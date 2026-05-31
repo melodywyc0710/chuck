@@ -1,0 +1,23 @@
+import './index.css';
+import { useAppStore } from './store/appStore';
+import Setup from './components/Setup';
+import Home from './components/Home';
+import LessonPlayer from './components/LessonPlayer';
+import ClassSummary from './components/ClassSummary';
+import RewardsRoom from './components/RewardsRoom';
+import TeacherDashboard from './components/TeacherDashboard';
+
+export default function App() {
+  const view = useAppStore(s => s.view);
+
+  return (
+    <>
+      {view === 'setup' && <Setup />}
+      {view === 'home' && <Home />}
+      {view === 'lesson' && <LessonPlayer />}
+      {view === 'summary' && <ClassSummary />}
+      {view === 'rewards' && <RewardsRoom />}
+      {view === 'teacher' && <TeacherDashboard />}
+    </>
+  );
+}

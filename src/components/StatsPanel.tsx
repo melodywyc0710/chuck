@@ -23,7 +23,7 @@ function StatBar({ label, value, max, color, icon }: StatBarProps) {
       <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
         <motion.div
           className="h-full rounded-full relative overflow-hidden"
-          style={{ backgroundColor: color, width: `${pct}%` }}
+          style={{ backgroundColor: color }}
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
           transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
@@ -36,7 +36,7 @@ function StatBar({ label, value, max, color, icon }: StatBarProps) {
 }
 
 export default function StatsPanel() {
-  const { mbtiType, level, xp, xpToNext, hp, maxHp, happiness } = usePetStore();
+  const { mbtiType, level, xp, xpToNext, happiness } = usePetStore();
   if (!mbtiType) return null;
   const creature = CREATURES[mbtiType];
 
@@ -58,10 +58,8 @@ export default function StatsPanel() {
         </div>
       </div>
 
-      <StatBar label="HP" value={hp} max={maxHp} color="#f87171" icon="❤️" />
       <StatBar label="Happiness" value={happiness} max={100} color={creature.glowColor} icon="✨" />
 
-      {/* XP bar */}
       <div className="space-y-1">
         <div className="flex items-center justify-between text-sm">
           <span className="flex items-center gap-1.5 text-slate-300 font-medium">
@@ -72,7 +70,7 @@ export default function StatsPanel() {
         <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
           <motion.div
             className="h-full rounded-full relative overflow-hidden"
-            style={{ backgroundColor: creature.accentColor, width: `${(xp / xpToNext) * 100}%` }}
+            style={{ backgroundColor: creature.accentColor }}
             animate={{ width: `${(xp / xpToNext) * 100}%` }}
             transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
           >

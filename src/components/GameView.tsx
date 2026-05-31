@@ -1,30 +1,23 @@
-import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CREATURES } from '../data/creatures';
 import { usePetStore } from '../store/petStore';
 import PetDisplay from './PetDisplay';
 import StatsPanel from './StatsPanel';
 import InteractionPanel from './InteractionPanel';
-import DailyTasks from './DailyTasks';
+import GoalsPanel from './GoalsPanel';
 
 export default function GameView() {
-  const { mbtiType, tick, resetPet } = usePetStore();
+  const { mbtiType, resetPet } = usePetStore();
   if (!mbtiType) return null;
 
   const creature = CREATURES[mbtiType];
-
-  // Passive decay tick every minute
-  useEffect(() => {
-    const id = setInterval(tick, 60_000);
-    return () => clearInterval(id);
-  }, [tick]);
 
   return (
     <div
       className={`min-h-screen bg-gradient-to-br ${creature.bgGradient} relative overflow-hidden`}
       style={{ '--glow-color': creature.glowColor } as React.CSSProperties}
     >
-      {/* Ambient glow orbs */}
+      {/* Ambient glow */}
       <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full opacity-20 blur-3xl pointer-events-none"
         style={{ background: creature.glowColor }}
@@ -43,21 +36,19 @@ export default function GameView() {
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => {
-            if (confirm('Start over with a new companion?')) resetPet();
-          }}
+          onClick={() => { if (confirm('Start over with a new companion?')) resetPet(); }}
           className="text-xs text-slate-500 hover:text-slate-300 border border-slate-700 rounded-lg px-3 py-1.5 transition-colors"
         >
           New Pet
         </motion.button>
       </div>
 
-      {/* Main layout */}
+      {/* Content */}
       <div className="relative z-10 max-w-xl mx-auto px-4 pb-8 space-y-4">
         <PetDisplay />
         <StatsPanel />
         <InteractionPanel />
-        <DailyTasks />
+        <GoalsPanel />
       </div>
     </div>
   );

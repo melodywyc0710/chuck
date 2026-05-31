@@ -6,15 +6,16 @@ import { usePetStore } from '../store/petStore';
 interface ActionButtonProps {
   emoji: string;
   label: string;
-  xpGain: string;
+  description: string;
+  xpGain: number;
+  happinessGain: number;
   cooldownEnd: number;
   onClick: () => void;
-  accentColor: string;
   glowColor: string;
-  disabled?: boolean;
+  accentColor: string;
 }
 
-function CooldownButton({ emoji, label, xpGain, cooldownEnd, onClick, accentColor, glowColor, disabled }: ActionButtonProps) {
+function ActionButton({ emoji, label, description, xpGain, happinessGain, cooldownEnd, onClick, glowColor, accentColor }: ActionButtonProps) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const id = setInterval(() => setNow(Date.now()), 500);
@@ -27,38 +28,38 @@ function CooldownButton({ emoji, label, xpGain, cooldownEnd, onClick, accentColo
 
   return (
     <motion.button
-      whileHover={!onCooldown && !disabled ? { scale: 1.06, y: -2 } : {}}
-      whileTap={!onCooldown && !disabled ? { scale: 0.94 } : {}}
-      onClick={() => { if (!onCooldown && !disabled) onClick(); }}
-      disabled={onCooldown || disabled}
-      className="flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all duration-200 relative overflow-hidden"
+      whileHover={!onCooldown ? { scale: 1.05, y: -2 } : {}}
+      whileTap={!onCooldown ? { scale: 0.95 } : {}}
+      onClick={() => { if (!onCooldown) onClick(); }}
+      disabled={onCooldown}
+      className="flex flex-col items-center gap-1.5 p-4 rounded-2xl border transition-all duration-200 text-center"
       style={
-        onCooldown || disabled
-          ? { borderColor: '#334155', background: '#0f172a', opacity: 0.5 }
+        onCooldown
+          ? { borderColor: '#1e293b', background: '#0f172a88', opacity: 0.45 }
           : {
               borderColor: `${glowColor}55`,
-              background: `linear-gradient(135deg, ${glowColor}22, ${glowColor}08)`,
-              boxShadow: `0 4px 20px ${glowColor}22`,
+              background: `linear-gradient(135deg, ${glowColor}20, ${glowColor}08)`,
+              boxShadow: `0 4px 20px ${glowColor}20`,
             }
       }
     >
       <span className="text-3xl">{emoji}</span>
       <span className="text-sm font-semibold text-white">{label}</span>
+      <span className="text-xs text-slate-500 leading-tight">{description}</span>
       {onCooldown ? (
-        <span className="text-xs text-slate-500">{secs}s</span>
+        <span className="text-xs text-slate-600 mt-0.5">back in {secs}s</span>
       ) : (
-        <span className="text-xs font-bold" style={{ color: accentColor }}>+{xpGain} XP</span>
+        <div className="flex gap-2 mt-0.5">
+          <span className="text-xs font-bold" style={{ color: accentColor }}>+{xpGain} XP</span>
+          <span className="text-xs text-pink-400">+{happinessGain} 😊</span>
+        </div>
       )}
     </motion.button>
   );
 }
 
 export default function InteractionPanel() {
-  const {
-    mbtiType, feed, play, rest,
-    feedCooldown, playCooldown, restCooldown,
-  } = usePetStore();
-
+  const { mbtiType, feed, play, rest, feedCooldown, playCooldown, restCooldown } = usePetStore();
   if (!mbtiType) return null;
   const creature = CREATURES[mbtiType];
 
@@ -70,39 +71,30 @@ export default function InteractionPanel() {
         borderColor: `${creature.glowColor}33`,
       }}
     >
-      <h3 className="text-white font-bold text-lg mb-4">Interactions</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-white font-bold text-lg">Care</h3>
+        <span className="text-slate-500 text-xs">All actions give happiness</span>
+      </div>
       <div className="grid grid-cols-3 gap-3">
-        <CooldownButton
-          emoji="🍖"
-          label="Feed"
-          xpGain="15"
-          cooldownEnd={feedCooldown}
-          onClick={feed}
-          accentColor={creature.accentColor}
-          glowColor="#f87171"
+        <ActionButton
+          emoji="🍓" label="Feed" description="Nourish your pet"
+          xpGain={15} happinessGain={8}
+          cooldownEnd={feedCooldown} onClick={feed}
+          glowColor="#f87171" accentColor={creature.accentColor}
         />
-        <CooldownButton
-          emoji="⚔️"
-          label="Play"
-          xpGain="30"
-          cooldownEnd={playCooldown}
-          onClick={play}
-          accentColor={creature.accentColor}
-          glowColor={creature.glowColor}
+        <ActionButton
+          emoji="🎮" label="Play" description="Have fun together"
+          xpGain={30} happinessGain={20}
+          cooldownEnd={playCooldown} onClick={play}
+          glowColor={creature.glowColor} accentColor={creature.accentColor}
         />
-        <CooldownButton
-          emoji="🌙"
-          label="Rest"
-          xpGain="10"
-          cooldownEnd={restCooldown}
-          onClick={rest}
-          accentColor={creature.accentColor}
-          glowColor="#818cf8"
+        <ActionButton
+          emoji="🌙" label="Rest" description="Recharge gently"
+          xpGain={10} happinessGain={12}
+          cooldownEnd={restCooldown} onClick={rest}
+          glowColor="#818cf8" accentColor={creature.accentColor}
         />
       </div>
-      <p className="text-slate-500 text-xs text-center mt-3">
-        {creature.name} loves {creature.favoriteActivity === 'feed' ? '🍖 feeding' : creature.favoriteActivity === 'play' ? '⚔️ playing' : '🌙 resting'}!
-      </p>
     </div>
   );
 }

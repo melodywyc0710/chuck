@@ -2,30 +2,32 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CREATURES } from '../data/creatures';
 import { usePetStore } from '../store/petStore';
 
-const MOOD_MESSAGES: Record<string, string[]> = {
-  happy: ['Feeling fantastic!', 'Life is wonderful~', 'So full of joy!', 'This is the best day!'],
-  content: ['Doing just fine.', 'All is well.', 'Comfortable and cozy.', 'A peaceful moment.'],
-  sad: ['A little lonely...', 'Could use some love.', 'Feeling a bit blue.', 'Play with me?'],
-  hungry: ['So hungry...', 'Please feed me!', 'My tummy is empty.', 'Need food!'],
+const MOOD_MESSAGES = {
+  ecstatic: ['Absolutely thriving!', 'Pure joy overflowing!', 'On top of the world!', 'Nothing could be better!'],
+  happy: ['Feeling wonderful today!', 'All smiles here~', 'So glad we\'re together!', 'Life is good!'],
+  content: ['Cozy and at peace.', 'Everything feels right.', 'Just chilling~', 'Serene and happy.'],
+  calm: ['Taking it easy today.', 'A quiet, peaceful day.', 'Resting gently.', 'Here with you always.'],
 };
 
-function getMood(happiness: number, hp: number) {
-  if (hp < 30) return 'hungry';
-  if (happiness >= 70) return 'happy';
+function getMood(happiness: number) {
+  if (happiness >= 85) return 'ecstatic';
+  if (happiness >= 65) return 'happy';
   if (happiness >= 40) return 'content';
-  return 'sad';
+  return 'calm';
 }
+
+const MOOD_EMOJI = { ecstatic: '🤩', happy: '😊', content: '😌', calm: '🌿' };
 
 function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export default function PetDisplay() {
-  const { mbtiType, petName, level, isLevelingUp, hp, happiness } = usePetStore();
+  const { mbtiType, petName, level, isLevelingUp, happiness } = usePetStore();
   if (!mbtiType) return null;
 
   const creature = CREATURES[mbtiType];
-  const mood = getMood(happiness, hp);
+  const mood = getMood(happiness);
 
   const animClass = {
     float: 'pet-float',
@@ -36,7 +38,6 @@ export default function PetDisplay() {
 
   return (
     <div className="flex flex-col items-center justify-center py-8 relative">
-      {/* Level up burst */}
       <AnimatePresence>
         {isLevelingUp && (
           <motion.div
@@ -46,7 +47,13 @@ export default function PetDisplay() {
             className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
           >
             <div className="text-center">
-              <div className="text-6xl mb-2">🌟</div>
+              <motion.div
+                className="text-6xl mb-2"
+                animate={{ rotate: [0, -10, 10, -10, 10, 0] }}
+                transition={{ duration: 0.6 }}
+              >
+                🌟
+              </motion.div>
               <div
                 className="text-3xl font-black"
                 style={{ color: creature.accentColor, textShadow: `0 0 20px ${creature.glowColor}` }}
@@ -54,44 +61,31 @@ export default function PetDisplay() {
                 LEVEL UP!
               </div>
               <div className="text-white text-xl font-bold">Level {level}</div>
+              <div className="text-slate-300 text-sm mt-1">You're doing amazing!</div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Decorative orbit ring */}
+      {/* Orbit ring + pet */}
       <div className="relative flex items-center justify-center mb-4">
         <div
           className="absolute rounded-full border-2 opacity-20 spin-slow"
-          style={{
-            width: 180,
-            height: 180,
-            borderColor: creature.glowColor,
-            borderStyle: 'dashed',
-          }}
+          style={{ width: 180, height: 180, borderColor: creature.glowColor, borderStyle: 'dashed' }}
         />
         <div
           className="absolute rounded-full opacity-10"
-          style={{
-            width: 160,
-            height: 160,
-            background: `radial-gradient(circle, ${creature.glowColor}88, transparent)`,
-          }}
+          style={{ width: 160, height: 160, background: `radial-gradient(circle, ${creature.glowColor}88, transparent)` }}
         />
-
-        {/* Pet emoji */}
-        <motion.div
+        <div
           className={`text-9xl select-none cursor-default ${animClass}`}
-          style={{
-            filter: `drop-shadow(0 0 30px ${creature.glowColor})`,
-          }}
+          style={{ filter: `drop-shadow(0 0 30px ${creature.glowColor})` }}
         >
           {creature.emoji}
-        </motion.div>
+        </div>
       </div>
 
-      {/* Pet name & species */}
-      <motion.div className="text-center mb-3">
+      <div className="text-center mb-3">
         <h2
           className="text-3xl font-black mb-1"
           style={{ color: creature.textColor, textShadow: `0 0 10px ${creature.glowColor}66` }}
@@ -101,9 +95,9 @@ export default function PetDisplay() {
         <div className="text-sm font-semibold opacity-70" style={{ color: creature.accentColor }}>
           {creature.species} · Lv.{level}
         </div>
-      </motion.div>
+      </div>
 
-      {/* Mood speech bubble */}
+      {/* Mood bubble — always warm */}
       <motion.div
         key={mood}
         initial={{ opacity: 0, y: 8, scale: 0.9 }}
@@ -115,11 +109,7 @@ export default function PetDisplay() {
           color: creature.textColor,
         }}
       >
-        {mood === 'happy' && '😊 '}
-        {mood === 'content' && '😌 '}
-        {mood === 'sad' && '😢 '}
-        {mood === 'hungry' && '😫 '}
-        {pickRandom(MOOD_MESSAGES[mood])}
+        {MOOD_EMOJI[mood]} {pickRandom(MOOD_MESSAGES[mood])}
       </motion.div>
     </div>
   );

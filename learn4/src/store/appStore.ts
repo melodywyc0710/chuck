@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type Subject = 'english' | 'maths';
+export type Subject = 'english' | 'maths' | 'science' | 'hass';
 export type Mascot = 'owl' | 'fox' | 'panda';
 export type Density = 'younger' | 'older';
 export type View = 'home' | 'lesson' | 'rewards' | 'teacher' | 'summary' | 'setup';
@@ -39,6 +39,7 @@ export interface AppState {
   view: View;
   profile: StudentProfile | null;
   activeSubject: Subject;
+  activeYearLevel: 4 | 5 | 6;
   activeSessionId: string | null;
   currentStepIndex: number;
   sessionStartTime: number;
@@ -55,6 +56,7 @@ export interface AppActions {
   setView: (v: View) => void;
   setupProfile: (p: StudentProfile) => void;
   setActiveSubject: (s: Subject) => void;
+  setActiveYearLevel: (y: 4 | 5 | 6) => void;
   startSession: (sessionId: string) => void;
   goToStep: (index: number) => void;
   recordAnswer: (stepId: string, answer: string | string[]) => void;
@@ -69,6 +71,7 @@ const defaultState: AppState = {
   view: 'setup',
   profile: null,
   activeSubject: 'english',
+  activeYearLevel: 4,
   activeSessionId: null,
   currentStepIndex: 0,
   sessionStartTime: 0,
@@ -91,6 +94,8 @@ export const useAppStore = create<AppState & AppActions>()(
       setupProfile: (p) => set({ profile: p, view: 'home' }),
 
       setActiveSubject: (s) => set({ activeSubject: s }),
+
+      setActiveYearLevel: (y) => set({ activeYearLevel: y, activeSubject: 'english' }),
 
       startSession: (sessionId) => set({
         activeSessionId: sessionId,

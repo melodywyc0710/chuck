@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useAppStore } from '../store/appStore';
 import { englishSession } from '../data/english-session';
 import { mathsSession } from '../data/maths-session';
+import { getSession } from '../data/curriculum/index';
 import VideoStep from './steps/VideoStep';
 import WorkedExample from './steps/WorkedExample';
 import QuizStep from './steps/QuizStep';
@@ -16,7 +17,8 @@ export default function LessonPlayer() {
 
   if (!activeSessionId || !profile) return null;
 
-  const session = activeSessionId.startsWith('eng') ? englishSession : mathsSession;
+  const session = getSession(activeSessionId)
+    ?? (activeSessionId.startsWith('eng') ? englishSession : mathsSession);
   const themeColor = THEME_COLOR[profile.colorTheme];
   const mascot = MASCOT_EMOJI[profile.mascot];
   const step = session.steps[currentStepIndex];

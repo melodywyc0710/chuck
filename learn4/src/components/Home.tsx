@@ -1,16 +1,20 @@
 import { motion } from 'framer-motion';
 import { useAppStore, type Subject } from '../store/appStore';
-import { englishSession } from '../data/english-session';
-import { mathsSession } from '../data/maths-session';
+import { sessionsByYear } from '../data/curriculum/index';
+import type { Session } from '../data/types';
 
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
-
-const sessions = { english: englishSession, maths: mathsSession };
+const SUBJECT_LABEL: Record<string, string> = {
+  english: '📖 English',
+  maths: '🔢 Maths',
+  science: '🔬 Science',
+  hass: '🌏 HASS',
+};
 
 interface NodeProps {
   index: number;
-  session: typeof englishSession;
+  session: Session;
   completed: boolean;
   current: boolean;
   locked: boolean;
@@ -32,8 +36,10 @@ function PathNode({ index, session, completed, current, locked, onStart, themeCo
           completed
             ? { background: themeColor, borderColor: themeColor, color: 'white' }
             : current
-            ? { background: '#f59e0b', borderColor: '#d97706', color: 'white', boxShadow: `0 0 0 0 ${themeColor}66` }
-            : { background: '#e5e7eb', borderColor: '#d1d5db', color: '#9ca3af' }
+            ? { background: '#f59e0b', borderColor: '#d97706', color: 'white' }
+            : locked
+            ? { background: '#f3f4f6', borderColor: '#e5e7eb', color: '#9ca3af' }
+            : { background: '#fff', borderColor: themeColor, color: themeColor }
         }
         animate={current ? { boxShadow: ['0 0 0 0 rgba(245,158,11,0.5)', '0 0 0 16px rgba(245,158,11,0)'] } : {}}
         transition={current ? { duration: 1.5, repeat: Infinity } : {}}
@@ -50,7 +56,8 @@ function PathNode({ index, session, completed, current, locked, onStart, themeCo
         )}
       </motion.button>
       <div className={`mt-2 text-center max-w-24 ${locked ? 'opacity-40' : ''}`}>
-        <div className="text-xs font-bold text-gray-700 leading-tight">{session.title.split(':')[0]}</div>
+        <div className="text-xs font-bold text-gray-700 leading-tight">{session.title.split(':').pop()?.trim()}</div>
+        <div className="text-xs text-gray-400">{session.victorianCode}</div>
         {completed && <div className="text-xs text-green-600 font-semibold">✓ Done</div>}
       </div>
     </div>
@@ -58,13 +65,19 @@ function PathNode({ index, session, completed, current, locked, onStart, themeCo
 }
 
 export default function Home() {
-  const { profile, activeSubject, setActiveSubject, startSession, completedSessions, totalStars, setView } = useAppStore();
+  const { profile, activeSubject, setActiveSubject, activeYearLevel, setActiveYearLevel, startSession, completedSessions, totalStars, setView } = useAppStore();
   if (!profile) return null;
 
   const themeColor = THEME_COLOR[profile.colorTheme];
-  const subjects: Subject[] = ['english', 'maths'];
-  const session = sessions[activeSubject];
-  const isCompleted = completedSessions.includes(session.id);
+  const yearSessions = sessionsByYear[activeYearLevel] ?? [];
+
+  // Get unique subjects present in this year's sessions
+  const subjects = Array.from(new Set(yearSessions.map(s => s.subject))) as Subject[];
+  const activeSubjectSessions = yearSessions.filter(s => s.subject === activeSubject);
+
+  // Find first incomplete session as "current"
+  const currentIndex = activeSubjectSessions.findIndex(s => !completedSessions.includes(s.id));
+  const featuredSession = currentIndex >= 0 ? activeSubjectSessions[currentIndex] : activeSubjectSessions[activeSubjectSessions.length - 1];
 
   return (
     <div className="min-h-screen" style={{ background: `linear-gradient(135deg, ${themeColor}11, #f0f4ff)` }}>
@@ -75,7 +88,7 @@ export default function Home() {
             <span className="text-2xl">{MASCOT_EMOJI[profile.mascot]}</span>
             <div>
               <div className="font-black text-gray-800 text-sm leading-none">Hi, {profile.name}! 👋</div>
-              <div className="text-xs text-gray-400">Year 4 · Learn4</div>
+              <div className="text-xs text-gray-400">Year {activeYearLevel} · Learn4</div>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -95,103 +108,132 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Year level tabs */}
+        <div className="max-w-2xl mx-auto px-4 pt-1 pb-2 flex gap-2">
+          {([4, 5, 6] as const).map(yr => (
+            <button
+              key={yr}
+              onClick={() => setActiveYearLevel(yr)}
+              className={`flex-1 py-1.5 px-3 rounded-xl font-bold text-sm transition-all ${
+                activeYearLevel === yr ? 'text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+              }`}
+              style={activeYearLevel === yr ? { background: themeColor } : {}}
+            >
+              Year {yr}
+            </button>
+          ))}
+        </div>
+
         {/* Subject tabs */}
-        <div className="max-w-2xl mx-auto px-4 pb-3 flex gap-2">
+        <div className="max-w-2xl mx-auto px-4 pb-3 flex gap-2 overflow-x-auto">
           {subjects.map(sub => (
             <button
               key={sub}
               onClick={() => setActiveSubject(sub)}
-              className={`flex-1 py-2 px-4 rounded-xl font-bold text-sm transition-all ${
+              className={`flex-shrink-0 py-2 px-4 rounded-xl font-bold text-sm transition-all ${
                 activeSubject === sub ? 'text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
-              style={activeSubject === sub ? { background: sessions[sub].color } : {}}
+              style={activeSubject === sub ? { background: featuredSession?.color ?? themeColor } : {}}
             >
-              {sessions[sub].icon} {sub.charAt(0).toUpperCase() + sub.slice(1)}
+              {SUBJECT_LABEL[sub] ?? sub}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Session card + path */}
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
-        {/* Active session card */}
-        <motion.div
-          key={activeSubject}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl p-6 text-white shadow-xl"
-          style={{ background: `linear-gradient(135deg, ${session.color}, ${session.color}cc)` }}
-        >
-          <div className="flex items-start justify-between mb-4">
+        {activeSubjectSessions.length === 0 ? (
+          <div className="bg-white rounded-3xl p-8 text-center shadow-sm">
+            <div className="text-4xl mb-3">🚀</div>
+            <p className="text-gray-500 font-semibold">Content loading — check back soon!</p>
+          </div>
+        ) : (
+          <>
+            {/* Featured session card */}
+            {featuredSession && (
+              <motion.div
+                key={featuredSession.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-3xl p-6 text-white shadow-xl"
+                style={{ background: `linear-gradient(135deg, ${featuredSession.color}, ${featuredSession.color}cc)` }}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <div className="text-xs font-semibold opacity-80 mb-1">{featuredSession.victorianCode}</div>
+                    <h2 className="text-xl font-black leading-tight">{featuredSession.title}</h2>
+                    <p className="text-sm opacity-80 mt-1">{featuredSession.description}</p>
+                  </div>
+                  <span className="text-5xl ml-4">{featuredSession.icon}</span>
+                </div>
+                <div className="flex items-center gap-4 text-sm opacity-80 mb-5">
+                  <span>⏱ ~{featuredSession.estimatedMinutes} min</span>
+                  <span>⭐ Up to {featuredSession.starsAvailable} stars</span>
+                  <span>📋 {featuredSession.steps.length} steps</span>
+                </div>
+                {completedSessions.includes(featuredSession.id) ? (
+                  <div className="bg-white/20 rounded-2xl px-4 py-3 text-center font-bold">
+                    ✅ Complete! Great work, {profile.name}!
+                  </div>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                    onClick={() => startSession(featuredSession.id)}
+                    className="w-full bg-white font-black text-lg py-3 rounded-2xl transition-all hover:shadow-lg"
+                    style={{ color: featuredSession.color }}
+                  >
+                    Start Learning →
+                  </motion.button>
+                )}
+              </motion.div>
+            )}
+
+            {/* Progress summary */}
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: 'Done', value: activeSubjectSessions.filter(s => completedSessions.includes(s.id)).length, icon: '✅' },
+                { label: 'Remaining', value: activeSubjectSessions.filter(s => !completedSessions.includes(s.id)).length, icon: '📚' },
+                { label: 'Stars', value: totalStars, icon: '⭐' },
+              ].map(stat => (
+                <div key={stat.label} className="bg-white rounded-2xl p-3 text-center shadow-sm">
+                  <div className="text-xl mb-0.5">{stat.icon}</div>
+                  <div className="font-black text-gray-800 text-lg">{stat.value}</div>
+                  <div className="text-xs text-gray-400">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Learning Path */}
             <div>
-              <div className="text-xs font-semibold opacity-80 mb-1">{session.victorianCode}</div>
-              <h2 className="text-xl font-black leading-tight">{session.title}</h2>
-              <p className="text-sm opacity-80 mt-1">{session.description}</p>
-            </div>
-            <span className="text-5xl ml-4">{session.icon}</span>
-          </div>
-          <div className="flex items-center gap-4 text-sm opacity-80 mb-5">
-            <span>⏱ ~{session.estimatedMinutes} min</span>
-            <span>⭐ Up to {session.starsAvailable} stars</span>
-            <span>📋 {session.steps.length} steps</span>
-          </div>
-          {isCompleted ? (
-            <div className="bg-white/20 rounded-2xl px-4 py-3 text-center font-bold">
-              ✅ Session complete! Great work, {profile.name}!
-            </div>
-          ) : (
-            <motion.button
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-              onClick={() => startSession(session.id)}
-              className="w-full bg-white font-black text-lg py-3 rounded-2xl transition-all hover:shadow-lg"
-              style={{ color: session.color }}
-            >
-              Start Learning →
-            </motion.button>
-          )}
-        </motion.div>
-
-        {/* Learning Path */}
-        <div>
-          <h3 className="font-black text-gray-700 mb-4 text-lg">📍 Your Learning Path</h3>
-          <div className="bg-white rounded-3xl p-6 shadow-sm flex flex-col gap-6 relative">
-            {/* Connecting line */}
-            <div className="absolute left-1/2 top-8 bottom-8 w-1 bg-gray-100 rounded-full -translate-x-1/2 z-0" />
-            {[session].map((s, i) => (
-              <PathNode
-                key={s.id}
-                index={i}
-                session={s}
-                completed={completedSessions.includes(s.id)}
-                current={!completedSessions.includes(s.id)}
-                locked={false}
-                onStart={() => startSession(s.id)}
-                themeColor={themeColor}
-              />
-            ))}
-            <div className={`flex flex-col items-center ${1 % 2 === 0 ? 'ml-8' : 'mr-8 self-end'}`}>
-              <div className="w-20 h-20 rounded-full flex items-center justify-center text-3xl bg-gray-100 border-4 border-dashed border-gray-300 opacity-50">
-                🔒
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-black text-gray-700 text-lg">📍 Learning Path</h3>
+                <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                  {activeSubjectSessions.filter(s => completedSessions.includes(s.id)).length} / {activeSubjectSessions.length} lessons
+                </span>
               </div>
-              <div className="mt-2 text-xs text-gray-400 font-semibold">More coming soon!</div>
+              <div className="bg-white rounded-3xl p-6 shadow-sm flex flex-col gap-6 relative">
+                <div className="absolute left-1/2 top-8 bottom-8 w-1 bg-gray-100 rounded-full -translate-x-1/2 z-0" />
+                {activeSubjectSessions.map((s, i) => {
+                  const isDone = completedSessions.includes(s.id);
+                  const isCurrent = i === currentIndex;
+                  const isLocked = !isDone && currentIndex >= 0 && i > currentIndex + 2;
+                  return (
+                    <PathNode
+                      key={s.id}
+                      index={i}
+                      session={s}
+                      completed={isDone}
+                      current={isCurrent}
+                      locked={isLocked}
+                      onStart={() => startSession(s.id)}
+                      themeColor={themeColor}
+                    />
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* Quick stats */}
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { label: 'Sessions done', value: completedSessions.length, icon: '✅' },
-            { label: 'Stars earned', value: totalStars, icon: '⭐' },
-            { label: 'Streak', value: '1 day', icon: '🔥' },
-          ].map(stat => (
-            <div key={stat.label} className="bg-white rounded-2xl p-4 text-center shadow-sm">
-              <div className="text-2xl mb-1">{stat.icon}</div>
-              <div className="font-black text-gray-800 text-xl">{stat.value}</div>
-              <div className="text-xs text-gray-400">{stat.label}</div>
-            </div>
-          ))}
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

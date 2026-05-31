@@ -1,11 +1,13 @@
-export type Subject = 'english' | 'maths';
+export type Subject = 'english' | 'maths' | 'science' | 'hass';
 
 export type StepType = 'video' | 'worked-example' | 'quiz' | 'free-response' | 'homework';
 
 export interface VideoStep {
   id: string; type: 'video';
   title: string; duration: string;
-  youtubeId: string; description: string;
+  youtubeId: string;
+  youtubeSearchQuery?: string;
+  description: string;
   teacherNote: string; keyPoints: string[];
 }
 

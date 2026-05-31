@@ -31,17 +31,34 @@ export default function VideoStep({ step, onNext, themeColor, mascot }: Props) {
       {/* Description */}
       <p className={`text-gray-600 ${density === 'younger' ? 'text-lg' : 'text-base'}`}>{step.description}</p>
 
-      {/* Video embed */}
-      <div className="rounded-2xl overflow-hidden shadow-lg bg-black aspect-video relative">
-        <iframe
-          src={`https://www.youtube.com/embed/${step.youtubeId}?rel=0&modestbranding=1`}
-          title={step.title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="w-full h-full"
-          onLoad={() => {}}
-        />
-      </div>
+      {/* Video embed or search button */}
+      {step.youtubeId ? (
+        <div className="rounded-2xl overflow-hidden shadow-lg bg-black aspect-video relative">
+          <iframe
+            src={`https://www.youtube.com/embed/${step.youtubeId}?rel=0&modestbranding=1`}
+            title={step.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="w-full h-full"
+            onLoad={() => {}}
+          />
+        </div>
+      ) : (
+        <div className="rounded-2xl overflow-hidden shadow-lg bg-gray-900 aspect-video relative flex flex-col items-center justify-center gap-4">
+          <div className="text-5xl">🎬</div>
+          <p className="text-gray-300 text-sm text-center px-6">Find a video on this topic using the button below.</p>
+          {step.youtubeSearchQuery && (
+            <a
+              href={`https://www.youtube.com/results?search_query=${encodeURIComponent(step.youtubeSearchQuery)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl flex items-center gap-2 transition-colors"
+            >
+              <span>▶</span> Search YouTube
+            </a>
+          )}
+        </div>
+      )}
 
       {/* Key points */}
       <div className="bg-indigo-50 rounded-2xl p-4 border border-indigo-100">

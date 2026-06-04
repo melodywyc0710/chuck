@@ -63,5 +63,6 @@ export interface Session {
   description: string; yearLevel: number;
   estimatedMinutes: number; starsAvailable: number;
   color: string; icon: string;
+  weekNumber?: number; // 1 = week of June 4 2026, 2 = June 11, etc. Undefined = always available
   steps: LessonStep[];
 }

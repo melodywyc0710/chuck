@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 export type Subject = 'english' | 'maths' | 'science' | 'hass';
 export type Mascot = 'owl' | 'fox' | 'panda';
 export type Density = 'younger' | 'older';
-export type View = 'home' | 'lesson' | 'rewards' | 'teacher' | 'summary' | 'setup';
+export type View = 'home' | 'lesson' | 'rewards' | 'teacher' | 'summary' | 'setup' | 'feedback';
 
 export interface StudentProfile {
   name: string;
@@ -132,7 +132,7 @@ export const useAppStore = create<AppState & AppActions>()(
           totalStars: s.totalStars + starsEarned,
           completedSessions: [...new Set([...s.completedSessions, result.sessionId])],
           sessionResults: [...s.sessionResults, full],
-          view: 'summary',
+          view: 'feedback',
         }));
       },
 

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useAppStore, type Subject } from '../store/appStore';
 import { sessionsByYear } from '../data/curriculum/index';
 import type { Session } from '../data/types';
+import { isSessionUnlocked, formatUnlockDate } from '../utils/weeklyUnlock';
 
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
@@ -18,33 +19,35 @@ interface NodeProps {
   completed: boolean;
   current: boolean;
   locked: boolean;
+  weekLocked: boolean;
   onStart: () => void;
   themeColor: string;
 }
 
-function PathNode({ index, session, completed, current, locked, onStart, themeColor }: NodeProps) {
+function PathNode({ index, session, completed, current, locked, weekLocked, onStart, themeColor }: NodeProps) {
+  const isAnyLocked = locked || weekLocked;
   const offset = index % 2 === 0 ? 'ml-8' : 'mr-8 self-end';
   return (
     <div className={`flex flex-col items-center ${offset}`}>
       <motion.button
-        whileHover={!locked ? { scale: 1.08 } : {}}
-        whileTap={!locked ? { scale: 0.95 } : {}}
-        onClick={() => !locked && onStart()}
-        disabled={locked}
+        whileHover={!isAnyLocked ? { scale: 1.08 } : {}}
+        whileTap={!isAnyLocked ? { scale: 0.95 } : {}}
+        onClick={() => !isAnyLocked && onStart()}
+        disabled={isAnyLocked}
         className="relative w-20 h-20 rounded-full flex items-center justify-center text-3xl shadow-lg border-4 transition-all"
         style={
           completed
             ? { background: themeColor, borderColor: themeColor, color: 'white' }
             : current
             ? { background: '#f59e0b', borderColor: '#d97706', color: 'white' }
-            : locked
+            : isAnyLocked
             ? { background: '#f3f4f6', borderColor: '#e5e7eb', color: '#9ca3af' }
             : { background: '#fff', borderColor: themeColor, color: themeColor }
         }
         animate={current ? { boxShadow: ['0 0 0 0 rgba(245,158,11,0.5)', '0 0 0 16px rgba(245,158,11,0)'] } : {}}
         transition={current ? { duration: 1.5, repeat: Infinity } : {}}
       >
-        {completed ? '⭐' : locked ? '🔒' : session.icon}
+        {completed ? '⭐' : isAnyLocked ? '🔒' : session.icon}
         {current && (
           <motion.div
             className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-black px-2 py-0.5 rounded-full"
@@ -55,10 +58,13 @@ function PathNode({ index, session, completed, current, locked, onStart, themeCo
           </motion.div>
         )}
       </motion.button>
-      <div className={`mt-2 text-center max-w-24 ${locked ? 'opacity-40' : ''}`}>
+      <div className={`mt-2 text-center max-w-24 ${isAnyLocked ? 'opacity-40' : ''}`}>
         <div className="text-xs font-bold text-gray-700 leading-tight">{session.title.split(':').pop()?.trim()}</div>
         <div className="text-xs text-gray-400">{session.victorianCode}</div>
         {completed && <div className="text-xs text-green-600 font-semibold">✓ Done</div>}
+        {weekLocked && session.weekNumber && (
+          <div className="text-xs text-blue-400 font-semibold">🗓 {formatUnlockDate(session.weekNumber)}</div>
+        )}
       </div>
     </div>
   );
@@ -216,7 +222,8 @@ export default function Home() {
                 {activeSubjectSessions.map((s, i) => {
                   const isDone = completedSessions.includes(s.id);
                   const isCurrent = i === currentIndex;
-                  const isLocked = !isDone && currentIndex >= 0 && i > currentIndex + 2;
+                  const isProgressLocked = !isDone && currentIndex >= 0 && i > currentIndex + 2;
+                  const isWeekLocked = !isSessionUnlocked(s.weekNumber);
                   return (
                     <PathNode
                       key={s.id}
@@ -224,7 +231,8 @@ export default function Home() {
                       session={s}
                       completed={isDone}
                       current={isCurrent}
-                      locked={isLocked}
+                      locked={isProgressLocked}
+                      weekLocked={isWeekLocked}
                       onStart={() => startSession(s.id)}
                       themeColor={themeColor}
                     />

@@ -1,6 +1,7 @@
 import { englishSession } from '../english-session';
 import { mathsSession } from '../maths-session';
 import type { Session } from '../types';
+import { weeklyLessons } from './weekly-lessons';
 
 import { y4English } from './y4-english';
 import { y4Maths } from './y4-maths';
@@ -14,6 +15,8 @@ import { y6English } from './y6-english';
 import { y6Maths } from './y6-maths';
 import { y6Science } from './y6-science';
 import { y6Hass } from './y6-hass';
+
+const weeklyY4 = weeklyLessons.filter(s => s.yearLevel === 4);
 
 export const allSessions: Session[] = [
   englishSession,
@@ -30,10 +33,11 @@ export const allSessions: Session[] = [
   ...y6Maths,
   ...y6Science,
   ...y6Hass,
+  ...weeklyLessons,
 ];
 
 export const sessionsByYear: Record<number, Session[]> = {
-  4: [...y4English, ...y4Maths, ...y4Science, ...y4Hass],
+  4: [...y4English, ...y4Maths, ...y4Science, ...y4Hass, ...weeklyY4],
   5: [...y5English, ...y5Maths, ...y5Science, ...y5Hass],
   6: [...y6English, ...y6Maths, ...y6Science, ...y6Hass],
 };

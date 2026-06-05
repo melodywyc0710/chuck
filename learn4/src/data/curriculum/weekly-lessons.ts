@@ -192,14 +192,14 @@ export const weeklyLessons: Session[] = [
     ],
   },
 
-  // ── WEEK 2 · MATHS · Y4 ────────────────────────────────────────────
+  // ── WEEK 2 · MATHS · Y6 ────────────────────────────────────────────
   {
     id: 'weekly-mat-w2',
     subject: 'maths',
     title: 'Maths: Patterns & Algebra — Number Patterns',
     victorianCode: 'VCMNA140',
     description: 'Identify, describe and create number patterns involving multiplication, division and combinations of operations.',
-    yearLevel: 4,
+    yearLevel: 6,
     estimatedMinutes: 90,
     starsAvailable: 10,
     color: '#0ea5e9',
@@ -532,14 +532,14 @@ export const weeklyLessons: Session[] = [
     ],
   },
 
-  // ── WEEK 3 · MATHS · Y4 ────────────────────────────────────────────
+  // ── WEEK 3 · MATHS · Y6 ────────────────────────────────────────────
   {
     id: 'weekly-mat-w3',
     subject: 'maths',
     title: 'Maths: Area & Perimeter',
     victorianCode: 'VCMMG162',
     description: 'Calculate the perimeter and area of rectangles, squares and composite shapes using standard formulas.',
-    yearLevel: 4,
+    yearLevel: 6,
     estimatedMinutes: 90,
     starsAvailable: 10,
     color: '#14b8a6',

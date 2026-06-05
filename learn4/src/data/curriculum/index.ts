@@ -16,7 +16,7 @@ import { y6Maths } from './y6-maths';
 import { y6Science } from './y6-science';
 import { y6Hass } from './y6-hass';
 
-const weeklyY4 = weeklyLessons.filter(s => s.yearLevel === 4);
+const weeklyByYear = (yr: number) => weeklyLessons.filter(s => s.yearLevel === yr);
 
 export const allSessions: Session[] = [
   englishSession,
@@ -37,9 +37,9 @@ export const allSessions: Session[] = [
 ];
 
 export const sessionsByYear: Record<number, Session[]> = {
-  4: [...y4English, ...y4Maths, ...y4Science, ...y4Hass, ...weeklyY4],
-  5: [...y5English, ...y5Maths, ...y5Science, ...y5Hass],
-  6: [...y6English, ...y6Maths, ...y6Science, ...y6Hass],
+  4: [...y4English, ...y4Maths, ...y4Science, ...y4Hass, ...weeklyByYear(4)],
+  5: [...y5English, ...y5Maths, ...y5Science, ...y5Hass, ...weeklyByYear(5)],
+  6: [...y6English, ...y6Maths, ...y6Science, ...y6Hass, ...weeklyByYear(6)],
 };
 
 export const sessionsBySubject = allSessions.reduce<Record<string, Session[]>>((acc, s) => {

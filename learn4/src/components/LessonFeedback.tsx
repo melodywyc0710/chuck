@@ -2,101 +2,98 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '../store/appStore';
 import { getSession } from '../data/curriculum/index';
+import { lessonSummaries } from '../data/lessonSummaries';
 
 const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 
-// ── Homework copy per subject ─────────────────────────────────────────────────
-const HOMEWORK_EN: Record<string, string> = {
-  english: `Homework this week:\n• Memorise your assigned vocabulary words\n• Write your daily diary entry (7 days)\n• Complete the English exercise book up to the folded page`,
-  maths: `Homework this week:\n• Complete the maths handouts (written or printed)`,
+const HW_EN: Record<string, string> = {
+  english: `For homework this week: please memorise the assigned vocabulary words, write a diary entry each day (seven days total), and complete the English exercise book up to the folded page.`,
+  maths: `For homework this week: please complete the maths handouts (written or printed).`,
+};
+const HW_ZH: Record<string, string> = {
+  english: `英语作业书本做到折的那一页，准备两本空的练习册作为专门的单词本以及日记本，并背指定的单词，以及写这周的日记（共七天）。`,
+  maths: `数学作业：完成数学练习单（书面或打印版）。`,
 };
 
-const HOMEWORK_ZH: Record<string, string> = {
-  english: `本周作业：\n• 背诵指定单词\n• 每天写日记（共七天）\n• 英语作业书本做到折的那一页`,
-  maths: `本周作业：\n• 完成数学练习单（书面或打印版）`,
-};
+function buildReport(
+  pct: number,
+  name: string,
+  subject: string,
+  sessionId: string,
+  lang: 'en' | 'zh',
+): string {
+  const summary = lessonSummaries[sessionId];
+  const hw = lang === 'en'
+    ? (HW_EN[subject] ?? 'Please complete all assigned homework before the next lesson.')
+    : (HW_ZH[subject] ?? '在下节课前完成所有指定作业。');
 
-// ── Tiered feedback ───────────────────────────────────────────────────────────
-interface Tier {
-  scoreLabel: { en: string; zh: string };
-  teacherNote: { en: string; zh: string };
-  progressNote: { en: string; zh: string };
-  futureNote: { en: string; zh: string };
-  recommendation: { en: string; zh: string };
-}
+  if (lang === 'zh') {
+    const coverageZh = summary?.zh ?? `这周${subject === 'maths' ? '数学' : '英语'}课上，我们完成了本节课的学习内容。`;
+    const futureZh = summary?.futureZh ?? '';
 
-function buildTier(pct: number, subject: string, title: string, name: string): Tier {
-  const subjectEn = subject === 'english' ? 'English' : subject === 'maths' ? 'Maths' : subject === 'science' ? 'Science' : 'HASS';
-  const subjectZh = subject === 'english' ? '英语' : subject === 'maths' ? '数学' : subject === 'science' ? '科学' : '人文';
-  const topic = title.replace(/^(English|Maths|Math|Science|HASS):\s*/i, '');
+    let progressZh: string;
+    let recommendationZh: string;
+
+    if (pct >= 87) {
+      progressZh = `${name}在课堂中持续参与、认真思考，在本节课的练习评估中得了${pct}分，能够独立完成并正确解答了所有题目，展现出非常好的理解能力与信心。`;
+      recommendationZh = `建议${name}在课后尝试用自己的语言向家人解释今天所学的内容——能够清楚地讲给别人听，是真正掌握知识最好的证明。`;
+    } else if (pct >= 62) {
+      progressZh = `${name}在课堂中认真参与，在本节课的练习评估中得了${pct}分，对大部分核心内容有良好的掌握。有几个地方还需要在下节课前再巩固一下。`;
+      recommendationZh = `建议${name}课后再回顾一遍今天的例题，尝试用自己的话写出一个例子，对于做错的题目也可以重新思考一遍原因。`;
+    } else {
+      progressZh = `${name}完整参与了这节课，在本节课的练习评估中得了${pct}分。这个课题需要时间和反复练习才能真正吸收，这是完全正常的。最重要的是不要着急，耐心复习例题和基础概念。`;
+      recommendationZh = `建议与${name}一起一步步回顾今天课程中的例题，慢慢来。如果可以的话，请家长陪着一起看，这样效果会好很多。下周我们会再确认一下这部分内容的掌握情况，看看还需要在这里花多长时间。`;
+    }
+
+    return [
+      `您好，`,
+      ``,
+      coverageZh,
+      ``,
+      progressZh,
+      ``,
+      futureZh,
+      ``,
+      recommendationZh,
+      ``,
+      hw,
+    ].filter(s => s !== undefined).join('\n');
+  }
+
+  // English
+  const coverageEn = summary?.en ?? `This week we completed the lesson content in ${subject === 'maths' ? 'Maths' : 'English'}.`;
+  const futureEn = summary?.futureEn ?? '';
+
+  let progressEn: string;
+  let recommendationEn: string;
 
   if (pct >= 87) {
-    return {
-      scoreLabel: { en: 'Excellent', zh: '优秀' },
-      teacherNote: {
-        en: `This week in ${subjectEn} we covered "${topic}". ${name} engaged with the material with great focus and enthusiasm throughout the lesson.`,
-        zh: `这周${subjectZh}课上我们学习了"${topic}"的内容。${name}在整堂课中专注投入，表现非常出色。`,
-      },
-      progressNote: {
-        en: `${name} demonstrated a strong understanding of the concepts, scoring ${pct}% on the lesson assessments. They completed all questions independently and correctly, showing real confidence and growth.`,
-        zh: `${name}在本节课的评估中得了${pct}分，展现出对知识点的深入掌握。能够独立且正确地完成所有练习题，体现出很好的信心与成长。`,
-      },
-      futureNote: {
-        en: `Mastering "${topic}" is an important step — it builds the analytical and problem-solving skills that connect directly to more advanced work later on. ${name} is building a very solid foundation.`,
-        zh: `扎实掌握"${topic}"是非常重要的一步，这些知识将直接为未来更高难度的学习奠定基础。${name}目前打下了非常坚实的基础。`,
-      },
-      recommendation: {
-        en: `To deepen understanding, encourage ${name} to explain today's topic in their own words — teaching others is one of the best ways to consolidate learning.`,
-        zh: `为了进一步巩固，建议${name}尝试用自己的话向家人解释今天所学的内容，这是检验和加深理解的最佳方式之一。`,
-      },
-    };
+    progressEn = `${name} worked with great focus throughout the lesson and scored ${pct}% on the practice assessments, completing all questions independently and correctly. This reflects genuine understanding and real confidence with the material.`;
+    recommendationEn = `To deepen the learning, encourage ${name} to explain today's topic in their own words to someone at home — being able to teach it clearly is the best sign of true mastery.`;
+  } else if (pct >= 62) {
+    progressEn = `${name} engaged well throughout the lesson and scored ${pct}% on the practice assessments, showing a solid grasp of most of the core content. There are a few areas that would benefit from another look before the next lesson.`;
+    recommendationEn = `It would help to go back through the worked examples from today's lesson, try writing out one example in ${name}'s own words, and revisit any questions that were tricky.`;
+  } else {
+    progressEn = `${name} attended the full lesson and engaged with the material. They scored ${pct}% on the practice assessments — this is a topic that takes time and repeated practice to absorb, and that is completely normal. The priority right now is patient, careful review of the worked examples rather than moving on quickly.`;
+    recommendationEn = `Please go through the worked examples from today's lesson step by step with ${name}, without rushing. If possible, having a parent sit through it together makes a big difference. We will revisit this topic next week to check where things stand and decide how much more time to spend on it.`;
   }
 
-  if (pct >= 62) {
-    return {
-      scoreLabel: { en: 'Good', zh: '良好' },
-      teacherNote: {
-        en: `This week in ${subjectEn} we covered "${topic}". ${name} worked hard throughout the lesson and showed a solid understanding of most of the content.`,
-        zh: `这周${subjectZh}课上我们学习了"${topic}"的内容。${name}在课堂中认真参与，对大部分内容展现出良好的掌握。`,
-      },
-      progressNote: {
-        en: `${name} scored ${pct}% on the lesson assessments, reflecting consistent effort and a good grasp of the core ideas. There are a few areas that would benefit from further review before the next lesson.`,
-        zh: `${name}在本节课评估中得了${pct}分，体现了持续的努力以及对核心概念的良好掌握。有几个知识点还需要在下节课前进一步巩固。`,
-      },
-      futureNote: {
-        en: `The skills from "${topic}" are foundational — building confidence now will make the next steps much easier. A little extra review this week will pay off significantly.`,
-        zh: `"${topic}"中的内容是基础性的，现在打好基础会让之后的学习事半功倍。本周多花一点时间复习，效果会非常显著。`,
-      },
-      recommendation: {
-        en: `Encourage ${name} to re-read the worked examples from today's lesson, and try writing out one example in their own words. Going back to the trickier questions is also a great use of review time.`,
-        zh: `建议${name}重新阅读今天课程中的例题，尝试用自己的话写出一个例子，也可以重点复习做错的题目。`,
-      },
-    };
-  }
-
-  return {
-    scoreLabel: { en: 'Needs Review', zh: '需复习' },
-    teacherNote: {
-      en: `This week in ${subjectEn} we covered "${topic}". ${name} attended the full lesson and engaged with the material — this is a topic that takes practice and time to fully absorb.`,
-      zh: `这周${subjectZh}课上我们学习了"${topic}"的内容。${name}完整参与了课堂，这个课题需要一定时间和练习才能真正掌握，不用担心。`,
-    },
-    progressNote: {
-      en: `${name} scored ${pct}% on the lesson assessments. This tells us the concepts need more time and practice to consolidate. The most important thing right now is careful, patient review of the worked examples.`,
-      zh: `${name}在本节课评估中得了${pct}分。这说明相关概念还需要更多时间和练习来巩固。目前最重要的是耐心、仔细地复习例题和基础知识。`,
-    },
-    futureNote: {
-      en: `"${topic}" is an important building block. Taking the time to review it carefully now means ${name} won't need to catch up later — every step reinforces the next one.`,
-      zh: `"${topic}"是重要的基础内容。现在认真复习，能让${name}在之后的学习中更加轻松，花时间打好基础非常值得。`,
-    },
-    recommendation: {
-      en: `Please go through the worked examples from today's lesson step by step with ${name}, slowly and without rushing. If possible, ask a parent or teacher to work through them together. We will revisit this topic next week to check on progress.`,
-      zh: `请与${name}一起一步步回顾今天课程中的例题，慢慢来不需要着急。如有可能，可以请家长或老师一起复习。下周我们会再看一下这部分内容的掌握情况。`,
-    },
-  };
+  return [
+    `Dear parent / guardian,`,
+    ``,
+    coverageEn,
+    ``,
+    progressEn,
+    ``,
+    futureEn,
+    ``,
+    recommendationEn,
+    ``,
+    hw,
+  ].filter(s => s !== undefined).join('\n');
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
 interface Props { onContinue: () => void }
 
 export default function LessonFeedback({ onContinue }: Props) {
@@ -109,46 +106,13 @@ export default function LessonFeedback({ onContinue }: Props) {
   if (!latest) { onContinue(); return null; }
 
   const session = getSession(latest.sessionId);
-  const lessonTitle = session?.title ?? latest.sessionId;
-
   const pct = latest.total > 0 ? Math.round((latest.score / latest.total) * 100) : 100;
   const themeColor = THEME_COLOR[profile.colorTheme];
   const mascot = MASCOT_EMOJI[profile.mascot];
-  const tier = buildTier(pct, latest.subject, lessonTitle, profile.name);
   const scoreColor = pct >= 87 ? '#059669' : pct >= 62 ? '#d97706' : '#dc2626';
+  const scoreLabel = { en: pct >= 87 ? 'Excellent' : pct >= 62 ? 'Good' : 'Needs Review', zh: pct >= 87 ? '优秀' : pct >= 62 ? '良好' : '需复习' };
 
-  const hwEn = HOMEWORK_EN[latest.subject] ?? 'Complete all assigned homework before the next lesson.';
-  const hwZh = HOMEWORK_ZH[latest.subject] ?? '在下节课前完成所有指定作业。';
-
-  const reportEn = [
-    `Dear parent/guardian,`,
-    ``,
-    tier.teacherNote.en,
-    ``,
-    tier.progressNote.en,
-    ``,
-    tier.futureNote.en,
-    ``,
-    tier.recommendation.en,
-    ``,
-    hwEn,
-  ].join('\n');
-
-  const reportZh = [
-    `您好，`,
-    ``,
-    tier.teacherNote.zh,
-    ``,
-    tier.progressNote.zh,
-    ``,
-    tier.futureNote.zh,
-    ``,
-    tier.recommendation.zh,
-    ``,
-    hwZh,
-  ].join('\n');
-
-  const report = lang === 'en' ? reportEn : reportZh;
+  const report = buildReport(pct, profile.name, latest.subject, latest.sessionId, lang);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(report).then(() => {
@@ -157,19 +121,11 @@ export default function LessonFeedback({ onContinue }: Props) {
     });
   };
 
-  const sections = [
-    { label: lang === 'en' ? '📚 This week\'s lesson' : '📚 本周课程内容', text: lang === 'en' ? tier.teacherNote.en : tier.teacherNote.zh },
-    { label: lang === 'en' ? '📈 Student progress' : '📈 学生进步', text: lang === 'en' ? tier.progressNote.en : tier.progressNote.zh },
-    { label: lang === 'en' ? '🔭 Why it matters' : '🔭 为什么重要', text: lang === 'en' ? tier.futureNote.en : tier.futureNote.zh },
-    { label: lang === 'en' ? '💡 Recommendation' : '💡 老师建议', text: lang === 'en' ? tier.recommendation.en : tier.recommendation.zh },
-    { label: lang === 'en' ? '🏠 Homework' : '🏠 作业', text: lang === 'en' ? hwEn : hwZh },
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="max-w-2xl mx-auto w-full px-4 py-6 space-y-5 flex-1">
 
-        {/* Language toggle — defaults to 中文 */}
+        {/* Language toggle */}
         <div className="flex justify-end">
           <div className="flex bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
             {(['zh', 'en'] as const).map(l => (
@@ -194,11 +150,14 @@ export default function LessonFeedback({ onContinue }: Props) {
           <div className="text-6xl mb-3">{mascot}</div>
           <div className="text-5xl font-black mb-1" style={{ color: scoreColor }}>{pct}%</div>
           <div className="text-sm font-bold uppercase tracking-wide mb-4" style={{ color: scoreColor }}>
-            {lang === 'en' ? tier.scoreLabel.en : tier.scoreLabel.zh}
+            {scoreLabel[lang]}
           </div>
+          {session && (
+            <div className="text-sm text-gray-500 mb-4 font-medium">{session.title}</div>
+          )}
           <div className="flex justify-center gap-1 mb-4">
             {Array.from({ length: 5 }).map((_, i) => (
-              <span key={i} className={`text-2xl transition-all ${i < latest.starsEarned ? 'opacity-100' : 'opacity-20'}`}>⭐</span>
+              <span key={i} className={`text-2xl ${i < latest.starsEarned ? 'opacity-100' : 'opacity-20'}`}>⭐</span>
             ))}
           </div>
           <div className="grid grid-cols-3 gap-3">
@@ -215,38 +174,35 @@ export default function LessonFeedback({ onContinue }: Props) {
           </div>
         </motion.div>
 
-        {/* Parent report */}
+        {/* Parent report — flowing prose, no section labels */}
         <motion.div
           key={lang}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl p-6 shadow-sm space-y-3"
+          className="bg-white rounded-3xl p-6 shadow-sm"
         >
-          <div className="flex items-center justify-between mb-1">
-            <h2 className="font-black text-gray-800 text-base">
-              {lang === 'en' ? '📤 Parent / Guardian Report' : '📤 家长报告'}
-            </h2>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm font-semibold text-gray-500">
+              {lang === 'en' ? 'Parent / guardian report' : '家长报告'}
+            </p>
             <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">
               {lang === 'en' ? 'Ready to share' : '可直接发送'}
             </span>
           </div>
 
-          {sections.map(s => (
-            <div key={s.label} className="border border-gray-100 rounded-2xl p-4">
-              <div className="font-bold text-gray-700 text-sm mb-1">{s.label}</div>
-              <p className="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{s.text}</p>
-            </div>
-          ))}
+          <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+            {report}
+          </div>
 
           <motion.button
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
             onClick={handleCopy}
-            className="w-full py-3 rounded-2xl text-white text-sm font-black transition-all mt-2"
+            className="w-full py-3 rounded-2xl text-white text-sm font-black transition-all mt-5"
             style={{ background: copied ? '#059669' : themeColor }}
           >
             {copied
               ? (lang === 'en' ? '✅ Copied!' : '✅ 已复制！')
-              : (lang === 'en' ? '📋 Copy full report' : '📋 复制完整报告')}
+              : (lang === 'en' ? 'Copy report' : '复制报告')}
           </motion.button>
         </motion.div>
 

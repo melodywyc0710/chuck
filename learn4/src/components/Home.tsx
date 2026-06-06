@@ -7,10 +7,10 @@ import { isSessionUnlocked, formatUnlockDate } from '../utils/weeklyUnlock';
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
 const SUBJECT_LABEL: Record<string, string> = {
-  english: '📖 English',
-  maths: '🔢 Maths',
-  science: '🔬 Science',
-  hass: '🌏 HASS',
+  english: 'English',
+  maths: 'Maths',
+  science: 'Science',
+  hass: 'HASS',
 };
 
 interface NodeProps {
@@ -71,7 +71,7 @@ function PathNode({ index, session, completed, current, locked, weekLocked, onSt
 }
 
 export default function Home() {
-  const { profile, activeSubject, setActiveSubject, activeYearLevel, setActiveYearLevel, startSession, completedSessions, totalStars, setView } = useAppStore();
+  const { profile, activeSubject, setActiveSubject, activeYearLevel, setActiveYearLevel, startSession, completedSessions, totalStars, setView, currentStreak } = useAppStore();
   if (!profile) return null;
 
   const themeColor = THEME_COLOR[profile.colorTheme];
@@ -105,11 +105,17 @@ export default function Home() {
               <span>⭐</span>
               <span className="font-black text-yellow-700 text-sm">{totalStars}</span>
             </button>
+            {currentStreak > 1 && (
+              <div className="flex items-center gap-1 bg-orange-100 px-3 py-1.5 rounded-full">
+                <span>🔥</span>
+                <span className="font-black text-orange-700 text-sm">{currentStreak}</span>
+              </div>
+            )}
             <button
               onClick={() => setView('teacher')}
               className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-3 py-1.5"
             >
-              👩‍🏫 Teacher
+              Teacher
             </button>
           </div>
         </div>
@@ -197,12 +203,11 @@ export default function Home() {
             {/* Progress summary */}
             <div className="grid grid-cols-3 gap-3">
               {[
-                { label: 'Done', value: activeSubjectSessions.filter(s => completedSessions.includes(s.id)).length, icon: '✅' },
-                { label: 'Remaining', value: activeSubjectSessions.filter(s => !completedSessions.includes(s.id)).length, icon: '📚' },
-                { label: 'Stars', value: totalStars, icon: '⭐' },
+                { label: 'Done', value: activeSubjectSessions.filter(s => completedSessions.includes(s.id)).length },
+                { label: 'Remaining', value: activeSubjectSessions.filter(s => !completedSessions.includes(s.id)).length },
+                { label: 'Stars', value: totalStars },
               ].map(stat => (
                 <div key={stat.label} className="bg-white rounded-2xl p-3 text-center shadow-sm">
-                  <div className="text-xl mb-0.5">{stat.icon}</div>
                   <div className="font-black text-gray-800 text-lg">{stat.value}</div>
                   <div className="text-xs text-gray-400">{stat.label}</div>
                 </div>

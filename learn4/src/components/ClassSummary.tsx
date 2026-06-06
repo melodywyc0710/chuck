@@ -145,19 +145,19 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
                 onClick={copyToClipboard}
                 className="text-xs bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-lg hover:bg-indigo-200 transition-colors no-print"
               >
-                📋 Copy
+                Copy
               </button>
               <button
                 onClick={() => window.print()}
                 className="text-xs bg-gray-100 text-gray-700 font-bold px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors no-print"
               >
-                🖨️ Print
+                Print
               </button>
             </div>
           </div>
-          <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 rounded-xl p-4 leading-relaxed">
+          <div className="text-sm text-gray-600 whitespace-pre-wrap bg-gray-50 rounded-xl p-4 leading-relaxed">
             {parentMessage}
-          </pre>
+          </div>
         </div>
 
         {/* Navigation */}
@@ -167,7 +167,7 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
             onClick={() => setView('rewards')}
             className="flex-1 py-4 rounded-2xl font-black text-lg bg-yellow-400 text-yellow-900"
           >
-            🛋️ Decorate Room
+            Decorate Room
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
@@ -175,7 +175,7 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
             className="flex-1 py-4 rounded-2xl text-white font-black text-lg"
             style={{ background: themeColor }}
           >
-            🏠 Back Home
+            Back Home
           </motion.button>
         </div>
       </div>

@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { useAppStore } from '../store/appStore';
 import { englishSession } from '../data/english-session';
 import { mathsSession } from '../data/maths-session';
+import { getSession } from '../data/curriculum/index';
+import { lessonSummaries } from '../data/lessonSummaries';
 
 const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
@@ -11,13 +13,14 @@ function formatDate(iso: string) {
 }
 
 export default function ClassSummary() {
-  const { sessionResults, profile, setView, totalStars, currentAnswers } = useAppStore();
+  const { sessionResults, profile, setView, totalStars, currentAnswers, currentStreak } = useAppStore();
   if (!profile) return null;
 
   const latest = sessionResults[sessionResults.length - 1];
   if (!latest) { setView('home'); return null; }
 
-  const session = latest.subject === 'english' ? englishSession : mathsSession;
+  const session = getSession(latest.sessionId) ?? (latest.subject === 'english' ? englishSession : mathsSession);
+  const coveredText = lessonSummaries[latest.sessionId]?.en ?? session.description;
   const themeColor = THEME_COLOR[profile.colorTheme];
   const mascot = MASCOT_EMOJI[profile.mascot];
   const pct = latest.total > 0 ? Math.round((latest.score / latest.total) * 100) : 100;
@@ -67,9 +70,9 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
         <motion.div
           initial={{ scale: 0 }} animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 200 }}
-          className="text-7xl mb-3"
+          className="text-7xl font-black mb-2"
         >
-          🎉
+          {pct}%
         </motion.div>
         <h1 className="text-3xl font-black mb-1">Session Complete!</h1>
         <p className="opacity-80 text-lg">You finished: <strong>{session.title}</strong></p>
@@ -77,22 +80,26 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
           <span className="text-3xl">{mascot}</span>
           <span className="font-bold text-xl">Well done, {profile.name}!</span>
         </div>
+        {currentStreak > 0 && (
+          <div className="mt-3 inline-block bg-white/20 rounded-full px-4 py-1 font-bold text-sm">
+            🔥 {currentStreak} day streak
+          </div>
+        )}
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
         {/* Stats cards */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { icon: '⭐', value: `+${latest.starsEarned}`, label: 'Stars earned' },
-            { icon: '📊', value: `${pct}%`, label: 'Quiz score' },
-            { icon: '⏱', value: `${latest.timeSpentMinutes || '~45'}m`, label: 'Time spent' },
+            { value: `+${latest.starsEarned}`, label: 'Stars earned' },
+            { value: `${pct}%`, label: 'Quiz score' },
+            { value: `${latest.timeSpentMinutes || '~45'}m`, label: 'Time spent' },
           ].map(s => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               className="bg-white rounded-2xl p-4 text-center shadow-sm"
             >
-              <div className="text-3xl mb-1">{s.icon}</div>
               <div className="font-black text-2xl text-gray-800">{s.value}</div>
               <div className="text-xs text-gray-400">{s.label}</div>
             </motion.div>
@@ -101,9 +108,9 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
 
         {/* What was covered */}
         <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h3 className="font-black text-gray-800 mb-3">📖 What we covered today</h3>
+          <h3 className="font-black text-gray-800 mb-3">What we covered</h3>
           <div className="text-xs text-indigo-600 font-semibold mb-1">{session.victorianCode}</div>
-          <p className="text-gray-600 text-sm">{session.description}</p>
+          <p className="text-gray-600 text-sm">{coveredText}</p>
           <div className="mt-3 space-y-1">
             {session.steps.map((s, i) => (
               <div key={i} className="flex items-center gap-2 text-sm text-gray-600">
@@ -117,7 +124,7 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
         {/* Homework reminder */}
         {session.steps.filter(s => s.type === 'homework').map((s: any) => (
           <div key={s.id} className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
-            <h3 className="font-black text-amber-800 mb-3">🏠 Homework (due next class)</h3>
+            <h3 className="font-black text-amber-800 mb-3">Homework due next class</h3>
             <div className="space-y-2">
               {s.tasks.map((task: any) => (
                 <div key={task.id} className="flex items-start gap-2 text-sm text-amber-700">
@@ -132,7 +139,7 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
         {/* Parent summary — printable */}
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-black text-gray-800">📧 Send to Parents</h3>
+            <h3 className="font-black text-gray-800">Send to Parents</h3>
             <div className="flex gap-2">
               <button
                 onClick={copyToClipboard}

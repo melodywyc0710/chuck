@@ -50,6 +50,8 @@ export interface AppState {
   placedItems: string[];
   currentAnswers: Record<string, string | string[]>;
   currentScore: { correct: number; total: number };
+  currentStreak: number;
+  lastActiveDate: string; // ISO date string YYYY-MM-DD
 }
 
 export interface AppActions {
@@ -62,6 +64,7 @@ export interface AppActions {
   recordAnswer: (stepId: string, answer: string | string[]) => void;
   recordScore: (correct: boolean) => void;
   finishSession: (result: Omit<SessionResult, 'completedAt'>) => void;
+  updateStreak: () => void;
   buyItem: (itemId: string, cost: number) => void;
   togglePlaced: (itemId: string) => void;
   reset: () => void;
@@ -82,6 +85,8 @@ const defaultState: AppState = {
   placedItems: ['bed', 'rug'],
   currentAnswers: {},
   currentScore: { correct: 0, total: 0 },
+  currentStreak: 0,
+  lastActiveDate: '',
 };
 
 export const useAppStore = create<AppState & AppActions>()(
@@ -119,7 +124,20 @@ export const useAppStore = create<AppState & AppActions>()(
           },
         })),
 
+      updateStreak: () => {
+        const state = get();
+        const today = new Date().toISOString().slice(0, 10);
+        if (state.lastActiveDate === today) return;
+        const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+        if (state.lastActiveDate === yesterday) {
+          set({ currentStreak: state.currentStreak + 1, lastActiveDate: today });
+        } else {
+          set({ currentStreak: 1, lastActiveDate: today });
+        }
+      },
+
       finishSession: (result) => {
+        get().updateStreak();
         const state = get();
         const minutes = Math.round((Date.now() - state.sessionStartTime) / 60000);
         const full: SessionResult = {

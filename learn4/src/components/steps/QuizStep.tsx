@@ -72,17 +72,10 @@ export default function QuizStep({ step, onNext, themeColor, mascot }: Props) {
       {/* All done — summary */}
       {allDone ? (
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center space-y-4 py-6">
-          <div className="text-6xl">{score === step.questions.length ? '🏆' : score >= step.questions.length / 2 ? '⭐' : '💪'}</div>
-          <h3 className="text-2xl font-black text-gray-800">
-            {score}/{step.questions.length} correct!
-          </h3>
-          <p className="text-gray-500">
-            {score === step.questions.length
-              ? "Perfect score! You really know this stuff!"
-              : score >= step.questions.length * 0.7
-              ? "Great work! Keep it up!"
-              : "Good try! Review the explanations and you'll get it next time."}
-          </p>
+          <div className="text-6xl font-black" style={{ color: themeColor }}>
+            {Math.round((score / step.questions.length) * 100)}%
+          </div>
+          <p className="text-gray-500 font-semibold">{score} of {step.questions.length} correct</p>
           <motion.button
             whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
             onClick={onNext}
@@ -114,14 +107,23 @@ export default function QuizStep({ step, onNext, themeColor, mascot }: Props) {
               {/* Options */}
               <div className="space-y-2">
                 {q.options.map((opt, i) => {
-                  let style = 'border-gray-200 bg-white hover:border-gray-300';
-                  if (confirmed) {
-                    if (i === q.correct) style = 'border-green-400 bg-green-50';
-                    else if (i === selected && !isCorrect) style = 'border-red-400 bg-red-50';
-                    else style = 'border-gray-100 bg-gray-50 opacity-50';
-                  } else if (selected === i) {
-                    style = 'border-indigo-400 bg-indigo-50';
-                  }
+                  const isCorrectOpt = confirmed && i === q.correct;
+                  const isWrongSelected = confirmed && i === selected && !isCorrect;
+                  const isOther = confirmed && i !== q.correct && i !== selected;
+
+                  let containerStyle = 'border-gray-200 bg-white hover:border-gray-300';
+                  if (isCorrectOpt) containerStyle = 'border-green-500 bg-green-500';
+                  else if (isWrongSelected) containerStyle = 'border-red-500 bg-red-500';
+                  else if (isOther) containerStyle = 'border-gray-100 bg-gray-50 opacity-50';
+                  else if (!confirmed && selected === i) containerStyle = 'border-indigo-400 bg-indigo-50';
+
+                  const labelBg = isCorrectOpt || isWrongSelected
+                    ? 'bg-white/25 text-white'
+                    : selected === i && !confirmed
+                    ? 'bg-indigo-100 text-indigo-700'
+                    : 'bg-gray-100 text-gray-600';
+
+                  const textColor = (isCorrectOpt || isWrongSelected) ? 'text-white' : 'text-gray-800';
 
                   return (
                     <motion.button
@@ -129,12 +131,14 @@ export default function QuizStep({ step, onNext, themeColor, mascot }: Props) {
                       whileHover={!confirmed ? { scale: 1.01 } : {}}
                       whileTap={!confirmed ? { scale: 0.99 } : {}}
                       onClick={() => !confirmed && setSelected(i)}
-                      className={`w-full text-left p-4 rounded-2xl border-2 transition-all font-medium ${style}`}
+                      className={`w-full text-left p-4 rounded-2xl border-2 transition-all font-medium flex items-center gap-3 ${containerStyle}`}
                     >
-                      <span className="text-gray-500 font-bold mr-2">{['A', 'B', 'C', 'D'][i]}.</span>
-                      <span className={density === 'younger' ? 'text-base' : 'text-sm'} dangerouslySetInnerHTML={{ __html: renderMd(opt) }} />
-                      {confirmed && i === q.correct && <span className="ml-2 text-green-600">✓</span>}
-                      {confirmed && i === selected && !isCorrect && <span className="ml-2 text-red-500">✗</span>}
+                      <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-black flex-shrink-0 ${labelBg}`}>
+                        {['A', 'B', 'C', 'D'][i]}
+                      </span>
+                      <span className={`flex-1 ${textColor} ${density === 'younger' ? 'text-base' : 'text-sm'}`} dangerouslySetInnerHTML={{ __html: renderMd(opt) }} />
+                      {isCorrectOpt && <span className="text-white font-black ml-1">✓</span>}
+                      {isWrongSelected && <span className="text-white font-black ml-1">✗</span>}
                     </motion.button>
                   );
                 })}
@@ -146,26 +150,18 @@ export default function QuizStep({ step, onNext, themeColor, mascot }: Props) {
                   <motion.div
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className={`rounded-2xl p-4 border ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200'}`}
+                    className="rounded-2xl p-4 border bg-white border-gray-200 shadow-sm"
                   >
-                    <div className={`font-bold mb-1 ${isCorrect ? 'text-green-700' : 'text-blue-700'}`}>
-                      {isCorrect ? '🎉 Correct!' : '💡 Here\'s the explanation:'}
+                    <div className={`font-bold mb-1 ${isCorrect ? 'text-green-600' : 'text-gray-600'}`}>
+                      {isCorrect ? 'Correct' : 'Not quite'}
                     </div>
                     <p
-                      className={`${isCorrect ? 'text-green-700' : 'text-blue-700'} ${density === 'younger' ? 'text-sm' : 'text-xs'}`}
+                      className={`text-gray-600 ${density === 'younger' ? 'text-sm' : 'text-xs'}`}
                       dangerouslySetInnerHTML={{ __html: renderMd(q.explanation) }}
                     />
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              {/* Mascot */}
-              {!confirmed && (
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <span className="text-2xl">{mascot}</span>
-                  <span>{density === 'younger' ? "Pick one answer, then check it!" : "Choose the best answer."}</span>
-                </div>
-              )}
             </motion.div>
           </AnimatePresence>
 
@@ -195,7 +191,7 @@ export default function QuizStep({ step, onNext, themeColor, mascot }: Props) {
       )}
 
       <button onClick={() => setShowNote(v => !v)} className="text-xs text-gray-400 hover:text-gray-600 underline">
-        👩‍🏫 Teacher note {showNote ? '▲' : '▼'}
+        Teacher note {showNote ? '▲' : '▼'}
       </button>
       {showNote && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-800">{step.teacherNote}</div>

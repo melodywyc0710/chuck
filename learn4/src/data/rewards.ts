@@ -6,6 +6,8 @@ export interface RoomItem {
   category: 'furniture' | 'pet' | 'decoration' | 'window';
   description: string;
   position: { x: number; y: number }; // percentage for room grid
+  unlocked?: boolean;
+  placed?: boolean;
 }
 
 export const ROOM_ITEMS: RoomItem[] = [
@@ -37,4 +39,8 @@ export const ROOM_ITEMS: RoomItem[] = [
   { id: 'plant', name: 'Potted Plant', emoji: '🌿', cost: 2, category: 'decoration', description: 'Brings life to the room', position: { x: 78, y: 55 } },
   { id: 'posters', name: 'Cool Posters', emoji: '🖼️', cost: 3, category: 'decoration', description: 'Your favourite things', position: { x: 50, y: 15 } },
   { id: 'treehouse-upgrade', name: '🌳 Treehouse Upgrade!', emoji: '🌳', cost: 20, category: 'decoration', description: 'Transform your bedroom into a treehouse', position: { x: 50, y: 5 } },
+  { id: 'chicken', name: 'Chicken', emoji: '🐔', cost: 8, category: 'pet', description: 'Earns 2 stars per hour on the farm', unlocked: false, placed: false, position: { x: 20, y: 60 } },
+  { id: 'sheep', name: 'Sheep', emoji: '🐑', cost: 20, category: 'pet', description: 'Earns 5 stars per hour on the farm', unlocked: false, placed: false, position: { x: 40, y: 60 } },
+  { id: 'cow', name: 'Cow', emoji: '🐄', cost: 45, category: 'pet', description: 'Earns 10 stars per hour on the farm', unlocked: false, placed: false, position: { x: 60, y: 60 } },
+  { id: 'horse', name: 'Horse', emoji: '🐴', cost: 80, category: 'pet', description: 'Earns 20 stars per hour on the farm', unlocked: false, placed: false, position: { x: 80, y: 60 } },
 ];

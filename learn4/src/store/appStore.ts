@@ -35,6 +35,12 @@ export interface RoomItem {
   placed: boolean;
 }
 
+export interface FarmPlot {
+  id: string;          // 'plot-0' .. 'plot-5'
+  animalId: string | null;
+  placedAt: string;    // ISO datetime when animal was placed
+}
+
 export interface AppState {
   view: View;
   profile: StudentProfile | null;
@@ -52,6 +58,10 @@ export interface AppState {
   currentScore: { correct: number; total: number };
   currentStreak: number;
   lastActiveDate: string; // ISO date string YYYY-MM-DD
+  itemPositions: Record<string, { x: number; y: number }>;
+  farmPlots: FarmPlot[];
+  lastFarmCollect: string; // ISO datetime
+  farmStarsPending: number;
 }
 
 export interface AppActions {
@@ -68,6 +78,10 @@ export interface AppActions {
   buyItem: (itemId: string, cost: number) => void;
   togglePlaced: (itemId: string) => void;
   reset: () => void;
+  setItemPosition: (itemId: string, pos: { x: number; y: number }) => void;
+  placeFarmAnimal: (plotId: string, animalId: string) => void;
+  removeFarmAnimal: (plotId: string) => void;
+  collectFarmStars: () => void;
 }
 
 const defaultState: AppState = {
@@ -87,6 +101,17 @@ const defaultState: AppState = {
   currentScore: { correct: 0, total: 0 },
   currentStreak: 0,
   lastActiveDate: '',
+  itemPositions: {},
+  farmPlots: [
+    { id: 'plot-0', animalId: null, placedAt: '' },
+    { id: 'plot-1', animalId: null, placedAt: '' },
+    { id: 'plot-2', animalId: null, placedAt: '' },
+    { id: 'plot-3', animalId: null, placedAt: '' },
+    { id: 'plot-4', animalId: null, placedAt: '' },
+    { id: 'plot-5', animalId: null, placedAt: '' },
+  ],
+  lastFarmCollect: '',
+  farmStarsPending: 0,
 };
 
 export const useAppStore = create<AppState & AppActions>()(
@@ -171,6 +196,42 @@ export const useAppStore = create<AppState & AppActions>()(
         })),
 
       reset: () => set(defaultState),
+
+      setItemPosition: (itemId, pos) =>
+        set(s => ({ itemPositions: { ...s.itemPositions, [itemId]: pos } })),
+
+      placeFarmAnimal: (plotId, animalId) =>
+        set(s => ({
+          farmPlots: s.farmPlots.map(p =>
+            p.id === plotId ? { ...p, animalId, placedAt: new Date().toISOString() } : p
+          ),
+        })),
+
+      removeFarmAnimal: (plotId) =>
+        set(s => ({
+          farmPlots: s.farmPlots.map(p =>
+            p.id === plotId ? { ...p, animalId: null, placedAt: '' } : p
+          ),
+        })),
+
+      collectFarmStars: () => {
+        const state = get();
+        const RATES: Record<string, number> = { chicken: 2, sheep: 5, cow: 10, horse: 20 };
+        const now = Date.now();
+        let earned = 0;
+        state.farmPlots.forEach(plot => {
+          if (!plot.animalId || !plot.placedAt) return;
+          const hoursElapsed = (now - new Date(plot.placedAt).getTime()) / 3600000;
+          earned += Math.floor(hoursElapsed * (RATES[plot.animalId] ?? 2));
+        });
+        if (earned > 0) {
+          set(s => ({
+            totalStars: s.totalStars + earned,
+            farmPlots: s.farmPlots.map(p => ({ ...p, placedAt: p.animalId ? new Date().toISOString() : '' })),
+            lastFarmCollect: new Date().toISOString(),
+          }));
+        }
+      },
     }),
     { name: 'learn4-app-v1' }
   )

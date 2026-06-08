@@ -244,35 +244,47 @@ export default function RewardsRoom() {
                 {/* Draggable placed items */}
                 {placed.map(item => {
                   const savedPos = itemPositions[item.id];
-                  const defaultX = item.position?.x ?? 50;
-                  const defaultY = item.position?.y ?? 55;
+                  // Always store/use percentage values (0-100)
+                  const xPct = savedPos ? savedPos.x : (item.position?.x ?? 50);
+                  const yPct = savedPos ? savedPos.y : (item.position?.y ?? 55);
                   return (
-                    <motion.div
+                    // Outer div: CSS percentage positioning — never changes during drag
+                    <div
                       key={item.id}
-                      drag
-                      dragMomentum={false}
-                      dragConstraints={roomRef}
-                      initial={false}
                       style={{
                         position: 'absolute',
-                        left: savedPos ? savedPos.x : `${defaultX}%`,
-                        top: savedPos ? savedPos.y : `${defaultY}%`,
-                        cursor: 'grab',
+                        left: `${xPct}%`,
+                        top: `${yPct}%`,
+                        transform: 'translate(-50%, -50%)',
+                        zIndex: 10,
                       }}
-                      onDragEnd={(_, info) => {
-                        if (!roomRef.current) return;
-                        const rect = roomRef.current.getBoundingClientRect();
-                        const x = (info.point.x - rect.left) - rect.width * defaultX / 100;
-                        const y = (info.point.y - rect.top) - rect.height * defaultY / 100;
-                        setItemPosition(item.id, { x, y });
-                      }}
-                      whileDrag={{ scale: 1.15, cursor: 'grabbing', zIndex: 50 }}
-                      whileHover={{ scale: 1.1 }}
-                      className="text-4xl select-none touch-none"
-                      title={`${item.name} — drag to move`}
                     >
-                      {item.emoji}
-                    </motion.div>
+                      {/* Inner motion.div: keyed so it resets (x=0,y=0) after every drop */}
+                      <motion.div
+                        key={`${item.id}-${xPct}-${yPct}`}
+                        drag
+                        dragMomentum={false}
+                        dragConstraints={roomRef}
+                        onDragEnd={(_, info) => {
+                          if (!roomRef.current) return;
+                          const rect = roomRef.current.getBoundingClientRect();
+                          // Compute new percentage from current CSS position + drag offset
+                          const newXPx = rect.width * xPct / 100 + info.offset.x;
+                          const newYPx = rect.height * yPct / 100 + info.offset.y;
+                          setItemPosition(item.id, {
+                            x: Math.max(4, Math.min(96, (newXPx / rect.width) * 100)),
+                            y: Math.max(4, Math.min(92, (newYPx / rect.height) * 100)),
+                          });
+                        }}
+                        whileDrag={{ scale: 1.2, zIndex: 50 }}
+                        whileHover={{ scale: 1.1 }}
+                        style={{ cursor: 'grab' }}
+                        className="text-4xl select-none touch-none block"
+                        title={`${item.name} — drag to move`}
+                      >
+                        {item.emoji}
+                      </motion.div>
+                    </div>
                   );
                 })}
 

@@ -8,6 +8,7 @@ import ClassSummary from './components/ClassSummary';
 import RewardsRoom from './components/RewardsRoom';
 import TeacherDashboard from './components/TeacherDashboard';
 import RevisionMode from './components/RevisionMode';
+import GamesHub from './components/GamesHub';
 
 export default function App() {
   const { view, setView } = useAppStore();
@@ -22,6 +23,7 @@ export default function App() {
       {view === 'rewards' && <RewardsRoom />}
       {view === 'teacher' && <TeacherDashboard />}
       {view === 'revision' && <RevisionMode />}
+      {view === 'games' && <GamesHub />}
     </>
   );
 }

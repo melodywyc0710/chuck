@@ -112,6 +112,12 @@ export default function Home() {
               </div>
             )}
             <button
+              onClick={() => setView('revision')}
+              className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-3 py-1.5"
+            >
+              Revision
+            </button>
+            <button
               onClick={() => setView('teacher')}
               className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-3 py-1.5"
             >

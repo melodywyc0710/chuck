@@ -33,6 +33,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-01-s2',
         type: 'worked-example',
         title: 'Identifying Structure in "The Missing Footy"',
+        imagePrompt: 'three-part narrative story structure diagram showing orientation complication resolution as a winding path with signposts, bright colourful infographic for primary school children',
         teacherNote: 'Read the story aloud before revealing the labels so students can identify the sections themselves first.',
         content: {
           heading: 'Short Story Analysis: "The Missing Footy"',
@@ -109,6 +110,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-01-s4',
         type: 'worked-example',
         title: 'Planning Your Own Narrative Using a Story Map',
+        imagePrompt: 'story map planning template with three boxes labelled orientation complication resolution, arrows connecting them, houseboat on a river storm scene Australian landscape illustration',
         teacherNote: 'Model filling in the story map on the board using a class-generated idea before students plan their own.',
         content: {
           heading: 'Story Map Example — "Storm on the Murray"',
@@ -285,6 +287,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-02-s2',
         type: 'worked-example',
         title: 'Character Profile: Mia the Surfer',
+        imagePrompt: 'character profile diagram for a primary school story, showing a young girl surfer with labels pointing to want goal flaw and personality traits, colourful infographic style',
         teacherNote: 'Discuss: which details make Mia interesting? What makes a character LESS interesting?',
         content: {
           heading: 'Building a Character From the Inside Out',
@@ -381,6 +384,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-02-s4',
         type: 'worked-example',
         title: 'Using Dialogue to Reveal Character',
+        imagePrompt: 'two children talking with large colourful speech bubbles showing dialogue punctuation rules, speech marks commas reporting clauses labelled clearly, educational diagram',
         teacherNote: 'Contrast the weak and strong dialogue examples. Ask: what does each tell us about the character without using description?',
         content: {
           heading: 'What Your Character Says Tells Us Who They Are',
@@ -559,6 +563,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-03-s2',
         type: 'worked-example',
         title: 'Five Senses in the Australian Bush',
+        imagePrompt: 'Australian bush landscape with five sense icons labelled sight sound smell touch taste around the scene, ghost gums red earth eagles, colourful educational diagram for primary school',
         teacherNote: 'After reading the example, ask: which sense is weakest or missing? How could students add it?',
         content: {
           heading: 'Writing a Bush Setting Using All Five Senses',
@@ -640,6 +645,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-03-s4',
         type: 'worked-example',
         title: 'Transforming a Weak Setting Description',
+        imagePrompt: 'before and after comparison of writing quality, dull grey scene transforming into vivid colourful Australian bush with sensory details, educational writing improvement diagram',
         teacherNote: 'Give students 2 minutes to try improving the "before" version themselves before revealing the "after".',
         content: {
           heading: 'Before & After: Improving a Setting',
@@ -810,6 +816,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-04-s2',
         type: 'worked-example',
         title: 'The Six Rules of Dialogue Punctuation',
+        imagePrompt: 'six dialogue punctuation rules displayed as numbered colourful signs, speech marks commas capital letters new lines, clear typography educational poster for primary school',
         teacherNote: 'Go through each rule with a real example sentence. Ask students to identify which rule is being demonstrated.',
         content: {
           heading: 'Dialogue Rules With Examples',
@@ -896,6 +903,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-04-s4',
         type: 'worked-example',
         title: 'Writing a Dialogue Scene',
+        imagePrompt: 'two children on a bush track having an argument about which direction to go, speech bubbles with correct punctuation shown, colourful fun illustration primary school',
         teacherNote: 'Model writing a 6-line dialogue on the board with students suggesting what characters say. Focus on rule application, not story quality.',
         content: {
           heading: 'A Complete Dialogue Scene: "The Shortcut"',
@@ -1054,6 +1062,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-05-s2',
         type: 'worked-example',
         title: 'Analysing a Report: The Thorny Devil',
+        imagePrompt: 'thorny devil Australian lizard with labels showing general statement description and conclusion sections of a factual report, colourful educational diagram primary school',
         teacherNote: 'Use this as a shared reading activity before students analyse it independently. Ask: can you find each section?',
         content: {
           heading: 'Model Report: The Thorny Devil',
@@ -1140,6 +1149,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-05-s4',
         type: 'worked-example',
         title: 'Planning and Writing a Report',
+        imagePrompt: 'factual report planning framework diagram with sections for title general statement subheadings and conclusion, organised grid layout colourful educational primary school',
         teacherNote: 'Help students choose a topic they already know something about — they\'ll write better reports on familiar subjects.',
         content: {
           heading: 'Report Planning Framework',
@@ -1317,6 +1327,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-06-s2',
         type: 'worked-example',
         title: 'Model Explanation: How Does Rain Form?',
+        imagePrompt: 'water cycle diagram showing evaporation condensation precipitation with arrows and labels, colourful educational illustration for primary school children simple clear',
         teacherNote: 'Draw the water cycle on the board as you read through the explanation — connecting text to diagram.',
         content: {
           heading: 'Structure of an Explanation Text',
@@ -1403,6 +1414,7 @@ export const y4English: Session[] = [
         id: 'y4-eng-06-s4',
         type: 'worked-example',
         title: 'Planning an Explanation Using a Flow Chart',
+        imagePrompt: 'flow chart showing why leaves change colour in autumn, boxes connected by arrows showing cause and effect chain, colourful autumn leaves educational diagram primary school',
         teacherNote: 'A flow chart helps students see the cause-and-effect chain before writing. Model one on the board for "Why do we get sunburnt?"',
         content: {
           heading: 'Planning "Why Do Leaves Change Colour in Autumn?"',

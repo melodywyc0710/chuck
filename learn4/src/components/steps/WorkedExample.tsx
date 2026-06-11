@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { WorkedExampleStep } from '../../data/types';
 import { useAppStore } from '../../store/appStore';
+import LessonImage from '../LessonImage';
 
 const HIGHLIGHT = {
   green: 'bg-green-50 border-l-4 border-green-400',
@@ -41,6 +42,10 @@ export default function WorkedExample({ step, onNext, themeColor, mascot }: Prop
           <h2 className="font-black text-gray-800 text-xl">{step.title}</h2>
         </div>
       </div>
+
+      {step.imagePrompt && (
+        <LessonImage prompt={step.imagePrompt} alt={step.title} />
+      )}
 
       <h3 className="text-lg font-black text-gray-700">{step.content.heading}</h3>
 

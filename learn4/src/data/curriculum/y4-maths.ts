@@ -33,6 +33,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-01-s2',
         type: 'worked-example',
         title: 'Reading and Writing Numbers to 10,000',
+        imagePrompt: 'place value chart showing thousands hundreds tens ones columns with number 3756 broken into blocks, colourful base-10 blocks diagram educational maths primary school',
         teacherNote: 'Use a physical place value chart and Base-10 blocks if available. Represent 3,756 before students try independently.',
         content: {
           heading: 'Breaking Down the Number 3,756',
@@ -109,6 +110,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-01-s4',
         type: 'worked-example',
         title: 'Comparing and Ordering Numbers to 10,000',
+        imagePrompt: 'number line showing four numbers being ordered from smallest to largest with comparison arrows greater than less than symbols, colourful maths educational diagram primary school',
         teacherNote: 'Use a number line on the board. Ask: which is bigger — 4,299 or 4,301? How do we know?',
         content: {
           heading: 'Comparing Numbers Using Place Value',
@@ -270,6 +272,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-02-s2',
         type: 'worked-example',
         title: 'Jump Strategy and Split Strategy',
+        imagePrompt: 'number line with kangaroo jumping in arcs showing jump addition strategy, and split partitioning boxes showing hundreds tens ones separate, colourful maths diagram primary school',
         teacherNote: 'Draw a number line on the board and physically jump through the steps for the jump strategy before showing the abstract version.',
         content: {
           heading: 'Adding 265 + 147 Using Two Strategies',
@@ -341,6 +344,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-02-s4',
         type: 'worked-example',
         title: 'Standard Algorithm for Addition',
+        imagePrompt: 'vertical addition algorithm with carrying shown step by step, digits aligned in columns hundreds tens ones, carry arrows highlighted in red, clean maths diagram primary school',
         teacherNote: 'Use grid paper to help students keep columns aligned. The most common error is misaligning digits.',
         content: {
           heading: 'Adding with Carrying: 467 + 385',
@@ -497,6 +501,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-03-s2',
         type: 'worked-example',
         title: 'Count Back, Split and Finding the Difference',
+        imagePrompt: 'three subtraction strategies on a number line, count back arrows going left, split boxes partitioning, count up arrows bridging to next ten, colourful maths diagram primary school',
         teacherNote: 'Represent the count back strategy on a number line drawn on the board — the physical jump helps students visualise.',
         content: {
           heading: 'Three Strategies for 84 − 37',
@@ -573,6 +578,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-03-s4',
         type: 'worked-example',
         title: 'Standard Algorithm with Trading (Borrowing)',
+        imagePrompt: 'subtraction with borrowing trading diagram showing a ten being exchanged for ten ones using base-10 blocks and vertical algorithm side by side, colourful educational maths primary school',
         teacherNote: 'Use Base-10 blocks to physically demonstrate "trading" a ten for ten ones. The concrete model before the abstract algorithm reduces errors.',
         content: {
           heading: 'Subtracting with Trading: 623 − 458',
@@ -734,6 +740,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-04-s2',
         type: 'worked-example',
         title: 'Arrays and Skip Counting Strategies',
+        imagePrompt: 'multiplication array of dots showing 4 rows by 6 columns with row and column labels, rotating arrow showing commutative property 4x6 equals 6x4, colourful maths diagram primary school',
         teacherNote: 'Draw arrays on the board using dots. Show how rotating the array gives the commutative fact.',
         content: {
           heading: 'Understanding Multiplication Through Arrays',
@@ -805,6 +812,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-04-s4',
         type: 'worked-example',
         title: 'Multiplying to Solve Word Problems',
+        imagePrompt: 'AFL football players arranged in 6 teams of 9 on an oval field viewed from above, showing multiplication as equal groups 9 times 6 equals 54, colourful Australian sports maths diagram',
         teacherNote: 'Model writing the number sentence first, then solving — this habit is essential for multi-step problems in later years.',
         content: {
           heading: 'Writing Number Sentences for Word Problems',
@@ -961,6 +969,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-05-s2',
         type: 'worked-example',
         title: 'Connecting Division to Multiplication',
+        imagePrompt: 'fact family triangle showing three numbers 5 7 35 with four related multiplication and division facts around it, colourful arrows connecting the facts educational maths diagram',
         teacherNote: 'Use a fact family triangle (three numbers in a triangle) to show the relationship between × and ÷.',
         content: {
           heading: 'Fact Families: × and ÷ Together',
@@ -1037,6 +1046,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-05-s4',
         type: 'worked-example',
         title: 'Division with Remainders',
+        imagePrompt: 'counters being shared equally into groups with leftover remainder counters shown separately, division with remainders visual diagram colourful primary school maths',
         teacherNote: 'Use counters to physically demonstrate what happens when items don\'t share equally. The "leftover" counter is the remainder.',
         content: {
           heading: 'When Division Doesn\'t Work Out Exactly',
@@ -1196,6 +1206,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-06-s2',
         type: 'worked-example',
         title: 'Reading and Writing Fractions',
+        imagePrompt: 'fraction notation diagram showing numerator and denominator labels on three quarters fraction, pizza divided into 8 equal slices with 3 shaded, colourful educational maths primary school',
         teacherNote: 'Use paper folding to physically show thirds, quarters and eighths. Connect the fold to the notation.',
         content: {
           heading: 'Fraction Notation and Equal Parts',
@@ -1272,6 +1283,7 @@ export const y4Maths: Session[] = [
         id: 'y4-mat-06-s4',
         type: 'worked-example',
         title: 'Fractions on a Number Line',
+        imagePrompt: 'number line from zero to one divided into quarters and thirds showing fractions positioned at correct points, halves quarters thirds eighths marked, colourful maths diagram primary school',
         teacherNote: 'Draw a number line from 0 to 1 on the board. Ask students to place ½ first, then thirds, then quarters.',
         content: {
           heading: 'Placing Fractions on a Number Line',

@@ -19,6 +19,7 @@ export interface WorkedExampleQuestion { q: string; a: string; }
 export interface WorkedExampleStep {
   id: string; type: 'worked-example';
   title: string; teacherNote: string;
+  imagePrompt?: string;
   content: {
     heading: string;
     body: WorkedExampleBody[];

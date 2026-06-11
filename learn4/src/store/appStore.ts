@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 export type Subject = 'english' | 'maths' | 'science' | 'hass';
 export type Mascot = 'owl' | 'fox' | 'panda';
 export type Density = 'younger' | 'older';
-export type View = 'home' | 'lesson' | 'rewards' | 'teacher' | 'summary' | 'setup' | 'feedback' | 'revision' | 'games';
+export type View = 'home' | 'lesson' | 'rewards' | 'teacher' | 'summary' | 'setup' | 'feedback' | 'revision' | 'games' | 'homework';
 
 export interface StudentProfile {
   name: string;
@@ -70,6 +70,7 @@ export interface AppActions {
   setupProfile: (p: StudentProfile) => void;
   setActiveSubject: (s: Subject) => void;
   setActiveYearLevel: (y: 4 | 5 | 6) => void;
+  setActiveSessionId: (id: string) => void;
   startSession: (sessionId: string) => void;
   goToStep: (index: number) => void;
   recordAnswer: (stepId: string, answer: string | string[]) => void;
@@ -128,6 +129,8 @@ export const useAppStore = create<AppState & AppActions>()(
       setActiveSubject: (s) => set({ activeSubject: s }),
 
       setActiveYearLevel: (y) => set({ activeYearLevel: y, activeSubject: 'english' }),
+
+      setActiveSessionId: (id) => set({ activeSessionId: id }),
 
       startSession: (sessionId) => set({
         activeSessionId: sessionId,

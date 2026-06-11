@@ -9,9 +9,10 @@ import RewardsRoom from './components/RewardsRoom';
 import TeacherDashboard from './components/TeacherDashboard';
 import RevisionMode from './components/RevisionMode';
 import GamesHub from './components/GamesHub';
+import PrintableHomework from './components/PrintableHomework';
 
 export default function App() {
-  const { view, setView } = useAppStore();
+  const { view, setView, activeSessionId } = useAppStore();
 
   return (
     <>
@@ -24,6 +25,7 @@ export default function App() {
       {view === 'teacher' && <TeacherDashboard />}
       {view === 'revision' && <RevisionMode />}
       {view === 'games' && <GamesHub />}
+      {view === 'homework' && <PrintableHomework sessionId={activeSessionId ?? ''} />}
     </>
   );
 }

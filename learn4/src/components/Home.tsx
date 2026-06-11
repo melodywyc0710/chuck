@@ -21,10 +21,11 @@ interface NodeProps {
   locked: boolean;
   weekLocked: boolean;
   onStart: () => void;
+  onHomework: () => void;
   themeColor: string;
 }
 
-function PathNode({ index, session, completed, current, locked, weekLocked, onStart, themeColor }: NodeProps) {
+function PathNode({ index, session, completed, current, locked, weekLocked, onStart, onHomework, themeColor }: NodeProps) {
   const isAnyLocked = locked || weekLocked;
   const offset = index % 2 === 0 ? 'ml-8' : 'mr-8 self-end';
   return (
@@ -65,13 +66,19 @@ function PathNode({ index, session, completed, current, locked, weekLocked, onSt
         {weekLocked && session.weekNumber && (
           <div className="text-xs text-blue-400 font-semibold">🗓 {formatUnlockDate(session.weekNumber)}</div>
         )}
+        <button
+          onClick={(e) => { e.stopPropagation(); onHomework(); }}
+          className="mt-1 text-xs text-gray-400 hover:text-gray-600 underline"
+        >
+          📄 Homework
+        </button>
       </div>
     </div>
   );
 }
 
 export default function Home() {
-  const { profile, activeSubject, setActiveSubject, activeYearLevel, setActiveYearLevel, startSession, completedSessions, totalStars, setView, currentStreak } = useAppStore();
+  const { profile, activeSubject, setActiveSubject, activeYearLevel, setActiveYearLevel, startSession, setActiveSessionId, completedSessions, totalStars, setView, currentStreak } = useAppStore();
   if (!profile) return null;
 
   const themeColor = THEME_COLOR[profile.colorTheme];
@@ -251,6 +258,7 @@ export default function Home() {
                       locked={isProgressLocked}
                       weekLocked={isWeekLocked}
                       onStart={() => startSession(s.id)}
+                      onHomework={() => { setActiveSessionId(s.id); setView('homework'); }}
                       themeColor={themeColor}
                     />
                   );

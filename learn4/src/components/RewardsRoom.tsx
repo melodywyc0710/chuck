@@ -92,7 +92,7 @@ function PetBody({ type, size = 80 }: { type: 'owl' | 'fox' | 'panda'; size?: nu
 export default function RewardsRoom() {
   const {
     profile, totalStars, ownedItems, placedItems, buyItem, togglePlaced, setView,
-    completedSessions, itemPositions, setItemPosition,
+    completedSessions, itemPositions, setItemPosition, itemQuantities,
     farmPlots, placeFarmAnimal, removeFarmAnimal, collectFarmStars,
   } = useAppStore();
 
@@ -296,8 +296,8 @@ export default function RewardsRoom() {
                   </div>
                 )}
 
-                {/* Companion mascot — bottom right */}
-                <div className="absolute bottom-3 right-4 flex flex-col items-end z-20">
+                {/* Companion mascot — bottom right, z-5 so draggable items stay on top */}
+                <div className="absolute bottom-3 right-4 flex flex-col items-end z-5" style={{ zIndex: 5 }}>
                   <AnimatePresence>
                     {showBubble && (
                       <motion.div
@@ -395,7 +395,8 @@ export default function RewardsRoom() {
             <div className="grid grid-cols-2 gap-3">
               <AnimatePresence>
                 {shopItems.map(item => {
-                  const owned = ownedItems.includes(item.id);
+                  const qty = itemQuantities[item.id] ?? 0;
+                  const owned = qty > 0;
                   const canAfford = totalStars >= item.cost;
                   return (
                     <motion.div
@@ -405,12 +406,17 @@ export default function RewardsRoom() {
                       animate={{ opacity: 1, scale: 1 }}
                       className={`bg-white rounded-2xl p-4 border-2 shadow-sm ${owned ? 'border-green-300' : 'border-gray-100'}`}
                     >
-                      <div className="text-4xl text-center mb-2">{item.emoji}</div>
+                      <div className="relative text-4xl text-center mb-2">
+                        {item.emoji}
+                        {qty > 1 && (
+                          <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-black rounded-full w-5 h-5 flex items-center justify-center">
+                            {qty}
+                          </span>
+                        )}
+                      </div>
                       <div className="font-bold text-gray-800 text-sm text-center">{item.name}</div>
                       <div className="text-xs text-gray-400 text-center mb-3">{item.description}</div>
-                      {owned ? (
-                        <div className="text-center text-green-600 text-xs font-bold">✓ Owned</div>
-                      ) : item.cost === 0 ? (
+                      {item.cost === 0 ? (
                         <div className="text-center text-gray-400 text-xs">Free starter item</div>
                       ) : (
                         <motion.button
@@ -421,7 +427,7 @@ export default function RewardsRoom() {
                           className="w-full py-2 rounded-xl text-xs font-black transition-all disabled:opacity-40"
                           style={canAfford ? { background: themeColor, color: 'white' } : { background: '#f3f4f6', color: '#9ca3af' }}
                         >
-                          ⭐ {item.cost} {canAfford ? 'Buy' : '— need more stars'}
+                          ⭐ {item.cost} {owned ? 'Buy another' : canAfford ? 'Buy' : '— need more stars'}
                         </motion.button>
                       )}
                     </motion.div>

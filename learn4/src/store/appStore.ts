@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 export type Subject = 'english' | 'maths' | 'science' | 'hass';
 export type Mascot = 'owl' | 'fox' | 'panda';
 export type Density = 'younger' | 'older';
-export type View = 'home' | 'lesson' | 'rewards' | 'teacher' | 'summary' | 'setup' | 'feedback';
+export type View = 'home' | 'lesson' | 'rewards' | 'teacher' | 'summary' | 'setup' | 'feedback' | 'revision' | 'games';
 
 export interface StudentProfile {
   name: string;
@@ -59,6 +59,7 @@ export interface AppState {
   currentStreak: number;
   lastActiveDate: string; // ISO date string YYYY-MM-DD
   itemPositions: Record<string, { x: number; y: number }>;
+  itemQuantities: Record<string, number>;
   farmPlots: FarmPlot[];
   lastFarmCollect: string; // ISO datetime
   farmStarsPending: number;
@@ -102,6 +103,7 @@ const defaultState: AppState = {
   currentStreak: 0,
   lastActiveDate: '',
   itemPositions: {},
+  itemQuantities: {},
   farmPlots: [
     { id: 'plot-0', animalId: null, placedAt: '' },
     { id: 'plot-1', animalId: null, placedAt: '' },
@@ -184,7 +186,8 @@ export const useAppStore = create<AppState & AppActions>()(
         if (state.totalStars < cost) return;
         set(s => ({
           totalStars: s.totalStars - cost,
-          ownedItems: [...new Set([...s.ownedItems, itemId])],
+          ownedItems: s.ownedItems.includes(itemId) ? s.ownedItems : [...s.ownedItems, itemId],
+          itemQuantities: { ...s.itemQuantities, [itemId]: (s.itemQuantities[itemId] ?? 0) + 1 },
         }));
       },
 

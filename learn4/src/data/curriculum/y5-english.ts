@@ -11,9 +11,9 @@ export const y5English: Session[] = [
     description: 'Explore how first and third person narration shape the reader\'s experience — and practise choosing the right perspective for your story.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
+    starsAvailable: 5,
     color: '#0d9488',
-    icon: '👁️',
+    icon: '📝',
     weekNumber: 1,
     steps: [
       {
@@ -36,6 +36,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Same Scene, Two Perspectives',
         teacherNote: 'Read both versions aloud before discussing. Ask students: which feels more intimate? Which gives more information? Which would you choose for a thriller? A mystery?',
+        imagePrompt: 'first person vs third person narration diagram showing two perspectives of the same scene, colourful infographic for primary school Year 5 English Australia',
         content: {
           heading: 'How Point of View Changes Everything',
           body: [
@@ -132,6 +133,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Point of View in Published Australian Texts',
         teacherNote: 'If students have read any of these texts, ask them to share how the POV affects their reading experience.',
+        imagePrompt: 'point of view analysis diagram showing narrator position inside vs outside story with speech bubbles and thought bubbles, educational Year 5 English',
         content: {
           heading: 'Recognising Point of View in Real Books',
           body: [
@@ -245,13 +247,6 @@ export const y5English: Session[] = [
             multiline: true,
             minRows: 4,
           },
-          {
-            id: 'fr-y5-eng-01-d',
-            label: 'Which version creates more tension in your opinion, and why?',
-            placeholder: 'e.g. The third person omniscient version creates more tension because the reader knows help is coming but Jake doesn\'t — this creates dramatic irony...',
-            multiline: true,
-            minRows: 2,
-          },
         ],
       },
       {
@@ -290,9 +285,9 @@ export const y5English: Session[] = [
     description: 'Learn how opinion pieces work — and how to use emotive language and rhetorical questions to bring readers to your side.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
-    color: '#0f766e',
-    icon: '📢',
+    starsAvailable: 5,
+    color: '#0891b2',
+    icon: '🔍',
     weekNumber: 2,
     steps: [
       {
@@ -315,6 +310,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Anatomy of a Persuasive Piece',
         teacherNote: 'Annotate this piece together on the board before students work independently.',
+        imagePrompt: 'anatomy of a persuasive text diagram with labelled sections introduction body conclusion, bright colourful Year 5 English primary school Australia',
         content: {
           heading: 'Model Opinion Piece: "Schools Should Grow Their Own Food"',
           body: [
@@ -406,6 +402,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Addressing the Counter-Argument',
         teacherNote: 'Strong persuasive writers acknowledge the other side — then refute it. Show students that ignoring counter-arguments makes their writing weaker, not stronger.',
+        imagePrompt: 'OREO persuasive paragraph structure diagram showing Opinion Reason Evidence Opinion restated, colourful educational infographic Year 5',
         content: {
           heading: 'Concede and Refute: Making Your Argument Stronger',
           body: [
@@ -514,13 +511,6 @@ export const y5English: Session[] = [
             multiline: true,
             minRows: 4,
           },
-          {
-            id: 'fr-y5-eng-02-d',
-            label: 'Write your conclusion with a rhetorical question and a call to action',
-            placeholder: 'If we would never hand a child a cigarette, why do we hand them a bag of chips and call it lunch? The time for half-measures is over...',
-            multiline: true,
-            minRows: 3,
-          },
         ],
       },
       {
@@ -559,9 +549,9 @@ export const y5English: Session[] = [
     description: 'Identify and use metaphor, simile and personification — the three figurative devices that transform ordinary writing into vivid, memorable prose.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
-    color: '#0d9488',
-    icon: '🌺',
+    starsAvailable: 5,
+    color: '#7c3aed',
+    icon: '🎭',
     weekNumber: 3,
     steps: [
       {
@@ -584,6 +574,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Figurative Language in Australian Literature',
         teacherNote: 'Encourage students to bring their own examples from books they\'ve read — this builds analytical confidence.',
+        imagePrompt: 'figurative language examples showing simile metaphor personification with Australian nature scenes harbour gum trees outback, colourful Year 5 English',
         content: {
           heading: 'Finding and Analysing Figurative Language',
           body: [
@@ -660,6 +651,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Crafting Your Own Figurative Language',
         teacherNote: 'The craft exercises here are the heart of the lesson — give students time to create originals, not just copy examples.',
+        imagePrompt: 'figurative language craft guide showing how to build strong similes and metaphors step by step, bright educational poster Year 5 primary school',
         content: {
           heading: 'From Literal to Figurative: The Transformation',
           body: [
@@ -762,22 +754,10 @@ export const y5English: Session[] = [
           },
           {
             id: 'fr-y5-eng-03-c',
-            label: 'My metaphor (no "like" or "as")',
-            placeholder: 'e.g. The MCG was a boiling cauldron, and everyone inside it was changing...',
-            multiline: false,
-          },
-          {
-            id: 'fr-y5-eng-03-d',
-            label: 'My personification (give your subject a human quality)',
-            placeholder: 'e.g. The scoreboard watched everything, indifferent to the drama below...',
-            multiline: false,
-          },
-          {
-            id: 'fr-y5-eng-03-e',
-            label: 'Short paragraph using all three devices (4–5 sentences)',
-            placeholder: 'Weave your simile, metaphor and personification into a flowing description...',
+            label: 'My metaphor, personification and a short paragraph using all three devices',
+            placeholder: 'Metaphor: e.g. The MCG was a boiling cauldron...\nPersonification: e.g. The scoreboard watched everything, indifferent...\n\nParagraph (4–5 sentences weaving all three devices): ...',
             multiline: true,
-            minRows: 5,
+            minRows: 6,
           },
         ],
       },
@@ -817,8 +797,8 @@ export const y5English: Session[] = [
     description: 'Understand the structure and language of news reports — and write your own using the 5Ws, objective language and a strong news lead.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
-    color: '#0f766e',
+    starsAvailable: 5,
+    color: '#d97706',
     icon: '📰',
     weekNumber: 4,
     steps: [
@@ -842,6 +822,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Anatomy of a News Report',
         teacherNote: 'Annotate this report together — label each feature before students write their own.',
+        imagePrompt: 'anatomy of a news report diagram showing headline byline lead paragraph body quotes labelled, inverted pyramid structure Year 5 English Australia',
         content: {
           heading: 'Model News Report: "Year 5 Students Plant 1,000 Native Trees"',
           body: [
@@ -933,6 +914,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Headlines, Leads and Language Features',
         teacherNote: 'The headline-writing activity works well as a class game — give students a one-paragraph story and race to write the best headline.',
+        imagePrompt: 'news headline writing rules poster showing present tense active voice examples, journalism skills Year 5 primary school Australia',
         content: {
           heading: 'News Writing Craft: Headlines, Leads and Language',
           body: [
@@ -1046,13 +1028,6 @@ export const y5English: Session[] = [
             multiline: true,
             minRows: 3,
           },
-          {
-            id: 'fr-y5-eng-04-d',
-            label: 'Include at least one quote from a named person',
-            placeholder: 'e.g. Year 5 student Amara Osei said, "We had no idea it would actually work until the last trial..."',
-            multiline: true,
-            minRows: 2,
-          },
         ],
       },
       {
@@ -1091,9 +1066,9 @@ export const y5English: Session[] = [
     description: 'Build powerful vocabulary strategies: use context clues to unlock word meanings, explore synonyms, and understand how connotations shape a reader\'s response.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
-    color: '#0d9488',
-    icon: '🔤',
+    starsAvailable: 5,
+    color: '#dc2626',
+    icon: '📚',
     weekNumber: 5,
     steps: [
       {
@@ -1116,6 +1091,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Context Clues and Connotation Analysis',
         teacherNote: 'The connotation spectrum (negative ←→ positive) is the most transferable concept here — it applies to all word choice in writing and reading comprehension.',
+        imagePrompt: 'vocabulary context clues diagram showing four types definition example contrast inference, connotation spectrum from negative to positive, Year 5 English',
         content: {
           heading: 'Using Context Clues and Understanding Connotation',
           body: [
@@ -1202,6 +1178,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Vocabulary Strategies for Reading',
         teacherNote: 'The REAP strategy is a scaffolded approach to unknown vocabulary. Practice it with 2-3 words from a shared text.',
+        imagePrompt: 'REAP vocabulary strategy diagram showing Read Examine Ask Predict steps with word roots prefixes suffixes examples, Year 5 primary school',
         content: {
           heading: 'Strategies for Unlocking Unknown Words',
           body: [
@@ -1354,8 +1331,8 @@ export const y5English: Session[] = [
     description: 'Learn the difference between revising (improving ideas and structure) and editing (fixing errors) — and use sentence variety and cohesive devices to lift your writing.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
-    color: '#0f766e',
+    starsAvailable: 5,
+    color: '#059669',
     icon: '✏️',
     weekNumber: 6,
     steps: [
@@ -1379,6 +1356,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Revising for Sentence Variety and Cohesion',
         teacherNote: 'The before-and-after comparison is the most powerful teaching tool here. Let students spot the improvements before you label them.',
+        imagePrompt: 'revising vs editing diagram showing before and after paragraph with improvements labelled, sentence variety cohesion Year 5 English primary school',
         content: {
           heading: 'Transforming a Draft: Before and After',
           body: [
@@ -1470,6 +1448,7 @@ export const y5English: Session[] = [
         type: 'worked-example',
         title: 'Sentence Variety Techniques',
         teacherNote: 'Give students a monotonous paragraph (all sentences starting with "I" or "She") and challenge them to apply at least three of these techniques.',
+        imagePrompt: 'six sentence variety techniques poster showing varied openers embedded clauses short punchy sentences, Year 5 English writing craft Australia',
         content: {
           heading: 'Six Techniques for Sentence Variety',
           body: [

@@ -11,7 +11,7 @@ export const y5Maths: Session[] = [
     description: 'Read, write and compare numbers to 1 000 000 — understanding place value, expanded form and the role of zero as a placeholder.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
+    starsAvailable: 5,
     color: '#e11d48',
     icon: '🔢',
     weekNumber: 1,
@@ -36,6 +36,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Place Value to 1 000 000',
         teacherNote: 'Build the place value chart on the board with students adding one column at a time from ones through to hundred thousands.',
+        imagePrompt: 'place value chart showing columns hundreds thousands tens ones extending to hundred thousands with Australian city populations, colourful Year 5 maths primary school',
         content: {
           heading: 'Understanding Six-Digit Numbers',
           body: [
@@ -112,6 +113,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Rounding and Estimating Large Numbers',
         teacherNote: 'Rounding large numbers requires identifying the correct column first — model the "find the column, look at the neighbour" process explicitly.',
+        imagePrompt: 'rounding large numbers diagram showing number line and rounding steps to nearest thousand ten thousand, Year 5 maths primary school Australia',
         content: {
           heading: 'Rounding to the Nearest 1 000 and 10 000',
           body: [
@@ -210,13 +212,6 @@ export const y5Maths: Session[] = [
             multiline: true,
             minRows: 4,
           },
-          {
-            id: 'fr-y5-mat-01-d',
-            label: 'Australian number 3 and its analysis',
-            placeholder: 'e.g. MCG capacity: 100 024',
-            multiline: true,
-            minRows: 4,
-          },
         ],
       },
       {
@@ -255,8 +250,8 @@ export const y5Maths: Session[] = [
     description: 'Master long multiplication and the area model — two powerful strategies for multiplying large numbers accurately and efficiently.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
-    color: '#be123c',
+    starsAvailable: 5,
+    color: '#7c3aed',
     icon: '✖️',
     weekNumber: 2,
     steps: [
@@ -280,6 +275,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Two Methods for 2-Digit × 2-Digit Multiplication',
         teacherNote: 'Show both methods on the board for 47 × 23. Ask students to check that both give the same answer.',
+        imagePrompt: 'long multiplication area model diagram showing 47 times 23 split into four partial products in a grid, colourful Year 5 maths primary school',
         content: {
           heading: 'Solving 47 × 23: Standard Algorithm and Area Model',
           body: [
@@ -361,6 +357,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Multiplying 3-Digit Numbers and Problem Solving',
         teacherNote: 'Three-digit multiplication extends the same logic. Emphasise that the process is identical — just one more step.',
+        imagePrompt: 'three digit multiplication worked example with area model and standard algorithm side by side, Year 5 maths primary school Australia',
         content: {
           heading: 'Extending to Three-Digit Numbers',
           body: [
@@ -454,13 +451,6 @@ export const y5Maths: Session[] = [
             multiline: true,
             minRows: 4,
           },
-          {
-            id: 'fr-y5-mat-02-d',
-            label: 'Do both methods give the same answer? Write your estimate and check it is reasonable.',
-            placeholder: 'Estimate: roughly ___ × ___ ≈ ___\nBoth methods gave: ___\nThis is / is not close to my estimate.',
-            multiline: true,
-            minRows: 2,
-          },
         ],
       },
       {
@@ -499,9 +489,9 @@ export const y5Maths: Session[] = [
     description: 'Find equivalent fractions, simplify fractions to their lowest terms, and compare fractions with different denominators.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
-    color: '#e11d48',
-    icon: '🍕',
+    starsAvailable: 5,
+    color: '#0891b2',
+    icon: '½',
     weekNumber: 3,
     steps: [
       {
@@ -524,6 +514,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Finding Equivalents and Simplifying',
         teacherNote: 'The HCF method for simplifying can be done in one step (if students know the HCF) or multiple steps (dividing by common factors repeatedly). Both are valid.',
+        imagePrompt: 'equivalent fractions diagram showing fraction bars and number lines with halves quarters eighths, simplifying fractions HCF method, colourful Year 5 maths',
         content: {
           heading: 'Equivalent Fractions: The Complete Guide',
           body: [
@@ -595,6 +586,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Mixed Numbers and Adding Fractions',
         teacherNote: 'Mixed numbers are the natural extension of this lesson. Introduce the concept but do not rush — some students will need more time.',
+        imagePrompt: 'improper fractions and mixed numbers conversion diagram with number line and pizza examples, adding fractions with common denominators Year 5 maths',
         content: {
           heading: 'Fractions Greater Than 1 and Adding Fractions',
           body: [
@@ -732,9 +724,9 @@ export const y5Maths: Session[] = [
     description: 'Understand tenths, hundredths and thousandths — how decimals extend the place value system, and how to order, compare and calculate with them.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
-    color: '#be123c',
-    icon: '🔣',
+    starsAvailable: 5,
+    color: '#059669',
+    icon: '🔟',
     weekNumber: 4,
     steps: [
       {
@@ -757,6 +749,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Place Value with Decimals',
         teacherNote: 'Use a place value chart extended to thousandths. Students often confuse tenths and hundredths — emphasise the relationship between the fraction names.',
+        imagePrompt: 'decimal place value chart extending to thousandths with Australian athletics times and money examples, colourful Year 5 maths primary school',
         content: {
           heading: 'Reading, Writing and Understanding Decimals',
           body: [
@@ -833,6 +826,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Adding and Subtracting Decimals',
         teacherNote: 'The single most common error in decimal addition is misaligning the decimal point. Insist students write the decimal point FIRST and then line up digits.',
+        imagePrompt: 'decimal addition and subtraction with aligned decimal points step by step, decimal multiplication Year 5 maths primary school Australia',
         content: {
           heading: 'Decimal Operations',
           body: [
@@ -965,8 +959,8 @@ export const y5Maths: Session[] = [
     description: 'Calculate perimeter and area of rectangles, triangles and composite shapes — developing the habit of identifying the correct formula and checking units.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
-    color: '#e11d48',
+    starsAvailable: 5,
+    color: '#d97706',
     icon: '📐',
     weekNumber: 5,
     steps: [
@@ -990,6 +984,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Perimeter and Area of Rectangles and Triangles',
         teacherNote: 'Emphasise: area is always in SQUARE units. Draw this on the board — a rectangle filled with unit squares — to make the "square" unit intuitive.',
+        imagePrompt: 'perimeter and area formulas for rectangles and triangles with AFL oval and school garden examples, colourful Year 5 maths measurement',
         content: {
           heading: 'Formulas, Examples and Applications',
           body: [
@@ -1061,6 +1056,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Composite Shapes and Problem Solving',
         teacherNote: 'The "missing measurement" problem (where you must calculate a side from given information) is the most challenging skill here. Model it explicitly.',
+        imagePrompt: 'composite shapes area calculation by addition and subtraction with L-shaped rooms and house plans labelled, Year 5 maths measurement',
         content: {
           heading: 'Finding Missing Measurements and Composite Areas',
           body: [
@@ -1149,17 +1145,10 @@ export const y5Maths: Session[] = [
           },
           {
             id: 'fr-y5-mat-05-c',
-            label: 'Total area calculation (show working for each section)',
-            placeholder: 'Section 1: 8 × 5 = 40 m²\nSection 2: 4 × 3 = 12 m²\nTotal: 52 m²',
+            label: 'Total area AND perimeter calculations (show working for each)',
+            placeholder: 'Area:\nSection 1: 8 × 5 = 40 m²\nSection 2: 4 × 3 = 12 m²\nTotal area: 52 m²\n\nPerimeter: List all outer sides and add...',
             multiline: true,
-            minRows: 3,
-          },
-          {
-            id: 'fr-y5-mat-05-d',
-            label: 'Perimeter of the whole shape (add all outer sides)',
-            placeholder: 'List all outer sides and add them...',
-            multiline: true,
-            minRows: 3,
+            minRows: 5,
           },
         ],
       },
@@ -1199,8 +1188,8 @@ export const y5Maths: Session[] = [
     description: 'Calculate and interpret mean, median, mode and range — understanding what each measure tells us about a data set and when each is most useful.',
     yearLevel: 5,
     estimatedMinutes: 90,
-    starsAvailable: 10,
-    color: '#be123c',
+    starsAvailable: 5,
+    color: '#4f46e5',
     icon: '📊',
     weekNumber: 6,
     steps: [
@@ -1224,6 +1213,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Calculating All Four Measures',
         teacherNote: 'The ordered list for median is the most common procedural error — students often forget to sort first.',
+        imagePrompt: 'mean median mode range calculation steps with AFL goals data set shown on stem and leaf plot, Year 5 maths statistics primary school Australia',
         content: {
           heading: 'Mean, Median, Mode and Range: Step by Step',
           body: [
@@ -1295,6 +1285,7 @@ export const y5Maths: Session[] = [
         type: 'worked-example',
         title: 'Data Investigation: Cricket Scores',
         teacherNote: 'Use data students care about — cricket, swimming, AFL scoring, temperature — to make the calculations feel purposeful.',
+        imagePrompt: 'statistical investigation cricket scores showing all four measures calculated with interpretation notes, Year 5 maths data statistics Australia',
         content: {
           heading: 'A Full Statistical Investigation',
           body: [

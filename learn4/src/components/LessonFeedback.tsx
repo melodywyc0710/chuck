@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '../store/appStore';
+import { sounds } from '../utils/sounds';
 import { getSession } from '../data/curriculum/index';
 import { lessonSummaries } from '../data/lessonSummaries';
 
@@ -96,10 +97,35 @@ function buildReport(
 
 interface Props { onContinue: () => void }
 
+interface StarParticle {
+  id: number;
+  x: number;
+  y: number;
+  angle: number;
+  distance: number;
+}
+
 export default function LessonFeedback({ onContinue }: Props) {
   const { profile, sessionResults } = useAppStore();
   const [lang, setLang] = useState<'zh' | 'en'>('zh');
   const [copied, setCopied] = useState(false);
+  const [stars, setStars] = useState<StarParticle[]>([]);
+
+  useEffect(() => {
+    sounds.starEarned();
+    const count = 7;
+    const particles: StarParticle[] = Array.from({ length: count }, (_, i) => ({
+      id: i,
+      x: 50,
+      y: 50,
+      angle: (360 / count) * i,
+      distance: 120 + Math.random() * 80,
+    }));
+    setStars(particles);
+    const timer = setTimeout(() => setStars([]), 1400);
+    return () => clearTimeout(timer);
+  }, []);
+
   if (!profile) return null;
 
   const latest = sessionResults[sessionResults.length - 1];
@@ -123,6 +149,30 @@ export default function LessonFeedback({ onContinue }: Props) {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Star burst fly-in */}
+      {stars.map(star => {
+        const rad = (star.angle * Math.PI) / 180;
+        const dx = Math.cos(rad) * star.distance;
+        const dy = Math.sin(rad) * star.distance;
+        return (
+          <motion.div
+            key={star.id}
+            initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+            animate={{ x: dx, y: dy, opacity: 0, scale: 0.5 }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+            style={{
+              position: 'fixed',
+              left: `${star.x}%`,
+              top: `${star.y}%`,
+              pointerEvents: 'none',
+              zIndex: 50,
+              fontSize: '1.5rem',
+            }}
+          >
+            ⭐
+          </motion.div>
+        );
+      })}
       <div className="max-w-2xl mx-auto w-full px-4 py-6 space-y-5 flex-1">
 
         {/* Language toggle */}

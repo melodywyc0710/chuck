@@ -1,11 +1,13 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '../store/appStore';
 import { ROOM_ITEMS } from '../data/rewards';
+import { BADGES } from '../data/badges';
+import { sounds } from '../utils/sounds';
 
 const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
-type TabType = 'room' | 'shop' | 'farm';
+type TabType = 'room' | 'shop' | 'farm' | 'badges';
 type Category = 'all' | 'furniture' | 'pet' | 'decoration' | 'window';
 
 const FARM_ANIMALS = ['chicken', 'sheep', 'cow', 'horse'];
@@ -94,6 +96,7 @@ export default function RewardsRoom() {
     profile, totalStars, ownedItems, placedItems, buyItem, togglePlaced, setView,
     completedSessions, itemPositions, setItemPosition, itemQuantities,
     farmPlots, placeFarmAnimal, removeFarmAnimal, collectFarmStars,
+    unlockedBadges,
   } = useAppStore();
 
   const [tab, setTab] = useState<TabType>('room');
@@ -104,6 +107,15 @@ export default function RewardsRoom() {
   const [bounce, setBounce] = useState(false);
   const [selectedFarmAnimal, setSelectedFarmAnimal] = useState<string | null>(null);
   const roomRef = useRef<HTMLDivElement>(null);
+  const prevBadgesRef = useRef<string[]>([]);
+
+  useEffect(() => {
+    const prev = prevBadgesRef.current;
+    if (unlockedBadges.length > prev.length) {
+      sounds.unlock();
+    }
+    prevBadgesRef.current = unlockedBadges;
+  }, [unlockedBadges]);
 
   if (!profile) return null;
 
@@ -152,14 +164,14 @@ export default function RewardsRoom() {
           </div>
         </div>
         <div className="max-w-2xl mx-auto px-4 pb-3 flex gap-2">
-          {(['room', 'shop', 'farm'] as TabType[]).map(t => (
+          {(['room', 'shop', 'farm', 'badges'] as TabType[]).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
               className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${tab === t ? 'text-white' : 'bg-gray-100 text-gray-500'}`}
               style={tab === t ? { background: themeColor } : {}}
             >
-              {t === 'room' ? 'My Room' : t === 'shop' ? 'Shop' : '🌾 Farm'}
+              {t === 'room' ? 'My Room' : t === 'shop' ? 'Shop' : t === 'farm' ? '🌾 Farm' : '🏅 Badges'}
             </button>
           ))}
         </div>
@@ -567,6 +579,46 @@ export default function RewardsRoom() {
                   {ANIMAL_EMOJI[selectedFarmAnimal]} {selectedFarmAnimal} selected — tap an empty plot above to place it
                 </p>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* ── BADGES TAB ── */}
+        {tab === 'badges' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-black text-gray-700 text-lg">Achievement Badges</h3>
+              <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
+                {unlockedBadges.length} / {BADGES.length} unlocked
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {BADGES.map(badge => {
+                const unlocked = unlockedBadges.includes(badge.id);
+                return (
+                  <motion.div
+                    key={badge.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={`bg-white rounded-2xl p-4 border-2 shadow-sm text-center transition-all ${
+                      unlocked ? 'border-yellow-300' : 'border-gray-100'
+                    }`}
+                  >
+                    <div className={`text-4xl mb-2 ${!unlocked ? 'grayscale opacity-30' : ''}`}>
+                      {badge.emoji}
+                    </div>
+                    <div className={`font-bold text-sm ${unlocked ? 'text-gray-800' : 'text-gray-400'}`}>
+                      {badge.name}
+                    </div>
+                    <div className={`text-xs mt-1 ${unlocked ? 'text-gray-500' : 'text-gray-300'}`}>
+                      {badge.description}
+                    </div>
+                    {unlocked && (
+                      <div className="mt-2 text-xs text-yellow-600 font-bold">✓ Earned!</div>
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         )}

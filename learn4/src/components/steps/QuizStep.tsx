@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { QuizStep as QuizStepType } from '../../data/types';
 import { useAppStore } from '../../store/appStore';
+import { sounds } from '../../utils/sounds';
 
 function renderMd(text: string) {
   return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
@@ -28,6 +29,7 @@ export default function QuizStep({ step, onNext, themeColor, mascot }: Props) {
     setConfirmed(true);
     recordAnswer(q.id, String(selected));
     recordScore(correct);
+    if (correct) { sounds.correct(); } else { sounds.wrong(); }
   };
 
   const next = () => {

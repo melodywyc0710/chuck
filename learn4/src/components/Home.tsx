@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useAppStore, type Subject } from '../store/appStore';
+import { sounds } from '../utils/sounds';
 import { sessionsByYear } from '../data/curriculum/index';
 import type { Session } from '../data/types';
 import { isSessionUnlocked, formatUnlockDate } from '../utils/weeklyUnlock';
@@ -112,10 +113,10 @@ export default function Home() {
               <span>⭐</span>
               <span className="font-black text-yellow-700 text-sm">{totalStars}</span>
             </button>
-            {currentStreak > 1 && (
-              <div className="flex items-center gap-1 bg-orange-100 px-3 py-1.5 rounded-full">
+            {currentStreak >= 1 && (
+              <div className="flex items-center gap-1 bg-orange-100 px-3 py-1.5 rounded-full" title="Sessions this week count!">
                 <span>🔥</span>
-                <span className="font-black text-orange-700 text-sm">{currentStreak}</span>
+                <span className="font-black text-orange-700 text-sm">{currentStreak} week streak</span>
               </div>
             )}
             <button
@@ -209,7 +210,7 @@ export default function Home() {
                 ) : (
                   <motion.button
                     whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    onClick={() => startSession(featuredSession.id)}
+                    onClick={() => { sounds.click(); startSession(featuredSession.id); }}
                     className="w-full bg-white font-black text-lg py-3 rounded-2xl transition-all hover:shadow-lg"
                     style={{ color: featuredSession.color }}
                   >

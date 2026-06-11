@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { BADGES } from '../data/badges';
 
 export type Subject = 'english' | 'maths' | 'science' | 'hass';
 export type Mascot = 'owl' | 'fox' | 'panda';
@@ -63,6 +64,7 @@ export interface AppState {
   farmPlots: FarmPlot[];
   lastFarmCollect: string; // ISO datetime
   farmStarsPending: number;
+  unlockedBadges: string[];
 }
 
 export interface AppActions {
@@ -84,6 +86,15 @@ export interface AppActions {
   placeFarmAnimal: (plotId: string, animalId: string) => void;
   removeFarmAnimal: (plotId: string) => void;
   collectFarmStars: () => void;
+  unlockBadge: (id: string) => void;
+}
+
+function isoWeek(date: Date): string {
+  const d = new Date(date);
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+  const week1 = new Date(d.getFullYear(), 0, 4);
+  return `${d.getFullYear()}-W${String(1 + Math.round(((d.getTime()-week1.getTime())/86400000 - 3 + ((week1.getDay()+6)%7)) / 7)).padStart(2,'0')}`;
 }
 
 const defaultState: AppState = {
@@ -115,6 +126,7 @@ const defaultState: AppState = {
   ],
   lastFarmCollect: '',
   farmStarsPending: 0,
+  unlockedBadges: [],
 };
 
 export const useAppStore = create<AppState & AppActions>()(
@@ -156,13 +168,19 @@ export const useAppStore = create<AppState & AppActions>()(
 
       updateStreak: () => {
         const state = get();
-        const today = new Date().toISOString().slice(0, 10);
-        if (state.lastActiveDate === today) return;
-        const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-        if (state.lastActiveDate === yesterday) {
-          set({ currentStreak: state.currentStreak + 1, lastActiveDate: today });
+        const today = new Date();
+        const todayStr = today.toISOString().slice(0, 10);
+        if (state.lastActiveDate === todayStr) return;
+        const todayWeek = isoWeek(today);
+        const lastWeek = state.lastActiveDate ? isoWeek(new Date(state.lastActiveDate)) : '';
+        const prevWeek = isoWeek(new Date(Date.now() - 7 * 86400000));
+        if (lastWeek === todayWeek) {
+          // same week, just update date
+          set({ lastActiveDate: todayStr });
+        } else if (lastWeek === prevWeek) {
+          set({ currentStreak: state.currentStreak + 1, lastActiveDate: todayStr });
         } else {
-          set({ currentStreak: 1, lastActiveDate: today });
+          set({ currentStreak: 1, lastActiveDate: todayStr });
         }
       },
 
@@ -182,6 +200,12 @@ export const useAppStore = create<AppState & AppActions>()(
           sessionResults: [...s.sessionResults, full],
           view: 'feedback',
         }));
+        const newState = get();
+        BADGES.forEach(badge => {
+          if (!newState.unlockedBadges.includes(badge.id) && badge.check(newState)) {
+            get().unlockBadge(badge.id);
+          }
+        });
       },
 
       buyItem: (itemId, cost) => {
@@ -219,6 +243,8 @@ export const useAppStore = create<AppState & AppActions>()(
             p.id === plotId ? { ...p, animalId: null, placedAt: '' } : p
           ),
         })),
+
+      unlockBadge: (id) => set(s => ({ unlockedBadges: [...new Set([...s.unlockedBadges, id])] })),
 
       collectFarmStars: () => {
         const state = get();

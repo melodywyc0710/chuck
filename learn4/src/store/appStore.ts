@@ -87,6 +87,7 @@ export interface AppActions {
   removeFarmAnimal: (plotId: string) => void;
   collectFarmStars: () => void;
   unlockBadge: (id: string) => void;
+  previewFeedback: (sessionId: string, score: number, total: number) => void;
 }
 
 function isoWeek(date: Date): string {
@@ -264,6 +265,9 @@ export const useAppStore = create<AppState & AppActions>()(
           }));
         }
       },
+
+      previewFeedback: (sessionId, score, total) =>
+        set({ activeSessionId: sessionId, currentScore: { correct: score, total }, view: 'feedback' }),
     }),
     { name: 'learn4-app-v1' }
   )

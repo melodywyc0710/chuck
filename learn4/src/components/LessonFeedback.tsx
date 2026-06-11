@@ -106,13 +106,21 @@ interface StarParticle {
 }
 
 export default function LessonFeedback({ onContinue }: Props) {
-  const { profile, sessionResults } = useAppStore();
+  const { profile, sessionResults, activeSessionId, setView } = useAppStore();
   const [lang, setLang] = useState<'zh' | 'en'>('zh');
   const [copied, setCopied] = useState(false);
   const [stars, setStars] = useState<StarParticle[]>([]);
 
+  // Find result by activeSessionId first (teacher preview), fallback to latest
+  const resultBySession = activeSessionId
+    ? [...sessionResults].reverse().find(r => r.sessionId === activeSessionId)
+    : undefined;
+  const latest = resultBySession ?? sessionResults[sessionResults.length - 1];
+  const isTeacherPreview = !!(resultBySession && resultBySession !== sessionResults[sessionResults.length - 1]);
+
   useEffect(() => {
-    sounds.starEarned();
+    if (!isTeacherPreview) sounds.starEarned();
+    if (isTeacherPreview) return;
     const count = 7;
     const particles: StarParticle[] = Array.from({ length: count }, (_, i) => ({
       id: i,
@@ -128,7 +136,6 @@ export default function LessonFeedback({ onContinue }: Props) {
 
   if (!profile) return null;
 
-  const latest = sessionResults[sessionResults.length - 1];
   if (!latest) { onContinue(); return null; }
 
   const session = getSession(latest.sessionId);
@@ -174,6 +181,16 @@ export default function LessonFeedback({ onContinue }: Props) {
         );
       })}
       <div className="max-w-2xl mx-auto w-full px-4 py-6 space-y-5 flex-1">
+
+        {/* Teacher preview back button */}
+        {isTeacherPreview && (
+          <button
+            onClick={() => setView('teacher')}
+            className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            ← Back to Dashboard
+          </button>
+        )}
 
         {/* Language toggle */}
         <div className="flex justify-end">
@@ -258,11 +275,13 @@ export default function LessonFeedback({ onContinue }: Props) {
 
         <motion.button
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-          onClick={onContinue}
+          onClick={isTeacherPreview ? () => setView('teacher') : onContinue}
           className="w-full py-4 rounded-2xl text-white font-black text-lg"
           style={{ background: themeColor }}
         >
-          {lang === 'en' ? 'See Full Summary →' : '查看完整摘要 →'}
+          {isTeacherPreview
+            ? (lang === 'en' ? '← Back to Dashboard' : '← 返回教师页面')
+            : (lang === 'en' ? 'See Full Summary →' : '查看完整摘要 →')}
         </motion.button>
 
       </div>

@@ -1,13 +1,14 @@
 import { useAppStore } from '../store/appStore';
-import { englishSession } from '../data/english-session';
-import { mathsSession } from '../data/maths-session';
+import { getSession } from '../data/curriculum/index';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
+const SUBJECT_LABEL: Record<string, string> = { english: 'English', maths: 'Maths', science: 'Science', hass: 'HASS' };
+
 export default function TeacherDashboard() {
-  const { profile, sessionResults, completedSessions, totalStars, currentAnswers, setView } = useAppStore();
+  const { profile, sessionResults, totalStars, currentStreak, setView, previewFeedback } = useAppStore();
   if (!profile) return null;
 
   return (
@@ -27,8 +28,8 @@ export default function TeacherDashboard() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
               { label: 'Name', value: profile.name },
-              { label: 'Year Level', value: '4' },
-              { label: 'Lesson Style', value: profile.density === 'younger' ? 'Easier' : 'Standard' },
+              { label: 'Lessons Done', value: String(sessionResults.length) },
+              { label: 'Week Streak', value: `${currentStreak} 🔥` },
               { label: 'Total Stars', value: String(totalStars) },
             ].map(item => (
               <div key={item.label} className="bg-gray-50 rounded-xl p-3">
@@ -39,119 +40,104 @@ export default function TeacherDashboard() {
           </div>
         </div>
 
-        {/* Progress overview */}
+        {/* Parent reports for each completed session */}
         <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h3 className="font-black text-gray-800 mb-4">📊 Session Progress</h3>
-          {[englishSession, mathsSession].map(session => {
-            const done = completedSessions.includes(session.id);
-            const result = sessionResults.find(r => r.sessionId === session.id);
-            const pct = result && result.total > 0 ? Math.round((result.score / result.total) * 100) : null;
-            return (
-              <div key={session.id} className="mb-4 last:mb-0">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{session.icon}</span>
-                    <div>
-                      <div className="font-bold text-gray-800 text-sm">{session.title}</div>
-                      <div className="text-xs text-gray-400">{session.victorianCode}</div>
+          <h3 className="font-black text-gray-800 mb-1">📋 Parent Reports</h3>
+          <p className="text-xs text-gray-400 mb-4">Tap "View Report" to open the full bilingual report — copy and paste to send to parents.</p>
+
+          {sessionResults.length === 0 ? (
+            <p className="text-gray-400 text-sm">No lessons completed yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {[...sessionResults].reverse().map(result => {
+                const session = getSession(result.sessionId);
+                const pct = result.total > 0 ? Math.round((result.score / result.total) * 100) : 0;
+                const scoreColor = pct >= 80 ? '#10b981' : pct >= 60 ? '#f59e0b' : '#ef4444';
+                return (
+                  <div key={result.sessionId + result.completedAt} className="flex items-center justify-between bg-gray-50 rounded-2xl px-4 py-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{session?.icon ?? '📖'}</span>
+                      <div>
+                        <div className="font-bold text-gray-800 text-sm leading-tight">
+                          {session?.title ?? result.sessionId}
+                        </div>
+                        <div className="text-xs text-gray-400 mt-0.5">
+                          {SUBJECT_LABEL[result.subject]} · {formatDate(result.completedAt)}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-xs font-bold" style={{ color: scoreColor }}>
+                            {result.score}/{result.total} ({pct}%)
+                          </span>
+                          <span className="text-xs text-yellow-600 font-bold">⭐ {result.starsEarned}</span>
+                        </div>
+                      </div>
                     </div>
+                    <button
+                      onClick={() => previewFeedback(result.sessionId, result.score, result.total)}
+                      className="flex-shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors"
+                    >
+                      View Report
+                    </button>
                   </div>
-                  <div className={`text-xs font-bold px-2 py-1 rounded-full ${done ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                    {done ? '✓ Complete' : 'Not started'}
-                  </div>
-                </div>
-                {result && (
-                  <div className="bg-gray-50 rounded-xl p-3 text-sm space-y-1">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Quiz score:</span>
-                      <span className="font-bold" style={{ color: (pct ?? 0) >= 70 ? '#10b981' : '#f59e0b' }}>
-                        {result.score}/{result.total} ({pct}%)
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Stars earned:</span>
-                      <span className="font-bold text-yellow-600">⭐ {result.starsEarned}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Completed:</span>
-                      <span className="font-bold text-gray-700">{formatDate(result.completedAt)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Homework set:</span>
-                      <span className="font-bold text-gray-700">{result.homeworkSet ? '✓ Yes' : 'No'}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Student writing samples */}
-        {Object.keys(currentAnswers).length > 0 && (
+        {sessionResults.some(r => Object.keys(r.freeResponses ?? {}).length > 0) && (
           <div className="bg-white rounded-2xl p-5 shadow-sm">
-            <h3 className="font-black text-gray-800 mb-4">✏️ Student Responses</h3>
-            <div className="space-y-4">
-              {Object.entries(currentAnswers)
-                .filter(([, v]) => typeof v === 'string' && v.length > 5)
-                .map(([key, value]) => (
-                  <div key={key} className="border border-gray-100 rounded-xl p-4">
-                    <div className="text-xs text-gray-400 font-semibold uppercase mb-2">{key.replace(/-/g, ' ')}</div>
-                    <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{String(value)}</p>
-                    <div className="text-xs text-gray-400 mt-2">
-                      {String(value).split(/\s+/).filter(Boolean).length} words
+            <h3 className="font-black text-gray-800 mb-4">✏️ Student Written Responses</h3>
+            <div className="space-y-5">
+              {sessionResults.map(result => {
+                const entries = Object.entries(result.freeResponses ?? {}).filter(([, v]) => v && v.length > 5);
+                if (entries.length === 0) return null;
+                const session = getSession(result.sessionId);
+                return (
+                  <div key={result.sessionId}>
+                    <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                      {session?.title ?? result.sessionId} — {formatDate(result.completedAt)}
+                    </div>
+                    <div className="space-y-2">
+                      {entries.map(([key, value]) => (
+                        <div key={key} className="border border-gray-100 rounded-xl p-3">
+                          <div className="text-xs text-gray-400 mb-1">{key.replace(/-/g, ' ')}</div>
+                          <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">{value}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* Homework tracking */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
-          <h3 className="font-black text-gray-800 mb-4">🏠 Homework Tracking</h3>
-          {sessionResults.length === 0 ? (
-            <p className="text-gray-400 text-sm">No sessions completed yet.</p>
-          ) : (
-            sessionResults.map(result => {
-              const session = result.subject === 'english' ? englishSession : mathsSession;
-              const hwStep = session.steps.find(s => s.type === 'homework') as any;
-              return hwStep ? (
-                <div key={result.sessionId} className="mb-4">
-                  <div className="font-bold text-gray-700 text-sm mb-2">{session.title}</div>
-                  <div className="space-y-1">
-                    {hwStep.tasks.map((task: any) => (
-                      <div key={task.id} className="flex items-start gap-2 text-sm text-gray-600">
-                        <span className="text-gray-300">□</span>
-                        <span>{task.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : null;
-            })
-          )}
-        </div>
-
         {/* Curriculum alignment */}
-        <div className="bg-indigo-50 rounded-2xl p-5 border border-indigo-100">
-          <h3 className="font-black text-indigo-800 mb-3">📋 Victorian Curriculum Alignment</h3>
-          <div className="space-y-3">
-            {[englishSession, mathsSession].map(session => (
-              <div key={session.id}>
-                <div className="flex items-center gap-2 mb-1">
-                  <span>{session.icon}</span>
-                  <span className="font-bold text-indigo-800 text-sm">{session.victorianCode}</span>
-                </div>
-                <p className="text-indigo-700 text-xs">{session.description}</p>
-              </div>
-            ))}
+        {sessionResults.length > 0 && (
+          <div className="bg-indigo-50 rounded-2xl p-5 border border-indigo-100">
+            <h3 className="font-black text-indigo-800 mb-3">📋 Victorian Curriculum Coverage</h3>
+            <div className="space-y-2">
+              {sessionResults.map(result => {
+                const session = getSession(result.sessionId);
+                if (!session) return null;
+                return (
+                  <div key={result.sessionId} className="flex items-start gap-2">
+                    <span>{session.icon}</span>
+                    <div>
+                      <span className="font-bold text-indigo-800 text-xs">{session.victorianCode}</span>
+                      <span className="text-indigo-600 text-xs"> — {session.description}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Reset */}
         <button
-          onClick={() => { if (confirm('Reset all student data?')) useAppStore.getState().reset(); setView('setup'); }}
+          onClick={() => { if (confirm('Reset all student data?')) { useAppStore.getState().reset(); setView('setup'); } }}
           className="text-xs text-gray-400 hover:text-red-400 underline transition-colors"
         >
           Reset student data (new student)

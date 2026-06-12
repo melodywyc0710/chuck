@@ -36,7 +36,7 @@ export default function Setup() {
         {step === 0 && (
           <div className="text-center space-y-6">
             <div className="text-6xl float">📚</div>
-            <h1 className="text-3xl font-black text-gray-800">Welcome to Learn4!</h1>
+            <h1 className="text-3xl font-black text-gray-800">Welcome to Chucky!</h1>
             <p className="text-gray-500 text-lg">Your Year 4 learning adventure starts here.</p>
             <div>
               <label className="block text-sm font-bold text-gray-600 mb-2 text-left">What's your name?</label>

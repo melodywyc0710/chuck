@@ -57,7 +57,7 @@ ${session.subject === 'english'
 
 Well done, ${profile.name}! Keep up the amazing work! ${mascot}
 
-— Learn4 Platform · learn4.edu.au`;
+— Chucky · chucky.app`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(parentMessage).then(() => alert('Copied! Paste it into an email or message.'));

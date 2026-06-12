@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192.svg', 'icon-512.svg'],
       manifest: {
-        name: 'Learn4 — Victorian Curriculum',
-        short_name: 'Learn4',
+        name: 'Chucky',
+        short_name: 'Chucky',
         description: 'Year 4–6 Victorian Curriculum learning app',
         theme_color: '#6366f1',
         background_color: '#f0f4ff',

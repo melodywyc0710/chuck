@@ -124,7 +124,7 @@ function SheetHeader({ sheet, studentName }: { sheet: HomeworkSheet; studentName
         {/* Centre title */}
         <div style={{ flex: 1, textAlign: 'center', padding: '0 1rem' }}>
           <div style={{ fontSize: '0.7rem', color: '#6b7280', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-            Learn4 · Year {sheet.yearLevel} {sheet.subject}
+            Chucky · Year {sheet.yearLevel} {sheet.subject}
           </div>
           <h1 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1e3a5f', margin: '0.2rem 0' }}>
             {sheet.title}
@@ -242,9 +242,9 @@ export default function PrintableHomework({ sessionId }: Props) {
             color: '#9ca3af',
           }}
         >
-          <span>Learn4 · learn4.edu.au</span>
+          <span>Chucky · chucky.app</span>
           <span>Year {sheet.yearLevel} {sheet.subject} · {sheet.victorianCode}</span>
-          <span>© Learn4 Education</span>
+          <span>© Chucky</span>
         </div>
       </div>
 

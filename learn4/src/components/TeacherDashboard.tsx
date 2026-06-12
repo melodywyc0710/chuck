@@ -17,7 +17,7 @@ export default function TeacherDashboard() {
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
           <button onClick={() => setView('home')} className="text-gray-400 hover:text-gray-600 text-sm">← Student View</button>
           <h2 className="font-black text-gray-800">👩‍🏫 Teacher Dashboard</h2>
-          <div className="text-xs text-gray-400">Learn4</div>
+          <div className="text-xs text-gray-400">Chucky</div>
         </div>
       </div>
 

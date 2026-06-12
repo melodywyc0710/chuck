@@ -102,7 +102,7 @@ export default function Home() {
             <span className="text-2xl">{MASCOT_EMOJI[profile.mascot]}</span>
             <div>
               <div className="font-black text-gray-800 text-sm leading-none">Hi, {profile.name}! 👋</div>
-              <div className="text-xs text-gray-400">Year {activeYearLevel} · Learn4</div>
+              <div className="text-xs text-gray-400">Year {activeYearLevel} · Chucky</div>
             </div>
           </div>
           <div className="flex items-center gap-3">

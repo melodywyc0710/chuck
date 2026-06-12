@@ -680,7 +680,7 @@ export default function GamesHub() {
             <span className="text-2xl">🎮</span>
             <div>
               <div className="font-black text-gray-800 text-sm leading-none">Mini Games</div>
-              <div className="text-xs text-gray-400">Learn4</div>
+              <div className="text-xs text-gray-400">Chucky</div>
             </div>
           </div>
           <button

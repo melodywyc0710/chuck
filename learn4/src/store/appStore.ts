@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { BADGES } from '../data/badges';
+import { saveSessionResult, fetchProfile, fetchStudentResults } from '../lib/db';
 
 export type Subject = 'english' | 'maths' | 'science' | 'hass';
 export type Mascot = 'owl' | 'fox' | 'panda';
@@ -45,6 +46,9 @@ export interface FarmPlot {
 export interface AppState {
   view: View;
   profile: StudentProfile | null;
+  userId: string | null;
+  userRole: 'teacher' | 'student' | null;
+  activeStudentId: string | null;
   activeSubject: Subject;
   activeYearLevel: 4 | 5 | 6;
   activeSessionId: string | null;
@@ -88,6 +92,9 @@ export interface AppActions {
   collectFarmStars: () => void;
   unlockBadge: (id: string) => void;
   previewFeedback: (sessionId: string, score: number, total: number) => void;
+  setUserId: (id: string | null, role: 'teacher' | 'student' | null) => void;
+  setActiveStudentId: (id: string | null) => void;
+  loadStudentData: (studentId: string) => Promise<void>;
 }
 
 function isoWeek(date: Date): string {
@@ -101,6 +108,9 @@ function isoWeek(date: Date): string {
 const defaultState: AppState = {
   view: 'setup',
   profile: null,
+  userId: null,
+  userRole: null,
+  activeStudentId: null,
   activeSubject: 'english',
   activeYearLevel: 4,
   activeSessionId: null,
@@ -207,6 +217,11 @@ export const useAppStore = create<AppState & AppActions>()(
             get().unlockBadge(badge.id);
           }
         });
+        // Sync to Supabase — save under activeStudentId (teacher playing for student) or own userId
+        const targetId = state.activeStudentId ?? state.userId;
+        if (targetId) {
+          saveSessionResult(targetId, full).catch(console.error);
+        }
       },
 
       buyItem: (itemId, cost) => {
@@ -268,6 +283,27 @@ export const useAppStore = create<AppState & AppActions>()(
 
       previewFeedback: (sessionId, score, total) =>
         set({ activeSessionId: sessionId, currentScore: { correct: score, total }, view: 'feedback' }),
+
+      setUserId: (id, role) => set({ userId: id, userRole: role }),
+
+      setActiveStudentId: (id) => set({ activeStudentId: id }),
+
+      loadStudentData: async (studentId) => {
+        const dbProfile = await fetchProfile(studentId);
+        if (dbProfile) {
+          set({
+            activeStudentId: studentId,
+            profile: {
+              name: dbProfile.name,
+              mascot: dbProfile.mascot as StudentProfile['mascot'],
+              density: dbProfile.density as StudentProfile['density'],
+              colorTheme: dbProfile.color_theme as StudentProfile['colorTheme'],
+            },
+          });
+        }
+        const results = await fetchStudentResults(studentId);
+        set({ sessionResults: results });
+      },
     }),
     { name: 'learn4-app-v1' }
   )

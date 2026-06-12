@@ -1,9 +1,10 @@
 import { supabase } from './supabase';
+import type { Subject } from '../store/appStore';
 
 // Inline to avoid circular import with appStore
 interface SessionResult {
   sessionId: string;
-  subject: string;
+  subject: Subject;
   completedAt: string;
   score: number;
   total: number;
@@ -70,7 +71,7 @@ export async function fetchStudentResults(studentId: string): Promise<SessionRes
   if (!data) return [];
   return data.map(r => ({
     sessionId: r.session_id as string,
-    subject: r.subject as SessionResult['subject'],
+    subject: r.subject as Subject,
     completedAt: r.completed_at as string,
     score: r.score as number,
     total: r.total as number,

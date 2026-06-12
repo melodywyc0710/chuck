@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import './index.css';
 import { useAppStore } from './store/appStore';
-import { supabase } from './lib/supabase';
+import { supabase, supabaseConfigured } from './lib/supabase';
 import { fetchProfile } from './lib/db';
 import AuthScreen from './components/AuthScreen';
 import Setup from './components/Setup';
@@ -62,6 +62,20 @@ export default function App() {
 
   // Auth gate
   if (userId === null) {
+    if (!supabaseConfigured) {
+      return (
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+          <div className="bg-white rounded-3xl p-8 shadow-lg max-w-sm w-full text-center space-y-4">
+            <div className="text-5xl">⚙️</div>
+            <h1 className="font-black text-gray-800 text-xl">Almost ready!</h1>
+            <p className="text-gray-500 text-sm leading-relaxed">
+              The app needs Supabase environment variables to be set in Vercel before it can load.
+              Please add <code className="bg-gray-100 px-1 rounded text-xs">VITE_SUPABASE_URL</code> and <code className="bg-gray-100 px-1 rounded text-xs">VITE_SUPABASE_ANON_KEY</code> in your Vercel project settings, then redeploy.
+            </p>
+          </div>
+        </div>
+      );
+    }
     return <AuthScreen />;
   }
 

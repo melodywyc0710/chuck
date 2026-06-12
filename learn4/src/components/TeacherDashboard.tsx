@@ -4,7 +4,15 @@ import { supabase } from '../lib/supabase';
 import { fetchAllStudents, fetchStudentResults } from '../lib/db';
 import type { DbProfile } from '../lib/db';
 import type { SessionResult } from '../store/appStore';
-import { getSession } from '../data/curriculum/index';
+import { getSession, sessionsByYear } from '../data/curriculum/index';
+import type { Session } from '../data/types';
+
+const SUBJECT_COLOR: Record<string, string> = {
+  english: '#6366f1',
+  maths: '#10b981',
+  science: '#3b82f6',
+  hass: '#f59e0b',
+};
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -12,13 +20,18 @@ function formatDate(iso: string) {
 
 const SUBJECT_LABEL: Record<string, string> = { english: 'English', maths: 'Maths', science: 'Science', hass: 'HASS' };
 
+type Tab = 'students' | 'curriculum';
+
 export default function TeacherDashboard() {
-  const { setView, loadStudentData, setUserId, previewFeedback } = useAppStore();
+  const { setView, loadStudentData, setUserId, previewFeedback, startSession } = useAppStore();
+  const [tab, setTab] = useState<Tab>('students');
   const [students, setStudents] = useState<DbProfile[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<DbProfile | null>(null);
   const [studentResults, setStudentResults] = useState<SessionResult[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [loadingResults, setLoadingResults] = useState(false);
+  const [currYear, setCurrYear] = useState<4 | 5 | 6>(4);
+  const [currSubject, setCurrSubject] = useState<string>('english');
 
   useEffect(() => {
     fetchAllStudents().then(data => {
@@ -45,22 +58,97 @@ export default function TeacherDashboard() {
     setUserId(null, null);
   }
 
+  const curriculumSessions: Session[] = (sessionsByYear[currYear] ?? []).filter(
+    s => s.subject === currSubject,
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h2 className="font-black text-gray-800">👩‍🏫 Teacher Dashboard</h2>
+        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          <h2 className="font-black text-gray-800 whitespace-nowrap">👩‍🏫 Teacher</h2>
+          {/* Tab switcher */}
+          <div className="flex bg-gray-100 rounded-xl overflow-hidden">
+            {([['students', '👤 Students'], ['curriculum', '📚 Curriculum']] as const).map(([t, label]) => (
+              <button
+                key={t}
+                onClick={() => setTab(t)}
+                className={`px-4 py-2 text-sm font-bold transition-all ${tab === t ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
           <button
             onClick={handleSignOut}
-            className="text-xs text-gray-500 hover:text-red-500 border border-gray-200 rounded-xl px-3 py-1.5 transition-colors"
+            className="text-xs text-gray-500 hover:text-red-500 border border-gray-200 rounded-xl px-3 py-1.5 transition-colors whitespace-nowrap"
           >
             Sign out
           </button>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 py-6 flex gap-6 flex-col md:flex-row">
+      {/* Curriculum tab */}
+      {tab === 'curriculum' && (
+        <div className="max-w-5xl mx-auto px-4 py-6 space-y-5">
+          {/* Year + Subject filters */}
+          <div className="flex flex-wrap gap-3">
+            <div className="flex bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+              {([4, 5, 6] as const).map(y => (
+                <button
+                  key={y}
+                  onClick={() => setCurrYear(y)}
+                  className={`px-4 py-2 text-sm font-bold transition-all ${currYear === y ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+                >
+                  Year {y}
+                </button>
+              ))}
+            </div>
+            <div className="flex bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+              {(['english', 'maths', 'science', 'hass'] as const).map(s => (
+                <button
+                  key={s}
+                  onClick={() => setCurrSubject(s)}
+                  className={`px-4 py-2 text-sm font-bold capitalize transition-all ${currSubject === s ? 'text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+                  style={currSubject === s ? { background: SUBJECT_COLOR[s] } : {}}
+                >
+                  {s === 'hass' ? 'HASS' : s.charAt(0).toUpperCase() + s.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Session cards */}
+          {curriculumSessions.length === 0 ? (
+            <div className="bg-white rounded-2xl p-8 text-center text-gray-400 shadow-sm">No sessions available.</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {curriculumSessions.map(session => (
+                <div key={session.id} className="bg-white rounded-2xl p-5 shadow-sm flex flex-col gap-3">
+                  <div className="flex items-start gap-3">
+                    <span className="text-3xl">{session.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-black text-gray-800 text-sm leading-tight">{session.title}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">{session.victorianCode}</div>
+                      <div className="text-xs text-gray-500 mt-1 line-clamp-2">{session.description}</div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { startSession(session.id); setView('lesson'); }}
+                    className="w-full py-2 rounded-xl text-white text-sm font-bold transition-colors"
+                    style={{ background: SUBJECT_COLOR[session.subject] }}
+                  >
+                    ▶ Preview lesson
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {tab === 'students' && <div className="max-w-5xl mx-auto px-4 py-6 flex gap-6 flex-col md:flex-row">
         {/* Left: Student list */}
         <div className="md:w-64 flex-shrink-0">
           <div className="bg-white rounded-2xl shadow-sm p-4">
@@ -214,7 +302,7 @@ export default function TeacherDashboard() {
             </>
           )}
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

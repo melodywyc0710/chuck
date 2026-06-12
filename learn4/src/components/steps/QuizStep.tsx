@@ -10,7 +10,7 @@ function renderMd(text: string) {
 
 interface Props { step: QuizStepType; onNext: () => void; themeColor: string; mascot: string; }
 
-export default function QuizStep({ step, onNext, themeColor, mascot }: Props) {
+export default function QuizStep({ step, onNext, themeColor, mascot: _mascot }: Props) {
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [confirmed, setConfirmed] = useState(false);

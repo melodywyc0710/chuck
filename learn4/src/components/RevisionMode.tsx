@@ -82,10 +82,7 @@ export default function RevisionMode() {
 
   const q = questions[currentIndex];
   const isCorrect = selected === q?.correct;
-  const totalAnswered = results.length;
   const batchSize = 10;
-  const batchStart = Math.floor(totalAnswered / batchSize) * batchSize;
-  const batchScore = results.slice(batchStart).filter(Boolean).length;
 
   const handleConfirm = () => {
     if (selected === null) return;

@@ -6,7 +6,6 @@ import { BADGES } from '../data/badges';
 import { sounds } from '../utils/sounds';
 
 const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
-const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 type TabType = 'room' | 'shop' | 'farm' | 'badges';
 type Category = 'all' | 'furniture' | 'pet' | 'decoration' | 'window';
 
@@ -121,7 +120,6 @@ export default function RewardsRoom() {
 
   const themeColor = THEME_COLOR[profile.colorTheme];
   const mascotType = profile.mascot;
-  const mascot = MASCOT_EMOJI[mascotType];
   const placed = ROOM_ITEMS.filter(i => placedItems.includes(i.id) && !FARM_ANIMALS.includes(i.id));
   const shopItems = ROOM_ITEMS.filter(i => filter === 'all' || i.category === filter);
   const hasTreehouse = placedItems.includes('treehouse-upgrade');

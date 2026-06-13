@@ -12,13 +12,14 @@ const SUBJECT_COLOR: Record<string, string> = {
   maths: '#10b981',
   science: '#3b82f6',
   hass: '#f59e0b',
+  vcd: '#ec4899',
 };
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleString('en-AU', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
 
-const SUBJECT_LABEL: Record<string, string> = { english: 'English', maths: 'Maths', science: 'Science', hass: 'HASS' };
+const SUBJECT_LABEL: Record<string, string> = { english: 'English', maths: 'Maths', science: 'Science', hass: 'HASS', vcd: 'VCD' };
 
 type Tab = 'students' | 'curriculum';
 

@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import { BADGES } from '../data/badges';
 import { saveSessionResult, fetchProfile, fetchStudentResults } from '../lib/db';
 
-export type Subject = 'english' | 'maths' | 'science' | 'hass';
+export type Subject = 'english' | 'maths' | 'science' | 'hass' | 'vcd';
 export type Mascot = 'owl' | 'fox' | 'panda';
 export type Density = 'younger' | 'older';
 export type View = 'home' | 'lesson' | 'rewards' | 'teacher' | 'summary' | 'setup' | 'feedback' | 'revision' | 'games' | 'homework';
@@ -50,7 +50,7 @@ export interface AppState {
   userRole: 'teacher' | 'student' | null;
   activeStudentId: string | null;
   activeSubject: Subject;
-  activeYearLevel: 4 | 5 | 6;
+  activeYearLevel: 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11;
   activeSessionId: string | null;
   currentStepIndex: number;
   sessionStartTime: number;
@@ -75,7 +75,7 @@ export interface AppActions {
   setView: (v: View) => void;
   setupProfile: (p: StudentProfile) => void;
   setActiveSubject: (s: Subject) => void;
-  setActiveYearLevel: (y: 4 | 5 | 6) => void;
+  setActiveYearLevel: (y: 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11) => void;
   setActiveSessionId: (id: string) => void;
   startSession: (sessionId: string) => void;
   goToStep: (index: number) => void;

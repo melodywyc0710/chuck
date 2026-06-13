@@ -1,4 +1,4 @@
-export type Subject = 'english' | 'maths' | 'science' | 'hass';
+export type Subject = 'english' | 'maths' | 'science' | 'hass' | 'vcd';
 
 export type StepType = 'video' | 'worked-example' | 'quiz' | 'free-response' | 'homework';
 

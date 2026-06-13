@@ -16,6 +16,13 @@ import { y6Maths } from './y6-maths';
 import { y6Science } from './y6-science';
 import { y6Hass } from './y6-hass';
 
+import { vcdY45 } from './vcd-y45';
+import { vcdY56 } from './vcd-y56';
+import { vcdY8 } from './vcd-y8';
+import { vcdY9 } from './vcd-y9';
+import { vcdY10 } from './vcd-y10';
+import { vcdVce } from './vcd-vce';
+
 const weeklyByYear = (yr: number) => weeklyLessons.filter(s => s.yearLevel === yr);
 
 export const allSessions: Session[] = [
@@ -34,12 +41,22 @@ export const allSessions: Session[] = [
   ...y6Science,
   ...y6Hass,
   ...weeklyLessons,
+  ...vcdY45,
+  ...vcdY56,
+  ...vcdY8,
+  ...vcdY9,
+  ...vcdY10,
+  ...vcdVce,
 ];
 
 export const sessionsByYear: Record<number, Session[]> = {
-  4: [...y4English, ...y4Maths, ...y4Science, ...y4Hass, ...weeklyByYear(4)],
-  5: [...y5English, ...y5Maths, ...y5Science, ...y5Hass, ...weeklyByYear(5)],
+  4: [...y4English, ...y4Maths, ...y4Science, ...y4Hass, ...weeklyByYear(4), ...vcdY45],
+  5: [...y5English, ...y5Maths, ...y5Science, ...y5Hass, ...weeklyByYear(5), ...vcdY56],
   6: [...y6English, ...y6Maths, ...y6Science, ...y6Hass, ...weeklyByYear(6)],
+  8: [...vcdY8],
+  9: [...vcdY9],
+  10: [...vcdY10],
+  11: [...vcdVce],
 };
 
 export const sessionsBySubject = allSessions.reduce<Record<string, Session[]>>((acc, s) => {

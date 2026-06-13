@@ -12,6 +12,7 @@ const SUBJECT_LABEL: Record<string, string> = {
   maths: 'Maths',
   science: 'Science',
   hass: 'HASS',
+  vcd: 'VCD',
 };
 
 interface NodeProps {
@@ -141,17 +142,17 @@ export default function Home() {
         </div>
 
         {/* Year level tabs */}
-        <div className="max-w-2xl mx-auto px-4 pt-1 pb-2 flex gap-2">
-          {([4, 5, 6] as const).map(yr => (
+        <div className="max-w-2xl mx-auto px-4 pt-1 pb-2 flex gap-2 overflow-x-auto">
+          {([4, 5, 6, 8, 9, 10, 11] as const).map(yr => (
             <button
               key={yr}
               onClick={() => setActiveYearLevel(yr)}
-              className={`flex-1 py-1.5 px-3 rounded-xl font-bold text-sm transition-all ${
+              className={`flex-shrink-0 py-1.5 px-3 rounded-xl font-bold text-sm transition-all ${
                 activeYearLevel === yr ? 'text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
               }`}
               style={activeYearLevel === yr ? { background: themeColor } : {}}
             >
-              Year {yr}
+              {yr === 11 ? 'VCE' : `Year ${yr}`}
             </button>
           ))}
         </div>

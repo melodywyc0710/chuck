@@ -22,6 +22,9 @@ import { vcdY8 } from './vcd-y8';
 import { vcdY9 } from './vcd-y9';
 import { vcdY10 } from './vcd-y10';
 import { vcdVce } from './vcd-vce';
+import { vcdVceElements } from './vcd-vce-elements';
+import { vcdVceTypography } from './vcd-vce-typography';
+import { vcdVceHistory } from './vcd-vce-history';
 
 const weeklyByYear = (yr: number) => weeklyLessons.filter(s => s.yearLevel === yr);
 
@@ -47,6 +50,9 @@ export const allSessions: Session[] = [
   ...vcdY9,
   ...vcdY10,
   ...vcdVce,
+  ...vcdVceElements,
+  ...vcdVceTypography,
+  ...vcdVceHistory,
 ];
 
 export const sessionsByYear: Record<number, Session[]> = {
@@ -56,7 +62,7 @@ export const sessionsByYear: Record<number, Session[]> = {
   8: [...vcdY8],
   9: [...vcdY9],
   10: [...vcdY10],
-  11: [...vcdVce],
+  11: [...vcdVce, ...vcdVceElements, ...vcdVceTypography, ...vcdVceHistory],
 };
 
 export const sessionsBySubject = allSessions.reduce<Record<string, Session[]>>((acc, s) => {

@@ -1,13 +1,13 @@
 import type { Session } from '../types';
 
 export const vcdVceElements: Session[] = [
-  // ─── SESSION: DESIGN ELEMENTS — LINE, SHAPE, FORM, SPACE, TONE ───────────
+  // ─── SESSION: DESIGN ELEMENTS — LINE, SHAPE, FORM, POINT, TONE ──────────
   {
     id: 'vcd-vce-e01',
     subject: 'vcd',
-    title: 'Design Elements: Line, Shape, Form, Space & Tone',
+    title: 'Design Elements: Colour, Shape, Line, Tone, Texture, Form, Point & Type',
     victorianCode: 'VCAA-VCD-ELEM1',
-    description: 'Master the five structural design elements — line, shape, form, space and tone — with VCE-level analysis vocabulary and exam application.',
+    description: 'Master all eight VCAA 2024 design elements — Colour, Shape, Line, Tone, Texture, Form, Point and Type — with VCE-level analysis vocabulary and exam application.',
     yearLevel: 11,
     estimatedMinutes: 70,
     starsAvailable: 6,
@@ -17,49 +17,49 @@ export const vcdVceElements: Session[] = [
       {
         id: 'vcd-vce-e01-s1',
         type: 'worked-example',
-        title: 'Line: The Foundation of Visual Communication',
-        teacherNote: 'Line is the most fundamental element. Push students beyond "thick/thin" to the expressive qualities of line — its emotional and cultural resonance.',
-        imagePrompt: 'design elements line study showing different line qualities horizontal vertical diagonal curved geometric organic expressive, clean educational graphic design poster',
+        title: 'The Eight VCAA 2024 Design Elements',
+        teacherNote: 'The VCAA 2024 study design identifies exactly EIGHT design elements: Colour, Shape, Line, Tone, Texture, Form, Point and Type. "Space" is NOT a listed element in 2024. Point and Type are new additions students must know.',
+        imagePrompt: 'design elements poster showing eight elements colour shape line tone texture form point type with examples, VCAA 2024 visual communication design educational poster',
         content: {
-          heading: 'Line: Direction, Weight, Quality and Meaning',
+          heading: 'Eight Elements — the Building Blocks of All Design',
           body: [
             {
-              label: 'Line Characteristics',
-              text: 'Every line has four qualities an examiner expects you to discuss: direction (horizontal = calm/stable, vertical = strength/authority, diagonal = dynamic/tension, curved = flow/organic), weight (thick = bold/dominant, thin = delicate/refined), quality (continuous = decisive, broken = fragmented/nervous, gestural = energetic), and edge (hard = precision/technology, soft = warmth/approachability).',
+              label: 'Colour, Shape and Line',
+              text: 'Colour: two models — Subtractive (CMYK, used for print) and Additive (RGB, used for screens). Colour has hue, saturation, primary/secondary/warm/cool properties; used for identity, decoration, depth and hierarchy. Colour has cultural connections with emotions. Shape: a two-dimensional enclosure — organic/biomorphic (found in nature), stylised (simplified), or geometric/rectilinear/sharp/hard-edged. Used to signify, denote or organise. Line: a continuous mark used to emphasise, divide components, create a figure, tone, texture or organise space. Can be geometric or organic, ruled or freehand, thick or thin, straight/curved/solid/dotted/dashed/flowing/visible/implied. Used in conventions for technical drawing.',
               highlight: 'blue',
             },
             {
-              label: 'Line in Communication Design',
-              text: 'In logo design, a single line communicates brand character: FedEx uses an implied arrow (hidden between the E and x) created by negative space — a line that doesn\'t exist but is perceived through gestalt closure, communicating forward movement and speed without a literal illustration. IBM\'s horizontal line stripes communicate precision and efficiency through repetition and uniformity.',
+              label: 'Tone, Texture and Form',
+              text: 'Tone: a variation of the intensity of colour. Used to create and emphasise form. Monochromatic. Light and dark, value, percentage, tint or shade. Qualities: dramatic, chiaroscuro, soft, gradual, subtle. Texture: the surface of an object or image. Actual texture can be felt; implied texture looks like texture. Used for function or aesthetics. Deep, shallow, regular, random, organic or geometric, rough or smooth, gloss, matte, shiny, satin. Form: a three-dimensional entity — cube, sphere, rectangular prism, tetrahedron, pyramid. Solid, hollow, slender, cylindrical, rectangular, conical, biomorphic, geometric. Made by shapes, lines and/or colours.',
               highlight: 'green',
             },
             {
-              label: 'Shape: Geometric vs Organic',
-              text: 'Geometric shapes (circles, squares, triangles, hexagons) communicate structure, logic and manufacture — they dominate in technology, finance and engineering brands. Organic shapes (biomorphic, irregular, nature-derived) communicate humanity, creativity and naturalism. The circle specifically suggests unity, wholeness and continuity — this is why most social media profile frames are circles (emphasising human connection).',
+              label: 'Point (NEW in 2024)',
+              text: 'Point: a mark. Can be a dot, square or circular. Used to create tone, texture, form and contrast in pictures. Point is used to create emphasis or a focal point using colour, scale and contrast. Point is one of the eight VCAA 2024 design elements — students often overlook it. In practice, a single point (dot) can anchor a composition, create a focal point, or when repeated, build tone (as in halftone printing or stipple illustration).',
               highlight: 'orange',
             },
             {
-              label: 'Shape and Cultural Meaning',
-              text: 'Shapes carry culturally specific meanings. The triangle in Western design suggests stability (apex up), danger (warning signs), or dynamic movement (apex pointing). In Japanese aesthetics, the circle (enso) represents enlightenment. The cross is simultaneously a cultural/religious symbol, a wayfinding symbol (+), and a mathematical operator. Always consider cultural reading when using shapes in design.',
+              label: 'Type as a Design Element (NEW in 2024)',
+              text: 'Type is writing in VCD. It communicates ideas, information and emotion through its literal meanings and its aesthetics. A typeface is one name/style of type. Typefaces are made in different groups: Serif and Sans serif. Decorative. Serif-type forms communicate old, established authority; sans serif-type forms communicate ideas with a newer feeling. A type-family has different widths and weights: ultra-light, light, regular, medium, bold, black, condensed, extended and italic. Type anatomy, leading, tracking and kerning are all key VCE knowledge.',
               highlight: 'purple',
             },
           ],
           questions: [
-            { q: 'What four qualities does every line possess that a VCE analysis should consider?', a: 'Direction (horizontal/vertical/diagonal/curved), weight (thick/thin), quality (continuous/broken/gestural), and edge quality (hard/soft).' },
-            { q: 'Why do technology and finance brands predominantly use geometric rather than organic shapes?', a: 'Geometric shapes communicate logic, precision, structure and manufacture — qualities associated with technology and financial reliability. Organic shapes suggest human warmth and naturalism, which conflicts with the rational, precise positioning these industries typically seek.' },
+            { q: 'Name all eight design elements in the VCAA 2024 VCD study design.', a: 'Colour, Shape, Line, Tone, Texture, Form, Point and Type. Note: "Space" is NOT one of the eight — it has been removed in the 2024 study design. Point and Type are both design elements.' },
+            { q: 'What is the difference between actual texture and implied texture in the VCAA 2024 study design?', a: 'Actual texture can be physically felt with our hands — it is the real surface quality of a material. Implied texture looks like texture on a flat surface but cannot be felt — it is a visual representation of a surface quality, such as a photograph of timber grain printed on paper.' },
           ],
         },
       },
       {
         id: 'vcd-vce-e01-s2',
         type: 'quiz',
-        title: 'Quiz: Line and Shape',
-        teacherNote: 'Focus students on justifying their answers — naming the quality is not enough without explaining the effect.',
+        title: 'Quiz: The Eight Design Elements',
+        teacherNote: 'Exam questions name a specific element and ask students to identify its visual qualities or communication effect. Practise naming all eight from memory.',
         questions: [
-          { id: 'vcd-vce-e01-q1', text: 'A financial services logo uses only straight horizontal and vertical lines. The primary visual quality this communicates is:', image: null, options: ['Energy and movement', 'Stability, order and reliability', 'Organic naturalness', 'Playfulness'], correct: 1, explanation: 'Horizontal lines suggest calm stability; vertical lines suggest strength and authority. Together in a financial context, they communicate the reliability and order clients expect from a financial institution.' },
-          { id: 'vcd-vce-e01-q2', text: 'An environmental charity uses organic, irregular curved shapes in its identity. This communicates:', image: null, options: ['Corporate professionalism', 'Technological precision', 'Naturalness, fluidity and a connection to the organic world', 'Geometric order'], correct: 2, explanation: 'Organic curved shapes reference natural forms — they communicate the brand\'s connection to nature and align with audience values around environmental authenticity.' },
-          { id: 'vcd-vce-e01-q3', text: 'The FedEx logo contains a hidden arrow formed by negative space. This is an example of which gestalt principle?', image: null, options: ['Proximity', 'Similarity', 'Closure', 'Continuation'], correct: 2, explanation: 'Closure is the gestalt principle where the mind completes incomplete shapes — the gap between E and x is perceived as an arrow because the brain fills in the implied form.' },
-          { id: 'vcd-vce-e01-q4', text: 'Diagonal lines in a composition primarily suggest:', image: null, options: ['Stability and calm', 'Dynamic tension, energy and movement', 'Formality and order', 'Softness and approachability'], correct: 1, explanation: 'Diagonal lines are inherently unstable — they create visual tension and suggest movement or dynamism. This is why sporting brands and action-focused designs frequently use diagonal compositions.' },
+          { id: 'vcd-vce-e01-q1', text: 'Which of the following is NOT one of the eight VCAA 2024 design elements?', image: null, options: ['Point', 'Space', 'Type', 'Tone'], correct: 1, explanation: '"Space" is not a VCAA 2024 design element — it was removed in the 2024 study design. The eight elements are: Colour, Shape, Line, Tone, Texture, Form, Point and Type.' },
+          { id: 'vcd-vce-e01-q2', text: 'In the VCAA 2024 study design, "Type" is classified as:', image: null, options: ['A design principle', 'A design element — one of the eight fundamental building blocks of visual communication', 'A gestalt principle', 'A drawing convention'], correct: 1, explanation: 'Type is one of the eight design elements in the VCAA 2024 VCD study design — it is a fundamental component of design, not merely a tool. Type communicates ideas, information and emotion through both its literal meaning and its aesthetic qualities.' },
+          { id: 'vcd-vce-e01-q3', text: 'The FedEx logo contains a hidden arrow formed by the gap between letters. The design element most directly responsible for this effect is:', image: null, options: ['Colour', 'Tone', 'Shape — the implied arrow shape created by negative space between the E and x letterforms', 'Point'], correct: 2, explanation: 'Shape includes implied shapes — the eye perceives the arrow as a shape even though it is formed by the surrounding letterforms rather than drawn directly. This is shape as a design element working through figure-ground.' },
+          { id: 'vcd-vce-e01-q4', text: 'A stipple illustration uses thousands of small dots to create tonal variation. Which design element is being used as the primary building block?', image: null, options: ['Line', 'Point — individual marks (dots) used to build tone, texture and form', 'Form', 'Texture'], correct: 1, explanation: 'Point is the design element used here — individual dot marks that, when clustered densely, create dark tones, and when spaced apart, create light tones. This is the classical stipple technique and a direct application of Point as a design element.' },
         ],
       },
       {
@@ -340,9 +340,9 @@ export const vcdVceElements: Session[] = [
   {
     id: 'vcd-vce-e03',
     subject: 'vcd',
-    title: 'Design Principles: Balance, Contrast & Emphasis',
+    title: 'Design Principles: Balance, Contrast & Dominance',
     victorianCode: 'VCAA-VCD-PRIN1',
-    description: 'Master the design principles of balance, contrast and emphasis — how they work, how to identify them, and how to write VCE-level analysis using precise vocabulary.',
+    description: 'Master the VCAA 2024 design principles of balance, contrast and dominance — how they work, how to identify them, and how to write VCE-level analysis using precise vocabulary.',
     yearLevel: 11,
     estimatedMinutes: 65,
     starsAvailable: 6,
@@ -352,59 +352,59 @@ export const vcdVceElements: Session[] = [
       {
         id: 'vcd-vce-e03-s1',
         type: 'worked-example',
-        title: 'Balance: Symmetry, Asymmetry and Radial',
-        teacherNote: 'Students often oversimplify balance as "symmetrical = stable, asymmetrical = dynamic." Push them to analyse WHY asymmetrical balance works through visual weight.',
-        imagePrompt: 'design principles balance study showing symmetrical asymmetrical radial balance examples with visual weight annotations, clean educational design poster infographic',
+        title: 'Balance, Contrast and Dominance',
+        teacherNote: 'Note: the VCAA 2024 study design uses "dominance" not "emphasis." Students should use the correct VCAA terminology in their exam responses and folio annotations.',
+        imagePrompt: 'design principles balance contrast dominance study showing symmetrical asymmetrical examples visual weight dominant element annotations, clean educational design poster infographic',
         content: {
-          heading: 'Balance Creates Visual Stability (or Intentional Instability)',
+          heading: 'Balance, Contrast and Dominance — the VCAA 2024 Principles',
           body: [
             {
-              label: 'Symmetrical Balance',
-              text: 'Symmetrical (formal) balance: elements are mirrored across a central axis. Creates stability, formality, dignity and predictability. Historically associated with classical architecture, religious design and governmental authority. In contemporary design, perfect symmetry can feel static — many brands use near-symmetry with small intentional breaks to feel stable but not rigid. Bilateral symmetry (left-right mirror) is the most common; radial symmetry (circular) is less common, used in mandalas, some logo marks, and decorative design.',
+              label: 'Symmetrical and Asymmetrical Balance',
+              text: 'Symmetrical (formal) balance: elements are mirrored across a central axis — creates stability, formality, dignity. Historically used in architecture, religious and governmental design. Asymmetrical (informal) balance: elements balance through visual weight rather than position. Visual weight is determined by: size, colour saturation, tonal contrast, texture, complexity and position. A small dark textured element can balance a large pale element. Asymmetrical balance feels dynamic and modern while maintaining compositional equilibrium.',
               highlight: 'blue',
             },
             {
-              label: 'Asymmetrical Balance',
-              text: 'Asymmetrical (informal) balance: elements are balanced by visual weight rather than position. A large light element balanced against a small dark element. A large area of negative space balanced against a small concentrated area of content. Visual weight is determined by: size, colour saturation, tonal contrast, texture, complexity, and position (elements near the edge have less weight; elements near the optical centre have more). Asymmetrical balance feels dynamic, modern and energetic while still maintaining compositional equilibrium.',
+              label: 'Contrast',
+              text: 'Contrast is the degree of difference between elements — the greater the difference, the greater the contrast. Types: tonal contrast (light vs dark), scale contrast (large vs small), colour contrast (complementary colours, warm vs cool), texture contrast (smooth vs rough), typographic contrast (serif vs sans-serif, heavy vs light weight). Contrast is essential for visual hierarchy — without contrast, all elements appear equally important, creating monotony and visual confusion.',
               highlight: 'green',
             },
             {
-              label: 'Contrast: The Engine of Visual Hierarchy',
-              text: 'Contrast is difference — the greater the difference between two elements, the greater the contrast. Types: tonal contrast (light vs dark), scale contrast (large vs small), colour contrast (complementary colours, or warm vs cool), texture contrast (smooth vs rough), typographic contrast (serif vs sans-serif, heavy vs light weight). Every visual hierarchy depends on contrast — without contrast, all elements appear equally important, creating visual monotony and confusion.',
+              label: 'Dominance (not Emphasis)',
+              text: 'Dominance — the VCAA 2024 term for what is sometimes called "emphasis" — is the principle that creates a clear focal point: the element that commands the viewer\'s attention first. Dominance is established through: maximum contrast against the background, greater size relative to other elements, the most saturated or advancing colour, isolation in negative space, position at the optical centre or along a strong axis, or having directional lines from other elements pointing toward it. A composition without a dominant element lacks visual hierarchy and confuses the viewer.',
               highlight: 'orange',
             },
             {
-              label: 'Emphasis: Making One Element Dominant',
-              text: 'Emphasis is the principle that creates a clear focal point — the element the eye goes to first. Created through: maximum contrast (the most different element in the composition), size (the largest element), colour (the most saturated or warmest element), isolation (an element surrounded by empty space), position (placed at visual centre or following gestalt principles), and line direction (other elements pointing toward it). A composition without clear emphasis creates visual chaos.',
+              label: 'Dominance vs Visual Hierarchy',
+              text: 'Dominance establishes the single most important element. Visual hierarchy establishes a ranked order for all elements — first (dominant), second, third, and so on. Both are required in professional design: the dominant element anchors the composition; the hierarchy guides the viewer through all remaining information in order of importance. In a poster: the dominant headline → the dominant image → the subheading → the body text → the call to action. Every level is a designed decision.',
               highlight: 'purple',
             },
           ],
           questions: [
-            { q: 'How does visual weight function in asymmetrical balance?', a: 'Visual weight is the perceived heaviness of an element — determined by its size, colour saturation, tonal contrast, texture, and position. In asymmetrical balance, elements of different visual weights are positioned so that the composition feels balanced overall — a small dark element can balance a large light element because of their visual weight difference.' },
-            { q: 'What is the role of contrast in establishing visual hierarchy?', a: 'Contrast creates difference between elements. The element with the highest contrast against its surroundings draws the eye first and is perceived as most important. Without contrast, all elements have equal visual weight and priority — the viewer has no guidance about what to look at first.' },
+            { q: 'What is the correct VCAA 2024 term for the design principle that creates the primary focal point in a composition?', a: 'Dominance — not "emphasis." The VCAA 2024 study design uses "dominance" to describe the principle that makes one element command the viewer\'s attention first. Always use the correct VCAA terminology in exam responses.' },
+            { q: 'How does dominance differ from visual hierarchy?', a: 'Dominance establishes the single most important element in a composition — the one focal point. Visual hierarchy arranges ALL elements in a ranked order of importance from most to least dominant. Dominance is about one element; hierarchy is about the ordered relationship between all elements.' },
           ],
         },
       },
       {
         id: 'vcd-vce-e03-s2',
         type: 'quiz',
-        title: 'Quiz: Balance, Contrast and Emphasis',
-        teacherNote: 'Insist that students identify the SPECIFIC design choice creating the effect — not just name the principle.',
+        title: 'Quiz: Balance, Contrast and Dominance',
+        teacherNote: 'Reinforce the VCAA terminology — "dominance" not "emphasis." Students who use the wrong term in the exam may lose marks.',
         questions: [
           { id: 'vcd-vce-e03-q1', text: 'A composition has a large, lightly coloured shape on the left balanced by a small, dark, highly textured shape on the right. This is an example of:', image: null, options: ['Symmetrical balance', 'Radial balance', 'Asymmetrical balance achieved through contrasting visual weights', 'Imbalance'], correct: 2, explanation: 'Asymmetrical balance uses different visual weights to achieve equilibrium — the small dark textured shape has greater visual weight than its size suggests, balancing the larger but lighter shape.' },
-          { id: 'vcd-vce-e03-q2', text: 'A poster has a single bright red button isolated in a large area of white negative space. The emphasis created by this arrangement is achieved through:', image: null, options: ['Symmetry', 'Colour saturation contrast, scale, and isolation in negative space — all creating maximum emphasis', 'Tonal similarity', 'Radial balance'], correct: 1, explanation: 'Multiple emphasis tools work simultaneously: the saturated red contrasts the white space, the single small element isolated in large space creates emphasis through isolation, and the surrounding negative space creates a visual frame directing attention.' },
-          { id: 'vcd-vce-e03-q3', text: 'Which type of balance is most associated with formality, tradition and institutional authority?', image: null, options: ['Asymmetrical balance', 'Radial balance', 'Symmetrical balance', 'Implied balance'], correct: 2, explanation: 'Symmetrical balance has historical associations with classical architecture, religious design and governmental authority — it projects stability, formality and permanence. This is why courts, churches and government buildings typically use symmetrical composition.' },
-          { id: 'vcd-vce-e03-q4', text: 'A magazine spread has a large high-contrast headline taking up 60% of the page and body text in light grey. What principle is at work?', image: null, options: ['Symmetrical balance', 'Emphasis through scale and tonal contrast — the headline is the clearly dominant element', 'Repetition', 'Pattern'], correct: 1, explanation: 'The large scale of the headline and its tonal contrast against the lighter body text creates clear emphasis — the viewer reads the headline first. Scale and tonal contrast are working together to build typographic hierarchy.' },
+          { id: 'vcd-vce-e03-q2', text: 'In VCAA 2024 VCD terminology, the principle that creates the primary focal point in a composition is called:', image: null, options: ['Emphasis', 'Dominance', 'Unity', 'Hierarchy'], correct: 1, explanation: 'The VCAA 2024 study design uses the term "dominance" for the principle that makes one element command the viewer\'s attention first. Using "emphasis" instead risks losing marks in the exam — always use the correct VCAA terminology.' },
+          { id: 'vcd-vce-e03-q3', text: 'Which type of balance is most associated with formality, tradition and institutional authority?', image: null, options: ['Asymmetrical balance', 'Radial balance', 'Symmetrical balance', 'Implied balance'], correct: 2, explanation: 'Symmetrical balance has historical associations with classical architecture, religious design and governmental authority — it projects stability, formality and permanence.' },
+          { id: 'vcd-vce-e03-q4', text: 'A magazine spread has a large high-contrast headline taking up 60% of the page and body text in light grey. Which principle makes the headline the dominant element?', image: null, options: ['Symmetrical balance', 'Dominance through scale and tonal contrast', 'Pattern', 'Proportion alone'], correct: 1, explanation: 'The large scale and high tonal contrast of the headline against the lighter body text creates dominance — the viewer\'s eye goes to the headline first. Scale and tonal contrast are the primary tools of dominance here.' },
         ],
       },
       {
         id: 'vcd-vce-e03-s3',
         type: 'worked-example',
-        title: 'Rhythm, Unity and Proportion',
-        teacherNote: 'Rhythm and unity are most clearly visible in systematic design — grid-based layouts, brand systems, publication design. Show students examples from editorial design.',
+        title: 'Rhythm, Harmony, Unity and Proportion',
+        teacherNote: 'The VCAA 2024 study design lists "harmony" as a separate principle from unity. Harmony refers to the pleasing relationship between elements; unity is the overall coherence of the design as a whole.',
         imagePrompt: 'design principles rhythm unity proportion examples showing grid based editorial layout repetition pattern visual flow, educational design poster clean layout',
         content: {
-          heading: 'Rhythm, Unity and Proportion: The Invisible Architecture',
+          heading: 'Rhythm, Harmony, Unity and Proportion: The Invisible Architecture',
           body: [
             {
               label: 'Rhythm in Design',
@@ -412,9 +412,14 @@ export const vcdVceElements: Session[] = [
               highlight: 'blue',
             },
             {
-              label: 'Unity: Making a Design Feel Whole',
-              text: 'Unity (also called harmony or coherence) is the quality of a design feeling complete and resolved — where all elements belong together. Achieved through: consistent colour palette, consistent typographic system, recurring shapes or motifs, shared alignment grids, consistent use of space. A design without unity feels visually chaotic — as if elements were assembled randomly rather than designed as a system. Brand guidelines exist to enforce visual unity across all applications.',
+              label: 'Harmony: Pleasing Relationships Between Elements',
+              text: 'Harmony is the principle describing the pleasing visual relationship between elements — when colours, shapes, textures and forms feel as though they belong together because they share visual qualities or follow a consistent logic. Colour harmony (analogous or complementary palettes), typographic harmony (consistent typeface family), and formal harmony (related shapes throughout) all contribute. Harmony is about the relationship between individual elements; it is distinct from unity.',
               highlight: 'green',
+            },
+            {
+              label: 'Unity: The Design Feels Complete',
+              text: 'Unity is the overarching quality of a design where all elements work together as a coherent whole — nothing feels out of place, added randomly, or inconsistent with the rest. Achieved through: consistent colour palette, consistent typographic system, recurring shapes or motifs, shared alignment grids, and consistent spatial relationships. A design without unity feels assembled rather than designed — as if elements came from different sources. Brand guidelines enforce unity across all applications and media.',
+              highlight: 'orange',
             },
             {
               label: 'Proportion and the Golden Ratio',
@@ -431,10 +436,10 @@ export const vcdVceElements: Session[] = [
       {
         id: 'vcd-vce-e03-s4',
         type: 'quiz',
-        title: 'Quiz: Rhythm, Unity and Proportion',
-        teacherNote: 'Unity is often misunderstood as sameness — clarify that variety can exist within a unified system.',
+        title: 'Quiz: Rhythm, Harmony, Unity and Proportion',
+        teacherNote: 'Unity and harmony are distinct principles in the VCAA 2024 study design — students should be able to explain both separately.',
         questions: [
-          { id: 'vcd-vce-e03-q5', text: 'A design system uses five different typefaces in five different colours with no consistent spacing or alignment. This design most clearly lacks:', image: null, options: ['Contrast', 'Emphasis', 'Unity — there is no consistent visual language or system', 'Rhythm'], correct: 2, explanation: 'Unity requires consistent visual elements that make a design feel like a cohesive whole. Inconsistent typefaces, colours and spacing creates visual chaos — the opposite of unity.' },
+          { id: 'vcd-vce-e03-q5', text: 'A design system uses five different typefaces in five different colours with no consistent spacing or alignment. This design most clearly lacks:', image: null, options: ['Contrast', 'Dominance', 'Unity — there is no consistent visual language or system', 'Rhythm'], correct: 2, explanation: 'Unity requires consistent visual elements that make a design feel like a cohesive whole. Inconsistent typefaces, colours and spacing creates visual chaos — the opposite of unity.' },
           { id: 'vcd-vce-e03-q6', text: 'A poster design places a large circle in the top-left third and a small square at the bottom-right intersection point of a Rule of Thirds grid. The visual effect of this proportion relationship is:', image: null, options: ['Static and uninteresting', 'Dynamically balanced — the different sizes create visual tension while the Rule of Thirds placement creates comfortable composition', 'Chaotic and hard to read', 'Perfectly symmetrical'], correct: 1, explanation: 'The Rule of Thirds creates naturally pleasing compositions by placing elements at power points (intersections) rather than the centre. The proportion difference (large vs small) creates dynamic contrast while the grid placement maintains compositional harmony.' },
           { id: 'vcd-vce-e03-q7', text: 'Progressive rhythm in design (elements progressively increasing in size) creates a sense of:', image: null, options: ['Static calm', 'Movement, direction and dynamic energy — the eye follows the progression', 'Perfect balance', 'Uniform pattern'], correct: 1, explanation: 'Progressive rhythm guides the viewer\'s eye — the direction of change (growing or shrinking) creates an implied movement through the composition. This is used to build visual pathways and create dynamism.' },
         ],
@@ -444,19 +449,19 @@ export const vcdVceElements: Session[] = [
         type: 'free-response',
         title: 'Principles in Practice: Comparative Analysis',
         teacherNote: 'Comparative analysis is a key VCE skill — push students to contrast how different designers achieve similar goals through different principles.',
-        prompt: 'Compare how TWO different organisations (e.g. Amnesty International and NAB Bank, or Apple and a charity of your choice) use design principles differently to communicate to their different audiences.\n\nFocus on: balance type, the use of contrast to create hierarchy, and what principle creates the dominant emphasis in each design.',
+        prompt: 'Compare how TWO different organisations (e.g. Amnesty International and NAB Bank, or Apple and a charity of your choice) use design principles differently to communicate to their different audiences.\n\nFocus on: balance type, the use of contrast to create hierarchy, and what creates dominance in each design.',
         fields: [
           {
             id: 'design_a',
             label: 'Design A — describe the organisation and its design approach',
-            placeholder: 'e.g. Apple.com homepage — asymmetrical balance, the product image is the sole emphasis point, white space is used deliberately...',
+            placeholder: 'e.g. Apple.com homepage — asymmetrical balance, the product image is the dominant element, white space is used deliberately...',
             multiline: true,
             minRows: 4,
           },
           {
             id: 'design_b',
             label: 'Design B — describe the organisation and its design approach',
-            placeholder: 'e.g. NAB bank website — symmetrical grid structure, navy/white tonal contrast creates hierarchy, the CTA button uses warm colour for emphasis...',
+            placeholder: 'e.g. NAB bank website — symmetrical grid structure, navy/white tonal contrast creates hierarchy, the CTA button uses warm colour for dominance...',
             multiline: true,
             minRows: 4,
           },

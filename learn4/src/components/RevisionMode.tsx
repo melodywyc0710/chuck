@@ -19,8 +19,8 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-type SubjectFilter = 'all' | 'english' | 'maths';
-type YearFilter = 'all' | 4 | 5 | 6;
+type SubjectFilter = 'all' | 'english' | 'maths' | 'science' | 'hass' | 'vcd';
+type YearFilter = 'all' | 4 | 5 | 6 | 8 | 9 | 10 | 11;
 
 interface EnrichedQuestion extends QuizQuestion {
   subject: string;
@@ -148,17 +148,17 @@ export default function RevisionMode() {
             {/* Subject filter */}
             <div>
               <div className="text-sm font-bold text-gray-600 mb-3">Subject</div>
-              <div className="flex gap-2">
-                {(['all', 'english', 'maths'] as SubjectFilter[]).map(s => (
+              <div className="flex gap-2 flex-wrap">
+                {(['all', 'english', 'maths', 'science', 'hass', 'vcd'] as SubjectFilter[]).map(s => (
                   <button
                     key={s}
                     onClick={() => setSubjectFilter(s)}
-                    className="flex-1 py-2 px-3 rounded-xl font-bold text-sm transition-all capitalize"
+                    className="py-2 px-3 rounded-xl font-bold text-sm transition-all capitalize"
                     style={subjectFilter === s
-                      ? { background: themeColor, color: 'white' }
+                      ? { background: s === 'vcd' ? '#7c3aed' : themeColor, color: 'white' }
                       : { background: '#f3f4f6', color: '#6b7280' }}
                   >
-                    {s === 'all' ? 'All' : s.charAt(0).toUpperCase() + s.slice(1)}
+                    {s === 'all' ? 'All Subjects' : s === 'hass' ? 'HASS' : s === 'vcd' ? 'VCD' : s.charAt(0).toUpperCase() + s.slice(1)}
                   </button>
                 ))}
               </div>
@@ -167,17 +167,17 @@ export default function RevisionMode() {
             {/* Year filter */}
             <div>
               <div className="text-sm font-bold text-gray-600 mb-3">Year Level</div>
-              <div className="flex gap-2">
-                {(['all', 4, 5, 6] as YearFilter[]).map(y => (
+              <div className="flex gap-2 flex-wrap">
+                {(['all', 4, 5, 6, 8, 9, 10, 11] as YearFilter[]).map(y => (
                   <button
                     key={y}
                     onClick={() => setYearFilter(y)}
-                    className="flex-1 py-2 px-3 rounded-xl font-bold text-sm transition-all"
+                    className="py-2 px-3 rounded-xl font-bold text-sm transition-all"
                     style={yearFilter === y
                       ? { background: themeColor, color: 'white' }
                       : { background: '#f3f4f6', color: '#6b7280' }}
                   >
-                    {y === 'all' ? 'All' : `Year ${y}`}
+                    {y === 'all' ? 'All Years' : y === 11 ? 'VCE' : `Year ${y}`}
                   </button>
                 ))}
               </div>

@@ -28,7 +28,7 @@ interface EnrichedQuestion extends QuizQuestion {
 }
 
 export default function RevisionMode() {
-  const { profile, setView } = useAppStore();
+  const { profile, setView, addStars } = useAppStore();
   const density = useAppStore(s => s.profile?.density ?? 'younger');
   if (!profile) return null;
 
@@ -90,6 +90,7 @@ export default function RevisionMode() {
   };
 
   const handleNext = () => {
+    if (isCorrect) addStars(1);
     const newResults = [...results, isCorrect];
     setResults(newResults);
 
@@ -229,6 +230,9 @@ export default function RevisionMode() {
           </h2>
           <div className="text-5xl font-black" style={{ color: themeColor }}>{pct}%</div>
           <p className="text-gray-500 font-semibold">{thisBatchCorrect} of {thisBatchResults.length} correct this round</p>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl px-4 py-2 text-yellow-700 font-black text-lg">
+            ⭐ +{thisBatchCorrect} stars earned!
+          </div>
           <p className="text-xs text-gray-400">Overall: {overallCorrect} of {results.length} correct</p>
 
           <div className="space-y-2 pt-2">

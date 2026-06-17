@@ -69,6 +69,7 @@ export interface AppState {
   lastFarmCollect: string; // ISO datetime
   farmStarsPending: number;
   unlockedBadges: string[];
+  firstLoginDate: string; // ISO date, set once on first login, never overwritten
 }
 
 export interface AppActions {
@@ -91,6 +92,7 @@ export interface AppActions {
   removeFarmAnimal: (plotId: string) => void;
   collectFarmStars: () => void;
   unlockBadge: (id: string) => void;
+  addStars: (n: number) => void;
   previewFeedback: (sessionId: string, score: number, total: number) => void;
   setUserId: (id: string | null, role: 'teacher' | 'student' | null) => void;
   setActiveStudentId: (id: string | null) => void;
@@ -138,6 +140,7 @@ const defaultState: AppState = {
   lastFarmCollect: '',
   farmStarsPending: 0,
   unlockedBadges: [],
+  firstLoginDate: '',
 };
 
 export const useAppStore = create<AppState & AppActions>()(
@@ -262,6 +265,8 @@ export const useAppStore = create<AppState & AppActions>()(
 
       unlockBadge: (id) => set(s => ({ unlockedBadges: [...new Set([...s.unlockedBadges, id])] })),
 
+      addStars: (n) => set(s => ({ totalStars: s.totalStars + n })),
+
       collectFarmStars: () => {
         const state = get();
         const RATES: Record<string, number> = { chicken: 2, sheep: 5, cow: 10, horse: 20 };
@@ -284,7 +289,12 @@ export const useAppStore = create<AppState & AppActions>()(
       previewFeedback: (sessionId, score, total) =>
         set({ activeSessionId: sessionId, currentScore: { correct: score, total }, view: 'feedback' }),
 
-      setUserId: (id, role) => set({ userId: id, userRole: role }),
+      setUserId: (id, role) => set(s => ({
+        userId: id,
+        userRole: role,
+        // Record first login date once — never overwrite
+        firstLoginDate: s.firstLoginDate || (id ? new Date().toISOString().slice(0, 10) : s.firstLoginDate),
+      })),
 
       setActiveStudentId: (id) => set({ activeStudentId: id }),
 

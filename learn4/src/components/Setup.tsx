@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore, type Mascot, type Density } from '../store/appStore';
+import { upsertProfile } from '../lib/db';
 
 const MASCOTS: { id: Mascot; emoji: string; name: string; trait: string }[] = [
   { id: 'owl', emoji: '🦉', name: 'Ollie the Owl', trait: 'Loves reading & big words' },
@@ -17,6 +18,7 @@ const THEMES = [
 
 export default function Setup() {
   const setupProfile = useAppStore(s => s.setupProfile);
+  const userId = useAppStore(s => s.userId);
   const [name, setName] = useState('');
   const [mascot, setMascot] = useState<Mascot>('owl');
   const [density, setDensity] = useState<Density>('younger');
@@ -145,7 +147,12 @@ export default function Setup() {
               <button onClick={() => setStep(1)} className="px-6 py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-semibold">← Back</button>
               <motion.button
                 whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                onClick={() => setupProfile({ name: name.trim(), mascot, density, colorTheme: theme })}
+                onClick={async () => {
+                  setupProfile({ name: name.trim(), mascot, density, colorTheme: theme });
+                  if (userId) {
+                    await upsertProfile({ id: userId, name: name.trim(), role: 'student', mascot, density, color_theme: theme, teacher_id: null });
+                  }
+                }}
                 className="flex-1 py-3 rounded-2xl text-white font-bold text-lg"
                 style={{ background: THEMES.find(t => t.id === theme)!.color }}
               >

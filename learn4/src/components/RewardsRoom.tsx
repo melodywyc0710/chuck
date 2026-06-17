@@ -95,8 +95,12 @@ export default function RewardsRoom() {
     profile, totalStars, ownedItems, placedItems, buyItem, togglePlaced, setView,
     completedSessions, itemPositions, setItemPosition, itemQuantities,
     farmPlots, placeFarmAnimal, removeFarmAnimal, collectFarmStars,
-    unlockedBadges,
+    unlockedBadges, firstLoginDate,
   } = useAppStore();
+
+  const weeksEnrolled = firstLoginDate
+    ? Math.floor((Date.now() - new Date(firstLoginDate).getTime()) / (7 * 24 * 3600 * 1000))
+    : 99; // if no firstLoginDate, show everything
 
   const [tab, setTab] = useState<TabType>('room');
   const [filter, setFilter] = useState<Category>('all');
@@ -121,7 +125,14 @@ export default function RewardsRoom() {
   const themeColor = THEME_COLOR[profile.colorTheme];
   const mascotType = profile.mascot;
   const placed = ROOM_ITEMS.filter(i => placedItems.includes(i.id) && !FARM_ANIMALS.includes(i.id));
-  const shopItems = ROOM_ITEMS.filter(i => filter === 'all' || i.category === filter);
+  const shopItems = ROOM_ITEMS.filter(i =>
+    (filter === 'all' || i.category === filter) &&
+    (i.weekUnlock === undefined || i.weekUnlock === 0 || i.weekUnlock <= weeksEnrolled)
+  );
+  const comingSoonItems = ROOM_ITEMS.filter(i =>
+    (filter === 'all' || i.category === filter) &&
+    i.weekUnlock !== undefined && i.weekUnlock > 0 && i.weekUnlock > weeksEnrolled
+  ).sort((a, b) => (a.weekUnlock ?? 0) - (b.weekUnlock ?? 0)).slice(0, 5);
   const hasTreehouse = placedItems.includes('treehouse-upgrade');
 
   const lines = COMPANION_LINES[mascotType];
@@ -445,6 +456,25 @@ export default function RewardsRoom() {
                 })}
               </AnimatePresence>
             </div>
+
+            {/* Coming Soon */}
+            {comingSoonItems.length > 0 && (
+              <div className="mt-4">
+                <div className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">🔒 Coming Soon — New items every week!</div>
+                <div className="grid grid-cols-2 gap-3">
+                  {comingSoonItems.map(item => (
+                    <div key={item.id} className="bg-gray-50 rounded-2xl p-4 border-2 border-dashed border-gray-200 text-center opacity-60">
+                      <div className="text-4xl grayscale mb-2">{item.emoji}</div>
+                      <div className="font-bold text-gray-500 text-sm">{item.name}</div>
+                      <div className="text-xs text-indigo-500 font-semibold mt-1">
+                        🗓 Unlocks week {item.weekUnlock}
+                        {item.weekUnlock !== undefined && ` (${item.weekUnlock - weeksEnrolled} week${item.weekUnlock - weeksEnrolled !== 1 ? 's' : ''} away)`}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

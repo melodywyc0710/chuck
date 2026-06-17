@@ -138,12 +138,12 @@ function TimesTableBlitz({ onBack }: { onBack: () => void }) {
 // ─────────────────────────────────────────────
 
 const WORD_LIST = [
-  'beautiful', 'because', 'different', 'important', 'necessary',
-  'opportunity', 'environment', 'government', 'community', 'education',
-  'knowledge', 'adventure', 'character', 'narrative', 'persuade',
-  'fraction', 'multiply', 'subtract', 'equation', 'geometry',
-  'australia', 'continent', 'parliament', 'democracy', 'atmosphere',
-  'photosynthesis', 'ecosystem', 'migration', 'electricity', 'gravity',
+  'apple', 'chair', 'grass', 'light', 'beach',
+  'cloud', 'earth', 'flame', 'grape', 'heart',
+  'juice', 'lemon', 'magic', 'night', 'ocean',
+  'paint', 'rainy', 'shade', 'table', 'water',
+  'plant', 'stone', 'steam', 'bread', 'cream',
+  'dream', 'frog', 'star', 'moon', 'bird',
 ];
 
 function scramble(word: string): string {
@@ -623,40 +623,499 @@ function MathsSpeedRound({ onBack }: { onBack: () => void }) {
 }
 
 // ─────────────────────────────────────────────
+// Game 5: True or False
+// ─────────────────────────────────────────────
+
+const TRUE_FALSE_QUESTIONS = [
+  { q: 'Australia is the smallest continent.', answer: false, explanation: 'Antarctica is the smallest continent. Australia is the smallest, but it\'s usually called a continent-country.' },
+  { q: 'There are 12 months in a year.', answer: true, explanation: 'January through December — 12 months in every year!' },
+  { q: 'A triangle has four sides.', answer: false, explanation: 'A triangle has THREE sides. A quadrilateral (like a square) has four sides.' },
+  { q: 'The sun rises in the east.', answer: true, explanation: 'The sun always rises in the east and sets in the west.' },
+  { q: 'Spiders are insects.', answer: false, explanation: 'Spiders are arachnids, not insects. Insects have 6 legs; spiders have 8.' },
+  { q: 'Water boils at 100°C at sea level.', answer: true, explanation: 'Water boils at exactly 100°C (212°F) at standard sea-level pressure.' },
+  { q: 'The Great Barrier Reef is in Queensland, Australia.', answer: true, explanation: 'The Great Barrier Reef stretches along the northeast coast of Queensland.' },
+  { q: 'Mammals are cold-blooded animals.', answer: false, explanation: 'Mammals (including humans) are warm-blooded — they maintain a constant body temperature.' },
+  { q: 'The plural of "mouse" is "mouses".', answer: false, explanation: 'The correct plural of mouse is "mice" — an irregular plural.' },
+  { q: 'A square is a special type of rectangle.', answer: true, explanation: 'A square has all the properties of a rectangle (4 right angles, 2 pairs of parallel sides) plus all sides are equal.' },
+  { q: 'Photosynthesis produces oxygen.', answer: true, explanation: 'Plants absorb CO₂ and water, and use sunlight to make glucose — releasing oxygen as a byproduct.' },
+  { q: 'The capital of Australia is Sydney.', answer: false, explanation: 'The capital of Australia is Canberra, not Sydney. Sydney is the largest city.' },
+  { q: '7 × 8 = 54', answer: false, explanation: '7 × 8 = 56, not 54.' },
+  { q: 'Adjectives describe nouns.', answer: true, explanation: 'Adjectives are describing words — they tell us more about nouns (people, places, things).' },
+  { q: 'The Earth takes 365 days to orbit the Sun.', answer: true, explanation: 'Earth\'s orbital period is approximately 365.25 days — the extra quarter day is why we have leap years every 4 years.' },
+];
+
+function TrueOrFalse({ onBack }: { onBack: () => void }) {
+  const [questions] = useState(() => shuffle(TRUE_FALSE_QUESTIONS));
+  const [index, setIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [selected, setSelected] = useState<boolean | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const [phase, setPhase] = useState<'playing' | 'done'>('playing');
+
+  const q = questions[index];
+
+  function answer(choice: boolean) {
+    if (confirmed) return;
+    setSelected(choice);
+    setConfirmed(true);
+    if (choice === q.answer) setScore(s => s + 1);
+  }
+
+  function next() {
+    if (index + 1 >= questions.length) { setPhase('done'); return; }
+    setIndex(i => i + 1);
+    setSelected(null);
+    setConfirmed(false);
+  }
+
+  function restart() {
+    setIndex(0);
+    setScore(0);
+    setSelected(null);
+    setConfirmed(false);
+    setPhase('playing');
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-6 p-4">
+      <button onClick={onBack} className="self-start flex items-center gap-1 text-gray-500 hover:text-gray-700 text-sm font-semibold">← Back</button>
+
+      {phase === 'playing' && (
+        <>
+          <div className="flex items-center justify-between w-full max-w-sm">
+            <div className="text-center">
+              <div className="text-2xl font-black text-gray-800">{score}</div>
+              <div className="text-xs text-gray-400">Correct</div>
+            </div>
+            <div className="text-sm text-gray-500 font-semibold">{index + 1} / {questions.length}</div>
+          </div>
+
+          <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-xl text-center">
+            <div className="text-xs text-gray-400 mb-3 uppercase tracking-wide font-bold">True or False?</div>
+            <div className="text-xl font-black text-gray-800 leading-snug">{q.q}</div>
+          </div>
+
+          <div className="flex gap-3 w-full max-w-sm">
+            {([true, false] as const).map(choice => {
+              const isSelected = selected === choice;
+              const isCorrect = confirmed && choice === q.answer;
+              const isWrong = confirmed && isSelected && choice !== q.answer;
+              return (
+                <button
+                  key={String(choice)}
+                  onClick={() => answer(choice)}
+                  className={`flex-1 py-5 rounded-2xl text-xl font-black transition-all active:scale-95 ${
+                    isCorrect ? 'bg-green-500 text-white' :
+                    isWrong ? 'bg-red-500 text-white' :
+                    isSelected ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-700' :
+                    'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-300'
+                  }`}
+                >
+                  {choice ? '✅ True' : '❌ False'}
+                </button>
+              );
+            })}
+          </div>
+
+          {confirmed && (
+            <div className="w-full max-w-sm bg-blue-50 rounded-2xl p-4 border border-blue-200">
+              <div className={`font-bold mb-1 ${selected === q.answer ? 'text-green-600' : 'text-red-600'}`}>
+                {selected === q.answer ? '✓ Correct!' : `✗ The answer is ${q.answer ? 'TRUE' : 'FALSE'}`}
+              </div>
+              <p className="text-sm text-gray-600">{q.explanation}</p>
+              <button
+                onClick={next}
+                className="mt-3 w-full py-2.5 rounded-xl bg-indigo-500 text-white font-black"
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {phase === 'done' && (
+        <div className="flex flex-col items-center gap-4 bg-white rounded-3xl p-8 shadow-xl w-full max-w-sm text-center">
+          <div className="text-5xl">{score >= 12 ? '🏆' : score >= 8 ? '🎉' : '💪'}</div>
+          <h3 className="text-2xl font-black text-gray-800">All done!</h3>
+          <div className="text-5xl font-black text-indigo-600">{score} / {questions.length}</div>
+          <div className="text-gray-500 text-sm">{score >= 12 ? 'Amazing! You\'re a knowledge star! 🌟' : score >= 8 ? 'Great work! Keep learning! 💪' : 'Good try! Keep practising! 📚'}</div>
+          <button onClick={restart} className="w-full py-3 rounded-2xl font-black text-white text-lg bg-indigo-500 hover:bg-indigo-600 transition-all active:scale-95">Play Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Game 6: Number Patterns
+// ─────────────────────────────────────────────
+
+function makePatternQuestion() {
+  const patterns = [
+    { seq: [2, 4, 6, 8], next: 10, rule: 'Add 2 each time (+2)' },
+    { seq: [3, 6, 9, 12], next: 15, rule: 'Multiply by 3 table (+3)' },
+    { seq: [5, 10, 15, 20], next: 25, rule: 'Count by 5s (+5)' },
+    { seq: [1, 3, 5, 7], next: 9, rule: 'Odd numbers (+2)' },
+    { seq: [10, 20, 30, 40], next: 50, rule: 'Count by 10s (+10)' },
+    { seq: [100, 90, 80, 70], next: 60, rule: 'Count backwards by 10 (−10)' },
+    { seq: [1, 2, 4, 8], next: 16, rule: 'Double each time (×2)' },
+    { seq: [64, 32, 16, 8], next: 4, rule: 'Halve each time (÷2)' },
+    { seq: [1, 4, 9, 16], next: 25, rule: 'Square numbers (1², 2², 3², 4²...)' },
+    { seq: [3, 6, 12, 24], next: 48, rule: 'Double each time (×2)' },
+    { seq: [50, 45, 40, 35], next: 30, rule: 'Subtract 5 each time (−5)' },
+    { seq: [2, 5, 8, 11], next: 14, rule: 'Add 3 each time (+3)' },
+    { seq: [0, 7, 14, 21], next: 28, rule: '7 times table (+7)' },
+    { seq: [1, 1, 2, 3], next: 5, rule: 'Fibonacci: add the previous two numbers' },
+    { seq: [4, 8, 12, 16], next: 20, rule: '4 times table (+4)' },
+  ];
+  const p = patterns[Math.floor(Math.random() * patterns.length)];
+  const wrong = new Set<number>();
+  while (wrong.size < 3) {
+    const delta = (Math.floor(Math.random() * 5) + 1) * (Math.random() > 0.5 ? 1 : -1);
+    const w = p.next + delta;
+    if (w !== p.next && w >= 0) wrong.add(w);
+  }
+  return { seq: p.seq, next: p.next, rule: p.rule, options: shuffle([p.next, ...wrong]) };
+}
+
+function NumberPatterns({ onBack }: { onBack: () => void }) {
+  const [q, setQ] = useState(makePatternQuestion);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const [score, setScore] = useState(0);
+  const [total, setTotal] = useState(0);
+  const isCorrect = selected === q.next;
+
+  function choose(opt: number) {
+    if (confirmed) return;
+    setSelected(opt);
+    setConfirmed(true);
+    if (opt === q.next) setScore(s => s + 1);
+    setTotal(t => t + 1);
+  }
+
+  function next() {
+    setQ(makePatternQuestion());
+    setSelected(null);
+    setConfirmed(false);
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-6 p-4">
+      <button onClick={onBack} className="self-start flex items-center gap-1 text-gray-500 hover:text-gray-700 text-sm font-semibold">← Back</button>
+
+      <div className="flex items-center justify-between w-full max-w-sm">
+        <div className="text-center">
+          <div className="text-2xl font-black text-gray-800">{score}</div>
+          <div className="text-xs text-gray-400">Correct</div>
+        </div>
+        <div className="text-center">
+          <div className="text-2xl font-black text-gray-800">{total}</div>
+          <div className="text-xs text-gray-400">Answered</div>
+        </div>
+      </div>
+
+      <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-xl text-center">
+        <div className="text-xs text-gray-400 mb-3 uppercase tracking-wide font-bold">What comes next?</div>
+        <div className="flex items-center justify-center gap-3 flex-wrap">
+          {q.seq.map((n, i) => (
+            <div key={i} className="w-14 h-14 bg-indigo-50 border-2 border-indigo-200 rounded-2xl flex items-center justify-center text-xl font-black text-indigo-700">
+              {n}
+            </div>
+          ))}
+          <div className="w-14 h-14 bg-yellow-50 border-2 border-dashed border-yellow-400 rounded-2xl flex items-center justify-center text-2xl font-black text-yellow-500">
+            ?
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
+        {q.options.map(opt => {
+          const isThis = selected === opt;
+          const isCorrectOpt = confirmed && opt === q.next;
+          const isWrong = confirmed && isThis && opt !== q.next;
+          return (
+            <button
+              key={opt}
+              onClick={() => choose(opt)}
+              className={`py-4 rounded-2xl text-xl font-black transition-all active:scale-95 ${
+                isCorrectOpt ? 'bg-green-500 text-white' :
+                isWrong ? 'bg-red-500 text-white' :
+                isThis ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-700' :
+                'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-300'
+              }`}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {confirmed && (
+        <div className="w-full max-w-sm bg-blue-50 rounded-2xl p-4 border border-blue-200">
+          <div className={`font-bold mb-1 ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+            {isCorrect ? '✓ Correct!' : `✗ The answer is ${q.next}`}
+          </div>
+          <p className="text-sm text-gray-600">Pattern: {q.rule}</p>
+          <button onClick={next} className="mt-3 w-full py-2.5 rounded-xl bg-indigo-500 text-white font-black">Next →</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Game 7: Word Meaning Match
+// ─────────────────────────────────────────────
+
+const WORD_MEANINGS = [
+  { word: 'enormous', meaning: 'Very, very large in size', wrong: ['Very small', 'Very fast', 'Very loud'] },
+  { word: 'timid', meaning: 'Shy and easily frightened', wrong: ['Brave and bold', 'Loud and noisy', 'Tall and strong'] },
+  { word: 'ancient', meaning: 'Very old, from a long time ago', wrong: ['Brand new', 'Very modern', 'Very shiny'] },
+  { word: 'curious', meaning: 'Eager to learn or know something', wrong: ['Bored and sleepy', 'Angry and upset', 'Happy and excited'] },
+  { word: 'fragile', meaning: 'Easily broken or damaged', wrong: ['Very strong and tough', 'Very heavy', 'Very colourful'] },
+  { word: 'harvest', meaning: 'To gather crops from the land', wrong: ['To plant seeds in the ground', 'To water plants', 'To buy food from a shop'] },
+  { word: 'migrate', meaning: 'To move from one place to another', wrong: ['To stay in one place', 'To sleep for winter', 'To eat a lot of food'] },
+  { word: 'predict', meaning: 'To say what will happen in the future', wrong: ['To forget something', 'To draw a picture', 'To explain the past'] },
+  { word: 'evidence', meaning: 'Information that proves something is true', wrong: ['A guess or opinion', 'A type of experiment', 'A book or story'] },
+  { word: 'persuade', meaning: 'To convince someone to do or believe something', wrong: ['To ignore someone', 'To argue loudly', 'To teach a lesson'] },
+  { word: 'tranquil', meaning: 'Calm and peaceful', wrong: ['Loud and busy', 'Dark and cold', 'Bright and colourful'] },
+  { word: 'vibrant', meaning: 'Full of energy and brightness', wrong: ['Quiet and dull', 'Small and delicate', 'Old and faded'] },
+];
+
+function WordMeaning({ onBack }: { onBack: () => void }) {
+  const [words] = useState(() => shuffle(WORD_MEANINGS));
+  const [index, setIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const [phase, setPhase] = useState<'playing' | 'done'>('playing');
+  const [options] = useState(() => words.map(w => shuffle([w.meaning, ...w.wrong])));
+
+  const w = words[index];
+
+  function choose(opt: string) {
+    if (confirmed) return;
+    setSelected(opt);
+    setConfirmed(true);
+    if (opt === w.meaning) setScore(s => s + 1);
+  }
+
+  function next() {
+    if (index + 1 >= words.length) { setPhase('done'); return; }
+    setIndex(i => i + 1);
+    setSelected(null);
+    setConfirmed(false);
+  }
+
+  function restart() {
+    setIndex(0);
+    setScore(0);
+    setSelected(null);
+    setConfirmed(false);
+    setPhase('playing');
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-6 p-4">
+      <button onClick={onBack} className="self-start flex items-center gap-1 text-gray-500 hover:text-gray-700 text-sm font-semibold">← Back</button>
+
+      {phase === 'playing' && (
+        <>
+          <div className="flex items-center justify-between w-full max-w-sm">
+            <div className="text-center">
+              <div className="text-2xl font-black text-gray-800">{score}</div>
+              <div className="text-xs text-gray-400">Correct</div>
+            </div>
+            <div className="text-sm text-gray-500 font-semibold">{index + 1} / {words.length}</div>
+          </div>
+
+          <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-xl text-center">
+            <div className="text-xs text-gray-400 mb-2 uppercase tracking-wide font-bold">What does this word mean?</div>
+            <div className="text-4xl font-black text-indigo-700 mt-2">{w.word}</div>
+          </div>
+
+          <div className="space-y-2 w-full max-w-sm">
+            {options[index].map(opt => {
+              const isThis = selected === opt;
+              const isCorrectOpt = confirmed && opt === w.meaning;
+              const isWrong = confirmed && isThis && opt !== w.meaning;
+              return (
+                <button
+                  key={opt}
+                  onClick={() => choose(opt)}
+                  className={`w-full text-left p-4 rounded-2xl font-semibold transition-all active:scale-[0.99] ${
+                    isCorrectOpt ? 'bg-green-500 text-white' :
+                    isWrong ? 'bg-red-500 text-white' :
+                    isThis ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-800' :
+                    'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-300'
+                  }`}
+                >
+                  {opt}
+                </button>
+              );
+            })}
+          </div>
+
+          {confirmed && (
+            <div className="w-full max-w-sm">
+              <button onClick={next} className="w-full py-3 rounded-2xl bg-indigo-500 text-white font-black">
+                {index + 1 >= words.length ? 'See Results →' : 'Next Word →'}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {phase === 'done' && (
+        <div className="flex flex-col items-center gap-4 bg-white rounded-3xl p-8 shadow-xl w-full max-w-sm text-center">
+          <div className="text-5xl">{score >= 10 ? '🧠' : score >= 6 ? '📚' : '💪'}</div>
+          <h3 className="text-2xl font-black text-gray-800">Vocabulary Champion!</h3>
+          <div className="text-5xl font-black text-indigo-600">{score} / {words.length}</div>
+          <div className="text-gray-500 text-sm">{score >= 10 ? 'Outstanding vocabulary!' : score >= 6 ? 'Great word knowledge!' : 'Keep building your vocab!'}</div>
+          <button onClick={restart} className="w-full py-3 rounded-2xl font-black text-white text-lg bg-indigo-500 hover:bg-indigo-600 transition-all active:scale-95">Play Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Game 8: Odd One Out
+// ─────────────────────────────────────────────
+
+const ODD_ONE_OUT_QUESTIONS = [
+  { items: ['cat', 'dog', 'eagle', 'rabbit'], odd: 'eagle', reason: 'Eagle is a bird — the others are mammals.' },
+  { items: ['red', 'blue', 'green', 'triangle'], odd: 'triangle', reason: 'Triangle is a shape — the others are colours.' },
+  { items: ['2', '4', '7', '8'], odd: '7', reason: '7 is odd — the others are all even numbers.' },
+  { items: ['apple', 'banana', 'carrot', 'mango'], odd: 'carrot', reason: 'Carrot is a vegetable — the others are fruits.' },
+  { items: ['Sydney', 'Melbourne', 'London', 'Brisbane'], odd: 'London', reason: 'London is in England — the others are Australian cities.' },
+  { items: ['noun', 'verb', 'adjective', 'fraction'], odd: 'fraction', reason: 'Fraction is a maths term — the others are parts of speech.' },
+  { items: ['add', 'subtract', 'multiply', 'persuade'], odd: 'persuade', reason: 'Persuade is an English word — the others are maths operations.' },
+  { items: ['Venus', 'Mars', 'Jupiter', 'Moon'], odd: 'Moon', reason: 'The Moon is a natural satellite — the others are planets.' },
+  { items: ['piano', 'guitar', 'drum', 'trumpet'], odd: 'drum', reason: 'Drum is a percussion instrument — the others are string or brass.' },
+  { items: ['oxygen', 'carbon dioxide', 'water', 'iron'], odd: 'iron', reason: 'Iron is a solid metal element — the others are gases or liquids involved in photosynthesis.' },
+  { items: ['penguin', 'parrot', 'sparrow', 'eagle'], odd: 'penguin', reason: 'A penguin cannot fly — the others are all flying birds.' },
+  { items: ['triangle', 'circle', 'square', 'rectangle'], odd: 'circle', reason: 'A circle has no straight sides — the others are polygons with straight edges.' },
+];
+
+function OddOneOut({ onBack }: { onBack: () => void }) {
+  const [questions] = useState(() => shuffle(ODD_ONE_OUT_QUESTIONS));
+  const [index, setIndex] = useState(0);
+  const [score, setScore] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const [phase, setPhase] = useState<'playing' | 'done'>('playing');
+
+  const q = questions[index];
+  const isCorrect = selected === q.odd;
+
+  function choose(item: string) {
+    if (confirmed) return;
+    setSelected(item);
+    setConfirmed(true);
+    if (item === q.odd) setScore(s => s + 1);
+  }
+
+  function next() {
+    if (index + 1 >= questions.length) { setPhase('done'); return; }
+    setIndex(i => i + 1);
+    setSelected(null);
+    setConfirmed(false);
+  }
+
+  function restart() {
+    setIndex(0);
+    setScore(0);
+    setSelected(null);
+    setConfirmed(false);
+    setPhase('playing');
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-6 p-4">
+      <button onClick={onBack} className="self-start flex items-center gap-1 text-gray-500 hover:text-gray-700 text-sm font-semibold">← Back</button>
+
+      {phase === 'playing' && (
+        <>
+          <div className="flex items-center justify-between w-full max-w-sm">
+            <div className="text-center">
+              <div className="text-2xl font-black text-gray-800">{score}</div>
+              <div className="text-xs text-gray-400">Correct</div>
+            </div>
+            <div className="text-sm text-gray-500 font-semibold">{index + 1} / {questions.length}</div>
+          </div>
+
+          <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-xl text-center">
+            <div className="text-xs text-gray-400 mb-2 uppercase tracking-wide font-bold">Which one doesn't belong?</div>
+            <div className="text-gray-500 text-sm mt-1">Tap the odd one out!</div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 w-full max-w-sm">
+            {q.items.map(item => {
+              const isThis = selected === item;
+              const isCorrectOpt = confirmed && item === q.odd;
+              const isWrong = confirmed && isThis && item !== q.odd;
+              return (
+                <button
+                  key={item}
+                  onClick={() => choose(item)}
+                  className={`py-5 rounded-2xl text-lg font-black capitalize transition-all active:scale-95 ${
+                    isCorrectOpt ? 'bg-green-500 text-white' :
+                    isWrong ? 'bg-red-500 text-white' :
+                    isThis ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-700' :
+                    'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-300'
+                  }`}
+                >
+                  {item}
+                </button>
+              );
+            })}
+          </div>
+
+          {confirmed && (
+            <div className="w-full max-w-sm bg-blue-50 rounded-2xl p-4 border border-blue-200">
+              <div className={`font-bold mb-1 ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                {isCorrect ? '✓ Correct!' : `✗ The odd one out is "${q.odd}"`}
+              </div>
+              <p className="text-sm text-gray-600">{q.reason}</p>
+              <button onClick={next} className="mt-3 w-full py-2.5 rounded-xl bg-indigo-500 text-white font-black">
+                {index + 1 >= questions.length ? 'See Results →' : 'Next →'}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {phase === 'done' && (
+        <div className="flex flex-col items-center gap-4 bg-white rounded-3xl p-8 shadow-xl w-full max-w-sm text-center">
+          <div className="text-5xl">{score >= 10 ? '🏆' : score >= 6 ? '🎉' : '💪'}</div>
+          <h3 className="text-2xl font-black text-gray-800">All done!</h3>
+          <div className="text-5xl font-black text-indigo-600">{score} / {questions.length}</div>
+          <div className="text-gray-500 text-sm">{score >= 10 ? 'Brilliant thinking! 🌟' : score >= 6 ? 'Good spotting!' : 'Keep practising — you\'ll get it!'}</div>
+          <button onClick={restart} className="w-full py-3 rounded-2xl font-black text-white text-lg bg-indigo-500 hover:bg-indigo-600 transition-all active:scale-95">Play Again</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────
 // Games Hub
 // ─────────────────────────────────────────────
 
-type GameId = 'times' | 'scramble' | 'memory' | 'maths';
+type GameId = 'times' | 'scramble' | 'memory' | 'maths' | 'truefalse' | 'patterns' | 'meanings' | 'oddone';
 
 const GAMES = [
-  {
-    id: 'times' as GameId,
-    emoji: '⚡',
-    name: 'Times Table Blitz',
-    desc: 'Answer times tables in 30 seconds!',
-    color: '#6366f1',
-  },
-  {
-    id: 'scramble' as GameId,
-    emoji: '🔤',
-    name: 'Word Scramble',
-    desc: 'Unscramble tricky English words',
-    color: '#10b981',
-  },
-  {
-    id: 'memory' as GameId,
-    emoji: '🧠',
-    name: 'Memory Match',
-    desc: 'Flip cards and find all the pairs',
-    color: '#f59e0b',
-  },
-  {
-    id: 'maths' as GameId,
-    emoji: '🚀',
-    name: 'Maths Speed Round',
-    desc: '20 maths questions, 3 seconds each',
-    color: '#ef4444',
-  },
+  { id: 'times' as GameId, emoji: '⚡', name: 'Times Table Blitz', desc: 'Answer times tables in 30 seconds!', color: '#6366f1', hasTimer: true },
+  { id: 'scramble' as GameId, emoji: '🔤', name: 'Word Scramble', desc: 'Unscramble English words — no timer!', color: '#10b981', hasTimer: false },
+  { id: 'memory' as GameId, emoji: '🧠', name: 'Memory Match', desc: 'Flip cards and find all the pairs', color: '#f59e0b', hasTimer: false },
+  { id: 'maths' as GameId, emoji: '🚀', name: 'Maths Speed Round', desc: '20 maths questions, 3 seconds each', color: '#ef4444', hasTimer: true },
+  { id: 'truefalse' as GameId, emoji: '✅', name: 'True or False', desc: 'Test your general knowledge — no timer!', color: '#8b5cf6', hasTimer: false },
+  { id: 'patterns' as GameId, emoji: '🔢', name: 'Number Patterns', desc: 'Find what comes next in the sequence!', color: '#0ea5e9', hasTimer: false },
+  { id: 'meanings' as GameId, emoji: '📖', name: 'Word Meanings', desc: 'Match words to their definitions!', color: '#d97706', hasTimer: false },
+  { id: 'oddone' as GameId, emoji: '🎯', name: 'Odd One Out', desc: 'Which one doesn\'t belong? Find it!', color: '#dc2626', hasTimer: false },
 ];
 
 export default function GamesHub() {
@@ -710,6 +1169,9 @@ export default function GamesHub() {
                   <div>
                     <h3 className="font-black text-gray-800 text-lg leading-tight">{game.name}</h3>
                     <p className="text-sm text-gray-500 mt-0.5">{game.desc}</p>
+                    <div className="text-xs font-semibold mt-1" style={{ color: game.hasTimer ? '#ef4444' : '#10b981' }}>
+                      {game.hasTimer ? '⏱ Has timer' : '🕊 No timer'}
+                    </div>
                   </div>
                   <button
                     onClick={() => setActiveGame(game.id)}
@@ -728,6 +1190,10 @@ export default function GamesHub() {
         {activeGame === 'scramble' && <WordScramble onBack={() => setActiveGame(null)} />}
         {activeGame === 'memory' && <MemoryMatch onBack={() => setActiveGame(null)} />}
         {activeGame === 'maths' && <MathsSpeedRound onBack={() => setActiveGame(null)} />}
+        {activeGame === 'truefalse' && <TrueOrFalse onBack={() => setActiveGame(null)} />}
+        {activeGame === 'patterns' && <NumberPatterns onBack={() => setActiveGame(null)} />}
+        {activeGame === 'meanings' && <WordMeaning onBack={() => setActiveGame(null)} />}
+        {activeGame === 'oddone' && <OddOneOut onBack={() => setActiveGame(null)} />}
       </div>
     </div>
   );

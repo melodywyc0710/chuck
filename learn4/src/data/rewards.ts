@@ -8,6 +8,7 @@ export interface RoomItem {
   position: { x: number; y: number }; // percentage for room grid
   unlocked?: boolean;
   placed?: boolean;
+  weekUnlock?: number; // 0 or undefined = always available; 1+ = unlocks after that many weeks
 }
 
 export const ROOM_ITEMS: RoomItem[] = [
@@ -43,4 +44,74 @@ export const ROOM_ITEMS: RoomItem[] = [
   { id: 'sheep', name: 'Sheep', emoji: '🐑', cost: 20, category: 'pet', description: 'Earns 5 stars per hour on the farm', unlocked: false, placed: false, position: { x: 40, y: 60 } },
   { id: 'cow', name: 'Cow', emoji: '🐄', cost: 45, category: 'pet', description: 'Earns 10 stars per hour on the farm', unlocked: false, placed: false, position: { x: 60, y: 60 } },
   { id: 'horse', name: 'Horse', emoji: '🐴', cost: 80, category: 'pet', description: 'Earns 20 stars per hour on the farm', unlocked: false, placed: false, position: { x: 80, y: 60 } },
+
+  // ── WEEK 1 UNLOCK ──────────────────────────────────────────────────────────
+  { id: 'gaming-chair', name: 'Gaming Chair', emoji: '🎮', cost: 12, category: 'furniture', description: 'The ultimate study setup!', position: { x: 70, y: 45 }, weekUnlock: 1 },
+  { id: 'moon-lamp', name: 'Moon Lamp', emoji: '🌙', cost: 7, category: 'decoration', description: 'A glowing moon on your shelf', position: { x: 82, y: 35 }, weekUnlock: 1 },
+  { id: 'gecko', name: 'Gecko', emoji: '🦎', cost: 8, category: 'pet', description: 'Tiny and very cool!', position: { x: 30, y: 50 }, weekUnlock: 1 },
+  { id: 'cherry-blossom', name: 'Cherry Blossom View', emoji: '🌸', cost: 9, category: 'window', description: 'Petals drift past your window', position: { x: 45, y: 10 }, weekUnlock: 1 },
+  { id: 'cactus', name: 'Cactus Collection', emoji: '🌵', cost: 4, category: 'decoration', description: 'Low-maintenance and stylish', position: { x: 75, y: 60 }, weekUnlock: 1 },
+
+  // ── WEEK 2 UNLOCK ──────────────────────────────────────────────────────────
+  { id: 'velvet-sofa', name: 'Velvet Sofa', emoji: '🛋️', cost: 15, category: 'furniture', description: 'Incredibly comfy reading couch', position: { x: 25, y: 55 }, weekUnlock: 2 },
+  { id: 'ocean-poster', name: 'Ocean Poster', emoji: '🌊', cost: 5, category: 'decoration', description: 'Feel the waves on your wall', position: { x: 50, y: 15 }, weekUnlock: 2 },
+  { id: 'flamingo', name: 'Flamingo', emoji: '🦩', cost: 10, category: 'pet', description: 'Stands on one leg in the corner', position: { x: 60, y: 65 }, weekUnlock: 2 },
+  { id: 'mountain-view', name: 'Mountain View', emoji: '🏔️', cost: 10, category: 'window', description: 'Snowy peaks outside your window', position: { x: 45, y: 10 }, weekUnlock: 2 },
+  { id: 'lava-lamp', name: 'Lava Lamp', emoji: '💡', cost: 6, category: 'decoration', description: 'Groovy blobs of colour', position: { x: 20, y: 30 }, weekUnlock: 2 },
+
+  // ── WEEK 3 UNLOCK ──────────────────────────────────────────────────────────
+  { id: 'hammock', name: 'Hammock', emoji: '🪢', cost: 14, category: 'furniture', description: 'Swing while you read!', position: { x: 40, y: 50 }, weekUnlock: 3 },
+  { id: 'crystal-ball', name: 'Crystal Ball', emoji: '🔮', cost: 9, category: 'decoration', description: 'See the future of your grades!', position: { x: 65, y: 35 }, weekUnlock: 3 },
+  { id: 'hedgehog', name: 'Hedgehog', emoji: '🦔', cost: 9, category: 'pet', description: 'Snuffles around your room', position: { x: 35, y: 65 }, weekUnlock: 3 },
+  { id: 'city-view', name: 'City Lights View', emoji: '🌃', cost: 11, category: 'window', description: 'Twinkling city at night', position: { x: 45, y: 10 }, weekUnlock: 3 },
+  { id: 'magic-carpet', name: 'Magic Carpet', emoji: '🪄', cost: 7, category: 'decoration', description: 'Ready to fly you anywhere', position: { x: 45, y: 72 }, weekUnlock: 3 },
+
+  // ── WEEK 4 UNLOCK ──────────────────────────────────────────────────────────
+  { id: 'bunk-bed', name: 'Bunk Bed', emoji: '🛏️', cost: 18, category: 'furniture', description: 'Top bunk for the ultimate view', position: { x: 12, y: 42 }, weekUnlock: 4 },
+  { id: 'star-map', name: 'Star Map', emoji: '🗺️', cost: 8, category: 'decoration', description: 'Map of the night sky', position: { x: 55, y: 18 }, weekUnlock: 4 },
+  { id: 'sloth', name: 'Sloth', emoji: '🦥', cost: 12, category: 'pet', description: 'Hangs around doing almost nothing', position: { x: 70, y: 55 }, weekUnlock: 4 },
+  { id: 'jungle-view', name: 'Jungle View', emoji: '🌴', cost: 10, category: 'window', description: 'Exotic jungle just outside', position: { x: 45, y: 10 }, weekUnlock: 4 },
+  { id: 'lego-set', name: 'LEGO Set', emoji: '🧱', cost: 11, category: 'decoration', description: 'Build something amazing!', position: { x: 30, y: 22 }, weekUnlock: 4 },
+
+  // ── WEEK 5 UNLOCK ──────────────────────────────────────────────────────────
+  { id: 'cloud-bed', name: 'Cloud Bed', emoji: '☁️', cost: 25, category: 'furniture', description: 'Sleep on actual clouds!', position: { x: 10, y: 48 }, weekUnlock: 5 },
+  { id: 'neon-sign', name: 'Neon Sign', emoji: '✨', cost: 13, category: 'decoration', description: 'Your name in glowing neon', position: { x: 50, y: 12 }, weekUnlock: 5 },
+  { id: 'capybara', name: 'Capybara', emoji: '🦫', cost: 14, category: 'pet', description: 'The chillest animal in the room', position: { x: 40, y: 62 }, weekUnlock: 5 },
+  { id: 'aurora-view', name: 'Aurora Borealis', emoji: '🌌', cost: 15, category: 'window', description: 'Northern lights dance outside', position: { x: 45, y: 10 }, weekUnlock: 5 },
+  { id: 'drum-kit', name: 'Drum Kit', emoji: '🥁', cost: 16, category: 'furniture', description: 'Rock out after study time', position: { x: 18, y: 38 }, weekUnlock: 5 },
+
+  // ── WEEK 6 UNLOCK ──────────────────────────────────────────────────────────
+  { id: 'robot-friend', name: 'Robot Friend', emoji: '🤖', cost: 20, category: 'decoration', description: 'Your AI study companion', position: { x: 62, y: 52 }, weekUnlock: 6 },
+  { id: 'vintage-clock', name: 'Grandfather Clock', emoji: '🕰️', cost: 12, category: 'furniture', description: 'Tick tock, time to study!', position: { x: 88, y: 38 }, weekUnlock: 6 },
+  { id: 'axolotl', name: 'Axolotl Tank', emoji: '🦎', cost: 16, category: 'pet', description: 'The rarest tank in school!', position: { x: 78, y: 32 }, weekUnlock: 6 },
+  { id: 'volcano-view', name: 'Volcano View', emoji: '🌋', cost: 13, category: 'window', description: 'Dramatic lava outside your window', position: { x: 45, y: 10 }, weekUnlock: 6 },
+  { id: 'zen-garden', name: 'Zen Garden', emoji: '🪨', cost: 10, category: 'decoration', description: 'Rake sand patterns when stressed', position: { x: 35, y: 68 }, weekUnlock: 6 },
+
+  // ── WEEK 7 UNLOCK ──────────────────────────────────────────────────────────
+  { id: 'race-car-bed', name: 'Race Car Bed', emoji: '🏎️', cost: 30, category: 'furniture', description: 'Vroom vroom to dreamland', position: { x: 12, y: 52 }, weekUnlock: 7 },
+  { id: 'potion-shelf', name: 'Potion Shelf', emoji: '⚗️', cost: 14, category: 'decoration', description: 'Mysterious glowing potions', position: { x: 86, y: 22 }, weekUnlock: 7 },
+  { id: 'penguin', name: 'Penguin', emoji: '🐧', cost: 15, category: 'pet', description: 'Waddles around looking formal', position: { x: 50, y: 60 }, weekUnlock: 7 },
+  { id: 'underwater-view', name: 'Underwater View', emoji: '🐠', cost: 18, category: 'window', description: 'Fish swim past your window!', position: { x: 45, y: 10 }, weekUnlock: 7 },
+  { id: 'skateboard-ramp', name: 'Skateboard Ramp', emoji: '🛹', cost: 17, category: 'decoration', description: 'Mini ramp in the corner', position: { x: 22, y: 62 }, weekUnlock: 7 },
+
+  // ── WEEK 8 UNLOCK ──────────────────────────────────────────────────────────
+  { id: 'trampoline', name: 'Trampoline', emoji: '🤸', cost: 22, category: 'furniture', description: 'Bounce your energy out!', position: { x: 55, y: 65 }, weekUnlock: 8 },
+  { id: 'art-easel', name: 'Art Easel', emoji: '🎨', cost: 11, category: 'decoration', description: 'Paint masterpieces after school', position: { x: 72, y: 40 }, weekUnlock: 8 },
+  { id: 'red-panda', name: 'Red Panda', emoji: '🐾', cost: 18, category: 'pet', description: 'Absolutely adorable fluffball', position: { x: 28, y: 55 }, weekUnlock: 8 },
+  { id: 'snow-globe-view', name: 'Snowy Village View', emoji: '❄️', cost: 16, category: 'window', description: 'A cosy snowy village outside', position: { x: 45, y: 10 }, weekUnlock: 8 },
+  { id: 'science-lab', name: 'Science Lab Corner', emoji: '🧪', cost: 19, category: 'decoration', description: 'Beakers, flasks and experiments!', position: { x: 85, y: 55 }, weekUnlock: 8 },
+
+  // ── WEEK 9 UNLOCK ──────────────────────────────────────────────────────────
+  { id: 'royal-throne', name: 'Royal Throne', emoji: '👑', cost: 35, category: 'furniture', description: 'Study like royalty!', position: { x: 40, y: 40 }, weekUnlock: 9 },
+  { id: 'hologram-table', name: 'Hologram Table', emoji: '🌐', cost: 25, category: 'decoration', description: 'Futuristic hologram displays', position: { x: 58, y: 38 }, weekUnlock: 9 },
+  { id: 'baby-elephant', name: 'Baby Elephant', emoji: '🐘', cost: 22, category: 'pet', description: 'A gentle giant in your room', position: { x: 42, y: 65 }, weekUnlock: 9 },
+  { id: 'rainbow-view', name: 'Rainbow Valley View', emoji: '🌈', cost: 20, category: 'window', description: 'A permanent rainbow outside!', position: { x: 45, y: 10 }, weekUnlock: 9 },
+  { id: 'aquarium-wall', name: 'Aquarium Wall', emoji: '🪸', cost: 28, category: 'decoration', description: 'Entire wall is a fish tank!', position: { x: 48, y: 30 }, weekUnlock: 9 },
+
+  // ── WEEK 10 UNLOCK ─────────────────────────────────────────────────────────
+  { id: 'space-capsule', name: 'Space Capsule Bed', emoji: '🚀', cost: 50, category: 'furniture', description: 'Sleep like an astronaut!', position: { x: 15, y: 45 }, weekUnlock: 10 },
+  { id: 'time-machine', name: 'Time Machine', emoji: '⏰', cost: 40, category: 'decoration', description: 'Travel through history!', position: { x: 68, y: 50 }, weekUnlock: 10 },
+  { id: 'unicorn', name: 'Unicorn', emoji: '🦄', cost: 35, category: 'pet', description: 'The rarest pet of all!', position: { x: 30, y: 58 }, weekUnlock: 10 },
+  { id: 'galaxy-view', name: 'Galaxy Portal View', emoji: '🌌', cost: 30, category: 'window', description: 'A swirling galaxy right outside!', position: { x: 45, y: 10 }, weekUnlock: 10 },
+  { id: 'gold-trophy-wall', name: 'Gold Trophy Wall', emoji: '🥇', cost: 45, category: 'decoration', description: 'Wall of legendary achievements', position: { x: 50, y: 20 }, weekUnlock: 10 },
 ];

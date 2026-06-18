@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore, type Subject } from '../store/appStore';
 import { sounds } from '../utils/sounds';
@@ -22,12 +23,13 @@ interface NodeProps {
   current: boolean;
   locked: boolean;
   weekLocked: boolean;
+  pinLocked?: boolean;
   onStart: () => void;
   onHomework: () => void;
   themeColor: string;
 }
 
-function PathNode({ index, session, completed, current, locked, weekLocked, onStart, onHomework, themeColor }: NodeProps) {
+function PathNode({ index, session, completed, current, locked, weekLocked, pinLocked, onStart, onHomework, themeColor }: NodeProps) {
   const isAnyLocked = locked || weekLocked;
   const offset = index % 2 === 0 ? 'ml-8' : 'mr-8 self-end';
   return (
@@ -50,7 +52,7 @@ function PathNode({ index, session, completed, current, locked, weekLocked, onSt
         animate={current ? { boxShadow: ['0 0 0 0 rgba(245,158,11,0.5)', '0 0 0 16px rgba(245,158,11,0)'] } : {}}
         transition={current ? { duration: 1.5, repeat: Infinity } : {}}
       >
-        {completed ? '⭐' : isAnyLocked ? '🔒' : session.icon}
+        {completed ? '⭐' : isAnyLocked ? '🔒' : pinLocked ? '🔐' : session.icon}
         {current && (
           <motion.div
             className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-black px-2 py-0.5 rounded-full"
@@ -80,7 +82,12 @@ function PathNode({ index, session, completed, current, locked, weekLocked, onSt
 }
 
 export default function Home() {
-  const { profile, activeSubject, setActiveSubject, activeYearLevel, setActiveYearLevel, startSession, setActiveSessionId, completedSessions, totalStars, setView, currentStreak } = useAppStore();
+  const { profile, activeSubject, setActiveSubject, activeYearLevel, setActiveYearLevel, startSession, setActiveSessionId, completedSessions, totalStars, setView, currentStreak, userRole, classPin, teacherUnlockedSessions, unlockSessionForClass } = useAppStore();
+
+  const [pinModal, setPinModal] = useState<{ sessionId: string } | null>(null);
+  const [pinInput, setPinInput] = useState('');
+  const [pinError, setPinError] = useState(false);
+
   if (!profile) return null;
 
   const themeColor = THEME_COLOR[profile.colorTheme];
@@ -132,12 +139,14 @@ export default function Home() {
             >
               Games
             </button>
-            <button
-              onClick={() => setView('teacher')}
-              className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-3 py-1.5"
-            >
-              Teacher
-            </button>
+            {userRole === 'teacher' && (
+              <button
+                onClick={() => setView('teacher')}
+                className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-3 py-1.5"
+              >
+                Teacher
+              </button>
+            )}
           </div>
         </div>
 
@@ -250,6 +259,8 @@ export default function Home() {
                   const isCurrent = i === currentIndex;
                   const isProgressLocked = !isDone && currentIndex >= 0 && i > currentIndex + 2;
                   const isWeekLocked = !isSessionUnlocked(s.weekNumber);
+                  const isPinUnlocked = teacherUnlockedSessions.includes(s.id);
+                  const needsPinToUnlock = isProgressLocked && !isPinUnlocked && userRole !== 'teacher';
                   return (
                     <PathNode
                       key={s.id}
@@ -257,9 +268,16 @@ export default function Home() {
                       session={s}
                       completed={isDone}
                       current={isCurrent}
-                      locked={isProgressLocked}
+                      locked={!needsPinToUnlock && isProgressLocked}
                       weekLocked={isWeekLocked}
-                      onStart={() => startSession(s.id)}
+                      pinLocked={needsPinToUnlock}
+                      onStart={() => {
+                        if (needsPinToUnlock) {
+                          setPinModal({ sessionId: s.id });
+                        } else {
+                          startSession(s.id);
+                        }
+                      }}
                       onHomework={() => { setActiveSessionId(s.id); setView('homework'); }}
                       themeColor={themeColor}
                     />
@@ -270,6 +288,45 @@ export default function Home() {
           </>
         )}
       </div>
+      {pinModal && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 w-80 text-center shadow-2xl">
+            <div className="text-4xl mb-3">🔒</div>
+            <h3 className="text-xl font-black text-gray-800 mb-2">Lesson Locked</h3>
+            <p className="text-gray-500 text-sm mb-4">Ask your teacher to enter the class PIN to unlock this lesson.</p>
+            <input
+              type="password"
+              maxLength={4}
+              value={pinInput}
+              onChange={e => { setPinInput(e.target.value); setPinError(false); }}
+              placeholder="Enter 4-digit PIN"
+              className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-center text-xl tracking-widest font-bold mb-3 focus:outline-none focus:border-indigo-400"
+              autoFocus
+            />
+            {pinError && <p className="text-red-500 text-sm mb-2">Incorrect PIN. Try again.</p>}
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setPinModal(null); setPinInput(''); setPinError(false); }}
+                className="flex-1 py-2 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold"
+              >Cancel</button>
+              <button
+                onClick={() => {
+                  if (pinInput === classPin && classPin.length === 4) {
+                    unlockSessionForClass(pinModal.sessionId);
+                    setPinModal(null);
+                    setPinInput('');
+                    setPinError(false);
+                    startSession(pinModal.sessionId);
+                  } else {
+                    setPinError(true);
+                  }
+                }}
+                className="flex-1 py-2 rounded-xl bg-indigo-500 text-white font-bold"
+              >Unlock</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

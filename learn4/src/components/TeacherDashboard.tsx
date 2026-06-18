@@ -21,17 +21,17 @@ function formatDate(iso: string) {
 
 const SUBJECT_LABEL: Record<string, string> = { english: 'English', maths: 'Maths', science: 'Science', hass: 'HASS', vcd: 'VCD' };
 
-type Tab = 'students' | 'curriculum';
+type Tab = 'students' | 'curriculum' | 'reports' | 'homework';
 
 export default function TeacherDashboard() {
-  const { setView, loadStudentData, setUserId, previewFeedback, startSession } = useAppStore();
+  const { setView, loadStudentData, setUserId, previewFeedback, startSession, classPin, setClassPin } = useAppStore();
   const [tab, setTab] = useState<Tab>('students');
   const [students, setStudents] = useState<DbProfile[]>([]);
   const [selectedStudent, setSelectedStudent] = useState<DbProfile | null>(null);
   const [studentResults, setStudentResults] = useState<SessionResult[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [loadingResults, setLoadingResults] = useState(false);
-  const [currYear, setCurrYear] = useState<4 | 5 | 6>(4);
+  const [currYear, setCurrYear] = useState<4 | 5 | 6 | 8 | 9 | 10 | 11>(4);
   const [currSubject, setCurrSubject] = useState<string>('english');
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function TeacherDashboard() {
           <h2 className="font-black text-gray-800 whitespace-nowrap">👩‍🏫 Teacher</h2>
           {/* Tab switcher */}
           <div className="flex bg-gray-100 rounded-xl overflow-hidden">
-            {([['students', '👤 Students'], ['curriculum', '📚 Curriculum']] as const).map(([t, label]) => (
+            {([['students', '👤 Students'], ['curriculum', '📚 Curriculum'], ['reports', '📊 Reports'], ['homework', '📋 Homework']] as [Tab, string][]).map(([t, label]) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -93,10 +93,27 @@ export default function TeacherDashboard() {
       {/* Curriculum tab */}
       {tab === 'curriculum' && (
         <div className="max-w-5xl mx-auto px-4 py-6 space-y-5">
+          {/* Class PIN */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4">
+            <h3 className="font-bold text-gray-800 mb-1">🔐 Class PIN (for lesson unlocks)</h3>
+            <p className="text-sm text-gray-500 mb-3">Set a 4-digit PIN. Students tap a locked lesson, then you type the PIN on their device to unlock it.</p>
+            <div className="flex gap-3 items-center">
+              <input
+                type="text"
+                maxLength={4}
+                value={classPin}
+                onChange={e => setClassPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                placeholder="e.g. 1234"
+                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-center text-xl tracking-widest font-bold w-32 focus:outline-none focus:border-yellow-400"
+              />
+              <span className="text-sm text-gray-500">{classPin.length === 4 ? '✅ PIN set' : 'Enter 4 digits'}</span>
+            </div>
+          </div>
+
           {/* Year + Subject filters */}
           <div className="flex flex-wrap gap-3">
             <div className="flex bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-              {([4, 5, 6] as const).map(y => (
+              {([4, 5, 6, 8, 9, 10, 11] as const).map(y => (
                 <button
                   key={y}
                   onClick={() => setCurrYear(y)}
@@ -107,7 +124,7 @@ export default function TeacherDashboard() {
               ))}
             </div>
             <div className="flex bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-              {(['english', 'maths', 'science', 'hass'] as const).map(s => (
+              {(['english', 'maths', 'science', 'hass', 'vcd'] as const).map(s => (
                 <button
                   key={s}
                   onClick={() => setCurrSubject(s)}
@@ -117,6 +134,23 @@ export default function TeacherDashboard() {
                   {s === 'hass' ? 'HASS' : s.charAt(0).toUpperCase() + s.slice(1)}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Class PIN */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 mb-6">
+            <h3 className="font-bold text-gray-800 mb-2">🔐 Class PIN (for lesson unlocks)</h3>
+            <p className="text-sm text-gray-500 mb-3">Set a 4-digit PIN. Students enter this to unlock new lessons with your help.</p>
+            <div className="flex gap-2 items-center">
+              <input
+                type="text"
+                maxLength={4}
+                value={classPin}
+                onChange={e => setClassPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                placeholder="e.g. 1234"
+                className="border-2 border-gray-200 rounded-xl px-4 py-2 text-center text-xl tracking-widest font-bold w-32 focus:outline-none focus:border-yellow-400"
+              />
+              <span className="text-sm text-gray-500">{classPin.length === 4 ? '✅ PIN set' : 'Enter 4 digits'}</span>
             </div>
           </div>
 
@@ -146,6 +180,81 @@ export default function TeacherDashboard() {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {tab === 'reports' && (
+        <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+          <h3 className="font-black text-gray-800 text-xl">Curriculum Reports — All Classes</h3>
+          <p className="text-sm text-gray-500">Overview of all curriculum sessions organised by year level.</p>
+          {([4, 5, 6, 8, 9, 10, 11] as const).map(yr => {
+            const yrSessions = sessionsByYear[yr] ?? [];
+            if (yrSessions.length === 0) return null;
+            return (
+              <div key={yr}>
+                <h4 className="font-bold text-gray-700 text-lg mb-3">Year {yr === 11 ? 'VCE (11)' : yr}</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {yrSessions.map(session => (
+                    <div key={session.id} className="bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3">
+                      <span className="text-2xl">{session.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-bold text-gray-800 text-sm leading-tight truncate">{session.title}</div>
+                        <div className="text-xs text-gray-400 mt-0.5">
+                          <span className="capitalize" style={{ color: SUBJECT_COLOR[session.subject] }}>{SUBJECT_LABEL[session.subject]}</span>
+                          {(session as Session & { term?: number }).term ? ` · Term ${(session as Session & { term?: number }).term}` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {tab === 'homework' && (
+        <div className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+          <h3 className="font-black text-gray-800 text-xl">All Homework</h3>
+          <p className="text-sm text-gray-500">Homework tasks from all curriculum sessions, organised by year and subject.</p>
+          {([4, 5, 6, 8, 9, 10, 11] as const).map(yr => {
+            const yrSessions = (sessionsByYear[yr] ?? []).filter(s =>
+              s.steps.some((step: { type: string; tasks?: unknown[] }) => step.type === 'homework')
+            );
+            if (yrSessions.length === 0) return null;
+            return (
+              <div key={yr}>
+                <h4 className="font-bold text-gray-700 text-lg mb-3">Year {yr === 11 ? 'VCE (11)' : yr}</h4>
+                <div className="space-y-3">
+                  {yrSessions.map(session => {
+                    const hwStep = session.steps.find((step: { type: string }) => step.type === 'homework') as { type: string; title?: string; tasks?: Array<{ id: string; label: string }> } | undefined;
+                    if (!hwStep) return null;
+                    return (
+                      <div key={session.id} className="bg-white rounded-2xl p-4 shadow-sm">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-xl">{session.icon}</span>
+                          <div className="font-bold text-gray-800 text-sm">{session.title}</div>
+                          <span className="text-xs px-2 py-0.5 rounded-full text-white" style={{ background: SUBJECT_COLOR[session.subject] }}>
+                            {SUBJECT_LABEL[session.subject]}
+                          </span>
+                        </div>
+                        {hwStep.tasks && hwStep.tasks.length > 0 && (
+                          <ul className="space-y-1 ml-2">
+                            {hwStep.tasks.map((task) => (
+                              <li key={task.id} className="text-xs text-gray-600 flex gap-2">
+                                <span className="text-gray-300">•</span>
+                                <span>{task.label}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 

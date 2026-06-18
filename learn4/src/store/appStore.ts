@@ -70,6 +70,8 @@ export interface AppState {
   farmStarsPending: number;
   unlockedBadges: string[];
   firstLoginDate: string; // ISO date, set once on first login, never overwritten
+  classPin: string;
+  teacherUnlockedSessions: string[];
 }
 
 export interface AppActions {
@@ -97,6 +99,8 @@ export interface AppActions {
   setUserId: (id: string | null, role: 'teacher' | 'student' | null) => void;
   setActiveStudentId: (id: string | null) => void;
   loadStudentData: (studentId: string) => Promise<void>;
+  setClassPin: (pin: string) => void;
+  unlockSessionForClass: (sessionId: string) => void;
 }
 
 function isoWeek(date: Date): string {
@@ -141,6 +145,8 @@ const defaultState: AppState = {
   farmStarsPending: 0,
   unlockedBadges: [],
   firstLoginDate: '',
+  classPin: '',
+  teacherUnlockedSessions: [],
 };
 
 export const useAppStore = create<AppState & AppActions>()(
@@ -297,6 +303,9 @@ export const useAppStore = create<AppState & AppActions>()(
       })),
 
       setActiveStudentId: (id) => set({ activeStudentId: id }),
+
+      setClassPin: (pin) => set({ classPin: pin }),
+      unlockSessionForClass: (id) => set(s => ({ teacherUnlockedSessions: [...new Set([...s.teacherUnlockedSessions, id])] })),
 
       loadStudentData: async (studentId) => {
         const dbProfile = await fetchProfile(studentId);

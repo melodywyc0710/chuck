@@ -1413,4 +1413,5 @@ export const y5Maths: Session[] = [
       },
     ],
   },
+  // ── LESSON 7: Measurement ───────────────────────────────────────
 ];

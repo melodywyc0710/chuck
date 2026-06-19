@@ -110,6 +110,8 @@ export const vcdY9: Session[] = [
         id: 'vcd-y9-02-hw',
         type: 'homework',
         title: 'Homework',
+        teacherNote: 'Complete before next class.',
+        dueNext: true,
         tasks: [
           { id: 'hw1', label: 'Complete an analytical drawing of a household object (e.g. running shoe, bottle, headphones) using at least 3 design elements deliberately', hint: '' },
           { id: 'hw2', label: 'Annotate your drawing identifying where you used line, shape, tone, colour and/or texture', hint: '' },
@@ -181,6 +183,8 @@ export const vcdY9: Session[] = [
         id: 'vcd-y9-03-hw',
         type: 'homework',
         title: 'Homework',
+        teacherNote: 'Complete before next class.',
+        dueNext: true,
         tasks: [
           { id: 'hw1', label: 'Collect 3 print advertisements or posters and annotate them identifying balance, contrast, hierarchy and emphasis', hint: '' },
           { id: 'hw2', label: 'Sketch a simple event poster applying all four principles — annotate each decision', hint: '' },
@@ -252,6 +256,8 @@ export const vcdY9: Session[] = [
         id: 'vcd-y9-04-hw',
         type: 'homework',
         title: 'Homework',
+        teacherNote: 'Complete before next class.',
+        dueNext: true,
         tasks: [
           { id: 'hw1', label: 'Design a typographic poster for a school event using only two typefaces — annotate your pairing choice', hint: '' },
           { id: 'hw2', label: 'Identify and photograph 5 examples of type in your environment (packaging, signs, phones) and classify each typeface', hint: '' },
@@ -323,6 +329,8 @@ export const vcdY9: Session[] = [
         id: 'vcd-y9-05-hw',
         type: 'homework',
         title: 'Homework',
+        teacherNote: 'Complete before next class.',
+        dueNext: true,
         tasks: [
           { id: 'hw1', label: 'Research the colour choices of 3 well-known brands and write a paragraph explaining why each chose its colours', hint: '' },
           { id: 'hw2', label: 'Create a colour palette for an imaginary brand — present 5 colours with a rationale for each choice', hint: '' },
@@ -396,6 +404,8 @@ export const vcdY9: Session[] = [
         id: 'vcd-y9-06-hw',
         type: 'homework',
         title: 'Homework',
+        teacherNote: 'Complete before next class.',
+        dueNext: true,
         tasks: [
           { id: 'hw1', label: 'Find 5 logos that use at least one Gestalt principle — sketch and annotate each one', hint: '' },
           { id: 'hw2', label: 'Design your own logo using closure or figure-ground — the design should work in black and white only', hint: '' },
@@ -467,6 +477,8 @@ export const vcdY9: Session[] = [
         id: 'vcd-y9-07-hw',
         type: 'homework',
         title: 'Homework',
+        teacherNote: 'Complete before next class.',
+        dueNext: true,
         tasks: [
           { id: 'hw1', label: 'Draw your bedroom or living room in 1-point perspective — include furniture, windows and at least 5 objects', hint: '' },
           { id: 'hw2', label: 'Draw a simple product (phone, shoe box, speaker) in 2-point perspective and add basic shading', hint: '' },
@@ -539,6 +551,8 @@ export const vcdY9: Session[] = [
         id: 'vcd-y9-08-hw',
         type: 'homework',
         title: 'Homework',
+        teacherNote: 'Complete before next class.',
+        dueNext: true,
         tasks: [
           { id: 'hw1', label: 'Render a product of your choice (e.g. headphones, water bottle, sneaker) using at least two different material types', hint: '' },
           { id: 'hw2', label: 'Annotate your rendering identifying: light source, highlight, mid-tone, shadow, reflected light and cast shadow', hint: '' },
@@ -610,6 +624,8 @@ export const vcdY9: Session[] = [
         id: 'vcd-y9-09-hw',
         type: 'homework',
         title: 'Homework',
+        teacherNote: 'Complete before next class.',
+        dueNext: true,
         tasks: [
           { id: 'hw1', label: 'Using Canva or similar software, create a simple social media graphic — save it in an appropriate format and explain your format choice', hint: '' },
           { id: 'hw2', label: 'Research and list: what software tools do professional graphic designers use at an Australian studio? (Check job listings or studio websites)', hint: '' },
@@ -681,6 +697,8 @@ export const vcdY9: Session[] = [
         id: 'vcd-y9-10-hw',
         type: 'homework',
         title: 'Homework',
+        teacherNote: 'Complete before next class.',
+        dueNext: true,
         tasks: [
           { id: 'hw1', label: 'Compile your Year 9 VCD folio — organise work chronologically, adding annotations to any unannotated pieces', hint: '' },
           { id: 'hw2', label: 'Write a one-page evaluation of your best piece of work this year: what worked, what you would change and why', hint: '' },

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../store/appStore';
 import { supabase } from '../lib/supabase';
-import { fetchAllStudents, fetchStudentResults } from '../lib/db';
+import { fetchAllStudents, fetchStudentResults, saveSessionResult } from '../lib/db';
 import type { DbProfile } from '../lib/db';
 import type { SessionResult } from '../store/appStore';
 import { getSession, sessionsByYear } from '../data/curriculum/index';
@@ -52,6 +52,29 @@ export default function TeacherDashboard() {
   async function playForStudent(student: DbProfile) {
     await loadStudentData(student.id);
     setView('home');
+  }
+
+  const [markingSession, setMarkingSession] = useState<string | null>(null);
+
+  async function markComplete(student: DbProfile, session: Session) {
+    setMarkingSession(session.id);
+    const stars = session.starsAvailable ?? 3;
+    const result: SessionResult = {
+      sessionId: session.id,
+      subject: session.subject,
+      completedAt: new Date().toISOString(),
+      score: session.steps.filter((s: { type: string }) => s.type === 'quiz').length * 4,
+      total: session.steps.filter((s: { type: string }) => s.type === 'quiz').length * 4,
+      starsEarned: stars,
+      freeResponses: {},
+      homeworkSet: false,
+      timeSpentMinutes: session.estimatedMinutes ?? 30,
+    };
+    await saveSessionResult(student.id, result);
+    // Refresh results
+    const updated = await fetchStudentResults(student.id);
+    setStudentResults(updated);
+    setMarkingSession(null);
   }
 
   async function handleSignOut() {
@@ -407,6 +430,52 @@ export default function TeacherDashboard() {
                       );
                     })}
                   </div>
+                </div>
+              )}
+              {/* Mark lessons complete */}
+              {selectedStudent && (
+                <div className="bg-white rounded-2xl p-5 shadow-sm">
+                  <h3 className="font-black text-gray-800 mb-1">✅ Mark Lessons Complete</h3>
+                  <p className="text-xs text-gray-400 mb-4">Award completion + full stars to this student for any lesson. They'll see it as done when they next open the app.</p>
+                  {([4, 5, 6, 8, 9, 10, 11] as const).map(yr => {
+                    const yrSessions = (sessionsByYear[yr] ?? []).filter(s =>
+                      ['english', 'maths', 'vcd'].includes(s.subject)
+                    );
+                    if (yrSessions.length === 0) return null;
+                    return (
+                      <div key={yr} className="mb-4">
+                        <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
+                          Year {yr === 11 ? 'VCE' : yr}
+                        </div>
+                        <div className="space-y-1.5">
+                          {yrSessions.map(session => {
+                            const done = studentResults.some(r => r.sessionId === session.id);
+                            const isMarking = markingSession === session.id;
+                            return (
+                              <div key={session.id} className="flex items-center gap-3 bg-gray-50 rounded-xl px-3 py-2">
+                                <span className="text-lg">{session.icon}</span>
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-sm font-semibold text-gray-800 truncate">{session.title}</div>
+                                  <div className="text-xs" style={{ color: SUBJECT_COLOR[session.subject] }}>{SUBJECT_LABEL[session.subject]}</div>
+                                </div>
+                                {done ? (
+                                  <span className="text-xs font-bold text-green-600 flex-shrink-0">✅ Done</span>
+                                ) : (
+                                  <button
+                                    onClick={() => markComplete(selectedStudent, session)}
+                                    disabled={isMarking}
+                                    className="flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 transition-colors"
+                                  >
+                                    {isMarking ? '…' : `✅ Award ${session.starsAvailable}⭐`}
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </>

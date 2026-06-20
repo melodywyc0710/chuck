@@ -321,7 +321,14 @@ export const useAppStore = create<AppState & AppActions>()(
           });
         }
         const results = await fetchStudentResults(studentId);
-        set({ sessionResults: results });
+        // Merge DB completed sessions into local store so teacher-awarded completions show up
+        const completedFromDb = results.map(r => r.sessionId);
+        const totalStarsFromDb = results.reduce((sum, r) => sum + r.starsEarned, 0);
+        set(s => ({
+          sessionResults: results,
+          completedSessions: [...new Set([...s.completedSessions, ...completedFromDb])],
+          totalStars: Math.max(s.totalStars, totalStarsFromDb + 5),
+        }));
       },
     }),
     { name: 'learn4-app-v1' }

@@ -15,48 +15,52 @@ import RevisionMode from './components/RevisionMode';
 import GamesHub from './components/GamesHub';
 import PrintableHomework from './components/PrintableHomework';
 
+const TEACHER_EMAIL = 'anxufangchuck@gmail.com';
+
 export default function App() {
   const { view, setView, activeSessionId, userId, setUserId, loadStudentData } = useAppStore();
 
   useEffect(() => {
-    // Check existing session on mount
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    const isTeacherEmail = (email?: string | null) => email === TEACHER_EMAIL;
+
+    async function handleSession(session: { user: { id: string; email?: string } } | null) {
       if (!session?.user) return;
+      const role = isTeacherEmail(session.user.email) ? 'teacher' : 'student';
       let dbProfile = await fetchProfile(session.user.id);
       if (!dbProfile) {
-        // No Supabase row — check if we have a local profile to rescue
         const localProfile = useAppStore.getState().profile;
-        if (localProfile?.name) {
-          // Save local profile to Supabase so future refreshes work
-          await supabase.from('profiles').upsert({
-            id: session.user.id,
-            name: localProfile.name,
-            role: 'student',
-            mascot: localProfile.mascot,
-            density: localProfile.density,
-            color_theme: localProfile.colorTheme,
-            teacher_id: null,
-          });
-          dbProfile = await fetchProfile(session.user.id);
-        }
+        await supabase.from('profiles').upsert({
+          id: session.user.id,
+          name: localProfile?.name ?? '',
+          role,
+          mascot: localProfile?.mascot ?? 'owl',
+          density: localProfile?.density ?? 'younger',
+          color_theme: localProfile?.colorTheme ?? 'purple',
+          teacher_id: null,
+        });
+        dbProfile = await fetchProfile(session.user.id);
         if (!dbProfile) {
-          setUserId(session.user.id, 'student');
-          setView('setup');
+          setUserId(session.user.id, role);
+          if (role === 'teacher') { setView('teacher'); } else { setView('setup'); }
           return;
         }
       }
-      setUserId(session.user.id, dbProfile.role);
-      if (dbProfile.role === 'student') {
-        await loadStudentData(session.user.id);
-        if (dbProfile.name) {
-          setView('home');
-        } else {
-          setView('setup');
-        }
-      } else {
-        setView('teacher');
+      // Always enforce teacher email → teacher role
+      const effectiveRole = isTeacherEmail(session.user.email) ? 'teacher' : dbProfile.role;
+      if (effectiveRole !== dbProfile.role) {
+        await supabase.from('profiles').update({ role: 'teacher' }).eq('id', session.user.id);
       }
-    });
+      setUserId(session.user.id, effectiveRole);
+      if (effectiveRole === 'teacher') {
+        setView('teacher');
+      } else {
+        await loadStudentData(session.user.id);
+        setView(dbProfile.name ? 'home' : 'setup');
+      }
+    }
+
+    // Check existing session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => handleSession(session));
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -66,48 +70,7 @@ export default function App() {
         return;
       }
       if (event === 'SIGNED_IN') {
-        let dbProfile = await fetchProfile(session.user.id);
-        if (!dbProfile) {
-          const localProfile = useAppStore.getState().profile;
-          if (localProfile?.name) {
-            await supabase.from('profiles').upsert({
-              id: session.user.id,
-              name: localProfile.name,
-              role: 'student',
-              mascot: localProfile.mascot,
-              density: localProfile.density,
-              color_theme: localProfile.colorTheme,
-              teacher_id: null,
-            });
-            dbProfile = await fetchProfile(session.user.id);
-          }
-          if (!dbProfile) {
-            // Auth succeeded but no profile row — create a minimal one and go to setup
-            await supabase.from('profiles').upsert({
-              id: session.user.id,
-              name: '',
-              role: 'student',
-              mascot: 'owl',
-              density: 'younger',
-              color_theme: 'purple',
-              teacher_id: null,
-            });
-            setUserId(session.user.id, 'student');
-            setView('setup');
-            return;
-          }
-        }
-        setUserId(session.user.id, dbProfile.role);
-        if (dbProfile.role === 'student') {
-          await loadStudentData(session.user.id);
-          if (dbProfile.name) {
-            setView('home');
-          } else {
-            setView('setup');
-          }
-        } else {
-          setView('teacher');
-        }
+        await handleSession(session);
       }
     });
 

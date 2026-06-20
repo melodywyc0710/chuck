@@ -6,14 +6,25 @@ const key = (import.meta.env.VITE_SUPABASE_ANON_KEY ?? '') as string;
 
 export const supabaseConfigured = url.length > 10 && key.length > 10;
 
+// Give each tab a unique ID so Supabase sessions are fully isolated per tab
+const tabId = (() => {
+  const existing = sessionStorage.getItem('chucky-tab-id');
+  if (existing) return existing;
+  const id = Math.random().toString(36).slice(2);
+  sessionStorage.setItem('chucky-tab-id', id);
+  return id;
+})();
+
 export const supabase = createClient(
   supabaseConfigured ? url : 'https://placeholder.supabase.co',
   supabaseConfigured ? key : 'placeholder-key-for-build',
   {
     auth: {
-      // Use sessionStorage so each browser tab has its own independent session
-      storage: typeof window !== 'undefined' ? window.sessionStorage : undefined,
+      storage: sessionStorage,
+      storageKey: `chucky-auth-${tabId}`,
       persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
     },
   }
 );

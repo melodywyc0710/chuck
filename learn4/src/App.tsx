@@ -24,7 +24,11 @@ export default function App() {
     const isTeacherEmail = (email?: string | null) => email === TEACHER_EMAIL;
 
     async function handleSession(session: { user: { id: string; email?: string } } | null) {
-      if (!session?.user) return;
+      if (!session?.user) {
+        // No active Supabase session — clear any stale localStorage userId so login screen shows
+        setUserId(null, null);
+        return;
+      }
       const role = isTeacherEmail(session.user.email) ? 'teacher' : 'student';
       let dbProfile = await fetchProfile(session.user.id);
       if (!dbProfile) {

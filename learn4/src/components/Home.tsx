@@ -5,6 +5,7 @@ import { sounds } from '../utils/sounds';
 import { sessionsByYear } from '../data/curriculum/index';
 import type { Session } from '../data/types';
 import { isSessionUnlocked, formatUnlockDate } from '../utils/weeklyUnlock';
+import { supabase } from '../lib/supabase';
 
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
@@ -82,7 +83,7 @@ function PathNode({ index, session, completed, current, locked, weekLocked, pinL
 }
 
 export default function Home() {
-  const { profile, activeSubject, setActiveSubject, activeYearLevel, setActiveYearLevel, startSession, setActiveSessionId, completedSessions, totalStars, setView, currentStreak, userRole, classPin, teacherUnlockedSessions, unlockSessionForClass } = useAppStore();
+  const { profile, activeSubject, setActiveSubject, activeYearLevel, setActiveYearLevel, startSession, setActiveSessionId, completedSessions, totalStars, setView, setUserId, currentStreak, userRole, classPin, teacherUnlockedSessions, unlockSessionForClass } = useAppStore();
 
   const [pinModal, setPinModal] = useState<{ sessionId: string } | null>(null);
   const [pinInput, setPinInput] = useState('');
@@ -138,6 +139,12 @@ export default function Home() {
               className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-3 py-1.5"
             >
               Games
+            </button>
+            <button
+              onClick={async () => { await supabase.auth.signOut(); setUserId(null, null); }}
+              className="text-xs text-gray-400 hover:text-red-500 border border-gray-200 rounded-full px-3 py-1.5"
+            >
+              Sign out
             </button>
             {userRole === 'teacher' && (
               <button

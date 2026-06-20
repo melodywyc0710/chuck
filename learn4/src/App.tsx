@@ -33,7 +33,7 @@ export default function App() {
       let dbProfile = await fetchProfile(session.user.id);
       if (!dbProfile) {
         const localProfile = useAppStore.getState().profile;
-        await supabase.from('profiles').upsert({
+        const { error: upsertError } = await supabase.from('profiles').upsert({
           id: session.user.id,
           name: localProfile?.name ?? '',
           role,
@@ -42,8 +42,10 @@ export default function App() {
           color_theme: localProfile?.colorTheme ?? 'purple',
           teacher_id: null,
         });
+        if (upsertError) console.error('[Chucky] profile upsert failed:', upsertError);
         dbProfile = await fetchProfile(session.user.id);
         if (!dbProfile) {
+          console.error('[Chucky] fetchProfile returned null after upsert for', session.user.id);
           setUserId(session.user.id, role);
           if (role === 'teacher') { setView('teacher'); } else { setView('setup'); }
           return;

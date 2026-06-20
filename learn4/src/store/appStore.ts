@@ -331,6 +331,14 @@ export const useAppStore = create<AppState & AppActions>()(
         }));
       },
     }),
-    { name: 'learn4-app-v1' }
+    {
+      name: 'learn4-app-v1',
+      // Use sessionStorage so each browser tab has its own independent state
+      storage: typeof window !== 'undefined' ? {
+        getItem: (k: string) => { const v = sessionStorage.getItem(k); return v ? JSON.parse(v) : null; },
+        setItem: (k: string, v: unknown) => sessionStorage.setItem(k, JSON.stringify(v)),
+        removeItem: (k: string) => sessionStorage.removeItem(k),
+      } : undefined,
+    }
   )
 );

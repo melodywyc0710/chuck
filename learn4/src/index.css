@@ -244,6 +244,9 @@ body {
   margin: 0 auto;
 }
 
+/* Safe area bottom for mobile notch devices */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
 @media print {
   .no-print { display: none !important; }
   body { background: white; }

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Star, Target, Clock, CheckCircle, Copy, Printer, Trophy, Home } from 'lucide-react';
+import { Star, Target, Clock, Copy, Printer, Trophy, Home } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { englishSession } from '../data/english-session';
 import { mathsSession } from '../data/maths-session';

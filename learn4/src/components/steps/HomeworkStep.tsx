@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Home, Printer, ChevronDown, ChevronUp } from 'lucide-react';
 import type { HomeworkStep as HomeworkStepType } from '../../data/types';
 import { useAppStore } from '../../store/appStore';
 
@@ -9,92 +10,105 @@ export default function HomeworkStep({ step, onNext, themeColor, mascot }: Props
   const [showHints, setShowHints] = useState<Record<string, boolean>>({});
   const density = useAppStore(s => s.profile?.density ?? 'younger');
 
+  const themeDark = themeColor; // fallback — homework step doesn't need separate dark
+
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm" style={{ background: themeColor }}>
-          🏠
-        </div>
-        <div>
-          <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Homework</div>
-          <h2 className="font-black text-gray-800 text-xl">{step.title}</h2>
-        </div>
-      </div>
+    <div className="flex flex-col min-h-[85vh]">
+      <div className="flex-1 px-4 pt-5 pb-4 space-y-5">
+        {/* Badge */}
+        <span className="inline-flex items-center gap-1.5 bg-yellow-100 text-yellow-700 font-black text-xs px-3 py-1.5 rounded-full uppercase tracking-wide">
+          <Home size={11} /> Homework
+        </span>
 
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-center gap-3">
-        <span className="text-2xl">📋</span>
-        <div>
-          <div className="font-bold text-amber-800">Due next class</div>
-          <div className="text-sm text-amber-700">
-            {density === 'younger'
-              ? "These are tasks to do at home. Ask a grown-up to help if you need!"
-              : "Complete these tasks before the next lesson. Allow about 20–25 minutes."}
+        <h2 className={`font-black text-gray-800 leading-snug ${density === 'younger' ? 'text-2xl' : 'text-xl'}`}>
+          {step.title}
+        </h2>
+
+        {/* Due card */}
+        <div className="rounded-2xl p-4 border-2 border-yellow-200 bg-yellow-50 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-yellow-200 flex items-center justify-center flex-shrink-0">
+            <Home size={20} color="#92400e" />
           </div>
-        </div>
-      </div>
-
-      {/* Mascot */}
-      <div className="flex items-center gap-3 bg-yellow-50 rounded-2xl p-4 border border-yellow-100">
-        <span className="text-3xl">{mascot}</span>
-        <p className="text-yellow-800 text-sm font-medium">
-          {density === 'younger'
-            ? "You're almost done for today! Take this list home and try your best."
-            : "Completing homework helps your brain remember what you've learned today. Good luck!"}
-        </p>
-      </div>
-
-      {/* Task list */}
-      <div className="space-y-3">
-        {step.tasks.map((task, i) => (
-          <div key={task.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-            <div className="flex items-start gap-3">
-              <div
-                className="w-7 h-7 rounded-full text-white flex items-center justify-center font-black text-sm flex-shrink-0 mt-0.5"
-                style={{ background: themeColor }}
-              >
-                {i + 1}
-              </div>
-              <div className="flex-1">
-                <p className={`text-gray-700 font-medium ${density === 'younger' ? 'text-base' : 'text-sm'}`}>
-                  {task.label}
-                </p>
-                <button
-                  onClick={() => setShowHints(h => ({ ...h, [task.id]: !h[task.id] }))}
-                  className="text-xs text-indigo-500 hover:text-indigo-700 mt-1 underline"
-                >
-                  {showHints[task.id] ? 'Hide hint ▲' : '💡 Show hint ▼'}
-                </button>
-                {showHints[task.id] && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="mt-2 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2 text-xs text-indigo-700"
-                  >
-                    {task.hint}
-                  </motion.div>
-                )}
-              </div>
+          <div>
+            <div className="font-black text-yellow-800">Due next class</div>
+            <div className="text-sm text-yellow-700 font-medium">
+              {density === 'younger'
+                ? "Ask a grown-up to help if you need!"
+                : "Allow about 20–25 minutes. No stress!"}
             </div>
           </div>
-        ))}
+        </div>
+
+        {/* Mascot */}
+        <div className="flex items-start gap-3 rounded-2xl p-4" style={{ background: '#fffbeb', border: '2px solid #fde68a' }}>
+          <span className="text-2xl">{mascot === 'owl' ? '🦉' : mascot === 'fox' ? '🦊' : '🐼'}</span>
+          <p className="text-yellow-800 text-sm font-medium">
+            {density === 'younger'
+              ? "You're almost done for today! Take this list home and try your best."
+              : "Completing homework helps your brain consolidate today's learning. Good luck!"}
+          </p>
+        </div>
+
+        {/* Task list */}
+        <div className="space-y-3">
+          {step.tasks.map((task, i) => (
+            <div key={task.id} className="card p-4">
+              <div className="flex items-start gap-3">
+                <div
+                  className="w-7 h-7 rounded-full text-white flex items-center justify-center font-black text-sm flex-shrink-0 mt-0.5"
+                  style={{ background: themeColor, boxShadow: `0 3px 0 ${themeDark}` }}
+                >
+                  {i + 1}
+                </div>
+                <div className="flex-1">
+                  <p className={`text-gray-700 font-semibold ${density === 'younger' ? 'text-base' : 'text-sm'}`}>
+                    {task.label}
+                  </p>
+                  <button
+                    onClick={() => setShowHints(h => ({ ...h, [task.id]: !h[task.id] }))}
+                    className="flex items-center gap-1 text-xs font-black mt-2 uppercase tracking-wide"
+                    style={{ color: themeColor }}
+                  >
+                    {showHints[task.id]
+                      ? <><ChevronUp size={12} /> Hide hint</>
+                      : <><ChevronDown size={12} /> Show hint</>
+                    }
+                  </button>
+                  {showHints[task.id] && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="mt-2 rounded-xl px-3 py-2 text-xs font-medium"
+                      style={{ background: themeColor + '12', color: themeColor }}
+                    >
+                      {task.hint}
+                    </motion.div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Print */}
+        <button
+          onClick={() => window.print()}
+          className="btn-duo btn-ghost w-full py-3 rounded-2xl flex items-center justify-center gap-2 no-print"
+        >
+          <Printer size={16} /> Print Homework List
+        </button>
       </div>
 
-      {/* Print button */}
-      <button
-        onClick={() => window.print()}
-        className="w-full py-3 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors no-print"
-      >
-        🖨️ Print Homework List
-      </button>
-
-      <motion.button
-        whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-        onClick={onNext}
-        className="w-full py-4 rounded-2xl text-white font-black text-lg"
-        style={{ background: themeColor }}
-      >
-        Finish Session 🎉
-      </motion.button>
-    </motion.div>
+      {/* Bottom button */}
+      <div className="px-4 pb-8 pt-2">
+        <button
+          onClick={onNext}
+          className="btn-duo w-full py-4 rounded-2xl font-black text-base uppercase tracking-wide text-white"
+          style={{ background: themeColor, borderBottomColor: themeDark }}
+        >
+          FINISH SESSION 🎉
+        </button>
+      </div>
+    </div>
   );
 }

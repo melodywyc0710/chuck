@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle, XCircle } from 'lucide-react';
 import type { QuizStep as QuizStepType } from '../../data/types';
 import { useAppStore } from '../../store/appStore';
 import { sounds } from '../../utils/sounds';
@@ -8,20 +9,20 @@ function renderMd(text: string) {
   return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
 }
 
-interface Props { step: QuizStepType; onNext: () => void; themeColor: string; mascot: string; }
+interface Props { step: QuizStepType; onNext: () => void; themeColor: string; themeDark: string; mascot: string; }
 
-export default function QuizStep({ step, onNext, themeColor, mascot: _mascot }: Props) {
+export default function QuizStep({ step, onNext, themeColor, themeDark, mascot: _mascot }: Props) {
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [confirmed, setConfirmed] = useState(false);
   const [results, setResults] = useState<boolean[]>([]);
-  const [showNote, setShowNote] = useState(false);
   const { recordAnswer, recordScore } = useAppStore();
   const density = useAppStore(s => s.profile?.density ?? 'younger');
 
   const q = step.questions[current];
   const isCorrect = selected === q.correct;
   const allDone = results.length === step.questions.length;
+  const score = results.filter(Boolean).length;
 
   const confirm = () => {
     if (selected === null) return;
@@ -41,163 +42,195 @@ export default function QuizStep({ step, onNext, themeColor, mascot: _mascot }: 
     }
   };
 
-  const score = results.filter(Boolean).length;
+  if (allDone) {
+    const pct = Math.round((score / step.questions.length) * 100);
+    const great = pct >= 80;
+    return (
+      <div className="flex flex-col min-h-[70vh]">
+        <div className="flex-1 flex flex-col items-center justify-center px-6 py-10 gap-6">
+          <motion.div
+            initial={{ scale: 0 }} animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200 }}
+            className="text-8xl"
+          >
+            {great ? '🏆' : '💪'}
+          </motion.div>
+          <div className="text-center">
+            <div className="font-black text-5xl mb-2" style={{ color: themeColor }}>{pct}%</div>
+            <p className="text-gray-500 font-bold text-lg">{score} of {step.questions.length} correct</p>
+          </div>
+          {/* Results dots */}
+          <div className="flex gap-2">
+            {results.map((r, i) => (
+              <div key={i} className={`w-8 h-8 rounded-full flex items-center justify-center ${r ? 'bg-green-500' : 'bg-red-400'}`}>
+                {r ? <CheckCircle size={16} color="white" /> : <XCircle size={16} color="white" />}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="px-4 pb-8">
+          <button
+            onClick={onNext}
+            className="btn-duo w-full py-4 rounded-2xl text-white font-black text-lg"
+            style={{ background: themeColor, borderBottomColor: themeDark }}
+          >
+            CONTINUE
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-sm" style={{ background: themeColor }}>
-          ❓
+    <div className="flex flex-col min-h-[85vh]">
+      {/* Content */}
+      <div className="flex-1 px-4 pt-5 pb-4 space-y-5">
+        {/* Step type badge */}
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 bg-purple-100 text-purple-700 font-black text-xs px-3 py-1.5 rounded-full uppercase tracking-wide">
+            ✦ Practice Quiz
+          </span>
         </div>
-        <div>
-          <div className="text-xs text-gray-400 font-semibold uppercase tracking-wide">Practice Questions</div>
-          <h2 className="font-black text-gray-800 text-xl">{step.title}</h2>
+
+        {/* Progress dots */}
+        <div className="flex gap-1.5">
+          {step.questions.map((_, i) => (
+            <div
+              key={i}
+              className="h-2 flex-1 rounded-full transition-all duration-500"
+              style={{
+                background: i < results.length
+                  ? results[i] ? '#58CC02' : '#FF4B4B'
+                  : i === current ? themeColor : '#e5e7eb'
+              }}
+            />
+          ))}
         </div>
-      </div>
 
-      {/* Progress dots */}
-      <div className="flex gap-2">
-        {step.questions.map((_, i) => (
-          <div
-            key={i}
-            className="h-2 flex-1 rounded-full transition-all duration-500"
-            style={{
-              background: i < results.length
-                ? results[i] ? '#10b981' : '#ef4444'
-                : i === current ? themeColor : '#e5e7eb'
-            }}
-          />
-        ))}
-      </div>
-
-      {/* All done — summary */}
-      {allDone ? (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center space-y-4 py-6">
-          <div className="text-6xl font-black" style={{ color: themeColor }}>
-            {Math.round((score / step.questions.length) * 100)}%
-          </div>
-          <p className="text-gray-500 font-semibold">{score} of {step.questions.length} correct</p>
-          <motion.button
-            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            onClick={onNext}
-            className="w-full py-4 rounded-2xl text-white font-black text-lg"
-            style={{ background: themeColor }}
+        {/* Question */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-5"
           >
-            Continue →
-          </motion.button>
-        </motion.div>
-      ) : (
-        <>
-          {/* Question */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-4"
-            >
-              <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-                <div className="text-xs text-gray-400 font-semibold mb-2">Question {current + 1} of {step.questions.length}</div>
-                <p
-                  className={`font-semibold text-gray-800 ${density === 'younger' ? 'text-lg' : 'text-base'}`}
-                  dangerouslySetInnerHTML={{ __html: renderMd(q.text) }}
-                />
-              </div>
+            <h2
+              className={`font-black text-gray-800 leading-snug ${density === 'younger' ? 'text-2xl' : 'text-xl'}`}
+              dangerouslySetInnerHTML={{ __html: renderMd(q.text) }}
+            />
 
-              {/* Options */}
-              <div className="space-y-2">
-                {q.options.map((opt, i) => {
-                  const isCorrectOpt = confirmed && i === q.correct;
-                  const isWrongSelected = confirmed && i === selected && !isCorrect;
-                  const isOther = confirmed && i !== q.correct && i !== selected;
+            {/* Options */}
+            <div className="space-y-3">
+              {q.options.map((opt, i) => {
+                const isCorrectOpt = confirmed && i === q.correct;
+                const isWrongOpt   = confirmed && i === selected && !isCorrect;
+                const isOther      = confirmed && i !== q.correct && i !== selected;
+                const isChosen     = !confirmed && selected === i;
 
-                  let containerStyle = 'border-gray-200 bg-white hover:border-gray-300';
-                  if (isCorrectOpt) containerStyle = 'border-green-500 bg-green-500';
-                  else if (isWrongSelected) containerStyle = 'border-red-500 bg-red-500';
-                  else if (isOther) containerStyle = 'border-gray-100 bg-gray-50 opacity-50';
-                  else if (!confirmed && selected === i) containerStyle = 'border-indigo-400 bg-indigo-50';
+                let border = '#e5e7eb';
+                let bg = '#ffffff';
+                let textColor = '#374151';
+                let bottomBorder = '#d1d5db';
 
-                  const labelBg = isCorrectOpt || isWrongSelected
-                    ? 'bg-white/25 text-white'
-                    : selected === i && !confirmed
-                    ? 'bg-indigo-100 text-indigo-700'
-                    : 'bg-gray-100 text-gray-600';
+                if (isChosen)      { border = themeColor; bg = themeColor + '10'; bottomBorder = themeDark; }
+                if (isCorrectOpt)  { border = '#58CC02'; bg = '#f0fff4'; bottomBorder = '#46A302'; textColor = '#166534'; }
+                if (isWrongOpt)    { border = '#FF4B4B'; bg = '#fff5f5'; bottomBorder = '#D93D3D'; textColor = '#991b1b'; }
+                if (isOther)       { border = '#f3f4f6'; bg = '#fafafa'; textColor = '#9ca3af'; }
 
-                  const textColor = (isCorrectOpt || isWrongSelected) ? 'text-white' : 'text-gray-800';
-
-                  return (
-                    <motion.button
-                      key={i}
-                      whileHover={!confirmed ? { scale: 1.01 } : {}}
-                      whileTap={!confirmed ? { scale: 0.99 } : {}}
-                      onClick={() => !confirmed && setSelected(i)}
-                      className={`w-full text-left p-4 rounded-2xl border-2 transition-all font-medium flex items-center gap-3 ${containerStyle}`}
-                    >
-                      <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-black flex-shrink-0 ${labelBg}`}>
-                        {['A', 'B', 'C', 'D'][i]}
-                      </span>
-                      <span className={`flex-1 ${textColor} ${density === 'younger' ? 'text-base' : 'text-sm'}`} dangerouslySetInnerHTML={{ __html: renderMd(opt) }} />
-                      {isCorrectOpt && <span className="text-white font-black ml-1">✓</span>}
-                      {isWrongSelected && <span className="text-white font-black ml-1">✗</span>}
-                    </motion.button>
-                  );
-                })}
-              </div>
-
-              {/* Explanation */}
-              <AnimatePresence>
-                {confirmed && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="rounded-2xl p-4 border bg-white border-gray-200 shadow-sm"
+                return (
+                  <motion.button
+                    key={i}
+                    whileTap={!confirmed ? { scale: 0.98 } : {}}
+                    onClick={() => !confirmed && setSelected(i)}
+                    className="w-full text-left p-4 rounded-2xl border-2 transition-all flex items-center gap-3 font-semibold"
+                    style={{
+                      borderColor: border,
+                      borderBottomColor: bottomBorder,
+                      borderBottomWidth: '3px',
+                      background: bg,
+                      color: textColor,
+                    }}
                   >
-                    <div className={`font-bold mb-1 ${isCorrect ? 'text-green-600' : 'text-gray-600'}`}>
-                      {isCorrect ? 'Correct' : 'Not quite'}
-                    </div>
-                    <p
-                      className={`text-gray-600 ${density === 'younger' ? 'text-sm' : 'text-xs'}`}
-                      dangerouslySetInnerHTML={{ __html: renderMd(q.explanation) }}
+                    <span
+                      className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black flex-shrink-0"
+                      style={{
+                        background: isChosen ? themeColor : isCorrectOpt ? '#58CC02' : isWrongOpt ? '#FF4B4B' : '#f3f4f6',
+                        color: (isChosen || isCorrectOpt || isWrongOpt) ? 'white' : '#6b7280',
+                      }}
+                    >
+                      {['A','B','C','D'][i]}
+                    </span>
+                    <span
+                      className={`flex-1 ${density === 'younger' ? 'text-base' : 'text-sm'}`}
+                      dangerouslySetInnerHTML={{ __html: renderMd(opt) }}
                     />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </AnimatePresence>
+                    {isCorrectOpt && <CheckCircle size={20} color="#58CC02" />}
+                    {isWrongOpt   && <XCircle    size={20} color="#FF4B4B" />}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-          {/* Action buttons */}
-          {!confirmed ? (
-            <motion.button
-              whileHover={selected !== null ? { scale: 1.03 } : {}}
-              whileTap={selected !== null ? { scale: 0.97 } : {}}
-              onClick={confirm}
-              disabled={selected === null}
-              className="w-full py-4 rounded-2xl text-white font-black text-lg disabled:opacity-30"
-              style={{ background: themeColor }}
-            >
-              Check Answer
-            </motion.button>
-          ) : (
-            <motion.button
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-              onClick={next}
-              className="w-full py-4 rounded-2xl text-white font-black text-lg"
-              style={{ background: themeColor }}
-            >
-              {current < step.questions.length - 1 ? 'Next Question →' : 'See Results →'}
-            </motion.button>
-          )}
-        </>
-      )}
+      {/* ── FEEDBACK PANEL + BOTTOM BUTTON (Duolingo-style) ── */}
+      <AnimatePresence>
+        {confirmed && (
+          <motion.div
+            key="feedback"
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            className="px-4 pt-4 pb-2 rounded-t-3xl border-t-2"
+            style={{
+              background: isCorrect ? '#f0fff4' : '#fff5f5',
+              borderColor: isCorrect ? '#86efac' : '#fca5a5',
+            }}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              {isCorrect
+                ? <CheckCircle size={22} color="#22c55e" />
+                : <XCircle    size={22} color="#ef4444" />
+              }
+              <span className={`font-black text-lg ${isCorrect ? 'text-green-700' : 'text-red-600'}`}>
+                {isCorrect ? 'Correct!' : 'Not quite!'}
+              </span>
+            </div>
+            <p
+              className="text-sm font-medium mb-4"
+              style={{ color: isCorrect ? '#166534' : '#991b1b' }}
+              dangerouslySetInnerHTML={{ __html: renderMd(q.explanation) }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <button onClick={() => setShowNote(v => !v)} className="text-xs text-gray-400 hover:text-gray-600 underline">
-        Teacher note {showNote ? '▲' : '▼'}
-      </button>
-      {showNote && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-sm text-amber-800">{step.teacherNote}</div>
-      )}
-    </motion.div>
+      <div className="px-4 pb-8 pt-2 bg-white">
+        {!confirmed ? (
+          <button
+            onClick={confirm}
+            disabled={selected === null}
+            className="btn-duo w-full py-4 rounded-2xl font-black text-base uppercase tracking-wide transition-all"
+            style={selected !== null
+              ? { background: themeColor, borderBottomColor: themeDark, color: 'white' }
+              : { background: '#e5e7eb', borderBottomColor: '#d1d5db', color: '#9ca3af' }
+            }
+          >
+            CHECK
+          </button>
+        ) : (
+          <button
+            onClick={next}
+            className="btn-duo w-full py-4 rounded-2xl font-black text-base uppercase tracking-wide text-white"
+            style={{ background: isCorrect ? '#58CC02' : '#FF4B4B', borderBottomColor: isCorrect ? '#46A302' : '#D93D3D' }}
+          >
+            {current < step.questions.length - 1 ? 'CONTINUE' : 'SEE RESULTS'}
+          </button>
+        )}
+      </div>
+    </div>
   );
 }

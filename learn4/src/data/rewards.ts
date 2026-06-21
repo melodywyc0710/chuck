@@ -114,4 +114,77 @@ export const ROOM_ITEMS: RoomItem[] = [
   { id: 'unicorn', name: 'Unicorn', emoji: '🦄', cost: 35, category: 'pet', description: 'The rarest pet of all!', position: { x: 30, y: 58 }, weekUnlock: 10 },
   { id: 'galaxy-view', name: 'Galaxy Portal View', emoji: '🌌', cost: 30, category: 'window', description: 'A swirling galaxy right outside!', position: { x: 45, y: 10 }, weekUnlock: 10 },
   { id: 'gold-trophy-wall', name: 'Gold Trophy Wall', emoji: '🥇', cost: 45, category: 'decoration', description: 'Wall of legendary achievements', position: { x: 50, y: 20 }, weekUnlock: 10 },
+
+  // ── ALWAYS AVAILABLE ───────────────────────────────────────────────────────
+  { id: 'mug', name: 'Hot Cocoa Mug', emoji: '☕', cost: 2, category: 'decoration', description: 'Perfect study fuel', position: { x: 68, y: 28 } },
+  { id: 'pillow', name: 'Throw Pillow', emoji: '🛋️', cost: 2, category: 'decoration', description: 'Extra cosy for reading', position: { x: 22, y: 65 } },
+  { id: 'candle', name: 'Scented Candle', emoji: '🕯️', cost: 3, category: 'decoration', description: 'Calming lavender scent', position: { x: 76, y: 42 } },
+  { id: 'sunflower', name: 'Sunflower Pot', emoji: '🌻', cost: 3, category: 'decoration', description: 'Bright and cheerful', position: { x: 84, y: 58 } },
+  { id: 'alarm-clock', name: 'Alarm Clock', emoji: '⏰', cost: 3, category: 'decoration', description: 'Never miss study time!', position: { x: 72, y: 25 } },
+  { id: 'notebook', name: 'Notebook Stack', emoji: '📓', cost: 4, category: 'decoration', description: 'Filled with great ideas', position: { x: 62, y: 30 } },
+  { id: 'headphones', name: 'Headphones', emoji: '🎧', cost: 5, category: 'decoration', description: 'Focus mode activated', position: { x: 55, y: 25 } },
+  { id: 'hamster', name: 'Hamster Wheel', emoji: '🐹', cost: 5, category: 'pet', description: 'Runs all night on the wheel', position: { x: 18, y: 58 } },
+  { id: 'snail', name: 'Garden Snail', emoji: '🐌', cost: 4, category: 'pet', description: 'Slow and steady wins the race', position: { x: 38, y: 72 } },
+  { id: 'frog', name: 'Frog in a Jar', emoji: '🐸', cost: 5, category: 'pet', description: 'Ribbit ribbit all day long', position: { x: 25, y: 45 } },
+
+  // ── WEEK 1 ADDITIONS ──────────────────────────────────────────────────────
+  { id: 'pinboard', name: 'Pin Board', emoji: '📌', cost: 4, category: 'decoration', description: 'Pin your best work up!', position: { x: 48, y: 18 }, weekUnlock: 1 },
+  { id: 'fairy-lights', name: 'Fairy Lights', emoji: '🌟', cost: 6, category: 'decoration', description: 'Twinkly lights everywhere', position: { x: 50, y: 8 }, weekUnlock: 1 },
+  { id: 'turtle', name: 'Sea Turtle', emoji: '🐢', cost: 7, category: 'pet', description: 'Ancient and wise', position: { x: 42, y: 68 }, weekUnlock: 1 },
+  { id: 'sunrise-view', name: 'Sunrise View', emoji: '🌅', cost: 7, category: 'window', description: 'Golden sunrise every morning', position: { x: 45, y: 10 }, weekUnlock: 1 },
+
+  // ── WEEK 2 ADDITIONS ──────────────────────────────────────────────────────
+  { id: 'basketball-hoop', name: 'Basketball Hoop', emoji: '🏀', cost: 9, category: 'decoration', description: 'Shoot hoops during breaks', position: { x: 88, y: 32 }, weekUnlock: 2 },
+  { id: 'dartboard', name: 'Dart Board', emoji: '🎯', cost: 7, category: 'decoration', description: 'Focus target practice!', position: { x: 15, y: 20 }, weekUnlock: 2 },
+  { id: 'butterfly', name: 'Butterfly Garden', emoji: '🦋', cost: 8, category: 'pet', description: 'Colourful butterflies flutter past', position: { x: 55, y: 55 }, weekUnlock: 2 },
+  { id: 'waterfall-view', name: 'Waterfall View', emoji: '💧', cost: 9, category: 'window', description: 'Peaceful waterfall sounds', position: { x: 45, y: 10 }, weekUnlock: 2 },
+
+  // ── WEEK 3 ADDITIONS ──────────────────────────────────────────────────────
+  { id: 'chessboard', name: 'Chess Set', emoji: '♟️', cost: 9, category: 'decoration', description: 'Train your strategic mind', position: { x: 62, y: 42 }, weekUnlock: 3 },
+  { id: 'terrarium', name: 'Terrarium', emoji: '🌿', cost: 10, category: 'decoration', description: 'Tiny ecosystem on your desk', position: { x: 72, y: 32 }, weekUnlock: 3 },
+  { id: 'fox-kit', name: 'Fox Kit', emoji: '🦊', cost: 11, category: 'pet', description: 'Curious and playful', position: { x: 32, y: 60 }, weekUnlock: 3 },
+  { id: 'desert-view', name: 'Desert Dunes View', emoji: '🏜️', cost: 10, category: 'window', description: 'Sandy dunes stretch to the horizon', position: { x: 45, y: 10 }, weekUnlock: 3 },
+
+  // ── WEEK 4 ADDITIONS ──────────────────────────────────────────────────────
+  { id: 'telescope-2', name: 'Giant Telescope', emoji: '🔭', cost: 13, category: 'decoration', description: 'See galaxies from your room', position: { x: 78, y: 22 }, weekUnlock: 4 },
+  { id: 'record-player', name: 'Record Player', emoji: '🎵', cost: 12, category: 'furniture', description: 'Study to vinyl beats', position: { x: 22, y: 35 }, weekUnlock: 4 },
+  { id: 'owl-pet', name: 'Wise Owl', emoji: '🦉', cost: 13, category: 'pet', description: 'Hoo hoo from the bookshelf', position: { x: 85, y: 28 }, weekUnlock: 4 },
+  { id: 'tundra-view', name: 'Arctic Tundra View', emoji: '🌨️', cost: 12, category: 'window', description: 'Polar bears wander outside', position: { x: 45, y: 10 }, weekUnlock: 4 },
+
+  // ── WEEK 5 ADDITIONS ──────────────────────────────────────────────────────
+  { id: 'foosball', name: 'Foosball Table', emoji: '⚽', cost: 18, category: 'furniture', description: 'Quick game after homework!', position: { x: 35, y: 55 }, weekUnlock: 5 },
+  { id: 'map-wall', name: 'World Map Wall', emoji: '🗺️', cost: 14, category: 'decoration', description: 'Pin all the places you\'ll go', position: { x: 50, y: 12 }, weekUnlock: 5 },
+  { id: 'koala', name: 'Koala', emoji: '🐨', cost: 15, category: 'pet', description: 'Sleeping on your eucalyptus branch', position: { x: 62, y: 58 }, weekUnlock: 5 },
+  { id: 'storm-view', name: 'Lightning Storm View', emoji: '⛈️', cost: 14, category: 'window', description: 'Dramatic storm rolls in outside', position: { x: 45, y: 10 }, weekUnlock: 5 },
+
+  // ── WEEK 6 ADDITIONS ──────────────────────────────────────────────────────
+  { id: 'projector', name: 'Movie Projector', emoji: '📽️', cost: 20, category: 'decoration', description: 'Movie nights in your room!', position: { x: 68, y: 45 }, weekUnlock: 6 },
+  { id: 'bookcase-big', name: 'Giant Library Wall', emoji: '📖', cost: 18, category: 'furniture', description: 'Hundreds of books floor-to-ceiling', position: { x: 88, y: 25 }, weekUnlock: 6 },
+  { id: 'lynx', name: 'Snow Leopard', emoji: '🐆', cost: 20, category: 'pet', description: 'Majestic and mysterious', position: { x: 48, y: 62 }, weekUnlock: 6 },
+  { id: 'sakura-view', name: 'Sakura Garden View', emoji: '🌸', cost: 16, category: 'window', description: 'Japanese cherry blossom garden', position: { x: 45, y: 10 }, weekUnlock: 6 },
+
+  // ── WEEK 7 ADDITIONS ──────────────────────────────────────────────────────
+  { id: 'climbing-wall', name: 'Climbing Wall', emoji: '🧗', cost: 22, category: 'decoration', description: 'Indoor bouldering corner!', position: { x: 5, y: 40 }, weekUnlock: 7 },
+  { id: 'vintage-globe', name: 'Antique Globe Bar', emoji: '🌍', cost: 16, category: 'furniture', description: 'Spin the world on your desk', position: { x: 38, y: 30 }, weekUnlock: 7 },
+  { id: 'narwhal', name: 'Narwhal Tank', emoji: '🦭', cost: 22, category: 'pet', description: 'The unicorn of the sea', position: { x: 72, y: 65 }, weekUnlock: 7 },
+  { id: 'savannah-view', name: 'African Savannah View', emoji: '🦁', cost: 19, category: 'window', description: 'Lions roam outside your window', position: { x: 45, y: 10 }, weekUnlock: 7 },
+
+  // ── WEEK 8 ADDITIONS ──────────────────────────────────────────────────────
+  { id: 'indoor-pool', name: 'Mini Indoor Pool', emoji: '🏊', cost: 28, category: 'furniture', description: 'Swim laps between lessons', position: { x: 45, y: 70 }, weekUnlock: 8 },
+  { id: 'arcade-machine', name: 'Arcade Machine', emoji: '🕹️', cost: 24, category: 'decoration', description: '80s arcade cabinet in the corner', position: { x: 15, y: 42 }, weekUnlock: 8 },
+  { id: 'panda-cub', name: 'Panda Cub', emoji: '🐼', cost: 24, category: 'pet', description: 'Munches bamboo on your rug', position: { x: 35, y: 62 }, weekUnlock: 8 },
+  { id: 'cosmos-view', name: 'Deep Space View', emoji: '🚀', cost: 22, category: 'window', description: 'Asteroids float past your window', position: { x: 45, y: 10 }, weekUnlock: 8 },
+
+  // ── WEEK 9 ADDITIONS ──────────────────────────────────────────────────────
+  { id: 'grand-piano', name: 'Grand Piano', emoji: '🎹', cost: 35, category: 'furniture', description: 'A full concert grand piano!', position: { x: 18, y: 48 }, weekUnlock: 9 },
+  { id: 'knight-armour', name: 'Knight\'s Armour', emoji: '⚔️', cost: 28, category: 'decoration', description: 'Full suit of armour stands guard', position: { x: 8, y: 28 }, weekUnlock: 9 },
+  { id: 'tiger-cub', name: 'Tiger Cub', emoji: '🐯', cost: 28, category: 'pet', description: 'Playful and fierce', position: { x: 58, y: 65 }, weekUnlock: 9 },
+  { id: 'northern-lights', name: 'Northern Lights Live', emoji: '🌠', cost: 26, category: 'window', description: 'Real-time aurora borealis outside', position: { x: 45, y: 10 }, weekUnlock: 9 },
+
+  // ── WEEK 10 ADDITIONS ─────────────────────────────────────────────────────
+  { id: 'dragon-egg', name: 'Dragon Egg', emoji: '🥚', cost: 40, category: 'decoration', description: 'What\'s hatching inside?!', position: { x: 65, y: 55 }, weekUnlock: 10 },
+  { id: 'portal-door', name: 'Portal Door', emoji: '🚪', cost: 45, category: 'decoration', description: 'Opens to another dimension', position: { x: 90, y: 50 }, weekUnlock: 10 },
+  { id: 'phoenix', name: 'Phoenix', emoji: '🔥', cost: 50, category: 'pet', description: 'The legendary fire bird! Rarest of all', position: { x: 52, y: 52 }, weekUnlock: 10 },
+  { id: 'floating-island', name: 'Floating Island View', emoji: '🏝️', cost: 38, category: 'window', description: 'Sky islands float past your window', position: { x: 45, y: 10 }, weekUnlock: 10 },
+  { id: 'diamond-chandelier', name: 'Diamond Chandelier', emoji: '💎', cost: 55, category: 'decoration', description: 'Legendary sparkle overhead', position: { x: 50, y: 5 }, weekUnlock: 10 },
 ];

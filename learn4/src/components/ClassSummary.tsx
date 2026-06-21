@@ -5,7 +5,8 @@ import { mathsSession } from '../data/maths-session';
 import { getSession } from '../data/curriculum/index';
 import { lessonSummaries } from '../data/lessonSummaries';
 
-const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
+const THEME_COLOR = { purple: '#A855F7', blue: '#1CB0F6', green: '#58CC02', orange: '#F97316' };
+const THEME_DARK  = { purple: '#7C3AED', blue: '#0E8FC4', green: '#46A302', orange: '#EA580C' };
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 
 function formatDate(iso: string) {
@@ -22,6 +23,7 @@ export default function ClassSummary() {
   const session = getSession(latest.sessionId) ?? (latest.subject === 'english' ? englishSession : mathsSession);
   const coveredText = lessonSummaries[latest.sessionId]?.en ?? session.description;
   const themeColor = THEME_COLOR[profile.colorTheme];
+  const themeDark  = THEME_DARK[profile.colorTheme];
   const mascot = MASCOT_EMOJI[profile.mascot];
   const pct = latest.total > 0 ? Math.round((latest.score / latest.total) * 100) : 100;
 
@@ -64,9 +66,11 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #f0fff4 0%, #fafff7 100%)' }}>
       {/* Celebration header */}
-      <div className="text-white py-10 px-4 text-center" style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}cc)` }}>
+      <div className="text-white py-10 px-4 text-center relative overflow-hidden"
+        style={{ background: `linear-gradient(135deg, ${themeColor}, ${themeColor}cc)`, boxShadow: `0 6px 0 ${themeDark}` }}>
+        <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-20" style={{ background: 'white' }} />
         <motion.div
           initial={{ scale: 0 }} animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 200 }}
@@ -91,25 +95,26 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
         {/* Stats cards */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { value: `+${latest.starsEarned}`, label: 'Stars earned' },
-            { value: `${pct}%`, label: 'Quiz score' },
-            { value: `${latest.timeSpentMinutes || '~45'}m`, label: 'Time spent' },
+            { value: `+${latest.starsEarned}`, label: 'Stars earned', emoji: '⭐' },
+            { value: `${pct}%`, label: 'Quiz score', emoji: '🎯' },
+            { value: `${latest.timeSpentMinutes || '~45'}m`, label: 'Time spent', emoji: '⏱' },
           ].map(s => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl p-4 text-center shadow-sm"
+              className="card p-4 text-center"
             >
-              <div className="font-black text-2xl text-gray-800">{s.value}</div>
-              <div className="text-xs text-gray-400">{s.label}</div>
+              <div className="text-xl mb-1">{s.emoji}</div>
+              <div className="font-black text-xl text-gray-800">{s.value}</div>
+              <div className="text-xs text-gray-400 font-medium">{s.label}</div>
             </motion.div>
           ))}
         </div>
 
         {/* What was covered */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm">
+        <div className="card p-5">
           <h3 className="font-black text-gray-800 mb-3">What we covered</h3>
-          <div className="text-xs text-indigo-600 font-semibold mb-1">{session.victorianCode}</div>
+          <div className="text-xs font-black uppercase tracking-wide mb-1" style={{ color: themeColor }}>{session.victorianCode}</div>
           <p className="text-gray-600 text-sm">{coveredText}</p>
           <div className="mt-3 space-y-1">
             {session.steps.map((s, i) => (
@@ -123,11 +128,11 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
 
         {/* Homework reminder */}
         {session.steps.filter(s => s.type === 'homework').map((s: any) => (
-          <div key={s.id} className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
-            <h3 className="font-black text-amber-800 mb-3">Homework due next class</h3>
+          <div key={s.id} className="card p-5 border-yellow-300" style={{ borderBottomColor: '#E0A800', borderBottomWidth: '3px' }}>
+            <h3 className="font-black text-yellow-700 mb-3">🏠 Homework due next class</h3>
             <div className="space-y-2">
               {s.tasks.map((task: any) => (
-                <div key={task.id} className="flex items-start gap-2 text-sm text-amber-700">
+                <div key={task.id} className="flex items-start gap-2 text-sm text-gray-700">
                   <span>□</span>
                   <span>{task.label}</span>
                 </div>
@@ -137,22 +142,12 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
         ))}
 
         {/* Parent summary — printable */}
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+        <div className="card p-5">
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-black text-gray-800">Send to Parents</h3>
             <div className="flex gap-2">
-              <button
-                onClick={copyToClipboard}
-                className="text-xs bg-indigo-100 text-indigo-700 font-bold px-3 py-1.5 rounded-lg hover:bg-indigo-200 transition-colors no-print"
-              >
-                Copy
-              </button>
-              <button
-                onClick={() => window.print()}
-                className="text-xs bg-gray-100 text-gray-700 font-bold px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-colors no-print"
-              >
-                Print
-              </button>
+              <button onClick={copyToClipboard} className="btn-duo btn-green px-3 py-1.5 text-xs rounded-xl no-print">Copy</button>
+              <button onClick={() => window.print()} className="btn-duo btn-ghost px-3 py-1.5 text-xs rounded-xl no-print">Print</button>
             </div>
           </div>
           <div className="text-sm text-gray-600 whitespace-pre-wrap bg-gray-50 rounded-xl p-4 leading-relaxed">
@@ -161,22 +156,17 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
         </div>
 
         {/* Navigation */}
-        <div className="flex gap-3 no-print">
-          <motion.button
-            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            onClick={() => setView('rewards')}
-            className="flex-1 py-4 rounded-2xl font-black text-lg bg-yellow-400 text-yellow-900"
-          >
-            Decorate Room
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+        <div className="flex gap-3 no-print pb-6">
+          <button onClick={() => setView('rewards')} className="btn-duo btn-yellow flex-1 py-4 text-base rounded-2xl">
+            🏆 Rewards Room
+          </button>
+          <button
             onClick={() => setView('home')}
-            className="flex-1 py-4 rounded-2xl text-white font-black text-lg"
-            style={{ background: themeColor }}
+            className="btn-duo flex-1 py-4 text-base rounded-2xl text-white"
+            style={{ background: themeColor, borderBottomColor: themeDark }}
           >
-            Back Home
-          </motion.button>
+            Back Home →
+          </button>
         </div>
       </div>
     </div>

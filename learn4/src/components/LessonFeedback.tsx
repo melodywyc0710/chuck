@@ -5,7 +5,7 @@ import { sounds } from '../utils/sounds';
 import { getSession } from '../data/curriculum/index';
 import { lessonSummaries } from '../data/lessonSummaries';
 
-const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
+const THEME_COLOR = { purple: '#A855F7', blue: '#1CB0F6', green: '#58CC02', orange: '#F97316' };
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 
 const HW_EN: Record<string, string> = {
@@ -155,7 +155,7 @@ export default function LessonFeedback({ onContinue }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #f0fff4 0%, #fafff7 100%)' }}>
       {/* Star burst fly-in */}
       {stars.map(star => {
         const rad = (star.angle * Math.PI) / 180;

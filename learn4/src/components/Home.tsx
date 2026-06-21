@@ -8,13 +8,21 @@ import { isSessionUnlocked, formatUnlockDate } from '../utils/weeklyUnlock';
 import { supabase } from '../lib/supabase';
 
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
-const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
+const THEME_COLOR = { purple: '#A855F7', blue: '#1CB0F6', green: '#58CC02', orange: '#F97316' };
+const THEME_DARK  = { purple: '#7C3AED', blue: '#0E8FC4', green: '#46A302', orange: '#EA580C' };
 const SUBJECT_LABEL: Record<string, string> = {
-  english: 'English',
-  maths: 'Maths',
-  science: 'Science',
-  hass: 'HASS',
-  vcd: 'VCD',
+  english: '📖 English',
+  maths: '🔢 Maths',
+  science: '🔬 Science',
+  hass: '🌏 HASS',
+  vcd: '🎨 VCD',
+};
+const SUBJECT_COLOR: Record<string, string> = {
+  english: '#1CB0F6',
+  maths: '#58CC02',
+  science: '#FF9600',
+  hass: '#CE82FF',
+  vcd: '#FF4B4B',
 };
 
 interface NodeProps {
@@ -28,54 +36,59 @@ interface NodeProps {
   onStart: () => void;
   onHomework: () => void;
   themeColor: string;
+  themeDark: string;
 }
 
-function PathNode({ index, session, completed, current, locked, weekLocked, pinLocked, onStart, onHomework, themeColor }: NodeProps) {
+function PathNode({ index, session, completed, current, locked, weekLocked, pinLocked, onStart, onHomework, themeColor, themeDark }: NodeProps) {
   const isAnyLocked = locked || weekLocked;
-  const offset = index % 2 === 0 ? 'ml-8' : 'mr-8 self-end';
+  const isLeft = index % 2 === 0;
+
   return (
-    <div className={`flex flex-col items-center ${offset}`}>
+    <div className={`flex items-center gap-4 ${isLeft ? 'flex-row' : 'flex-row-reverse'}`}>
       <motion.button
         whileHover={!isAnyLocked ? { scale: 1.08 } : {}}
-        whileTap={!isAnyLocked ? { scale: 0.95 } : {}}
+        whileTap={!isAnyLocked ? { scale: 0.92 } : {}}
         onClick={() => !isAnyLocked && onStart()}
         disabled={isAnyLocked}
-        className="relative w-20 h-20 rounded-full flex items-center justify-center text-3xl shadow-lg border-4 transition-all"
+        className="relative w-20 h-20 rounded-full flex items-center justify-center text-3xl flex-shrink-0 transition-all"
         style={
           completed
-            ? { background: themeColor, borderColor: themeColor, color: 'white' }
+            ? { background: themeColor, boxShadow: `0 5px 0 ${themeDark}`, color: 'white' }
             : current
-            ? { background: '#f59e0b', borderColor: '#d97706', color: 'white' }
+            ? { background: '#FFC800', boxShadow: '0 5px 0 #E0A800', color: '#6b4f00' }
             : isAnyLocked
-            ? { background: '#f3f4f6', borderColor: '#e5e7eb', color: '#9ca3af' }
-            : { background: '#fff', borderColor: themeColor, color: themeColor }
+            ? { background: '#f3f4f6', boxShadow: '0 4px 0 #e5e7eb', color: '#9ca3af' }
+            : { background: 'white', boxShadow: `0 5px 0 ${themeDark}`, color: themeColor, border: `3px solid ${themeColor}` }
         }
-        animate={current ? { boxShadow: ['0 0 0 0 rgba(245,158,11,0.5)', '0 0 0 16px rgba(245,158,11,0)'] } : {}}
+        animate={current ? { y: [0, -4, 0] } : {}}
         transition={current ? { duration: 1.5, repeat: Infinity } : {}}
       >
         {completed ? '⭐' : isAnyLocked ? '🔒' : pinLocked ? '🔐' : session.icon}
         {current && (
           <motion.div
-            className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-black px-2 py-0.5 rounded-full"
-            animate={{ y: [0, -3, 0] }}
-            transition={{ duration: 1, repeat: Infinity }}
+            className="absolute -top-3 left-1/2 -translate-x-1/2 text-xs font-black px-2 py-0.5 rounded-full whitespace-nowrap"
+            style={{ background: '#FFC800', color: '#6b4f00', boxShadow: '0 2px 0 #E0A800' }}
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 0.8, repeat: Infinity }}
           >
-            GO!
+            START!
           </motion.div>
         )}
       </motion.button>
-      <div className={`mt-2 text-center max-w-24 ${isAnyLocked ? 'opacity-40' : ''}`}>
-        <div className="text-xs font-bold text-gray-700 leading-tight">{session.title.split(':').pop()?.trim()}</div>
-        <div className="text-xs text-gray-400">{session.victorianCode}</div>
-        {completed && <div className="text-xs text-green-600 font-semibold">✓ Done</div>}
+
+      <div className={`flex-1 card p-3 ${isAnyLocked ? 'opacity-50' : ''}`}
+        style={current ? { borderColor: '#FFC800', borderBottomColor: '#E0A800', borderBottomWidth: '3px' } : {}}>
+        <div className="font-black text-gray-800 text-sm leading-tight">{session.title.split(':').pop()?.trim()}</div>
+        <div className="text-xs text-gray-400 font-medium mt-0.5">{session.victorianCode}</div>
+        {completed && <div className="text-xs text-green-600 font-black mt-1">✓ Complete!</div>}
         {weekLocked && session.weekNumber && (
-          <div className="text-xs text-blue-400 font-semibold">🗓 {formatUnlockDate(session.weekNumber)}</div>
+          <div className="text-xs text-blue-500 font-bold mt-1">🗓 {formatUnlockDate(session.weekNumber)}</div>
         )}
         <button
           onClick={(e) => { e.stopPropagation(); onHomework(); }}
-          className="mt-1 text-xs text-gray-400 hover:text-gray-600 underline"
+          className="mt-1.5 text-xs text-gray-400 hover:text-gray-600 font-semibold"
         >
-          📄 Homework
+          📄 Homework sheet
         </button>
       </div>
     </div>
@@ -92,109 +105,107 @@ export default function Home() {
   if (!profile) return null;
 
   const themeColor = THEME_COLOR[profile.colorTheme];
+  const themeDark  = THEME_DARK[profile.colorTheme];
   const yearSessions = sessionsByYear[activeYearLevel] ?? [];
-
-  // Get unique subjects present in this year's sessions
   const subjects = Array.from(new Set(yearSessions.map(s => s.subject))) as Subject[];
   const activeSubjectSessions = yearSessions.filter(s => s.subject === activeSubject);
-
-  // Find first incomplete session as "current"
   const currentIndex = activeSubjectSessions.findIndex(s => !completedSessions.includes(s.id));
   const featuredSession = currentIndex >= 0 ? activeSubjectSessions[currentIndex] : activeSubjectSessions[activeSubjectSessions.length - 1];
+  const doneCount = activeSubjectSessions.filter(s => completedSessions.includes(s.id)).length;
+  const progressPct = activeSubjectSessions.length ? Math.round((doneCount / activeSubjectSessions.length) * 100) : 0;
 
   return (
-    <div className="min-h-screen" style={{ background: `linear-gradient(135deg, ${themeColor}11, #f0f4ff)` }}>
+    <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #f0fff4 0%, #fafff7 100%)' }}>
       {/* Top bar */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">{MASCOT_EMOJI[profile.mascot]}</span>
-            <div>
-              <div className="font-black text-gray-800 text-sm leading-none">Hi, {profile.name}! 👋</div>
-              <div className="text-xs text-gray-400">Year {activeYearLevel} · Chucky</div>
+      <div className="bg-white sticky top-0 z-10" style={{ boxShadow: '0 3px 0 #e5e7eb' }}>
+        <div className="max-w-2xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-xl"
+                style={{ background: themeColor + '20', boxShadow: `0 3px 0 ${themeDark}20` }}>
+                {MASCOT_EMOJI[profile.mascot]}
+              </div>
+              <div>
+                <div className="font-black text-gray-800 text-sm">{profile.name}</div>
+                <div className="text-xs text-gray-400 font-medium">Year {activeYearLevel}</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap justify-end">
+              <button onClick={() => setView('rewards')} className="xp-badge cursor-pointer hover:scale-105 transition-transform">
+                ⭐ {totalStars}
+              </button>
+              {currentStreak >= 1 && (
+                <div className="streak-badge">🔥 {currentStreak}w</div>
+              )}
+              <button onClick={() => setView('revision')} className="btn-duo btn-ghost px-3 py-1.5 text-xs rounded-xl">Revision</button>
+              <button onClick={() => setView('games')} className="btn-duo btn-ghost px-3 py-1.5 text-xs rounded-xl">Games</button>
+              {userRole === 'teacher' && (
+                <button
+                  onClick={() => setView('teacher')}
+                  className="btn-duo px-3 py-1.5 text-xs rounded-xl text-white"
+                  style={{ background: themeColor, borderBottomColor: themeDark, borderBottomWidth: '3px' }}
+                >
+                  🍎 Teacher
+                </button>
+              )}
+              <button
+                onClick={async () => { await supabase.auth.signOut(); setUserId(null, null); }}
+                className="btn-duo btn-ghost px-3 py-1.5 text-xs rounded-xl"
+              >
+                Sign out
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setView('rewards')}
-              className="flex items-center gap-1.5 bg-yellow-100 hover:bg-yellow-200 px-3 py-1.5 rounded-full transition-colors"
-            >
-              <span>⭐</span>
-              <span className="font-black text-yellow-700 text-sm">{totalStars}</span>
-            </button>
-            {currentStreak >= 1 && (
-              <div className="flex items-center gap-1 bg-orange-100 px-3 py-1.5 rounded-full" title="Sessions this week count!">
-                <span>🔥</span>
-                <span className="font-black text-orange-700 text-sm">{currentStreak} week streak</span>
-              </div>
-            )}
-            <button
-              onClick={() => setView('revision')}
-              className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-3 py-1.5"
-            >
-              Revision
-            </button>
-            <button
-              onClick={() => setView('games')}
-              className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-3 py-1.5"
-            >
-              Games
-            </button>
-            <button
-              onClick={async () => { await supabase.auth.signOut(); setUserId(null, null); }}
-              className="text-xs text-gray-400 hover:text-red-500 border border-gray-200 rounded-full px-3 py-1.5"
-            >
-              Sign out
-            </button>
-            {userRole === 'teacher' && (
+
+          {/* Year tabs */}
+          <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+            {([4, 5, 6, 8, 9, 10, 11] as const).map(yr => (
               <button
-                onClick={() => setView('teacher')}
-                className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-3 py-1.5"
+                key={yr}
+                onClick={() => setActiveYearLevel(yr)}
+                className={`flex-shrink-0 py-1.5 px-3 rounded-xl font-black text-xs transition-all ${
+                  activeYearLevel === yr ? 'text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                }`}
+                style={activeYearLevel === yr ? {
+                  background: themeColor,
+                  boxShadow: `0 3px 0 ${themeDark}`,
+                } : {}}
               >
-                Teacher
+                {yr === 11 ? 'VCE' : `Year ${yr}`}
               </button>
-            )}
+            ))}
           </div>
-        </div>
 
-        {/* Year level tabs */}
-        <div className="max-w-2xl mx-auto px-4 pt-1 pb-2 flex gap-2 overflow-x-auto">
-          {([4, 5, 6, 8, 9, 10, 11] as const).map(yr => (
-            <button
-              key={yr}
-              onClick={() => setActiveYearLevel(yr)}
-              className={`flex-shrink-0 py-1.5 px-3 rounded-xl font-bold text-sm transition-all ${
-                activeYearLevel === yr ? 'text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-              }`}
-              style={activeYearLevel === yr ? { background: themeColor } : {}}
-            >
-              {yr === 11 ? 'VCE' : `Year ${yr}`}
-            </button>
-          ))}
-        </div>
-
-        {/* Subject tabs */}
-        <div className="max-w-2xl mx-auto px-4 pb-3 flex gap-2 overflow-x-auto">
-          {subjects.map(sub => (
-            <button
-              key={sub}
-              onClick={() => setActiveSubject(sub)}
-              className={`flex-shrink-0 py-2 px-4 rounded-xl font-bold text-sm transition-all ${
-                activeSubject === sub ? 'text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-              }`}
-              style={activeSubject === sub ? { background: featuredSession?.color ?? themeColor } : {}}
-            >
-              {SUBJECT_LABEL[sub] ?? sub}
-            </button>
-          ))}
+          {/* Subject tabs */}
+          <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
+            {subjects.map(sub => {
+              const subColor = SUBJECT_COLOR[sub] ?? themeColor;
+              return (
+                <button
+                  key={sub}
+                  onClick={() => setActiveSubject(sub)}
+                  className={`flex-shrink-0 py-2 px-4 rounded-xl font-black text-xs transition-all ${
+                    activeSubject === sub ? 'text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                  }`}
+                  style={activeSubject === sub ? {
+                    background: subColor,
+                    boxShadow: `0 3px 0 ${subColor}99`,
+                  } : {}}
+                >
+                  {SUBJECT_LABEL[sub] ?? sub}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
         {activeSubjectSessions.length === 0 ? (
-          <div className="bg-white rounded-3xl p-8 text-center shadow-sm">
-            <div className="text-4xl mb-3">🚀</div>
-            <p className="text-gray-500 font-semibold">Content loading — check back soon!</p>
+          <div className="card p-10 text-center">
+            <div className="text-5xl mb-4">🚀</div>
+            <p className="text-gray-500 font-bold text-lg">Content loading — check back soon!</p>
           </div>
         ) : (
           <>
@@ -202,65 +213,84 @@ export default function Home() {
             {featuredSession && (
               <motion.div
                 key={featuredSession.id}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-3xl p-6 text-white shadow-xl"
-                style={{ background: `linear-gradient(135deg, ${featuredSession.color}, ${featuredSession.color}cc)` }}
+                className="rounded-3xl p-6 text-white relative overflow-hidden"
+                style={{
+                  background: `linear-gradient(135deg, ${featuredSession.color}, ${featuredSession.color}cc)`,
+                  boxShadow: `0 6px 0 ${featuredSession.color}88`,
+                }}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <div className="text-xs font-semibold opacity-80 mb-1">{featuredSession.victorianCode}</div>
-                    <h2 className="text-xl font-black leading-tight">{featuredSession.title}</h2>
-                    <p className="text-sm opacity-80 mt-1">{featuredSession.description}</p>
+                <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-20" style={{ background: 'white' }} />
+                <div className="absolute -bottom-4 -left-4 w-20 h-20 rounded-full opacity-10" style={{ background: 'white' }} />
+                <div className="relative">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="text-xs font-black opacity-80 mb-1 tracking-wide uppercase">{featuredSession.victorianCode}</div>
+                      <h2 className="text-xl font-black leading-tight">{featuredSession.title}</h2>
+                      <p className="text-sm opacity-80 mt-1 font-medium">{featuredSession.description}</p>
+                    </div>
+                    <span className="text-5xl ml-4">{featuredSession.icon}</span>
                   </div>
-                  <span className="text-5xl ml-4">{featuredSession.icon}</span>
-                </div>
-                <div className="flex items-center gap-4 text-sm opacity-80 mb-5">
-                  <span>⏱ ~{featuredSession.estimatedMinutes} min</span>
-                  <span>⭐ Up to {featuredSession.starsAvailable} stars</span>
-                  <span>📋 {featuredSession.steps.length} steps</span>
-                </div>
-                {completedSessions.includes(featuredSession.id) ? (
-                  <div className="bg-white/20 rounded-2xl px-4 py-3 text-center font-bold">
-                    ✅ Complete! Great work, {profile.name}!
+                  <div className="flex items-center gap-4 text-sm opacity-80 mb-5 font-bold">
+                    <span>⏱ ~{featuredSession.estimatedMinutes}min</span>
+                    <span>⭐ {featuredSession.starsAvailable} stars</span>
+                    <span>📋 {featuredSession.steps.length} steps</span>
                   </div>
-                ) : (
-                  <motion.button
-                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-                    onClick={() => { sounds.click(); startSession(featuredSession.id); }}
-                    className="w-full bg-white font-black text-lg py-3 rounded-2xl transition-all hover:shadow-lg"
-                    style={{ color: featuredSession.color }}
-                  >
-                    Start Learning →
-                  </motion.button>
-                )}
+                  {completedSessions.includes(featuredSession.id) ? (
+                    <div className="bg-white/20 rounded-2xl px-4 py-3 text-center font-black">
+                      ✅ Complete! Great work, {profile.name}!
+                    </div>
+                  ) : (
+                    <motion.button
+                      whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                      onClick={() => { sounds.click(); startSession(featuredSession.id); }}
+                      className="w-full font-black text-lg py-3.5 rounded-2xl"
+                      style={{
+                        background: 'white',
+                        color: featuredSession.color,
+                        boxShadow: '0 5px 0 rgba(0,0,0,0.15)',
+                      }}
+                    >
+                      Start Learning →
+                    </motion.button>
+                  )}
+                </div>
               </motion.div>
             )}
 
-            {/* Progress summary */}
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: 'Done', value: activeSubjectSessions.filter(s => completedSessions.includes(s.id)).length },
-                { label: 'Remaining', value: activeSubjectSessions.filter(s => !completedSessions.includes(s.id)).length },
-                { label: 'Stars', value: totalStars },
-              ].map(stat => (
-                <div key={stat.label} className="bg-white rounded-2xl p-3 text-center shadow-sm">
-                  <div className="font-black text-gray-800 text-lg">{stat.value}</div>
-                  <div className="text-xs text-gray-400">{stat.label}</div>
-                </div>
-              ))}
+            {/* Progress bar */}
+            <div className="card p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-black text-gray-700 text-sm">Your Progress</span>
+                <span className="text-xs font-bold text-gray-400">{doneCount} / {activeSubjectSessions.length} lessons</span>
+              </div>
+              <div className="progress-track">
+                <motion.div
+                  className="progress-fill"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPct}%` }}
+                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                />
+              </div>
+              <div className="flex justify-around mt-3">
+                {[
+                  { label: 'Done', value: doneCount, emoji: '✅' },
+                  { label: 'To go', value: activeSubjectSessions.length - doneCount, emoji: '🎯' },
+                  { label: 'Stars', value: totalStars, emoji: '⭐' },
+                ].map(stat => (
+                  <div key={stat.label} className="text-center">
+                    <div className="font-black text-gray-800 text-sm">{stat.emoji} {stat.value}</div>
+                    <div className="text-xs text-gray-400 font-medium">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Learning Path */}
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-black text-gray-700 text-lg">📍 Learning Path</h3>
-                <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
-                  {activeSubjectSessions.filter(s => completedSessions.includes(s.id)).length} / {activeSubjectSessions.length} lessons
-                </span>
-              </div>
-              <div className="bg-white rounded-3xl p-6 shadow-sm flex flex-col gap-6 relative">
-                <div className="absolute left-1/2 top-8 bottom-8 w-1 bg-gray-100 rounded-full -translate-x-1/2 z-0" />
+              <h3 className="font-black text-gray-700 text-lg mb-4">📍 Learning Path</h3>
+              <div className="card p-5 space-y-4">
                 {activeSubjectSessions.map((s, i) => {
                   const isDone = completedSessions.includes(s.id);
                   const isCurrent = i === currentIndex;
@@ -287,6 +317,7 @@ export default function Home() {
                       }}
                       onHomework={() => { setActiveSessionId(s.id); setView('homework'); }}
                       themeColor={themeColor}
+                      themeDark={themeDark}
                     />
                   );
                 })}
@@ -295,26 +326,37 @@ export default function Home() {
           </>
         )}
       </div>
+
+      {/* PIN Modal */}
       {pinModal && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-8 w-80 text-center shadow-2xl">
-            <div className="text-4xl mb-3">🔒</div>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="card p-8 w-80 text-center"
+          >
+            <div className="text-5xl mb-4">🔐</div>
             <h3 className="text-xl font-black text-gray-800 mb-2">Lesson Locked</h3>
-            <p className="text-gray-500 text-sm mb-4">Ask your teacher to enter the class PIN to unlock this lesson.</p>
+            <p className="text-gray-500 text-sm mb-5 font-medium">Ask your teacher to enter the class PIN to unlock this lesson.</p>
             <input
               type="password"
               maxLength={4}
               value={pinInput}
               onChange={e => { setPinInput(e.target.value); setPinError(false); }}
-              placeholder="Enter 4-digit PIN"
-              className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-center text-xl tracking-widest font-bold mb-3 focus:outline-none focus:border-indigo-400"
+              placeholder="• • • •"
+              className="input-duo text-center text-2xl tracking-widest font-black mb-3"
               autoFocus
             />
-            {pinError && <p className="text-red-500 text-sm mb-2">Incorrect PIN. Try again.</p>}
+            {pinError && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="text-red-500 text-sm mb-3 font-bold">
+                ❌ Incorrect PIN. Try again.
+              </motion.p>
+            )}
             <div className="flex gap-3">
               <button
                 onClick={() => { setPinModal(null); setPinInput(''); setPinError(false); }}
-                className="flex-1 py-2 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold"
+                className="btn-duo btn-ghost flex-1 py-3"
               >Cancel</button>
               <button
                 onClick={() => {
@@ -328,10 +370,10 @@ export default function Home() {
                     setPinError(true);
                   }
                 }}
-                className="flex-1 py-2 rounded-xl bg-indigo-500 text-white font-bold"
-              >Unlock</button>
+                className="btn-duo btn-green flex-1 py-3"
+              >Unlock 🔓</button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>

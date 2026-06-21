@@ -27,7 +27,6 @@ export default function AuthScreen() {
       setLoading(false);
       return;
     }
-    // fetchProfile is called in App.tsx via onAuthStateChange
     setLoading(false);
   }
 
@@ -57,29 +56,48 @@ export default function AuthScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen leaf-bg flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative blobs */}
+      <div className="absolute top-0 left-0 w-64 h-64 rounded-full opacity-20 pointer-events-none"
+        style={{ background: 'radial-gradient(circle, #58CC02, transparent)', transform: 'translate(-30%, -30%)' }} />
+      <div className="absolute bottom-0 right-0 w-80 h-80 rounded-full opacity-15 pointer-events-none"
+        style={{ background: 'radial-gradient(circle, #1CB0F6, transparent)', transform: 'translate(30%, 30%)' }} />
+
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm"
+        transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
+        className="w-full max-w-sm relative"
       >
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3">🦉</div>
-          <h1 className="text-3xl font-black text-gray-800">Chucky</h1>
-          <p className="text-gray-500 text-sm mt-1">Your learning adventure starts here</p>
+          <motion.div
+            className="text-7xl mb-3 inline-block"
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            🌿
+          </motion.div>
+          <h1 className="text-4xl font-black text-gray-800 tracking-tight">Chucky</h1>
+          <p className="text-gray-500 text-sm mt-2 font-semibold">Level up your learning every day</p>
+          {/* XP row */}
+          <div className="flex items-center justify-center gap-3 mt-4">
+            <span className="xp-badge">⭐ Earn stars</span>
+            <span className="streak-badge">🔥 Build streaks</span>
+            <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-600 font-bold text-xs px-3 py-1 rounded-full border border-purple-100">🏆 Unlock rewards</span>
+          </div>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-3xl shadow-xl p-6">
+        <div className="card p-6">
           {/* Tabs */}
-          <div className="flex bg-gray-100 rounded-2xl p-1 mb-6">
+          <div className="flex bg-gray-100 rounded-2xl p-1 mb-6 gap-1">
             {(['login', 'signup'] as Tab[]).map(t => (
               <button
                 key={t}
                 onClick={() => { setTab(t); setError(''); }}
-                className={`flex-1 py-2 rounded-xl text-sm font-bold transition-all ${
-                  tab === t ? 'bg-white shadow text-indigo-600' : 'text-gray-500 hover:text-gray-700'
+                className={`flex-1 py-2.5 rounded-xl text-sm font-black transition-all ${
+                  tab === t ? 'bg-white shadow-sm text-gray-800' : 'text-gray-400 hover:text-gray-600'
                 }`}
               >
                 {t === 'login' ? 'Log in' : 'Sign up'}
@@ -99,38 +117,38 @@ export default function AuthScreen() {
             >
               {tab === 'signup' && (
                 <div>
-                  <label className="block text-xs font-bold text-gray-600 mb-1">Name</label>
+                  <label className="block text-xs font-black text-gray-500 uppercase tracking-wide mb-2">Your name</label>
                   <input
                     type="text"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    placeholder="Your name"
-                    className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                    placeholder="First name"
+                    className="input-duo"
                     required
                   />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 mb-1">Email</label>
+                <label className="block text-xs font-black text-gray-500 uppercase tracking-wide mb-2">Email</label>
                 <input
                   type="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  className="input-duo"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-600 mb-1">Password</label>
+                <label className="block text-xs font-black text-gray-500 uppercase tracking-wide mb-2">Password</label>
                 <input
                   type="password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  className="input-duo"
                   required
                   minLength={6}
                 />
@@ -138,20 +156,21 @@ export default function AuthScreen() {
 
               {tab === 'signup' && (
                 <div>
-                  <label className="block text-xs font-bold text-gray-600 mb-2">I am a…</label>
+                  <label className="block text-xs font-black text-gray-500 uppercase tracking-wide mb-2">I am a…</label>
                   <div className="flex gap-3">
                     {(['student', 'teacher'] as const).map(r => (
                       <button
                         key={r}
                         type="button"
                         onClick={() => setRole(r)}
-                        className={`flex-1 py-3 rounded-2xl text-sm font-bold border-2 transition-all ${
+                        className={`flex-1 py-3 rounded-2xl text-sm font-black border-2 transition-all ${
                           role === r
-                            ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                            : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                            ? 'border-green-400 bg-green-50 text-green-700'
+                            : 'border-gray-200 text-gray-400 hover:border-gray-300'
                         }`}
+                        style={role === r ? { borderBottomWidth: '3px', borderBottomColor: '#46A302' } : {}}
                       >
-                        {r === 'student' ? '🎒 Student' : '👩‍🏫 Teacher'}
+                        {r === 'student' ? '🎒 Student' : '🍎 Teacher'}
                       </button>
                     ))}
                   </div>
@@ -159,20 +178,20 @@ export default function AuthScreen() {
               )}
 
               {error && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-500 text-sm bg-red-50 rounded-xl px-3 py-2"
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex items-center gap-2 bg-red-50 border-2 border-red-100 rounded-2xl px-4 py-3"
                 >
-                  {error}
-                </motion.p>
+                  <span>❌</span>
+                  <p className="text-red-600 text-sm font-semibold">{error}</p>
+                </motion.div>
               )}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-2xl font-black text-white transition-all"
-                style={{ background: loading ? '#a5b4fc' : '#6366f1' }}
+                className="btn-duo btn-green w-full py-4 text-base rounded-2xl mt-2"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -182,11 +201,15 @@ export default function AuthScreen() {
                     </svg>
                     {tab === 'login' ? 'Logging in…' : 'Creating account…'}
                   </span>
-                ) : tab === 'login' ? 'Log in' : 'Create account'}
+                ) : tab === 'login' ? 'Log in →' : 'Create account →'}
               </button>
             </motion.form>
           </AnimatePresence>
         </div>
+
+        <p className="text-center text-xs text-gray-400 mt-6 font-medium">
+          🌱 Your learning adventure awaits
+        </p>
       </motion.div>
     </div>
   );

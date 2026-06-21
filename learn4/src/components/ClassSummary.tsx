@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Star, Target, Clock, CheckCircle, Copy, Printer, Trophy, Home } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { englishSession } from '../data/english-session';
 import { mathsSession } from '../data/maths-session';
@@ -95,16 +96,18 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
         {/* Stats cards */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { value: `+${latest.starsEarned}`, label: 'Stars earned', emoji: '⭐' },
-            { value: `${pct}%`, label: 'Quiz score', emoji: '🎯' },
-            { value: `${latest.timeSpentMinutes || '~45'}m`, label: 'Time spent', emoji: '⏱' },
+            { value: `+${latest.starsEarned}`, label: 'Stars earned', Icon: Star, color: '#FFC800' },
+            { value: `${pct}%`, label: 'Quiz score', Icon: Target, color: '#58CC02' },
+            { value: `${latest.timeSpentMinutes || '~45'}m`, label: 'Time spent', Icon: Clock, color: '#1CB0F6' },
           ].map(s => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
               className="card p-4 text-center"
             >
-              <div className="text-xl mb-1">{s.emoji}</div>
+              <div className="w-9 h-9 rounded-full flex items-center justify-center mx-auto mb-2" style={{ background: s.color + '20' }}>
+                <s.Icon size={18} style={{ color: s.color }} />
+              </div>
               <div className="font-black text-xl text-gray-800">{s.value}</div>
               <div className="text-xs text-gray-400 font-medium">{s.label}</div>
             </motion.div>
@@ -129,7 +132,7 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
         {/* Homework reminder */}
         {session.steps.filter(s => s.type === 'homework').map((s: any) => (
           <div key={s.id} className="card p-5 border-yellow-300" style={{ borderBottomColor: '#E0A800', borderBottomWidth: '3px' }}>
-            <h3 className="font-black text-yellow-700 mb-3">🏠 Homework due next class</h3>
+            <h3 className="font-black text-yellow-700 mb-3 flex items-center gap-2"><Home size={16} /> Homework due next class</h3>
             <div className="space-y-2">
               {s.tasks.map((task: any) => (
                 <div key={task.id} className="flex items-start gap-2 text-sm text-gray-700">
@@ -146,8 +149,8 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-black text-gray-800">Send to Parents</h3>
             <div className="flex gap-2">
-              <button onClick={copyToClipboard} className="btn-duo btn-green px-3 py-1.5 text-xs rounded-xl no-print">Copy</button>
-              <button onClick={() => window.print()} className="btn-duo btn-ghost px-3 py-1.5 text-xs rounded-xl no-print">Print</button>
+              <button onClick={copyToClipboard} className="btn-duo btn-green px-3 py-1.5 text-xs rounded-xl no-print flex items-center gap-1"><Copy size={12} /> Copy</button>
+              <button onClick={() => window.print()} className="btn-duo btn-ghost px-3 py-1.5 text-xs rounded-xl no-print flex items-center gap-1"><Printer size={12} /> Print</button>
             </div>
           </div>
           <div className="text-sm text-gray-600 whitespace-pre-wrap bg-gray-50 rounded-xl p-4 leading-relaxed">
@@ -157,15 +160,15 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
 
         {/* Navigation */}
         <div className="flex gap-3 no-print pb-6">
-          <button onClick={() => setView('rewards')} className="btn-duo btn-yellow flex-1 py-4 text-base rounded-2xl">
-            🏆 Rewards Room
+          <button onClick={() => setView('rewards')} className="btn-duo btn-yellow flex-1 py-4 text-base rounded-2xl flex items-center justify-center gap-2">
+            <Trophy size={18} /> Rewards Room
           </button>
           <button
             onClick={() => setView('home')}
-            className="btn-duo flex-1 py-4 text-base rounded-2xl text-white"
+            className="btn-duo flex-1 py-4 text-base rounded-2xl text-white flex items-center justify-center gap-2"
             style={{ background: themeColor, borderBottomColor: themeDark }}
           >
-            Back Home →
+            <Home size={18} /> Back Home
           </button>
         </div>
       </div>

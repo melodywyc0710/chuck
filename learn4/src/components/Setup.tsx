@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAppStore, type Mascot, type Density } from '../store/appStore';
 import { upsertProfile } from '../lib/db';
 
@@ -49,7 +50,7 @@ export default function Setup() {
                   'bg-gray-200 text-gray-400'
                 }`}
               >
-                {i < step ? '✓' : i + 1}
+                {i < step ? <Check size={14} /> : i + 1}
               </div>
               {i < STEPS.length - 1 && (
                 <div className={`w-8 h-1 rounded-full transition-all ${i < step ? 'bg-green-400' : 'bg-gray-200'}`} />
@@ -86,9 +87,9 @@ export default function Setup() {
               <button
                 onClick={() => name.trim() && setStep(1)}
                 disabled={!name.trim()}
-                className="btn-duo btn-green w-full py-4 text-base"
+                className="btn-duo btn-green w-full py-4 text-base flex items-center justify-center gap-2"
               >
-                Next →
+                Next <ChevronRight size={18} />
               </button>
             </motion.div>
           )}
@@ -125,15 +126,15 @@ export default function Setup() {
                       <div className="text-sm text-gray-500 font-medium">{m.trait}</div>
                     </div>
                     {mascot === m.id && (
-                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-black"
-                        style={{ background: m.color }}>✓</div>
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center text-white"
+                        style={{ background: m.color }}><Check size={14} /></div>
                     )}
                   </motion.button>
                 ))}
               </div>
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setStep(0)} className="btn-duo btn-ghost px-5 py-3">← Back</button>
-                <button onClick={() => setStep(2)} className="btn-duo btn-green flex-1 py-3 text-base">Next →</button>
+                <button onClick={() => setStep(0)} className="btn-duo btn-ghost px-5 py-3 flex items-center gap-1"><ChevronLeft size={16} /> Back</button>
+                <button onClick={() => setStep(2)} className="btn-duo btn-green flex-1 py-3 text-base flex items-center justify-center gap-1">Next <ChevronRight size={16} /></button>
               </div>
             </motion.div>
           )}
@@ -203,7 +204,7 @@ export default function Setup() {
               </div>
 
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setStep(1)} className="btn-duo btn-ghost px-5 py-3">← Back</button>
+                <button onClick={() => setStep(1)} className="btn-duo btn-ghost px-5 py-3 flex items-center gap-1"><ChevronLeft size={16} /> Back</button>
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   onClick={async () => {

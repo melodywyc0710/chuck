@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Star, Flame, Trophy, Mail, Lock, User, Loader2, GraduationCap, AlertCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { upsertProfile } from '../lib/db';
 import { useAppStore } from '../store/appStore';
@@ -81,10 +82,10 @@ export default function AuthScreen() {
           <h1 className="text-4xl font-black text-gray-800 tracking-tight">Chucky</h1>
           <p className="text-gray-500 text-sm mt-2 font-semibold">Level up your learning every day</p>
           {/* XP row */}
-          <div className="flex items-center justify-center gap-3 mt-4">
-            <span className="xp-badge">⭐ Earn stars</span>
-            <span className="streak-badge">🔥 Build streaks</span>
-            <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-600 font-bold text-xs px-3 py-1 rounded-full border border-purple-100">🏆 Unlock rewards</span>
+          <div className="flex items-center justify-center gap-3 mt-4 flex-wrap">
+            <span className="xp-badge"><Star size={11} fill="#6b4f00" strokeWidth={0} /> Earn stars</span>
+            <span className="streak-badge"><Flame size={11} /> Build streaks</span>
+            <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-600 font-bold text-xs px-3 py-1 rounded-full border border-purple-100"><Trophy size={11} /> Unlock rewards</span>
           </div>
         </div>
 
@@ -118,40 +119,27 @@ export default function AuthScreen() {
               {tab === 'signup' && (
                 <div>
                   <label className="block text-xs font-black text-gray-500 uppercase tracking-wide mb-2">Your name</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                    placeholder="First name"
-                    className="input-duo"
-                    required
-                  />
+                  <div className="relative">
+                    <User size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="First name" className="input-duo pl-10" required />
+                  </div>
                 </div>
               )}
 
               <div>
                 <label className="block text-xs font-black text-gray-500 uppercase tracking-wide mb-2">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="input-duo"
-                  required
-                />
+                <div className="relative">
+                  <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" className="input-duo pl-10" required />
+                </div>
               </div>
 
               <div>
                 <label className="block text-xs font-black text-gray-500 uppercase tracking-wide mb-2">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="input-duo"
-                  required
-                  minLength={6}
-                />
+                <div className="relative">
+                  <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="input-duo pl-10" required minLength={6} />
+                </div>
               </div>
 
               {tab === 'signup' && (
@@ -163,14 +151,15 @@ export default function AuthScreen() {
                         key={r}
                         type="button"
                         onClick={() => setRole(r)}
-                        className={`flex-1 py-3 rounded-2xl text-sm font-black border-2 transition-all ${
-                          role === r
-                            ? 'border-green-400 bg-green-50 text-green-700'
-                            : 'border-gray-200 text-gray-400 hover:border-gray-300'
+                        className={`flex-1 py-3 rounded-2xl text-sm font-black border-2 transition-all flex items-center justify-center gap-2 ${
+                          role === r ? 'border-green-400 bg-green-50 text-green-700' : 'border-gray-200 text-gray-400 hover:border-gray-300'
                         }`}
                         style={role === r ? { borderBottomWidth: '3px', borderBottomColor: '#46A302' } : {}}
                       >
-                        {r === 'student' ? '🎒 Student' : '🍎 Teacher'}
+                        {r === 'student'
+                          ? <><GraduationCap size={16} /> Student</>
+                          : <><Star size={16} /> Teacher</>
+                        }
                       </button>
                     ))}
                   </div>
@@ -183,32 +172,23 @@ export default function AuthScreen() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="flex items-center gap-2 bg-red-50 border-2 border-red-100 rounded-2xl px-4 py-3"
                 >
-                  <span>❌</span>
+                  <AlertCircle size={16} className="text-red-500 flex-shrink-0" />
                   <p className="text-red-600 text-sm font-semibold">{error}</p>
                 </motion.div>
               )}
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn-duo btn-green w-full py-4 text-base rounded-2xl mt-2"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                    </svg>
-                    {tab === 'login' ? 'Logging in…' : 'Creating account…'}
-                  </span>
-                ) : tab === 'login' ? 'Log in →' : 'Create account →'}
+              <button type="submit" disabled={loading} className="btn-duo btn-green w-full py-4 text-base rounded-2xl mt-2 flex items-center justify-center gap-2">
+                {loading
+                  ? <><Loader2 size={16} className="animate-spin" /> {tab === 'login' ? 'Logging in…' : 'Creating account…'}</>
+                  : tab === 'login' ? 'Log in' : 'Create account'
+                }
               </button>
             </motion.form>
           </AnimatePresence>
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-6 font-medium">
-          🌱 Your learning adventure awaits
+          Your learning adventure awaits
         </p>
       </motion.div>
     </div>

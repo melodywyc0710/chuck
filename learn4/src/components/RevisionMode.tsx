@@ -4,7 +4,8 @@ import { useAppStore } from '../store/appStore';
 import { allSessions } from '../data/curriculum/index';
 import type { QuizQuestion } from '../data/types';
 
-const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
+const THEME_COLOR = { purple: '#A855F7', blue: '#1CB0F6', green: '#58CC02', orange: '#F97316' };
+const THEME_DARK  = { purple: '#7C3AED', blue: '#0E8FC4', green: '#46A302', orange: '#EA580C' };
 
 function renderMd(text: string) {
   return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
@@ -33,6 +34,7 @@ export default function RevisionMode() {
   if (!profile) return null;
 
   const themeColor = THEME_COLOR[profile.colorTheme];
+  const themeDark = THEME_DARK[profile.colorTheme];
 
   // Filters
   const [subjectFilter, setSubjectFilter] = useState<SubjectFilter>('all');
@@ -129,7 +131,7 @@ export default function RevisionMode() {
   // Setup screen
   if (!started) {
     return (
-      <div className="min-h-screen" style={{ background: `linear-gradient(135deg, ${themeColor}11, #f0f4ff)` }}>
+      <div className="min-h-screen" style={{ background: '#F7FFF4' }}>
         <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
           {/* Header */}
           <div className="flex items-center gap-3">
@@ -190,16 +192,14 @@ export default function RevisionMode() {
               <div className="text-sm text-gray-500 font-semibold">questions available</div>
             </div>
 
-            <motion.button
-              whileHover={filteredQuestions.length > 0 ? { scale: 1.03 } : {}}
-              whileTap={filteredQuestions.length > 0 ? { scale: 0.97 } : {}}
+            <button
               onClick={handleStart}
               disabled={filteredQuestions.length === 0}
-              className="w-full py-4 rounded-2xl text-white font-black text-lg disabled:opacity-30"
-              style={{ background: themeColor }}
+              className="btn-duo w-full py-4 rounded-2xl text-white font-black text-lg uppercase tracking-wide disabled:opacity-30"
+              style={{ background: themeColor, borderBottomColor: themeDark }}
             >
-              Start Practice →
-            </motion.button>
+              START PRACTICE →
+            </button>
           </div>
         </div>
       </div>
@@ -216,7 +216,7 @@ export default function RevisionMode() {
     const outOfQuestions = currentIndex >= questions.length - 1;
 
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: `linear-gradient(135deg, ${themeColor}11, #f0f4ff)` }}>
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: '#F7FFF4' }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -270,7 +270,7 @@ export default function RevisionMode() {
 
   // Question screen
   return (
-    <div className="min-h-screen" style={{ background: `linear-gradient(135deg, ${themeColor}11, #f0f4ff)` }}>
+    <div className="min-h-screen" style={{ background: '#F7FFF4' }}>
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -323,37 +323,38 @@ export default function RevisionMode() {
             <div className="space-y-2">
               {q.options.map((opt, i) => {
                 const isCorrectOpt = confirmed && i === q.correct;
-                const isWrongSelected = confirmed && i === selected && !isCorrect;
-                const isOther = confirmed && i !== q.correct && i !== selected;
+                const isWrongOpt   = confirmed && i === selected && !isCorrect;
+                const isOther      = confirmed && i !== q.correct && i !== selected;
+                const isChosen     = !confirmed && selected === i;
 
-                let containerStyle = 'border-gray-200 bg-white hover:border-gray-300';
-                if (isCorrectOpt) containerStyle = 'border-green-500 bg-green-500';
-                else if (isWrongSelected) containerStyle = 'border-red-500 bg-red-500';
-                else if (isOther) containerStyle = 'border-gray-100 bg-gray-50 opacity-50';
-                else if (!confirmed && selected === i) containerStyle = 'border-indigo-400 bg-indigo-50';
+                let border = '#e5e7eb';
+                let bg = '#ffffff';
+                let textColor = '#374151';
+                let bottomBorder = '#d1d5db';
 
-                const labelBg = isCorrectOpt || isWrongSelected
-                  ? 'bg-white/25 text-white'
-                  : selected === i && !confirmed
-                  ? 'bg-indigo-100 text-indigo-700'
-                  : 'bg-gray-100 text-gray-600';
-
-                const textColor = (isCorrectOpt || isWrongSelected) ? 'text-white' : 'text-gray-800';
+                if (isChosen)     { border = themeColor; bg = themeColor + '10'; bottomBorder = themeDark; }
+                if (isCorrectOpt) { border = '#58CC02'; bg = '#f0fff4'; bottomBorder = '#46A302'; textColor = '#166534'; }
+                if (isWrongOpt)   { border = '#FF4B4B'; bg = '#fff5f5'; bottomBorder = '#D93D3D'; textColor = '#991b1b'; }
+                if (isOther)      { border = '#f3f4f6'; bg = '#fafafa'; textColor = '#9ca3af'; }
 
                 return (
                   <motion.button
                     key={i}
-                    whileHover={!confirmed ? { scale: 1.01 } : {}}
-                    whileTap={!confirmed ? { scale: 0.99 } : {}}
+                    whileTap={!confirmed ? { scale: 0.98 } : {}}
                     onClick={() => !confirmed && setSelected(i)}
-                    className={`w-full text-left p-4 rounded-2xl border-2 transition-all font-medium flex items-center gap-3 ${containerStyle}`}
+                    className="w-full text-left p-4 rounded-2xl border-2 transition-all flex items-center gap-3 font-semibold"
+                    style={{ borderColor: border, borderBottomColor: bottomBorder, borderBottomWidth: '3px', background: bg, color: textColor }}
                   >
-                    <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg text-xs font-black flex-shrink-0 ${labelBg}`}>
-                      {['A', 'B', 'C', 'D'][i]}
+                    <span
+                      className="w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black flex-shrink-0"
+                      style={{
+                        background: isChosen ? themeColor : isCorrectOpt ? '#58CC02' : isWrongOpt ? '#FF4B4B' : '#f3f4f6',
+                        color: (isChosen || isCorrectOpt || isWrongOpt) ? 'white' : '#6b7280',
+                      }}
+                    >
+                      {['A','B','C','D'][i]}
                     </span>
-                    <span className={`flex-1 ${textColor} ${density === 'younger' ? 'text-base' : 'text-sm'}`} dangerouslySetInnerHTML={{ __html: renderMd(opt) }} />
-                    {isCorrectOpt && <span className="text-white font-black ml-1">✓</span>}
-                    {isWrongSelected && <span className="text-white font-black ml-1">✗</span>}
+                    <span className={`flex-1 ${density === 'younger' ? 'text-base' : 'text-sm'}`} dangerouslySetInnerHTML={{ __html: renderMd(opt) }} />
                   </motion.button>
                 );
               })}
@@ -382,25 +383,25 @@ export default function RevisionMode() {
 
         {/* Action button */}
         {!confirmed ? (
-          <motion.button
-            whileHover={selected !== null ? { scale: 1.03 } : {}}
-            whileTap={selected !== null ? { scale: 0.97 } : {}}
+          <button
             onClick={handleConfirm}
             disabled={selected === null}
-            className="w-full py-4 rounded-2xl text-white font-black text-lg disabled:opacity-30"
-            style={{ background: themeColor }}
+            className="btn-duo w-full py-4 rounded-2xl font-black text-base uppercase tracking-wide transition-all"
+            style={selected !== null
+              ? { background: themeColor, borderBottomColor: themeDark, color: 'white' }
+              : { background: '#e5e7eb', borderBottomColor: '#d1d5db', color: '#9ca3af' }
+            }
           >
-            Check Answer
-          </motion.button>
+            CHECK
+          </button>
         ) : (
-          <motion.button
-            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+          <button
             onClick={handleNext}
-            className="w-full py-4 rounded-2xl text-white font-black text-lg"
-            style={{ background: themeColor }}
+            className="btn-duo w-full py-4 rounded-2xl font-black text-base uppercase tracking-wide text-white"
+            style={{ background: isCorrect ? '#58CC02' : '#FF4B4B', borderBottomColor: isCorrect ? '#46A302' : '#D93D3D' }}
           >
-            Next Question →
-          </motion.button>
+            NEXT QUESTION →
+          </button>
         )}
       </div>
     </div>

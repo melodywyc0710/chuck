@@ -8,11 +8,11 @@ import { getSession, sessionsByYear } from '../data/curriculum/index';
 import type { Session } from '../data/types';
 
 const SUBJECT_COLOR: Record<string, string> = {
-  english: '#6366f1',
-  maths: '#10b981',
-  science: '#3b82f6',
-  hass: '#f59e0b',
-  vcd: '#ec4899',
+  english: '#A855F7',
+  maths: '#58CC02',
+  science: '#1CB0F6',
+  hass: '#FFC800',
+  vcd: '#F97316',
 };
 
 function formatDate(iso: string) {
@@ -87,18 +87,18 @@ export default function TeacherDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#F7FFF4' }}>
       {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
+      <div className="sticky top-0 z-10" style={{ background: 'linear-gradient(135deg, #7C3AED, #A855F7)' }}>
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-          <h2 className="font-black text-gray-800 whitespace-nowrap">👩‍🏫 Teacher</h2>
+          <h2 className="font-black text-white whitespace-nowrap">👩‍🏫 Teacher</h2>
           {/* Tab switcher */}
-          <div className="flex bg-gray-100 rounded-xl overflow-hidden">
+          <div className="flex bg-white/20 rounded-xl overflow-hidden">
             {([['students', '👤 Students'], ['curriculum', '📚 Curriculum'], ['reports', '📊 Reports'], ['homework', '📋 Homework']] as [Tab, string][]).map(([t, label]) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className={`px-4 py-2 text-sm font-bold transition-all ${tab === t ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`px-4 py-2 text-sm font-bold transition-all ${tab === t ? 'bg-white text-purple-700' : 'text-white/70 hover:text-white'}`}
               >
                 {label}
               </button>
@@ -106,7 +106,7 @@ export default function TeacherDashboard() {
           </div>
           <button
             onClick={handleSignOut}
-            className="text-xs text-gray-500 hover:text-red-500 border border-gray-200 rounded-xl px-3 py-1.5 transition-colors whitespace-nowrap"
+            className="text-xs text-white/70 hover:text-white border border-white/30 rounded-xl px-3 py-1.5 transition-colors whitespace-nowrap"
           >
             Sign out
           </button>
@@ -140,7 +140,8 @@ export default function TeacherDashboard() {
                 <button
                   key={y}
                   onClick={() => setCurrYear(y)}
-                  className={`px-4 py-2 text-sm font-bold transition-all ${currYear === y ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+                  className={`px-4 py-2 text-sm font-bold transition-all ${currYear === y ? 'text-white' : 'text-gray-500 hover:bg-gray-50'}`}
+                  style={currYear === y ? { background: '#58CC02' } : {}}
                 >
                   Year {y}
                 </button>
@@ -289,7 +290,15 @@ export default function TeacherDashboard() {
             {loadingStudents ? (
               <div className="text-gray-400 text-sm py-4 text-center">Loading…</div>
             ) : students.length === 0 ? (
-              <div className="text-gray-400 text-sm">No students yet.</div>
+              <div className="space-y-3">
+                <p className="text-gray-500 text-sm font-semibold">No students yet.</p>
+                <div className="bg-green-50 border border-green-200 rounded-xl p-3 text-xs text-green-800 space-y-1">
+                  <p className="font-bold">How students join:</p>
+                  <p>1. Student signs up at this app</p>
+                  <p>2. They use their school email</p>
+                  <p>3. They appear here automatically</p>
+                </div>
+              </div>
             ) : (
               <div className="space-y-2">
                 {students.map(student => (
@@ -298,7 +307,7 @@ export default function TeacherDashboard() {
                     onClick={() => selectStudent(student)}
                     className={`w-full text-left px-3 py-2.5 rounded-xl transition-all ${
                       selectedStudent?.id === student.id
-                        ? 'bg-indigo-50 border-2 border-indigo-300'
+                        ? 'border-2 border-green-400 bg-green-50'
                         : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
                     }`}
                   >
@@ -331,7 +340,7 @@ export default function TeacherDashboard() {
                   </div>
                   <button
                     onClick={() => playForStudent(selectedStudent)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-black px-5 py-2.5 rounded-2xl transition-colors"
+                    className="btn-duo text-white text-sm font-black px-5 py-2.5 rounded-2xl" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}
                   >
                     ▶ Play lesson for this student
                   </button>
@@ -393,7 +402,7 @@ export default function TeacherDashboard() {
                           </div>
                           <button
                             onClick={() => previewFeedback(result.sessionId, result.score, result.total)}
-                            className="flex-shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors"
+                            className="btn-duo flex-shrink-0 text-white text-xs font-bold px-4 py-2 rounded-xl" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}
                           >
                             View Report
                           </button>
@@ -464,7 +473,7 @@ export default function TeacherDashboard() {
                                   <button
                                     onClick={() => markComplete(selectedStudent, session)}
                                     disabled={isMarking}
-                                    className="flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-50 transition-colors"
+                                    className="btn-duo flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl text-white disabled:opacity-50" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}
                                   >
                                     {isMarking ? '…' : `✅ Award ${session.starsAvailable}⭐`}
                                   </button>

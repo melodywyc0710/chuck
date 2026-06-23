@@ -102,7 +102,7 @@ function TimesTableBlitz({ onBack }: { onBack: () => void }) {
               <button
                 key={opt}
                 onClick={() => answer(opt)}
-                className="py-4 rounded-2xl text-xl font-black bg-white border-2 border-indigo-100 hover:border-indigo-400 hover:bg-indigo-50 transition-all shadow-sm active:scale-95"
+                className="btn-duo py-4 rounded-2xl text-xl font-black bg-white border-2 border-gray-200 hover:border-green-400 hover:bg-green-50 transition-all shadow-sm"
               >
                 {opt}
               </button>
@@ -115,7 +115,7 @@ function TimesTableBlitz({ onBack }: { onBack: () => void }) {
         <div className="flex flex-col items-center gap-4 bg-white rounded-3xl p-8 shadow-xl w-full max-w-sm text-center">
           <div className="text-5xl">🏆</div>
           <h3 className="text-2xl font-black text-gray-800">Time's up!</h3>
-          <div className="text-5xl font-black text-indigo-600">{score}</div>
+          <div className="text-5xl font-black" style={{ color: '#58CC02' }}>{score}</div>
           <div className="text-gray-500 text-sm">
             {score >= 20 ? 'Amazing! You\'re a maths star! 🌟' :
              score >= 10 ? 'Great job! Keep practising! 💪' :
@@ -123,7 +123,7 @@ function TimesTableBlitz({ onBack }: { onBack: () => void }) {
           </div>
           <button
             onClick={restart}
-            className="w-full py-3 rounded-2xl font-black text-white text-lg bg-indigo-500 hover:bg-indigo-600 transition-all active:scale-95"
+            className="btn-duo w-full py-3 rounded-2xl font-black text-white text-lg" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}
           >
             Play Again
           </button>
@@ -232,12 +232,12 @@ function WordScramble({ onBack }: { onBack: () => void }) {
             }`}
           >
             <div className="text-xs text-gray-400 mb-1">Unscramble this word:</div>
-            <div className="text-4xl font-black tracking-widest text-indigo-700 mb-3">
+            <div className="text-4xl font-black tracking-widest text-green-700 mb-3">
               {scrambled[index]}
             </div>
             {hintUsed && (
               <div className="text-sm text-gray-500">
-                Hint: starts with <span className="font-black text-indigo-600">{currentWord[0].toUpperCase()}</span>
+                Hint: starts with <span className="font-black" style={{ color: '#58CC02' }}>{currentWord[0].toUpperCase()}</span>
                 {' '}({currentWord.length} letters)
               </div>
             )}
@@ -250,11 +250,11 @@ function WordScramble({ onBack }: { onBack: () => void }) {
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && submit()}
               placeholder="Type your answer…"
-              className="flex-1 border-2 border-gray-200 rounded-2xl px-4 py-3 text-lg font-semibold focus:border-indigo-400 focus:outline-none"
+              className="flex-1 border-2 border-gray-200 rounded-2xl px-4 py-3 text-lg font-semibold focus:border-green-400 focus:outline-none"
             />
             <button
               onClick={submit}
-              className="px-5 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-2xl transition-all active:scale-95"
+              className="px-5 py-3 btn-duo text-white font-black rounded-2xl" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}
             >
               ✓
             </button>
@@ -263,7 +263,7 @@ function WordScramble({ onBack }: { onBack: () => void }) {
           {!hintUsed && (
             <button
               onClick={() => setHintUsed(true)}
-              className="text-sm text-gray-400 hover:text-indigo-500 underline"
+              className="text-sm text-gray-400 hover:text-green-500 underline"
             >
               💡 Use hint (reveals first letter)
             </button>
@@ -277,11 +277,11 @@ function WordScramble({ onBack }: { onBack: () => void }) {
           <h3 className="text-2xl font-black text-gray-800">
             {lives > 0 ? 'All words done!' : 'Game over!'}
           </h3>
-          <div className="text-5xl font-black text-indigo-600">{score}</div>
+          <div className="text-5xl font-black" style={{ color: '#58CC02' }}>{score}</div>
           <div className="text-gray-500 text-sm">words solved</div>
           <button
             onClick={restart}
-            className="w-full py-3 rounded-2xl font-black text-white text-lg bg-indigo-500 hover:bg-indigo-600 transition-all active:scale-95"
+            className="btn-duo w-full py-3 rounded-2xl font-black text-white text-lg" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}
           >
             Play Again
           </button>
@@ -408,8 +408,8 @@ function MemoryMatch({ onBack }: { onBack: () => void }) {
                   card.matched
                     ? 'bg-green-100 border-2 border-green-300'
                     : card.flipped
-                    ? 'bg-indigo-50 border-2 border-indigo-300'
-                    : 'bg-indigo-500 hover:bg-indigo-600 border-2 border-indigo-600'
+                    ? 'bg-green-50 border-2 border-green-300'
+                    : 'bg-green-500 hover:bg-green-600 border-2 border-green-600'
                 }`}
               >
                 {(card.flipped || card.matched) ? card.emoji : '?'}
@@ -424,18 +424,18 @@ function MemoryMatch({ onBack }: { onBack: () => void }) {
           <div className="text-5xl">🎉</div>
           <h3 className="text-2xl font-black text-gray-800">You matched them all!</h3>
           <div className="grid grid-cols-2 gap-4 w-full">
-            <div className="bg-indigo-50 rounded-2xl p-3">
-              <div className="text-2xl font-black text-indigo-700">{fmt(seconds)}</div>
+            <div className="bg-green-50 rounded-2xl p-3">
+              <div className="text-2xl font-black text-green-700">{fmt(seconds)}</div>
               <div className="text-xs text-gray-500">Time taken</div>
             </div>
-            <div className="bg-indigo-50 rounded-2xl p-3">
-              <div className="text-2xl font-black text-indigo-700">{moves}</div>
+            <div className="bg-green-50 rounded-2xl p-3">
+              <div className="text-2xl font-black text-green-700">{moves}</div>
               <div className="text-xs text-gray-500">Moves used</div>
             </div>
           </div>
           <button
             onClick={restart}
-            className="w-full py-3 rounded-2xl font-black text-white text-lg bg-indigo-500 hover:bg-indigo-600 transition-all active:scale-95"
+            className="btn-duo w-full py-3 rounded-2xl font-black text-white text-lg" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}
           >
             Play Again
           </button>
@@ -564,7 +564,7 @@ function MathsSpeedRound({ onBack }: { onBack: () => void }) {
           {/* Progress bar */}
           <div className="w-full max-w-sm bg-gray-100 rounded-full h-2">
             <div
-              className="h-2 rounded-full bg-indigo-500 transition-all"
+              className="h-2 rounded-full bg-green-500 transition-all"
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -585,11 +585,11 @@ function MathsSpeedRound({ onBack }: { onBack: () => void }) {
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && submit()}
               placeholder="Answer…"
-              className="flex-1 border-2 border-gray-200 rounded-2xl px-4 py-3 text-xl font-bold focus:border-indigo-400 focus:outline-none"
+              className="flex-1 border-2 border-gray-200 rounded-2xl px-4 py-3 text-xl font-bold focus:border-green-400 focus:outline-none"
             />
             <button
               onClick={submit}
-              className="px-5 py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-black rounded-2xl transition-all active:scale-95"
+              className="px-5 py-3 btn-duo text-white font-black rounded-2xl" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}
             >
               ✓
             </button>
@@ -603,7 +603,7 @@ function MathsSpeedRound({ onBack }: { onBack: () => void }) {
             {score >= 18 ? '🌟' : score >= 14 ? '🏆' : score >= 10 ? '👍' : '🎯'}
           </div>
           <h3 className="text-2xl font-black text-gray-800">Round complete!</h3>
-          <div className="text-5xl font-black text-indigo-600">{score} / {TOTAL_QUESTIONS}</div>
+          <div className="text-5xl font-black" style={{ color: '#58CC02' }}>{score} / {TOTAL_QUESTIONS}</div>
           <div className="text-gray-500 text-sm">
             {score >= 18 ? 'Outstanding! You\'re a maths genius! 🌟' :
              score >= 14 ? 'Excellent work! Keep it up! 💪' :
@@ -612,7 +612,7 @@ function MathsSpeedRound({ onBack }: { onBack: () => void }) {
           </div>
           <button
             onClick={restart}
-            className="w-full py-3 rounded-2xl font-black text-white text-lg bg-indigo-500 hover:bg-indigo-600 transition-all active:scale-95"
+            className="btn-duo w-full py-3 rounded-2xl font-black text-white text-lg" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}
           >
             Play Again
           </button>
@@ -707,8 +707,8 @@ function TrueOrFalse({ onBack }: { onBack: () => void }) {
                   className={`flex-1 py-5 rounded-2xl text-xl font-black transition-all active:scale-95 ${
                     isCorrect ? 'bg-green-500 text-white' :
                     isWrong ? 'bg-red-500 text-white' :
-                    isSelected ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-700' :
-                    'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-300'
+                    isSelected ? 'bg-green-100 border-2 border-green-400 text-green-700' :
+                    'bg-white border-2 border-gray-200 text-gray-700 hover:border-green-300'
                   }`}
                 >
                   {choice ? '✅ True' : '❌ False'}
@@ -725,7 +725,7 @@ function TrueOrFalse({ onBack }: { onBack: () => void }) {
               <p className="text-sm text-gray-600">{q.explanation}</p>
               <button
                 onClick={next}
-                className="mt-3 w-full py-2.5 rounded-xl bg-indigo-500 text-white font-black"
+                className="btn-duo mt-3 w-full py-2.5 rounded-xl text-white font-black" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}
               >
                 Next →
               </button>
@@ -738,9 +738,9 @@ function TrueOrFalse({ onBack }: { onBack: () => void }) {
         <div className="flex flex-col items-center gap-4 bg-white rounded-3xl p-8 shadow-xl w-full max-w-sm text-center">
           <div className="text-5xl">{score >= 12 ? '🏆' : score >= 8 ? '🎉' : '💪'}</div>
           <h3 className="text-2xl font-black text-gray-800">All done!</h3>
-          <div className="text-5xl font-black text-indigo-600">{score} / {questions.length}</div>
+          <div className="text-5xl font-black" style={{ color: '#58CC02' }}>{score} / {questions.length}</div>
           <div className="text-gray-500 text-sm">{score >= 12 ? 'Amazing! You\'re a knowledge star! 🌟' : score >= 8 ? 'Great work! Keep learning! 💪' : 'Good try! Keep practising! 📚'}</div>
-          <button onClick={restart} className="w-full py-3 rounded-2xl font-black text-white text-lg bg-indigo-500 hover:bg-indigo-600 transition-all active:scale-95">Play Again</button>
+          <button onClick={restart} className="btn-duo w-full py-3 rounded-2xl font-black text-white text-lg" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}>Play Again</button>
         </div>
       )}
     </div>
@@ -820,7 +820,7 @@ function NumberPatterns({ onBack }: { onBack: () => void }) {
         <div className="text-xs text-gray-400 mb-3 uppercase tracking-wide font-bold">What comes next?</div>
         <div className="flex items-center justify-center gap-3 flex-wrap">
           {q.seq.map((n, i) => (
-            <div key={i} className="w-14 h-14 bg-indigo-50 border-2 border-indigo-200 rounded-2xl flex items-center justify-center text-xl font-black text-indigo-700">
+            <div key={i} className="w-14 h-14 bg-green-50 border-2 border-green-200 rounded-2xl flex items-center justify-center text-xl font-black text-green-700">
               {n}
             </div>
           ))}
@@ -842,8 +842,8 @@ function NumberPatterns({ onBack }: { onBack: () => void }) {
               className={`py-4 rounded-2xl text-xl font-black transition-all active:scale-95 ${
                 isCorrectOpt ? 'bg-green-500 text-white' :
                 isWrong ? 'bg-red-500 text-white' :
-                isThis ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-700' :
-                'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-300'
+                isThis ? 'bg-green-100 border-2 border-green-400 text-green-700' :
+                'bg-white border-2 border-gray-200 text-gray-700 hover:border-green-300'
               }`}
             >
               {opt}
@@ -858,7 +858,7 @@ function NumberPatterns({ onBack }: { onBack: () => void }) {
             {isCorrect ? '✓ Correct!' : `✗ The answer is ${q.next}`}
           </div>
           <p className="text-sm text-gray-600">Pattern: {q.rule}</p>
-          <button onClick={next} className="mt-3 w-full py-2.5 rounded-xl bg-indigo-500 text-white font-black">Next →</button>
+          <button onClick={next} className="btn-duo mt-3 w-full py-2.5 rounded-xl text-white font-black" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}>Next →</button>
         </div>
       )}
     </div>
@@ -933,7 +933,7 @@ function WordMeaning({ onBack }: { onBack: () => void }) {
 
           <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-xl text-center">
             <div className="text-xs text-gray-400 mb-2 uppercase tracking-wide font-bold">What does this word mean?</div>
-            <div className="text-4xl font-black text-indigo-700 mt-2">{w.word}</div>
+            <div className="text-4xl font-black text-green-700 mt-2">{w.word}</div>
           </div>
 
           <div className="space-y-2 w-full max-w-sm">
@@ -948,8 +948,8 @@ function WordMeaning({ onBack }: { onBack: () => void }) {
                   className={`w-full text-left p-4 rounded-2xl font-semibold transition-all active:scale-[0.99] ${
                     isCorrectOpt ? 'bg-green-500 text-white' :
                     isWrong ? 'bg-red-500 text-white' :
-                    isThis ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-800' :
-                    'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-300'
+                    isThis ? 'bg-green-100 border-2 border-green-400 text-green-800' :
+                    'bg-white border-2 border-gray-200 text-gray-700 hover:border-green-300'
                   }`}
                 >
                   {opt}
@@ -960,7 +960,7 @@ function WordMeaning({ onBack }: { onBack: () => void }) {
 
           {confirmed && (
             <div className="w-full max-w-sm">
-              <button onClick={next} className="w-full py-3 rounded-2xl bg-indigo-500 text-white font-black">
+              <button onClick={next} className="btn-duo w-full py-3 rounded-2xl text-white font-black" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}>
                 {index + 1 >= words.length ? 'See Results →' : 'Next Word →'}
               </button>
             </div>
@@ -972,9 +972,9 @@ function WordMeaning({ onBack }: { onBack: () => void }) {
         <div className="flex flex-col items-center gap-4 bg-white rounded-3xl p-8 shadow-xl w-full max-w-sm text-center">
           <div className="text-5xl">{score >= 10 ? '🧠' : score >= 6 ? '📚' : '💪'}</div>
           <h3 className="text-2xl font-black text-gray-800">Vocabulary Champion!</h3>
-          <div className="text-5xl font-black text-indigo-600">{score} / {words.length}</div>
+          <div className="text-5xl font-black" style={{ color: '#58CC02' }}>{score} / {words.length}</div>
           <div className="text-gray-500 text-sm">{score >= 10 ? 'Outstanding vocabulary!' : score >= 6 ? 'Great word knowledge!' : 'Keep building your vocab!'}</div>
-          <button onClick={restart} className="w-full py-3 rounded-2xl font-black text-white text-lg bg-indigo-500 hover:bg-indigo-600 transition-all active:scale-95">Play Again</button>
+          <button onClick={restart} className="btn-duo w-full py-3 rounded-2xl font-black text-white text-lg" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}>Play Again</button>
         </div>
       )}
     </div>
@@ -1064,8 +1064,8 @@ function OddOneOut({ onBack }: { onBack: () => void }) {
                   className={`py-5 rounded-2xl text-lg font-black capitalize transition-all active:scale-95 ${
                     isCorrectOpt ? 'bg-green-500 text-white' :
                     isWrong ? 'bg-red-500 text-white' :
-                    isThis ? 'bg-indigo-100 border-2 border-indigo-400 text-indigo-700' :
-                    'bg-white border-2 border-gray-200 text-gray-700 hover:border-indigo-300'
+                    isThis ? 'bg-green-100 border-2 border-green-400 text-green-700' :
+                    'bg-white border-2 border-gray-200 text-gray-700 hover:border-green-300'
                   }`}
                 >
                   {item}
@@ -1080,7 +1080,7 @@ function OddOneOut({ onBack }: { onBack: () => void }) {
                 {isCorrect ? '✓ Correct!' : `✗ The odd one out is "${q.odd}"`}
               </div>
               <p className="text-sm text-gray-600">{q.reason}</p>
-              <button onClick={next} className="mt-3 w-full py-2.5 rounded-xl bg-indigo-500 text-white font-black">
+              <button onClick={next} className="btn-duo mt-3 w-full py-2.5 rounded-xl text-white font-black" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}>
                 {index + 1 >= questions.length ? 'See Results →' : 'Next →'}
               </button>
             </div>
@@ -1092,9 +1092,9 @@ function OddOneOut({ onBack }: { onBack: () => void }) {
         <div className="flex flex-col items-center gap-4 bg-white rounded-3xl p-8 shadow-xl w-full max-w-sm text-center">
           <div className="text-5xl">{score >= 10 ? '🏆' : score >= 6 ? '🎉' : '💪'}</div>
           <h3 className="text-2xl font-black text-gray-800">All done!</h3>
-          <div className="text-5xl font-black text-indigo-600">{score} / {questions.length}</div>
+          <div className="text-5xl font-black" style={{ color: '#58CC02' }}>{score} / {questions.length}</div>
           <div className="text-gray-500 text-sm">{score >= 10 ? 'Brilliant thinking! 🌟' : score >= 6 ? 'Good spotting!' : 'Keep practising — you\'ll get it!'}</div>
-          <button onClick={restart} className="w-full py-3 rounded-2xl font-black text-white text-lg bg-indigo-500 hover:bg-indigo-600 transition-all active:scale-95">Play Again</button>
+          <button onClick={restart} className="btn-duo w-full py-3 rounded-2xl font-black text-white text-lg" style={{ background: '#58CC02', borderBottomColor: '#46A302' }}>Play Again</button>
         </div>
       )}
     </div>
@@ -1123,28 +1123,28 @@ export default function GamesHub() {
   const [activeGame, setActiveGame] = useState<GameId | null>(null);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
+    <div className="min-h-screen" style={{ background: '#F7FFF4' }}>
       {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
+      <div className="sticky top-0 z-10" style={{ background: 'linear-gradient(135deg, #7C3AED, #A855F7)' }}>
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             {activeGame && (
               <button
                 onClick={() => setActiveGame(null)}
-                className="text-gray-500 hover:text-gray-700 font-semibold text-sm mr-1"
+                className="text-white/70 hover:text-white font-bold text-sm mr-1"
               >
                 ← Games
               </button>
             )}
             <span className="text-2xl">🎮</span>
             <div>
-              <div className="font-black text-gray-800 text-sm leading-none">Mini Games</div>
-              <div className="text-xs text-gray-400">Chucky</div>
+              <div className="font-black text-white text-sm leading-none">Mini Games</div>
+              <div className="text-xs text-white/60">Chucky</div>
             </div>
           </div>
           <button
             onClick={() => setView('home')}
-            className="text-xs text-gray-400 hover:text-gray-600 border border-gray-200 rounded-full px-3 py-1.5"
+            className="text-xs text-white/70 hover:text-white border border-white/30 rounded-full px-3 py-1.5"
           >
             ← Home
           </button>
@@ -1163,20 +1163,20 @@ export default function GamesHub() {
               {GAMES.map(game => (
                 <div
                   key={game.id}
-                  className="bg-white rounded-3xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col gap-3"
+                  className="card p-6 flex flex-col gap-3"
                 >
                   <div className="text-5xl">{game.emoji}</div>
                   <div>
                     <h3 className="font-black text-gray-800 text-lg leading-tight">{game.name}</h3>
                     <p className="text-sm text-gray-500 mt-0.5">{game.desc}</p>
-                    <div className="text-xs font-semibold mt-1" style={{ color: game.hasTimer ? '#ef4444' : '#10b981' }}>
+                    <div className="text-xs font-semibold mt-1" style={{ color: game.hasTimer ? '#FF4B4B' : '#58CC02' }}>
                       {game.hasTimer ? '⏱ Has timer' : '🕊 No timer'}
                     </div>
                   </div>
                   <button
                     onClick={() => setActiveGame(game.id)}
-                    className="mt-auto py-2.5 px-5 rounded-2xl font-black text-white text-sm transition-all active:scale-95 hover:opacity-90"
-                    style={{ background: game.color }}
+                    className="btn-duo mt-auto py-2.5 px-5 rounded-2xl font-black text-white text-sm"
+                    style={{ background: game.color, filter: 'brightness(1.0)' }}
                   >
                     Play →
                   </button>

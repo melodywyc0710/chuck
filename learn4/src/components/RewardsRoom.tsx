@@ -5,7 +5,8 @@ import { ROOM_ITEMS } from '../data/rewards';
 import { BADGES } from '../data/badges';
 import { sounds } from '../utils/sounds';
 
-const THEME_COLOR = { purple: '#6366f1', blue: '#3b82f6', green: '#10b981', orange: '#f59e0b' };
+const THEME_COLOR = { purple: '#A855F7', blue: '#1CB0F6', green: '#58CC02', orange: '#F97316' };
+const THEME_DARK  = { purple: '#7C3AED', blue: '#0E8FC4', green: '#46A302', orange: '#EA580C' };
 type TabType = 'room' | 'shop' | 'farm' | 'badges';
 type Category = 'all' | 'furniture' | 'pet' | 'decoration' | 'window';
 
@@ -123,6 +124,7 @@ export default function RewardsRoom() {
   if (!profile) return null;
 
   const themeColor = THEME_COLOR[profile.colorTheme];
+  const themeDark = THEME_DARK[profile.colorTheme];
   const mascotType = profile.mascot;
   const placed = ROOM_ITEMS.filter(i => placedItems.includes(i.id) && !FARM_ANIMALS.includes(i.id));
   const shopItems = ROOM_ITEMS.filter(i =>
@@ -161,15 +163,15 @@ export default function RewardsRoom() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#F7FFF4' }}>
       {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
+      <div className="sticky top-0 z-10" style={{ background: 'linear-gradient(135deg, #7C3AED, #A855F7)' }}>
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <button onClick={() => setView('home')} className="text-gray-400 hover:text-gray-600 text-sm">← Home</button>
-          <h2 className="font-black text-gray-800">{hasTreehouse ? '🌳 My Treehouse' : '🛏️ My Room'}</h2>
-          <div className="flex items-center gap-1 bg-yellow-100 px-3 py-1.5 rounded-full">
+          <button onClick={() => setView('home')} className="text-white/70 hover:text-white text-sm font-bold">← Home</button>
+          <h2 className="font-black text-white">{hasTreehouse ? '🌳 My Treehouse' : '🛏️ My Room'}</h2>
+          <div className="flex items-center gap-1 bg-yellow-400 px-3 py-1.5 rounded-full" style={{ borderBottom: '2px solid #E0A800' }}>
             <span>⭐</span>
-            <span className="font-black text-yellow-700">{totalStars}</span>
+            <span className="font-black text-yellow-900">{totalStars}</span>
           </div>
         </div>
         <div className="max-w-2xl mx-auto px-4 pb-3 flex gap-2">
@@ -177,8 +179,8 @@ export default function RewardsRoom() {
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex-1 py-2 rounded-xl font-bold text-sm transition-all ${tab === t ? 'text-white' : 'bg-gray-100 text-gray-500'}`}
-              style={tab === t ? { background: themeColor } : {}}
+              className={`flex-1 py-2 rounded-xl font-black text-sm transition-all btn-duo ${tab === t ? 'text-white' : 'bg-white/20 text-white/70'}`}
+              style={tab === t ? { background: themeColor, borderBottomColor: themeDark } : {}}
             >
               {t === 'room' ? 'My Room' : t === 'shop' ? 'Shop' : t === 'farm' ? '🌾 Farm' : '🏅 Badges'}
             </button>
@@ -446,7 +448,7 @@ export default function RewardsRoom() {
                           onClick={() => canAfford && buyItem(item.id, item.cost)}
                           disabled={!canAfford}
                           className="w-full py-2 rounded-xl text-xs font-black transition-all disabled:opacity-40"
-                          style={canAfford ? { background: themeColor, color: 'white' } : { background: '#f3f4f6', color: '#9ca3af' }}
+                          style={canAfford ? { background: themeColor, borderBottomColor: themeDark, color: 'white' } : { background: '#f3f4f6', borderBottomColor: '#d1d5db', color: '#9ca3af' }}
                         >
                           ⭐ {item.cost} {owned ? 'Buy another' : canAfford ? 'Buy' : '— need more stars'}
                         </motion.button>
@@ -466,7 +468,7 @@ export default function RewardsRoom() {
                     <div key={item.id} className="bg-gray-50 rounded-2xl p-4 border-2 border-dashed border-gray-200 text-center opacity-60">
                       <div className="text-4xl grayscale mb-2">{item.emoji}</div>
                       <div className="font-bold text-gray-500 text-sm">{item.name}</div>
-                      <div className="text-xs text-indigo-500 font-semibold mt-1">
+                      <div className="text-xs font-semibold mt-1" style={{ color: themeColor }}>
                         🗓 Unlocks week {item.weekUnlock}
                         {item.weekUnlock !== undefined && ` (${item.weekUnlock - weeksEnrolled} week${item.weekUnlock - weeksEnrolled !== 1 ? 's' : ''} away)`}
                       </div>

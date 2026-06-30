@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VCE VCD Teaching Materials</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0fdf4; color: #1a1a1a; min-height: 100vh; padding: 40px 20px; }
+  h1 { font-size: 2.2rem; font-weight: 900; color: #1a1a1a; margin-bottom: 6px; }
+  .sub { color: #6b7280; font-size: 1rem; margin-bottom: 40px; }
+  .section { margin-bottom: 36px; }
+  .section-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: #9ca3af; margin-bottom: 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .card { background: white; border-radius: 16px; padding: 20px; border: 2px solid #e5e7eb; border-bottom: 4px solid #d1d5db; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 8px; transition: border-color 0.15s, transform 0.1s; }
+  .card:hover { border-color: #58CC02; border-bottom-color: #46A302; transform: translateY(-2px); }
+  .card-topic { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+  .card-title { font-size: 1rem; font-weight: 800; color: #111; }
+  .card-desc { font-size: 0.82rem; color: #6b7280; line-height: 1.5; }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .badge { font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 99px; }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-purple { background: #f3e8ff; color: #6b21a8; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .header-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+  .logo { width: 48px; height: 48px; background: #58CC02; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border-bottom: 3px solid #46A302; }
+</style>
+</head>
+<body>
+<div style="max-width:900px;margin:0 auto;">
+  <div class="header-bar">
+    <div class="logo">🎨</div>
+    <div>
+      <h1>VCE VCD Teaching Materials</h1>
+      <p class="sub">Year 11 Visual Communication Design · Chucky Learning</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Design Elements</div>
+    <div class="grid">
+      <a class="card" href="elements-handout.html">
+        <div class="card-topic" style="color:#A855F7">VCAA-VCD-ELEM1 & ELEM2</div>
+        <div class="card-title">Design Elements — Reference Handout</div>
+        <div class="card-desc">All 8 VCAA elements with definitions, visual examples and exam vocabulary. Print 1 per student.</div>
+        <div class="badges"><span class="badge badge-purple">Handout</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+      <a class="card" href="elements-workbook.html">
+        <div class="card-topic" style="color:#A855F7">VCAA-VCD-ELEM1 & ELEM2</div>
+        <div class="card-title">Design Elements — Student Workbook</div>
+        <div class="card-desc">Fill-in activities, analysis tasks and colour theory exercises. A4 print layout.</div>
+        <div class="badges"><span class="badge badge-blue">Workbook</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+      <a class="card" href="elements-slides.html">
+        <div class="card-topic" style="color:#A855F7">VCAA-VCD-ELEM1 & ELEM2</div>
+        <div class="card-title">Design Elements — Lesson Slides</div>
+        <div class="card-desc">15-slide deck covering all 8 elements. Present in browser or save as PDF for PowerPoint import.</div>
+        <div class="badges"><span class="badge badge-purple">Slides</span></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Design Principles</div>
+    <div class="grid">
+      <a class="card" href="principles-handout.html">
+        <div class="card-topic" style="color:#58CC02">VCAA-VCD-PRIN1</div>
+        <div class="card-title">Design Principles — Reference Handout</div>
+        <div class="card-desc">All 8 VCAA 2024 principles with definitions and analysis sentence starters. Common exam mistakes highlighted.</div>
+        <div class="badges"><span class="badge badge-purple">Handout</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+      <a class="card" href="principles-workbook.html">
+        <div class="card-topic" style="color:#58CC02">VCAA-VCD-PRIN1</div>
+        <div class="card-title">Design Principles — Student Workbook</div>
+        <div class="card-desc">Identify principles in real designs, comparative analysis tasks, and exam response scaffolding.</div>
+        <div class="badges"><span class="badge badge-blue">Workbook</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+      <a class="card" href="principles-slides.html">
+        <div class="card-topic" style="color:#58CC02">VCAA-VCD-PRIN1</div>
+        <div class="card-title">Design Principles — Lesson Slides</div>
+        <div class="card-desc">12-slide deck. Includes "NOT in VCAA 2024" slide to prevent common student mistakes.</div>
+        <div class="badges"><span class="badge badge-purple">Slides</span></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Gestalt Principles</div>
+    <div class="grid">
+      <a class="card" href="gestalt-handout.html">
+        <div class="card-topic" style="color:#1CB0F6">VCAA-VCD-GEST</div>
+        <div class="card-title">Gestalt Principles — Reference Handout</div>
+        <div class="card-desc">All 6 VCAA gestalt principles. Note: "Continuity" not "Continuation." Includes visual diagram for each.</div>
+        <div class="badges"><span class="badge badge-purple">Handout</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+      <a class="card" href="gestalt-workbook.html">
+        <div class="card-topic" style="color:#1CB0F6">VCAA-VCD-GEST</div>
+        <div class="card-title">Gestalt Principles — Student Workbook</div>
+        <div class="card-desc">Draw your own gestalt diagrams, analyse real logos, and write exam-style responses.</div>
+        <div class="badges"><span class="badge badge-blue">Workbook</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+      <a class="card" href="gestalt-slides.html">
+        <div class="card-topic" style="color:#1CB0F6">VCAA-VCD-GEST</div>
+        <div class="card-title">Gestalt Principles — Lesson Slides</div>
+        <div class="card-desc">10-slide visual deck. Each gestalt principle shown with SVG diagram built into the slide.</div>
+        <div class="badges"><span class="badge badge-purple">Slides</span></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Typography</div>
+    <div class="grid">
+      <a class="card" href="typography-handout.html">
+        <div class="card-topic" style="color:#F97316">VCAA-VCD-TYPE1 & TYPE2</div>
+        <div class="card-title">Typography — Reference Handout</div>
+        <div class="card-desc">Letterform anatomy diagram, 4 typeface classifications, hierarchy rules and exam vocabulary.</div>
+        <div class="badges"><span class="badge badge-purple">Handout</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+      <a class="card" href="typography-workbook.html">
+        <div class="card-topic" style="color:#F97316">VCAA-VCD-TYPE1 & TYPE2</div>
+        <div class="card-title">Typography — Student Workbook</div>
+        <div class="card-desc">Label the anatomy diagram, classify typefaces, write a typography analysis paragraph.</div>
+        <div class="badges"><span class="badge badge-blue">Workbook</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+      <a class="card" href="typography-slides.html">
+        <div class="card-topic" style="color:#F97316">VCAA-VCD-TYPE1 & TYPE2</div>
+        <div class="card-title">Typography — Lesson Slides</div>
+        <div class="card-desc">14-slide deck covering anatomy, classification, hierarchy and grid systems.</div>
+        <div class="badges"><span class="badge badge-purple">Slides</span></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Exam Technique</div>
+    <div class="grid">
+      <a class="card" href="exam-handout.html">
+        <div class="card-topic" style="color:#EF4444">VCAA-VCD-EXAM</div>
+        <div class="card-title">Exam Analysis Technique — Reference Handout</div>
+        <div class="card-desc">E.E.E. method (Element/Effect/Evidence), sentence starters, mark allocation and common mistakes.</div>
+        <div class="badges"><span class="badge badge-purple">Handout</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+      <a class="card" href="exam-workbook.html">
+        <div class="card-topic" style="color:#EF4444">VCAA-VCD-EXAM</div>
+        <div class="card-title">Exam Analysis Technique — Practice Workbook</div>
+        <div class="card-desc">Scaffold frames for writing 3-mark and 6-mark analysis responses, with model answers.</div>
+        <div class="badges"><span class="badge badge-blue">Workbook</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Design History</div>
+    <div class="grid">
+      <a class="card" href="history-handout.html">
+        <div class="card-topic" style="color:#6B7280">VCAA-VCD-HIST</div>
+        <div class="card-title">Design History — Reference Handout</div>
+        <div class="card-desc">Bauhaus, Swiss International Style and Postmodernism — key dates, designers, characteristics and exam links.</div>
+        <div class="badges"><span class="badge badge-purple">Handout</span><span class="badge badge-green">Print-ready</span></div>
+      </a>
+    </div>
+  </div>
+
+  <p style="text-align:center;color:#9ca3af;font-size:0.8rem;margin-top:40px;">Open any file in a browser · Press Ctrl+P to print · Save as PDF</p>
+</div>
+</body>
+</html>

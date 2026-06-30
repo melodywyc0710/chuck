@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Principles — VCE VCD Reference Handout</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 14mm 14mm 14mm 14mm; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.4}
+  .page{max-width:182mm;margin:0 auto;padding:0}
+  .header{background:linear-gradient(135deg,#166534,#16a34a);color:#fff;padding:10px 14px;border-radius:6px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .header h1{font-size:16pt;font-weight:900;margin-bottom:2px}
+  .header p{font-size:8pt;opacity:.85}
+  .header .badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);padding:4px 10px;border-radius:20px;font-size:7.5pt;font-weight:700;white-space:nowrap}
+  .warn{background:#fff7ed;border:1.5px solid #f97316;border-radius:6px;padding:8px 12px;margin-bottom:10px}
+  .warn h3{color:#ea580c;font-size:9pt;font-weight:800;margin-bottom:4px}
+  .warn ul{padding-left:14px;color:#9a3412;font-size:8.5pt;line-height:1.7}
+  .warn .good{color:#166534;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:4px;padding:4px 8px;margin-top:6px;font-size:8pt}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+  .card{border:1.5px solid #dcfce7;border-radius:8px;padding:10px;background:#f0fdf4}
+  .card h2{color:#166534;font-size:9.5pt;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+  .card .def{color:#1a1a1a;font-size:8.5pt;line-height:1.5;margin-bottom:5px}
+  .card .eg{color:#166534;font-size:7.5pt;font-style:italic;border-left:2px solid #4ade80;padding-left:6px}
+  .card .starter{background:#fff;border:1px solid #bbf7d0;border-radius:4px;padding:5px 8px;margin-top:5px;font-size:7.5pt;color:#14532d}
+  .label{font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#86efac;margin-bottom:2px}
+  .section-title{font-size:8.5pt;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px;border-bottom:1.5px solid #bbf7d0;padding-bottom:2px}
+  .exam-table{width:100%;border-collapse:collapse;font-size:8pt;margin-top:6px}
+  .exam-table th{background:#166534;color:#fff;padding:5px 8px;text-align:left;font-size:7.5pt}
+  .exam-table td{padding:5px 8px;border-bottom:1px solid #dcfce7;vertical-align:top}
+  .exam-table tr:nth-child(even) td{background:#f0fdf4}
+  .footer{margin-top:10px;text-align:center;font-size:7pt;color:#86efac;border-top:1px solid #dcfce7;padding-top:6px}
+  @media print{body{background:#fff}.page{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Design Principles</h1>
+      <p>VCE Visual Communication Design · Unit 1 AOS 1 · VCAA 2024</p>
+    </div>
+    <div class="badge">VCAA-VCD-PRIN1</div>
+  </div>
+
+  <!-- WARNING BOX -->
+  <div class="warn">
+    <h3>⚠️ VCAA 2024 — Know What's IN and What's OUT</h3>
+    <ul>
+      <li><strong>NOT in VCAA 2024:</strong> Emphasis · Unity · Harmony · Rhythm · Dominance · Repetition (as a separate principle)</li>
+      <li><strong>IN VCAA 2024:</strong> Balance · Contrast · Cropping · Scale · Proportion · Hierarchy · Pattern · Figure-Ground</li>
+    </ul>
+    <div class="good">✅ Always use ONLY the 8 principles listed above in your exam responses.</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>⚖️ Balance</h2>
+      <div class="def">The distribution of visual weight in a design. Can be <strong>symmetrical</strong> (mirror both sides), <strong>asymmetrical</strong> (different elements of equal weight), or <strong>radial</strong> (elements radiating from a centre).</div>
+      <div class="eg">e.g. A poster with one large image on the left balanced by several smaller text blocks on the right uses asymmetrical balance.</div>
+      <div class="label">Exam sentence starter</div>
+      <div class="starter">"The principle of <strong>balance</strong> is used through [symmetrical/asymmetrical/radial] arrangement, which creates a sense of [stability/dynamism] and ensures the viewer's eye..."</div>
+    </div>
+    <div class="card">
+      <h2>◐ Contrast</h2>
+      <div class="def">The juxtaposition of <strong>opposing visual qualities</strong> to create visual interest and emphasis. Can be tonal (light/dark), colour (complementary hues), scale (large/small), or texture (rough/smooth).</div>
+      <div class="eg">e.g. White text on a dark background creates high tonal contrast, making the text legible and dominant.</div>
+      <div class="label">Exam sentence starter</div>
+      <div class="starter">"The principle of <strong>contrast</strong> is achieved through [tonal/colour/scale/textural] opposition between [X] and [Y], which directs the viewer's attention to..."</div>
+    </div>
+    <div class="card">
+      <h2>✂️ Cropping</h2>
+      <div class="def">The <strong>selective framing</strong> of an image or subject to eliminate unwanted elements, create tension, direct focus, or imply continuation beyond the frame. Types: full, tight, partial, bleed.</div>
+      <div class="eg">e.g. Cropping a portrait so the top of the head is cut off creates an intimate, close-up feel that draws attention to the subject's eyes.</div>
+      <div class="label">Exam sentence starter</div>
+      <div class="starter">"The principle of <strong>cropping</strong> is used in this design by [framing/eliminating/cutting] the [subject/image], which creates a sense of [tension/intimacy/focus] and..."</div>
+    </div>
+    <div class="card">
+      <h2>🔍 Scale</h2>
+      <div class="def">The <strong>relative size</strong> of elements in relation to each other or to the real world. Exaggerated scale creates emphasis; realistic scale creates clarity; distorted scale creates surreal or dramatic effects.</div>
+      <div class="eg">e.g. A large product image next to small text creates visual dominance through scale, establishing the product as the focus.</div>
+      <div class="label">Exam sentence starter</div>
+      <div class="starter">"The principle of <strong>scale</strong> is evident through the [enlarged/reduced] size of [element], which [emphasises/diminishes] it in relation to [other elements], communicating..."</div>
+    </div>
+    <div class="card">
+      <h2>📏 Proportion</h2>
+      <div class="def">The <strong>size relationship</strong> between parts of an object, or between an object and the whole design. Linked to the golden ratio (1:1.618). Proportional relationships convey harmony, anatomy, and aesthetic appeal.</div>
+      <div class="eg">e.g. The golden ratio is used in logo design to ensure letterforms are proportionally pleasing and balanced.</div>
+      <div class="label">Exam sentence starter</div>
+      <div class="starter">"The principle of <strong>proportion</strong> is demonstrated through the [size relationship/ratio] of [X to Y], which creates a sense of [harmony/tension/realism] in the design."</div>
+    </div>
+    <div class="card">
+      <h2>🏆 Hierarchy</h2>
+      <div class="def">The <strong>organisation of visual elements</strong> by importance to guide the viewer's reading order. Achieved through size, weight, colour, position, and typeface variation.</div>
+      <div class="eg">e.g. A headline in large bold type, followed by a subheading, then body text, creates a clear visual hierarchy that guides the eye top to bottom.</div>
+      <div class="label">Exam sentence starter</div>
+      <div class="starter">"Visual <strong>hierarchy</strong> is established through the use of [larger/bolder/coloured] type for [heading], which signals that this information has greater visual priority than [body text/captions]."</div>
+    </div>
+    <div class="card">
+      <h2>🔁 Pattern</h2>
+      <div class="def">The <strong>repetition of visual elements</strong> (shapes, colours, lines, textures) in a regular or irregular arrangement, creating rhythm, texture, and unity. Distinguished from the (non-VCAA) "repetition" principle.</div>
+      <div class="eg">e.g. A repeating chevron motif across the background of a brochure creates visual texture and reinforces brand identity.</div>
+      <div class="label">Exam sentence starter</div>
+      <div class="starter">"The principle of <strong>pattern</strong> is created through the repetition of [element], which generates visual [rhythm/texture/unity] and reinforces the [theme/brand identity]."</div>
+    </div>
+    <div class="card">
+      <h2>◐ Figure-Ground</h2>
+      <div class="def">The relationship between the <strong>subject (figure)</strong> and <strong>background (ground)</strong>. Can be stable (clear separation) or ambiguous (reversible). Negative space can become a meaningful figure.</div>
+      <div class="eg">e.g. The FedEx logo uses the negative space between 'E' and 'x' to create an arrow — the ground becomes a meaningful figure.</div>
+      <div class="label">Exam sentence starter</div>
+      <div class="starter">"The principle of <strong>figure-ground</strong> is used through the [contrast/negative space/colour] which separates [subject] from [background], directing the viewer's attention to [focal point]."</div>
+    </div>
+  </div>
+
+  <div class="section-title">Quick Reference: The 3-Part Analysis Formula</div>
+  <table class="exam-table">
+    <tr><th>Part</th><th>What to write</th><th>Example</th></tr>
+    <tr><td><strong>1. Name</strong></td><td>State the principle by name</td><td>"The principle of contrast..."</td></tr>
+    <tr><td><strong>2. Evidence</strong></td><td>Specific visual detail from the design</td><td>"...is achieved through the dark navy background against the white text block in the upper left..."</td></tr>
+    <tr><td><strong>3. Effect</strong></td><td>Impact on the viewer / purpose</td><td>"...which draws the viewer's attention immediately to the title and creates a strong first impression."</td></tr>
+  </table>
+
+  <div class="footer">VCE Visual Communication Design · Unit 1 AOS 1 · Design Principles · VCAA 2024 Study Design · melodywyc0710@gmail.com</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typography — VCE VCD Reference Handout</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 14mm 14mm 14mm 14mm; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.4}
+  .page{max-width:182mm;margin:0 auto;padding:0}
+  .header{background:linear-gradient(135deg,#78350f,#d97706);color:#fff;padding:10px 14px;border-radius:6px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .header h1{font-size:16pt;font-weight:900;margin-bottom:2px}
+  .header p{font-size:8pt;opacity:.85}
+  .header .badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);padding:4px 10px;border-radius:20px;font-size:7.5pt;font-weight:700;white-space:nowrap}
+  .section-title{font-size:8.5pt;font-weight:800;color:#92400e;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px;border-bottom:1.5px solid #fde68a;padding-bottom:2px}
+  .anatomy-box{background:#fffbeb;border:1.5px solid #fde68a;border-radius:8px;padding:10px;margin-bottom:8px}
+  .anatomy-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .anatomy-terms{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+  .term{background:#fff;border:1px solid #fde68a;border-radius:4px;padding:4px 8px;font-size:8pt}
+  .term strong{color:#92400e;font-size:8pt}
+  .term span{color:#374151;font-size:7.5pt}
+  .class-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
+  .class-card{border:1.5px solid #fde68a;border-radius:8px;padding:9px;background:#fffbeb;text-align:center}
+  .class-card .specimen{font-size:1.8rem;margin-bottom:5px;line-height:1;color:#92400e}
+  .class-card h3{font-size:8.5pt;font-weight:800;color:#78350f;margin-bottom:4px}
+  .class-card p{font-size:7.5pt;color:#374151;line-height:1.4}
+  .class-card .eg{color:#d97706;font-size:7pt;margin-top:4px;font-style:italic}
+  .spacing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+  .sp-card{background:#fffbeb;border:1.5px solid #fde68a;border-radius:8px;padding:10px}
+  .sp-card h3{color:#92400e;font-size:8.5pt;font-weight:800;margin-bottom:6px}
+  .sp-card .demo{background:#fff;border:1px solid #fde68a;border-radius:4px;padding:6px;margin-bottom:6px;text-align:center;min-height:36px;display:flex;align-items:center;justify-content:center}
+  .sp-card p{font-size:7.5pt;color:#374151;line-height:1.5}
+  .hier-box{background:#fffbeb;border:1.5px solid #fde68a;border-radius:8px;padding:12px;margin-bottom:8px}
+  .hier-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .exam-table{width:100%;border-collapse:collapse;font-size:8pt;margin-bottom:8px}
+  .exam-table th{background:#78350f;color:#fff;padding:5px 8px;text-align:left;font-size:7.5pt}
+  .exam-table td{padding:5px 8px;border-bottom:1px solid #fde68a;vertical-align:top}
+  .exam-table tr:nth-child(even) td{background:#fffbeb}
+  .starter{background:#fffbeb;border:1.5px solid #fde68a;border-radius:6px;padding:8px 12px;font-size:8pt;color:#78350f;margin-bottom:6px}
+  .starter strong{color:#92400e}
+  .footer{margin-top:8px;text-align:center;font-size:7pt;color:#d97706;border-top:1px solid #fde68a;padding-top:6px}
+  @media print{body{background:#fff}.page{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Typography</h1>
+      <p>VCE Visual Communication Design · Unit 1 AOS 1 · VCAA 2024</p>
+    </div>
+    <div class="badge">VCAA-VCD-TYPE1</div>
+  </div>
+
+  <!-- ANATOMY -->
+  <div class="section-title">1. Anatomy of a Letterform</div>
+  <div class="anatomy-box">
+    <div class="anatomy-row">
+      <div>
+        <!-- SVG anatomy diagram -->
+        <svg width="240" height="130" viewBox="0 0 240 130" style="display:block;max-width:100%">
+          <!-- Baseline -->
+          <line x1="10" y1="100" x2="230" y2="100" stroke="#d97706" stroke-width="1" stroke-dasharray="5 3"/>
+          <text x="232" y="104" font-size="8" fill="#d97706" font-family="Inter">baseline</text>
+          <!-- x-height -->
+          <line x1="10" y1="68" x2="155" y2="68" stroke="#2563eb" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="0" y="72" font-size="8" fill="#2563eb" font-family="Inter">x-ht</text>
+          <!-- cap height -->
+          <line x1="10" y1="30" x2="100" y2="30" stroke="#16a34a" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="0" y="34" font-size="8" fill="#16a34a" font-family="Inter">cap</text>
+          <!-- descender -->
+          <line x1="10" y1="118" x2="230" y2="118" stroke="#dc2626" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="232" y="122" font-size="8" fill="#dc2626" font-family="Inter">descender</text>
+          <!-- ascender -->
+          <line x1="120" y1="14" x2="230" y2="14" stroke="#9333ea" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="232" y="18" font-size="8" fill="#9333ea" font-family="Inter">ascender</text>
+          <!-- Letters -->
+          <text x="10" y="100" font-size="72" font-family="Georgia,serif" font-weight="700" fill="#92400e" opacity=".9">H</text>
+          <text x="88" y="100" font-size="72" font-family="Georgia,serif" font-weight="700" fill="#dc2626" opacity=".7">p</text>
+          <text x="150" y="100" font-size="72" font-family="Georgia,serif" font-weight="700" fill="#9333ea" opacity=".7">d</text>
+        </svg>
+      </div>
+      <div class="anatomy-terms">
+        <div class="term"><strong>Baseline</strong><br><span>Line letters sit on</span></div>
+        <div class="term"><strong>x-height</strong><br><span>Height of lowercase x</span></div>
+        <div class="term"><strong>Cap height</strong><br><span>Height of capitals</span></div>
+        <div class="term"><strong>Ascender</strong><br><span>Stroke above x-height (d, h, k)</span></div>
+        <div class="term"><strong>Descender</strong><br><span>Stroke below baseline (p, g, y)</span></div>
+        <div class="term"><strong>Serif</strong><br><span>Foot/stroke at letter end</span></div>
+        <div class="term"><strong>Counter</strong><br><span>Enclosed space inside o, e, d</span></div>
+        <div class="term"><strong>Stem</strong><br><span>Main vertical/diagonal stroke</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLASSIFICATIONS -->
+  <div class="section-title">2. Typeface Classifications</div>
+  <div class="class-grid">
+    <div class="class-card">
+      <div class="specimen" style="font-family:'Playfair Display',serif">Aa</div>
+      <h3>Serif</h3>
+      <p>Small strokes at letter ends. Traditional, authoritative, trustworthy.</p>
+      <div class="eg">Times New Roman, Garamond, Georgia</div>
+      <div style="margin-top:5px;font-size:7.5pt;color:#92400e"><strong>Use:</strong> books, newspapers, formal docs</div>
+    </div>
+    <div class="class-card">
+      <div class="specimen" style="font-family:'Inter',sans-serif;font-weight:800">Aa</div>
+      <h3>Sans-Serif</h3>
+      <p>No strokes at ends. Modern, clean, accessible.</p>
+      <div class="eg">Helvetica, Arial, Futura, Gill Sans</div>
+      <div style="margin-top:5px;font-size:7.5pt;color:#92400e"><strong>Use:</strong> screens, signage, modern brands</div>
+    </div>
+    <div class="class-card">
+      <div class="specimen" style="font-family:cursive">Aa</div>
+      <h3>Script / Decorative</h3>
+      <p>Mimics handwriting. Expressive, personal — display use only.</p>
+      <div class="eg">Brush Script, display fonts</div>
+      <div style="margin-top:5px;font-size:7.5pt;color:#92400e"><strong>Use:</strong> invitations, titles (not body!)</div>
+    </div>
+    <div class="class-card">
+      <div class="specimen" style="font-family:monospace;font-size:1.4rem">Aa</div>
+      <h3>Monospaced</h3>
+      <p>Each character = equal width. Technical, precise.</p>
+      <div class="eg">Courier, Consolas, Space Mono</div>
+      <div style="margin-top:5px;font-size:7.5pt;color:#92400e"><strong>Use:</strong> code, forms, typewriter look</div>
+    </div>
+  </div>
+
+  <!-- SPACING -->
+  <div class="section-title">3. Spacing: Kerning · Tracking · Leading</div>
+  <div class="spacing-grid">
+    <div class="sp-card">
+      <h3>Kerning</h3>
+      <div class="demo">
+        <span style="font-size:18pt;font-weight:900;color:#92400e;letter-spacing:-.08em">AV</span>
+        <span style="color:#9ca3af;font-size:9pt;margin:0 6px">vs</span>
+        <span style="font-size:18pt;font-weight:900;color:#2563eb">AV</span>
+      </div>
+      <p>Adjusts space <strong>between two specific characters</strong>. Fixes optically uneven pairs like AV, WA, To, Ty. Applied to display/heading text.</p>
+    </div>
+    <div class="sp-card">
+      <h3>Tracking</h3>
+      <div class="demo" style="flex-direction:column;gap:3px">
+        <span style="font-size:9pt;font-weight:700;color:#92400e;letter-spacing:.3em">LOOSE</span>
+        <span style="font-size:9pt;font-weight:700;color:#2563eb;letter-spacing:0">TIGHT</span>
+      </div>
+      <p>Adjusts space <strong>across a range of characters</strong> (word, line, or paragraph). Loose = airy/luxury; tight = dense/urgent.</p>
+    </div>
+    <div class="sp-card">
+      <h3>Leading</h3>
+      <div class="demo" style="flex-direction:column">
+        <div style="line-height:1;font-size:8.5pt;color:#92400e">Tight line spacing<br>feels cramped here</div>
+        <div style="line-height:2;font-size:8.5pt;color:#2563eb;margin-top:4px">Loose leading<br>feels airy here</div>
+      </div>
+      <p>Vertical space <strong>between lines</strong> of text. Named after lead strips in manual typesetting. 120%–150% of font size is standard for body text.</p>
+    </div>
+  </div>
+
+  <!-- HIERARCHY + EXAM -->
+  <div class="section-title">4. Typographic Hierarchy &amp; Exam Technique</div>
+  <div class="hier-box">
+    <div class="hier-row">
+      <div>
+        <p style="font-size:8.5pt;font-weight:700;color:#92400e;margin-bottom:6px">Creating Hierarchy Through:</p>
+        <table class="exam-table" style="margin-bottom:0">
+          <tr><th>Tool</th><th>How it works</th></tr>
+          <tr><td><strong>Size</strong></td><td>Larger = higher priority; draws eye first</td></tr>
+          <tr><td><strong>Weight</strong></td><td>Bold/black weight dominates lighter weights</td></tr>
+          <tr><td><strong>Colour</strong></td><td>High-contrast or saturated colour = emphasis</td></tr>
+          <tr><td><strong>Position</strong></td><td>Top/centre = primary; bottom/edge = secondary</td></tr>
+          <tr><td><strong>Typeface</strong></td><td>Contrasting classifications (serif + sans) signal levels</td></tr>
+        </table>
+      </div>
+      <div>
+        <p style="font-size:8.5pt;font-weight:700;color:#92400e;margin-bottom:6px">Key Vocabulary:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+          <div class="term"><strong>Typeface</strong><br><span>Design of a type family</span></div>
+          <div class="term"><strong>Font</strong><br><span>Specific weight/style of typeface</span></div>
+          <div class="term"><strong>Point size</strong><br><span>Height of type in points (1pt = 0.35mm)</span></div>
+          <div class="term"><strong>Weight</strong><br><span>Light / Regular / Bold / Black</span></div>
+          <div class="term"><strong>Legibility</strong><br><span>How easy to distinguish letters</span></div>
+          <div class="term"><strong>Readability</strong><br><span>How easy to read blocks of text</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="starter"><strong>Exam sentence starter:</strong> "The [serif/sans-serif] typeface used for [element] communicates [tone/quality] to the viewer, while the [size/weight/tracking] establishes typographic hierarchy by signalling that [this element] has greater visual priority than [other elements]."</div>
+
+  <div class="footer">VCE Visual Communication Design · Unit 1 AOS 1 · Typography · VCAA 2024 Study Design</div>
+</div>
+</body>
+</html>

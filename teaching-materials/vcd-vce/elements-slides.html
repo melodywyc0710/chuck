@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Design Elements — VCE VCD Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #0d0d1a; color: white; height: 100vh; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 60px 72px; }
+  .slide.active { display: flex; }
+  .badge { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; background: rgba(168,85,247,0.25); color: #c084fc; border: 1px solid rgba(168,85,247,0.4); border-radius: 99px; padding: 4px 14px; margin-bottom: 18px; }
+  .slide-title { font-size: 2.6rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .slide-sub { font-size: 1.15rem; color: rgba(255,255,255,0.6); margin-bottom: 32px; font-weight: 400; }
+  .accent { color: #c084fc; }
+  .green { color: #4ade80; }
+  .yellow { color: #fbbf24; }
+  .red { color: #f87171; }
+  .blue { color: #60a5fa; }
+
+  /* Nav */
+  .nav { position: fixed; bottom: 28px; right: 32px; display: flex; gap: 10px; z-index: 100; }
+  .nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; transition: background 0.15s; }
+  .nav button:hover { background: rgba(168,85,247,0.4); }
+  .counter { position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 0.82rem; font-weight: 600; letter-spacing: 0.05em; }
+  .hint { position: fixed; bottom: 36px; left: 32px; color: rgba(255,255,255,0.25); font-size: 0.78rem; }
+
+  /* Layouts */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; flex: 1; }
+  .grid-8 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; flex: 1; }
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px; }
+  .card-sm { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; }
+  .full { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+  /* Element visual boxes */
+  .elem-name { font-size: 1.5rem; font-weight: 900; color: #c084fc; margin-bottom: 10px; }
+  .elem-def { font-size: 1rem; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 14px; }
+  .vocab { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
+  .vocab strong { color: rgba(255,255,255,0.7); }
+  .visual-box { flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; min-height: 200px; }
+
+  /* Title slide */
+  .title-slide { justify-content: center; align-items: flex-start; gap: 0; }
+  .big-title { font-size: 4rem; font-weight: 900; line-height: 1; margin-bottom: 16px; }
+  .big-sub { font-size: 1.4rem; color: rgba(255,255,255,0.5); font-weight: 400; }
+
+  /* Colour swatches */
+  .swatch-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .swatch { width: 36px; height: 36px; border-radius: 8px; }
+  .swatch-label { font-size: 0.82rem; color: rgba(255,255,255,0.6); }
+
+  /* Warning */
+  .warning-card { background: rgba(239,68,68,0.12); border: 2px solid rgba(239,68,68,0.4); border-radius: 16px; padding: 28px 32px; }
+
+  /* Divider */
+  .divider { width: 60px; height: 4px; background: #a855f7; border-radius: 99px; margin-bottom: 28px; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide active title-slide">
+  <div style="max-width:700px;">
+    <div class="badge">VCAA-VCD-ELEM1 & ELEM2 · Unit 1 AOS 1</div>
+    <div class="divider"></div>
+    <div class="big-title">The 8 Design<br><span class="accent">Elements</span></div>
+    <div class="big-sub" style="margin-top:16px;">Visual Communication Design · Year 11 VCE</div>
+    <div style="margin-top:48px;font-size:0.9rem;color:rgba(255,255,255,0.3);">Use ← → arrow keys or buttons to navigate</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: What are design elements? -->
+<div class="slide">
+  <div class="badge">Introduction</div>
+  <div class="slide-title">What are <span class="accent">Design Elements?</span></div>
+  <div class="grid-2" style="align-items:start;gap:32px;">
+    <div class="full">
+      <p style="font-size:1.2rem;color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:28px;">Design elements are the <strong style="color:#c084fc;">fundamental visual building blocks</strong> a designer uses to create any visual communication.</p>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:20px;">They are the "what" of a design — the raw materials that can be seen and described.</p>
+      <div class="card" style="background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.3);">
+        <p style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.6;"><strong style="color:#c084fc;">In the VCE exam</strong> you must: name the element → describe how it is used → explain the effect on the audience.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#c084fc;margin-bottom:12px;">The 8 VCAA 2024 Elements</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="font-size:1rem;font-weight:700;color:white;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;">1. Line</div>
+          <div style="font-size:1rem;font-weight:700;color:white;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;">2. Shape</div>
+          <div style="font-size:1rem;font-weight:700;color:white;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;">3. Colour</div>
+          <div style="font-size:1rem;font-weight:700;color:white;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;">4. Tone</div>
+          <div style="font-size:1rem;font-weight:700;color:white;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;">5. Texture</div>
+          <div style="font-size:1rem;font-weight:700;color:white;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;">6. Form</div>
+          <div style="font-size:1rem;font-weight:700;color:white;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;">7. Point / Dot</div>
+          <div style="font-size:1rem;font-weight:700;color:white;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;">8. Type</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Line -->
+<div class="slide">
+  <div class="badge">Element 1 of 8</div>
+  <div class="slide-title"><span class="accent">Line</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="elem-def">A mark made by a moving point. Lines direct the eye, create movement, divide space and suggest emotion through their character.</div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#c084fc;margin-bottom:8px;">Types of Line</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.8;">
+          <div><strong style="color:white;">Horizontal</strong> — calm, stability, rest</div>
+          <div><strong style="color:white;">Vertical</strong> — strength, formality, growth</div>
+          <div><strong style="color:white;">Diagonal</strong> — movement, tension, dynamism</div>
+          <div><strong style="color:white;">Curved</strong> — flow, elegance, nature</div>
+          <div><strong style="color:white;">Implied</strong> — line suggested by the viewer's eye following shapes</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> horizontal, vertical, diagonal, curved, implied, contour, gestural, thick, thin, broken, continuous, converging, radiating</div>
+    </div>
+    <div class="visual-box">
+      <svg width="320" height="260" viewBox="0 0 320 260">
+        <!-- Horizontal -->
+        <line x1="30" y1="40" x2="290" y2="40" stroke="#c084fc" stroke-width="3"/>
+        <text x="30" y="30" fill="rgba(255,255,255,0.5)" font-size="12" font-family="Inter">Horizontal — calm</text>
+        <!-- Vertical -->
+        <line x1="160" y1="60" x2="160" y2="130" stroke="#60a5fa" stroke-width="3"/>
+        <text x="170" y="90" fill="rgba(255,255,255,0.5)" font-size="12" font-family="Inter">Vertical</text>
+        <!-- Diagonal -->
+        <line x1="30" y1="160" x2="140" y2="80" stroke="#4ade80" stroke-width="3"/>
+        <text x="30" y="175" fill="rgba(255,255,255,0.5)" font-size="12" font-family="Inter">Diagonal — dynamic</text>
+        <!-- Curved -->
+        <path d="M 180 160 Q 240 80 290 160" stroke="#fbbf24" stroke-width="3" fill="none"/>
+        <text x="185" y="190" fill="rgba(255,255,255,0.5)" font-size="12" font-family="Inter">Curved — flow</text>
+        <!-- Implied -->
+        <circle cx="50" cy="230" r="5" fill="#f87171"/>
+        <circle cx="110" cy="215" r="5" fill="#f87171"/>
+        <circle cx="170" cy="225" r="5" fill="#f87171"/>
+        <circle cx="230" cy="210" r="5" fill="#f87171"/>
+        <circle cx="285" cy="220" r="5" fill="#f87171"/>
+        <text x="50" y="250" fill="rgba(255,255,255,0.5)" font-size="12" font-family="Inter">Implied line</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Shape -->
+<div class="slide">
+  <div class="badge">Element 2 of 8</div>
+  <div class="slide-title"><span class="accent">Shape</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="elem-def">A two-dimensional enclosed area defined by line, colour or tone. Shapes are geometric (precise, mathematical) or organic (natural, irregular).</div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#c084fc;margin-bottom:8px;">Key Distinction</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.8;">
+          <div><strong style="color:white;">Geometric</strong> — circles, squares, triangles. Suggests order, precision, technology</div>
+          <div><strong style="color:white;">Organic</strong> — natural, flowing, irregular. Suggests nature, warmth, humanity</div>
+          <div><strong style="color:white;">Positive shape</strong> — the subject/foreground</div>
+          <div><strong style="color:white;">Negative shape</strong> — the space around the subject</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> geometric, organic, positive, negative, biomorphic, angular, curvilinear, regular, irregular, silhouette</div>
+    </div>
+    <div class="visual-box">
+      <svg width="300" height="240" viewBox="0 0 300 240">
+        <text x="20" y="22" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">GEOMETRIC</text>
+        <rect x="20" y="30" width="60" height="60" fill="none" stroke="#c084fc" stroke-width="2.5" rx="2"/>
+        <circle cx="130" cy="60" r="32" fill="none" stroke="#c084fc" stroke-width="2.5"/>
+        <polygon points="220,90 250,30 280,90" fill="none" stroke="#c084fc" stroke-width="2.5"/>
+        <text x="20" y="120" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">ORGANIC</text>
+        <path d="M30 170 Q50 130 90 145 Q130 130 120 170 Q130 210 90 200 Q50 210 30 170Z" fill="none" stroke="#4ade80" stroke-width="2.5"/>
+        <path d="M160 145 Q185 125 210 145 Q240 140 235 175 Q240 210 210 205 Q185 215 160 200 Q140 180 160 145Z" fill="none" stroke="#4ade80" stroke-width="2.5"/>
+        <text x="20" y="230" fill="rgba(255,255,255,0.3)" font-size="10" font-family="Inter">Negative space is as important as positive shape</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Colour -->
+<div class="slide">
+  <div class="badge">Element 3 of 8</div>
+  <div class="slide-title"><span class="accent">Colour</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="elem-def">The visual property produced by reflected light. Colour creates mood, draws attention, communicates brand identity and organises information.</div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#c084fc;margin-bottom:8px;">Colour Properties</div>
+        <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Hue</strong> — the name of the colour (red, blue, yellow)</div>
+          <div><strong style="color:white;">Saturation</strong> — intensity / purity of the colour</div>
+          <div><strong style="color:white;">Value</strong> — lightness or darkness</div>
+          <div><strong style="color:white;">Tint</strong> — hue + white (lighter)</div>
+          <div><strong style="color:white;">Shade</strong> — hue + black (darker)</div>
+          <div><strong style="color:white;">Tone</strong> — hue + grey added</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> hue, saturation, value, tint, shade, warm, cool, complementary, analogous, monochromatic, triadic, high/low saturation</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;justify-content:center;">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.4);margin-bottom:4px;">Colour Schemes</div>
+      <div class="swatch-row"><div class="swatch" style="background:#e63946;"></div><div class="swatch" style="background:#457b9d;"></div><div class="swatch-label">Complementary — maximum contrast</div></div>
+      <div class="swatch-row"><div class="swatch" style="background:#e63946;"></div><div class="swatch" style="background:#f4a261;"></div><div class="swatch" style="background:#e9c46a;"></div><div class="swatch-label">Analogous — harmonious</div></div>
+      <div class="swatch-row"><div class="swatch" style="background:#e63946;"></div><div class="swatch" style="background:#2a9d8f;"></div><div class="swatch" style="background:#e9c46a;"></div><div class="swatch-label">Triadic — vibrant, balanced</div></div>
+      <div class="swatch-row"><div class="swatch" style="background:#c1121f;"></div><div class="swatch" style="background:#e63946;"></div><div class="swatch" style="background:#ff8fa3;"></div><div class="swatch-label">Monochromatic — unified</div></div>
+      <div style="margin-top:8px;padding:12px 16px;background:rgba(255,255,255,0.05);border-radius:10px;font-size:0.85rem;color:rgba(255,255,255,0.6);">
+        <strong style="color:#fbbf24;">Warm:</strong> red, orange, yellow — energy, passion<br>
+        <strong style="color:#60a5fa;">Cool:</strong> blue, green, purple — calm, trust
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Tone -->
+<div class="slide">
+  <div class="badge">Element 4 of 8</div>
+  <div class="slide-title"><span class="accent">Tone</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="elem-def">The lightness or darkness of an area, regardless of colour. Tone creates depth, volume, contrast and the illusion of three-dimensionality on a flat surface.</div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#c084fc;margin-bottom:8px;">Key Concepts</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">High-key</strong> — mostly light tones, airy, delicate</div>
+          <div><strong style="color:white;">Low-key</strong> — mostly dark tones, dramatic, mysterious</div>
+          <div><strong style="color:white;">Tonal contrast</strong> — difference between lightest and darkest areas</div>
+          <div><strong style="color:white;">Tonal gradation</strong> — smooth transition from light to dark</div>
+          <div><strong style="color:white;">Highlight, midtone, shadow</strong> — the three tonal zones</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> highlight, midtone, shadow, high-key, low-key, tonal range, gradation, contrast, chiaroscuro, flat, modelled</div>
+    </div>
+    <div class="visual-box">
+      <svg width="300" height="250" viewBox="0 0 300 250">
+        <!-- Tone scale -->
+        <defs>
+          <linearGradient id="toneGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:white;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:black;stop-opacity:1"/>
+          </linearGradient>
+          <linearGradient id="sphereGrad" cx="40%" cy="35%" r="60%" fx="40%" fy="35%" gradientUnits="objectBoundingBox">
+            <stop offset="0%" style="stop-color:white;stop-opacity:1"/>
+            <stop offset="40%" style="stop-color:#aaa;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#222;stop-opacity:1"/>
+          </linearGradient>
+        </defs>
+        <text x="20" y="20" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Tonal scale</text>
+        <rect x="20" y="28" width="260" height="40" rx="6" fill="url(#toneGrad)"/>
+        <text x="20" y="84" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter">Highlight</text>
+        <text x="128" y="84" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter">Midtone</text>
+        <text x="245" y="84" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter">Shadow</text>
+        <!-- Sphere with tonal modelling -->
+        <text x="90" y="110" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Tonal modelling = 3D illusion</text>
+        <radialGradient id="rg1" cx="38%" cy="35%" r="65%" fx="38%" fy="35%">
+          <stop offset="0%" style="stop-color:#ffffff"/>
+          <stop offset="45%" style="stop-color:#888888"/>
+          <stop offset="100%" style="stop-color:#111111"/>
+        </radialGradient>
+        <circle cx="150" cy="185" r="60" fill="url(#rg1)"/>
+        <ellipse cx="150" cy="248" rx="42" ry="8" fill="rgba(0,0,0,0.5)"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Texture -->
+<div class="slide">
+  <div class="badge">Element 5 of 8</div>
+  <div class="slide-title"><span class="accent">Texture</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="elem-def">The surface quality of an object — actual (tactile) or visual (simulated). Texture adds richness, depth and can communicate cultural or brand meaning.</div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#c084fc;margin-bottom:8px;">Two Types</div>
+        <div class="card" style="margin-bottom:10px;border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.08);">
+          <div style="font-size:0.95rem;font-weight:700;color:#c084fc;margin-bottom:4px;">Actual (Tactile) Texture</div>
+          <div style="font-size:0.9rem;color:rgba(255,255,255,0.65);">Can be physically felt. e.g. embossed printing, rough cardboard packaging, velvet fabric.</div>
+        </div>
+        <div class="card" style="border-color:rgba(96,165,250,0.3);background:rgba(96,165,250,0.08);">
+          <div style="font-size:0.95rem;font-weight:700;color:#60a5fa;margin-bottom:4px;">Visual (Simulated) Texture</div>
+          <div style="font-size:0.9rem;color:rgba(255,255,255,0.65);">Created using marks, patterns or photography to suggest texture. e.g. a photo of wood grain, a drawn halftone pattern.</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> tactile, simulated, rough, smooth, matte, glossy, organic, industrial, grainy, woven, embossed, debossed</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;justify-content:center;">
+      <div style="font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.3);margin-bottom:4px;">Cultural Meaning of Texture</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.8;">
+        <div><strong style="color:white;">Rough/natural</strong> → sustainability, authenticity, handcrafted</div>
+        <div><strong style="color:white;">Smooth/glossy</strong> → luxury, precision, technology</div>
+        <div><strong style="color:white;">Woven/fabric</strong> → warmth, tradition, craftsmanship</div>
+        <div><strong style="color:white;">Industrial/metal</strong> → strength, durability, modernity</div>
+      </div>
+      <div style="padding:14px 16px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:10px;">
+        <div style="font-size:0.85rem;color:#fbbf24;font-weight:700;margin-bottom:4px;">💡 Exam tip</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.65);">Always state whether texture is actual or visual AND explain what meaning it communicates to the target audience.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: Form -->
+<div class="slide">
+  <div class="badge">Element 6 of 8</div>
+  <div class="slide-title"><span class="accent">Form</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="elem-def">Three-dimensional volume — or the illusion of it on a 2D surface. Form is created through tone, line and perspective drawing.</div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#c084fc;margin-bottom:8px;">Form vs Shape</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.8;">
+          <div><strong style="color:white;">Shape</strong> is 2D — a circle on paper</div>
+          <div><strong style="color:white;">Form</strong> is 3D — a sphere with volume and depth</div>
+          <div style="margin-top:12px;"><strong style="color:white;">How to create form:</strong><br>→ Tonal gradation (light to shadow)<br>→ Overlapping shapes<br>→ Perspective drawing<br>→ Cast shadows</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> three-dimensional, mass, volume, depth, solid, hollow, geometric form, organic form, rendered, modelled, perspective</div>
+    </div>
+    <div class="visual-box">
+      <svg width="300" height="240" viewBox="0 0 300 240">
+        <!-- 2D circle -->
+        <circle cx="75" cy="100" r="55" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+        <text x="47" y="170" fill="rgba(255,255,255,0.4)" font-size="12" font-family="Inter">Shape (2D)</text>
+        <!-- 3D sphere -->
+        <radialGradient id="sphereG" cx="38%" cy="35%" r="65%" fx="38%" fy="35%">
+          <stop offset="0%" style="stop-color:#ffffff"/>
+          <stop offset="50%" style="stop-color:#8888cc"/>
+          <stop offset="100%" style="stop-color:#1a1a3a"/>
+        </radialGradient>
+        <circle cx="220" cy="100" r="55" fill="url(#sphereG)"/>
+        <ellipse cx="220" cy="160" rx="38" ry="7" fill="rgba(0,0,0,0.4)"/>
+        <text x="191" y="182" fill="rgba(255,255,255,0.4)" font-size="12" font-family="Inter">Form (3D)</text>
+        <text x="110" y="215" fill="rgba(255,255,255,0.3)" font-size="10" font-family="Inter">Same element — tone creates volume</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: Point/Dot -->
+<div class="slide">
+  <div class="badge">Element 7 of 8</div>
+  <div class="slide-title"><span class="accent">Point / Dot</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="elem-def">The smallest visual unit. Points attract the eye, create texture through repetition and establish visual rhythm, pattern and movement.</div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#c084fc;margin-bottom:8px;">Uses of Point</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Focal point</strong> — a single prominent dot draws the eye</div>
+          <div><strong style="color:white;">Repetition</strong> — creates texture and visual interest</div>
+          <div><strong style="color:white;">Stippling</strong> — many dots create tonal variation</div>
+          <div><strong style="color:white;">Pattern</strong> — regular arrangement creates rhythm</div>
+          <div><strong style="color:white;">Concentration</strong> — density of dots implies darkness or weight</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> focal point, dot, mark, repetition, pattern, concentration, dispersal, stippling, halftone, scatter</div>
+    </div>
+    <div class="visual-box">
+      <svg width="280" height="230" viewBox="0 0 280 230">
+        <!-- Stippling effect -->
+        <text x="10" y="18" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Stippling — dots create tone</text>
+        <g opacity="0.8">
+          <!-- Dense area (dark) -->
+          <circle cx="30" cy="40" r="2.5" fill="white"/><circle cx="40" cy="50" r="2.5" fill="white"/><circle cx="25" cy="58" r="2.5" fill="white"/>
+          <circle cx="50" cy="38" r="2.5" fill="white"/><circle cx="60" cy="55" r="2.5" fill="white"/><circle cx="35" cy="70" r="2.5" fill="white"/>
+          <circle cx="55" cy="70" r="2.5" fill="white"/><circle cx="45" cy="80" r="2.5" fill="white"/><circle cx="65" cy="42" r="2.5" fill="white"/>
+          <!-- Sparse area (light) -->
+          <circle cx="120" cy="45" r="2" fill="rgba(255,255,255,0.5)"/>
+          <circle cx="145" cy="65" r="2" fill="rgba(255,255,255,0.5)"/>
+          <circle cx="130" cy="80" r="2" fill="rgba(255,255,255,0.5)"/>
+          <circle cx="165" cy="50" r="2" fill="rgba(255,255,255,0.5)"/>
+        </g>
+        <!-- Pattern row -->
+        <text x="10" y="110" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Regular pattern</text>
+        <g fill="rgba(168,85,247,0.8)">
+          <circle cx="25" cy="130" r="5"/><circle cx="50" cy="130" r="5"/><circle cx="75" cy="130" r="5"/>
+          <circle cx="100" cy="130" r="5"/><circle cx="125" cy="130" r="5"/><circle cx="150" cy="130" r="5"/>
+          <circle cx="25" cy="155" r="5"/><circle cx="50" cy="155" r="5"/><circle cx="75" cy="155" r="5"/>
+          <circle cx="100" cy="155" r="5"/><circle cx="125" cy="155" r="5"/><circle cx="150" cy="155" r="5"/>
+        </g>
+        <!-- Focal point -->
+        <text x="185" y="110" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Focal point</text>
+        <circle cx="230" cy="155" r="22" fill="#c084fc" opacity="0.9"/>
+        <circle cx="175" cy="175" r="6" fill="rgba(255,255,255,0.2)"/>
+        <circle cx="255" cy="135" r="5" fill="rgba(255,255,255,0.2)"/>
+        <circle cx="200" cy="190" r="4" fill="rgba(255,255,255,0.2)"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: Type -->
+<div class="slide">
+  <div class="badge">Element 8 of 8</div>
+  <div class="slide-title"><span class="accent">Type</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="elem-def">Letterforms and typography as a visual design element. Type communicates personality, hierarchy and brand identity beyond its literal meaning.</div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#c084fc;margin-bottom:8px;">Type as a Visual Element</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Weight</strong> — bold communicates strength and importance</div>
+          <div><strong style="color:white;">Size</strong> — larger type has greater visual weight</div>
+          <div><strong style="color:white;">Tracking</strong> — spacing between all letters</div>
+          <div><strong style="color:white;">Leading</strong> — space between lines</div>
+          <div><strong style="color:white;">Case</strong> — ALL CAPS suggests authority</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> typeface, font, serif, sans-serif, weight, tracking, leading, kerning, hierarchy, baseline, x-height, cap height</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;justify-content:center;">
+      <div style="font-family:Georgia,serif;font-size:2.5rem;font-weight:700;color:white;letter-spacing:0.02em;">Serif</div>
+      <div style="font-family:'Segoe UI',Arial,sans-serif;font-size:2.5rem;font-weight:700;color:#c084fc;letter-spacing:-0.01em;">Sans-Serif</div>
+      <div style="font-family:Georgia,serif;font-size:2rem;font-style:italic;color:#60a5fa;letter-spacing:0.05em;">Script / Italic</div>
+      <div style="font-family:'Segoe UI',sans-serif;font-size:2rem;font-weight:900;color:#fbbf24;letter-spacing:0.2em;text-transform:uppercase;">DISPLAY</div>
+      <div style="margin-top:8px;font-size:0.8rem;color:rgba(255,255,255,0.3);border-top:1px solid rgba(255,255,255,0.1);padding-top:10px;">Type classification covered in Typography unit</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: Exam analysis method -->
+<div class="slide">
+  <div class="badge">Exam Technique</div>
+  <div class="slide-title">How to <span class="accent">Analyse Elements</span> in the Exam</div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.4);margin-bottom:16px;">
+        <div style="font-size:1.1rem;font-weight:900;color:#c084fc;margin-bottom:10px;">Element → Use → Effect</div>
+        <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">
+          <div><span style="color:#c084fc;font-weight:700;">1. Name</span> the specific element and its type</div>
+          <div><span style="color:#c084fc;font-weight:700;">2. Describe</span> exactly how it is used</div>
+          <div><span style="color:#c084fc;font-weight:700;">3. Explain</span> the effect on the target audience</div>
+        </div>
+      </div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.4);line-height:1.7;">
+        <div style="color:#f87171;font-weight:700;margin-bottom:4px;">❌ Weak answer:</div>
+        <div style="margin-bottom:10px;">"The line is interesting and makes the design look good."</div>
+        <div style="color:#4ade80;font-weight:700;margin-bottom:4px;">✓ Strong answer:</div>
+        <div>"The bold diagonal line creates a sense of <em>urgency and movement</em>, directing the viewer's eye towards the call-to-action and conveying the campaign's dynamic energy."</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.4);">Sentence Starters</div>
+      <div style="font-size:0.88rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div>"The use of <em>[diagonal lines]</em> creates..."</div>
+        <div>"The <em>[complementary colour scheme]</em> of [X and Y] produces..."</div>
+        <div>"Through the use of <em>[low-key tonal values]</em>, the designer..."</div>
+        <div>"The <em>[organic shapes]</em> suggest [nature/warmth] and convey..."</div>
+        <div>"A <em>[rough, tactile texture]</em> communicates [authenticity] to the target audience of..."</div>
+        <div>"The <em>[high tonal contrast]</em> between [X] and [Y] draws immediate attention to..."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: Summary grid -->
+<div class="slide">
+  <div class="badge">Summary</div>
+  <div class="slide-title">All 8 Elements — <span class="accent">Quick Reference</span></div>
+  <div class="grid-8" style="margin-top:8px;">
+    <div class="card-sm" style="border-color:rgba(168,85,247,0.3);">
+      <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;color:#c084fc;margin-bottom:6px;">Line</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Mark by a moving point. Horizontal, vertical, diagonal, curved, implied.</div>
+    </div>
+    <div class="card-sm" style="border-color:rgba(96,165,250,0.3);">
+      <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;color:#60a5fa;margin-bottom:6px;">Shape</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">2D enclosed area. Geometric or organic. Positive and negative.</div>
+    </div>
+    <div class="card-sm" style="border-color:rgba(251,191,36,0.3);">
+      <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;color:#fbbf24;margin-bottom:6px;">Colour</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Hue, saturation, value. Warm/cool. Colour schemes: complementary, analogous, triadic.</div>
+    </div>
+    <div class="card-sm" style="border-color:rgba(74,222,128,0.3);">
+      <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;color:#4ade80;margin-bottom:6px;">Tone</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Light to dark. Highlight, midtone, shadow. Creates depth and volume.</div>
+    </div>
+    <div class="card-sm" style="border-color:rgba(248,113,113,0.3);">
+      <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;color:#f87171;margin-bottom:6px;">Texture</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Actual (tactile) or visual (simulated). Communicates cultural meaning.</div>
+    </div>
+    <div class="card-sm" style="border-color:rgba(167,139,250,0.3);">
+      <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;color:#a78bfa;margin-bottom:6px;">Form</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">3D volume or illusion of it. Created by tone, line and perspective.</div>
+    </div>
+    <div class="card-sm" style="border-color:rgba(52,211,153,0.3);">
+      <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;color:#34d399;margin-bottom:6px;">Point</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Smallest visual unit. Creates focal point, texture, pattern through repetition.</div>
+    </div>
+    <div class="card-sm" style="border-color:rgba(251,146,60,0.3);">
+      <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;color:#fb923c;margin-bottom:6px;">Type</div>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Letterforms as visual element. Communicates personality, hierarchy, brand.</div>
+    </div>
+  </div>
+  <div style="margin-top:20px;padding:14px 20px;background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);border-radius:12px;font-size:0.9rem;color:rgba(255,255,255,0.7);text-align:center;">
+    Always: <strong style="color:#c084fc;">Name the element → Describe how it's used → Explain the effect on the audience</strong>
+  </div>
+</div>
+
+<div class="nav">
+  <button id="prev">←</button>
+  <button id="next">→</button>
+</div>
+<div class="counter"></div>
+<div class="hint">← → arrow keys to navigate</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.querySelector('.counter');
+  function show(n) {
+    slides.forEach(s => s.classList.remove('active'));
+    slides[n].classList.add('active');
+    counter.textContent = (n+1) + ' / ' + slides.length;
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { if (current < slides.length-1) show(++current); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { if (current > 0) show(--current); }
+  });
+  document.getElementById('prev').onclick = () => { if (current > 0) show(--current); };
+  document.getElementById('next').onclick = () => { if (current < slides.length-1) show(++current); };
+  show(0);
+</script>
+</body>
+</html>

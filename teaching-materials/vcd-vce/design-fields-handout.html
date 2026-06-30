@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Fields — VCE VCD Reference Handout</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 14mm 14mm 14mm 14mm; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.4}
+  .page{max-width:182mm;margin:0 auto;padding:0}
+  .header{background:linear-gradient(135deg,#0f172a,#1e40af);color:#fff;padding:10px 14px;border-radius:6px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .header h1{font-size:16pt;font-weight:900;margin-bottom:2px}
+  .header p{font-size:8pt;opacity:.85}
+  .header .badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);padding:4px 10px;border-radius:20px;font-size:7.5pt;font-weight:700;white-space:nowrap}
+  .section-title{font-size:8.5pt;font-weight:800;color:#1e40af;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px;border-bottom:1.5px solid #bfdbfe;padding-bottom:2px}
+  .intro{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:8px 12px;margin-bottom:10px;font-size:8.5pt;color:#1e3a5f;line-height:1.5}
+  .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .field-card{border-radius:10px;padding:12px;border:1.5px solid}
+  .comm{background:#eff6ff;border-color:#bfdbfe}
+  .env{background:#f0fdf4;border-color:#bbf7d0}
+  .ind{background:#fffbeb;border-color:#fde68a}
+  .int{background:#fdf4ff;border-color:#e9d5ff}
+  .field-card h2{font-size:11pt;font-weight:900;margin-bottom:2px}
+  .comm h2{color:#1e40af}
+  .env h2{color:#166534}
+  .ind h2{color:#92400e}
+  .int h2{color:#6b21a8}
+  .field-card .sub{font-size:8pt;font-weight:600;margin-bottom:6px}
+  .comm .sub{color:#60a5fa}
+  .env .sub{color:#4ade80}
+  .ind .sub{color:#fbbf24}
+  .int .sub{color:#c084fc}
+  .field-card .def{font-size:8.5pt;color:#374151;line-height:1.5;margin-bottom:6px}
+  .eg-list{margin:0;padding-left:14px}
+  .eg-list li{font-size:8pt;color:#374151;margin-bottom:2px;line-height:1.4}
+  .eg-list li strong{font-size:7.5pt;font-weight:700}
+  .careers{margin-top:6px;padding:5px 8px;border-radius:4px;font-size:7.5pt}
+  .comm .careers{background:#dbeafe;color:#1e3a5f}
+  .env .careers{background:#dcfce7;color:#14532d}
+  .ind .careers{background:#fef9c3;color:#78350f}
+  .int .careers{background:#f3e8ff;color:#4a1d96}
+  .careers strong{display:block;margin-bottom:2px;font-size:7pt;text-transform:uppercase;letter-spacing:.05em}
+  .comparison-table{width:100%;border-collapse:collapse;font-size:8pt;margin-bottom:8px}
+  .comparison-table th{background:#1e40af;color:#fff;padding:5px 8px;text-align:left;font-size:7.5pt}
+  .comparison-table td{padding:5px 8px;border-bottom:1px solid #bfdbfe;vertical-align:top}
+  .comparison-table tr:nth-child(even) td{background:#eff6ff}
+  .process-box{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:8px;padding:10px;margin-bottom:8px}
+  .process-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+  .p-step{background:#fff;border:1px solid #bfdbfe;border-radius:4px;padding:5px 8px;text-align:center;flex:1;min-width:50px}
+  .p-step .num{font-size:9pt;font-weight:900;color:#1e40af;display:block}
+  .p-step .label{font-size:7pt;color:#374151;display:block}
+  .p-arrow{color:#94a3b8;font-size:10pt}
+  .footer{margin-top:8px;text-align:center;font-size:7pt;color:#93c5fd;border-top:1px solid #bfdbfe;padding-top:6px}
+  @media print{body{background:#fff}.page{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Design Fields</h1>
+      <p>VCE Visual Communication Design · Unit 1 AOS 1 · VCAA 2024</p>
+    </div>
+    <div class="badge">VCAA-VCD-FIELD1</div>
+  </div>
+
+  <div class="intro"><strong>What is a design field?</strong> A design field is a specialised area of practice within visual communication design. The VCAA 2024 Study Design identifies <strong>four design fields</strong>. Each field has distinct purposes, audiences, materials, methods, and professional contexts. Understanding these fields helps you contextualise design work in analysis and justify choices in your own design practice.</div>
+
+  <div class="field-grid">
+    <!-- COMMUNICATION DESIGN -->
+    <div class="field-card comm">
+      <h2>📢 Communication Design</h2>
+      <div class="sub">aka Graphic Design · Visual Communication</div>
+      <div class="def">Designs that <strong>communicate messages, information, or ideas</strong> to audiences through visual media. Primarily 2D, print and digital. Focuses on legibility, clarity, and persuasion.</div>
+      <p style="font-size:7.5pt;font-weight:700;color:#1e40af;margin-bottom:3px">Examples of design outcomes:</p>
+      <ul class="eg-list">
+        <li><strong>Print:</strong> posters, brochures, magazines, packaging, book covers, annual reports</li>
+        <li><strong>Digital:</strong> websites, apps, social media graphics, motion graphics, email campaigns</li>
+        <li><strong>Brand:</strong> logos, brand identity systems, wayfinding/signage</li>
+        <li><strong>Advertising:</strong> campaigns across print, outdoor, digital media</li>
+      </ul>
+      <div class="careers"><strong>Related careers</strong>Graphic designer · Art director · Brand designer · UX/UI designer · Web designer · Typographer</div>
+    </div>
+
+    <!-- ENVIRONMENTAL DESIGN -->
+    <div class="field-card env">
+      <h2>🏙️ Environmental Design</h2>
+      <div class="sub">aka Spatial Design · Interior &amp; Landscape</div>
+      <div class="def">Designs that shape <strong>built environments and spaces</strong> for function, experience, and aesthetic. Considers how people move through and interact with physical spaces.</div>
+      <p style="font-size:7.5pt;font-weight:700;color:#166534;margin-bottom:3px">Examples of design outcomes:</p>
+      <ul class="eg-list">
+        <li><strong>Interior:</strong> home interiors, retail spaces, hospitality design (cafés, hotels)</li>
+        <li><strong>Exhibition:</strong> museum exhibitions, trade show stands, pop-up installations</li>
+        <li><strong>Landscape:</strong> parks, streetscapes, urban plazas, playgrounds</li>
+        <li><strong>Wayfinding:</strong> signage systems for airports, hospitals, campuses</li>
+      </ul>
+      <div class="careers"><strong>Related careers</strong>Interior designer · Landscape architect · Exhibition designer · Urban designer · Set designer</div>
+    </div>
+
+    <!-- INDUSTRIAL DESIGN -->
+    <div class="field-card ind">
+      <h2>⚙️ Industrial Design</h2>
+      <div class="sub">aka Product Design · Manufacturing Design</div>
+      <div class="def">Designs for <strong>mass-produced or manufactured objects</strong> that combine function, ergonomics, aesthetics, and materials engineering. Considers how products are used, held, and produced at scale.</div>
+      <p style="font-size:7.5pt;font-weight:700;color:#92400e;margin-bottom:3px">Examples of design outcomes:</p>
+      <ul class="eg-list">
+        <li><strong>Consumer:</strong> furniture, kitchen appliances, electronics, toys</li>
+        <li><strong>Transport:</strong> car body design, bicycle components, public seating</li>
+        <li><strong>Medical:</strong> prosthetics, medical devices, hospital equipment</li>
+        <li><strong>Packaging:</strong> structural packaging (bottles, boxes, containers)</li>
+      </ul>
+      <div class="careers"><strong>Related careers</strong>Industrial designer · Product designer · Ergonomics specialist · Furniture designer · Packaging designer</div>
+    </div>
+
+    <!-- INTERACTION DESIGN -->
+    <div class="field-card int">
+      <h2>💻 Interaction Design</h2>
+      <div class="sub">aka UX Design · Digital Product Design</div>
+      <div class="def">Designs that shape <strong>how users interact with digital systems</strong>, interfaces, and experiences. Prioritises usability, accessibility, and the quality of the user's journey through a product or service.</div>
+      <p style="font-size:7.5pt;font-weight:700;color:#6b21a8;margin-bottom:3px">Examples of design outcomes:</p>
+      <ul class="eg-list">
+        <li><strong>Apps:</strong> mobile apps, software interfaces, dashboards</li>
+        <li><strong>Web:</strong> website UX/UI, landing pages, e-commerce flows</li>
+        <li><strong>Interactive:</strong> touchscreen kiosks, interactive installations, games</li>
+        <li><strong>Systems:</strong> information architecture, design systems, chatbot interactions</li>
+      </ul>
+      <div class="careers"><strong>Related careers</strong>UX designer · UI designer · Interaction designer · Service designer · Accessibility specialist</div>
+    </div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="section-title">Quick Comparison: The 4 Design Fields</div>
+  <table class="comparison-table">
+    <tr><th>Field</th><th>Primary Output</th><th>Dimension</th><th>Key Concern</th><th>Material/Medium</th></tr>
+    <tr><td><strong>Communication</strong></td><td>Visual messages</td><td>2D (mainly)</td><td>Legibility, persuasion</td><td>Print, screen, digital</td></tr>
+    <tr><td><strong>Environmental</strong></td><td>Spaces &amp; places</td><td>3D</td><td>Movement, experience</td><td>Materials, light, space</td></tr>
+    <tr><td><strong>Industrial</strong></td><td>Physical products</td><td>3D</td><td>Function, ergonomics</td><td>Materials, manufacturing</td></tr>
+    <tr><td><strong>Interaction</strong></td><td>Digital experiences</td><td>Digital/4D</td><td>Usability, accessibility</td><td>Software, prototypes</td></tr>
+  </table>
+
+  <!-- DESIGN PROCESS -->
+  <div class="section-title">The Design Process (applies to all fields)</div>
+  <div class="process-box">
+    <div class="process-row">
+      <div class="p-step"><span class="num">①</span><span class="label">Research &amp; Brief</span></div>
+      <span class="p-arrow">→</span>
+      <div class="p-step"><span class="num">②</span><span class="label">Ideation &amp; Concept</span></div>
+      <span class="p-arrow">→</span>
+      <div class="p-step"><span class="num">③</span><span class="label">Development &amp; Refinement</span></div>
+      <span class="p-arrow">→</span>
+      <div class="p-step"><span class="num">④</span><span class="label">Presentation &amp; Production</span></div>
+      <span class="p-arrow">→</span>
+      <div class="p-step"><span class="num">⑤</span><span class="label">Evaluation</span></div>
+    </div>
+    <p style="font-size:7.5pt;color:#64748b;margin-top:8px">In VCE VCD, you will use this process across all fields. Your folio documents your design thinking at each stage — research, sketches, development, and final presentation.</p>
+  </div>
+
+  <div class="footer">VCE Visual Communication Design · Unit 1 AOS 1 · Design Fields · VCAA 2024 Study Design</div>
+</div>
+</body>
+</html>

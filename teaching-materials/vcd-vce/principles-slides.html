@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Design Principles — VCE VCD Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #0a1a0a; color: white; height: 100vh; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 56px 72px; }
+  .slide.active { display: flex; }
+  .badge { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; background: rgba(88,204,2,0.2); color: #86efac; border: 1px solid rgba(88,204,2,0.35); border-radius: 99px; padding: 4px 14px; margin-bottom: 18px; }
+  .slide-title { font-size: 2.6rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .accent { color: #4ade80; }
+  .divider { width: 60px; height: 4px; background: #58CC02; border-radius: 99px; margin-bottom: 28px; }
+  .nav { position: fixed; bottom: 28px; right: 32px; display: flex; gap: 10px; z-index: 100; }
+  .nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; transition: background 0.15s; }
+  .nav button:hover { background: rgba(88,204,2,0.4); }
+  .counter { position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 0.82rem; font-weight: 600; }
+  .hint { position: fixed; bottom: 36px; left: 32px; color: rgba(255,255,255,0.25); font-size: 0.78rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; flex: 1; }
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 22px; }
+  .card-sm { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; }
+  .visual-box { flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; min-height: 180px; }
+  .p-name { font-size: 1.6rem; font-weight: 900; color: #4ade80; margin-bottom: 10px; }
+  .p-def { font-size: 1rem; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 14px; }
+  .vocab { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
+  .vocab strong { color: rgba(255,255,255,0.7); }
+  .warn-card { background: rgba(239,68,68,0.12); border: 2px solid rgba(239,68,68,0.5); border-radius: 16px; padding: 28px 36px; }
+  .big-title { font-size: 4rem; font-weight: 900; line-height: 1; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" style="justify-content:center;align-items:flex-start;">
+  <div style="max-width:700px;">
+    <div class="badge">VCAA-VCD-PRIN1 · Unit 1 AOS 1</div>
+    <div class="divider"></div>
+    <div class="big-title">The 8 Design<br><span class="accent">Principles</span></div>
+    <div style="font-size:1.3rem;color:rgba(255,255,255,0.5);font-weight:400;margin-top:16px;">Visual Communication Design · Year 11 VCE</div>
+    <div style="margin-top:48px;font-size:0.9rem;color:rgba(255,255,255,0.3);">Use ← → arrow keys to navigate</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: What are principles? -->
+<div class="slide">
+  <div class="badge">Introduction</div>
+  <div class="slide-title">What are <span class="accent">Design Principles?</span></div>
+  <div class="grid-2" style="align-items:start;gap:32px;">
+    <div>
+      <p style="font-size:1.15rem;color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:24px;">Design principles are the <strong style="color:#4ade80;">rules and guidelines</strong> that govern how design elements are arranged and combined.</p>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:20px;">If elements are the "what", principles are the "how" — how elements are organised to communicate effectively.</p>
+      <div class="card" style="background:rgba(88,204,2,0.08);border-color:rgba(88,204,2,0.3);">
+        <p style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.6;"><strong style="color:#4ade80;">Elements + Principles together</strong> = a complete visual analysis vocabulary for the VCE exam.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#4ade80;margin-bottom:14px;">The 8 VCAA 2024 Principles</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:0.95rem;font-weight:700;">1. Balance</div>
+        <div style="padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:0.95rem;font-weight:700;">2. Contrast</div>
+        <div style="padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:0.95rem;font-weight:700;">3. Cropping</div>
+        <div style="padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:0.95rem;font-weight:700;">4. Scale</div>
+        <div style="padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:0.95rem;font-weight:700;">5. Proportion</div>
+        <div style="padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:0.95rem;font-weight:700;">6. Hierarchy</div>
+        <div style="padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:0.95rem;font-weight:700;">7. Pattern</div>
+        <div style="padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:0.95rem;font-weight:700;">8. Figure-Ground</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: WARNING -->
+<div class="slide" style="justify-content:center;align-items:center;">
+  <div class="warn-card" style="max-width:800px;text-align:center;">
+    <div style="font-size:3rem;margin-bottom:16px;">⚠️</div>
+    <div style="font-size:2rem;font-weight:900;color:#f87171;margin-bottom:20px;">NOT in VCAA 2024</div>
+    <div style="font-size:1.3rem;color:rgba(255,255,255,0.5);margin-bottom:28px;">These principles are often taught but are <strong style="color:#f87171;">NOT part of the VCAA 2024 study design:</strong></div>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:24px;">
+      <div style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);border-radius:10px;padding:10px 20px;font-size:1.1rem;font-weight:700;color:#fca5a5;text-decoration:line-through;">Emphasis</div>
+      <div style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);border-radius:10px;padding:10px 20px;font-size:1.1rem;font-weight:700;color:#fca5a5;text-decoration:line-through;">Unity</div>
+      <div style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);border-radius:10px;padding:10px 20px;font-size:1.1rem;font-weight:700;color:#fca5a5;text-decoration:line-through;">Harmony</div>
+      <div style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);border-radius:10px;padding:10px 20px;font-size:1.1rem;font-weight:700;color:#fca5a5;text-decoration:line-through;">Rhythm</div>
+      <div style="background:rgba(239,68,68,0.2);border:1px solid rgba(239,68,68,0.4);border-radius:10px;padding:10px 20px;font-size:1.1rem;font-weight:700;color:#fca5a5;text-decoration:line-through;">Dominance</div>
+    </div>
+    <div style="font-size:1rem;color:rgba(255,255,255,0.5);">Using these in the exam will cost you marks. Stick to the 8 official VCAA 2024 principles.</div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Balance -->
+<div class="slide">
+  <div class="badge">Principle 1 of 8</div>
+  <div class="slide-title"><span class="accent">Balance</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The distribution of visual weight across a design. Balance creates stability or intentional tension and affects how the viewer perceives the composition.</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#4ade80;margin-bottom:8px;">Three Types</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Symmetrical</strong> — mirrored halves. Formal, stable, trustworthy.</div>
+          <div><strong style="color:white;">Asymmetrical</strong> — different elements, equal visual weight. Dynamic, modern, interesting.</div>
+          <div><strong style="color:white;">Radial</strong> — elements radiate from a central point. Energy, movement, focus.</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> symmetrical, asymmetrical, radial, visual weight, equilibrium, formal, informal, off-centre</div>
+    </div>
+    <div class="visual-box">
+      <svg width="300" height="230" viewBox="0 0 300 230">
+        <!-- Symmetrical -->
+        <text x="15" y="16" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Symmetrical</text>
+        <rect x="25" y="22" width="55" height="55" rx="6" fill="rgba(74,222,128,0.3)" stroke="#4ade80" stroke-width="1.5"/>
+        <rect x="90" y="22" width="55" height="55" rx="6" fill="rgba(74,222,128,0.3)" stroke="#4ade80" stroke-width="1.5"/>
+        <line x1="150" y1="18" x2="150" y2="82" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="4"/>
+        <!-- Asymmetrical -->
+        <text x="165" y="16" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Asymmetrical</text>
+        <rect x="165" y="22" width="80" height="55" rx="6" fill="rgba(96,165,250,0.3)" stroke="#60a5fa" stroke-width="1.5"/>
+        <rect x="255" y="38" width="30" height="24" rx="4" fill="rgba(96,165,250,0.3)" stroke="#60a5fa" stroke-width="1.5"/>
+        <!-- Radial -->
+        <text x="90" y="115" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter" text-anchor="middle">Radial</text>
+        <circle cx="90" cy="175" r="5" fill="#fbbf24"/>
+        <line x1="90" y1="170" x2="90" y2="140" stroke="#fbbf24" stroke-width="2"/>
+        <line x1="90" y1="170" x2="115" y2="152" stroke="#fbbf24" stroke-width="2"/>
+        <line x1="90" y1="170" x2="120" y2="175" stroke="#fbbf24" stroke-width="2"/>
+        <line x1="90" y1="170" x2="115" y2="198" stroke="#fbbf24" stroke-width="2"/>
+        <line x1="90" y1="170" x2="90" y2="210" stroke="#fbbf24" stroke-width="2"/>
+        <line x1="90" y1="170" x2="65" y2="198" stroke="#fbbf24" stroke-width="2"/>
+        <line x1="90" y1="170" x2="60" y2="175" stroke="#fbbf24" stroke-width="2"/>
+        <line x1="90" y1="170" x2="65" y2="152" stroke="#fbbf24" stroke-width="2"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Contrast -->
+<div class="slide">
+  <div class="badge">Principle 2 of 8</div>
+  <div class="slide-title"><span class="accent">Contrast</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The juxtaposition of opposing visual qualities to create visual interest, emphasis and separation between elements. Contrast draws the viewer's eye.</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#4ade80;margin-bottom:8px;">Types of Contrast</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Tonal contrast</strong> — light vs dark</div>
+          <div><strong style="color:white;">Colour contrast</strong> — complementary colours, warm vs cool</div>
+          <div><strong style="color:white;">Scale contrast</strong> — large vs small elements</div>
+          <div><strong style="color:white;">Texture contrast</strong> — rough vs smooth</div>
+          <div><strong style="color:white;">Typographic contrast</strong> — bold vs light, serif vs sans-serif</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> high contrast, low contrast, juxtaposition, opposition, visual tension, emphasis, differentiation</div>
+    </div>
+    <div class="visual-box">
+      <svg width="280" height="220" viewBox="0 0 280 220">
+        <rect x="10" y="10" width="120" height="100" rx="8" fill="#1a1a1a" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <circle cx="70" cy="60" r="35" fill="white"/>
+        <text x="70" y="125" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter" text-anchor="middle">Tonal contrast</text>
+        <rect x="150" y="10" width="120" height="100" rx="8" fill="#1d4ed8"/>
+        <circle cx="210" cy="60" r="35" fill="#dc2626"/>
+        <text x="210" y="125" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter" text-anchor="middle">Colour contrast</text>
+        <rect x="10" y="140" width="260" height="60" rx="8" fill="rgba(255,255,255,0.04)">
+        </rect>
+        <text x="30" y="178" fill="white" font-size="36" font-family="Inter" font-weight="900">Big</text>
+        <text x="120" y="185" fill="rgba(255,255,255,0.5)" font-size="12" font-family="Inter">small</text>
+        <text x="165" y="185" fill="rgba(255,255,255,0.3)" font-size="11" font-family="Inter">Scale contrast</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Cropping -->
+<div class="slide">
+  <div class="badge">Principle 3 of 8</div>
+  <div class="slide-title"><span class="accent">Cropping</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">How much of a subject or image is shown within the frame. Cropping controls what the viewer sees, directs focus and creates compositional interest.</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#4ade80;margin-bottom:8px;">Effect of Cropping</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Tight crop</strong> — creates intimacy, drama, focus on detail</div>
+          <div><strong style="color:white;">Wide crop</strong> — shows context and environment</div>
+          <div><strong style="color:white;">Partial crop</strong> — implies the subject extends beyond the frame, creates energy</div>
+          <div><strong style="color:white;">Rule of thirds</strong> — off-centre cropping creates visual interest</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> tight crop, wide shot, close-up, rule of thirds, frame, bleed, partial, compositional, foreground, background</div>
+    </div>
+    <div class="visual-box">
+      <svg width="280" height="220" viewBox="0 0 280 220">
+        <!-- Full figure -->
+        <circle cx="60" cy="55" r="22" fill="rgba(74,222,128,0.3)" stroke="#4ade80" stroke-width="1.5"/>
+        <rect x="44" y="78" width="32" height="55" rx="6" fill="rgba(74,222,128,0.2)" stroke="#4ade80" stroke-width="1.5"/>
+        <rect x="44" y="134" width="14" height="40" rx="4" fill="rgba(74,222,128,0.2)" stroke="#4ade80" stroke-width="1.5"/>
+        <rect x="62" y="134" width="14" height="40" rx="4" fill="rgba(74,222,128,0.2)" stroke="#4ade80" stroke-width="1.5"/>
+        <text x="60" y="188" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter" text-anchor="middle">Full</text>
+        <!-- Tight crop -->
+        <rect x="110" y="30" width="70" height="70" rx="4" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-dasharray="4"/>
+        <circle cx="145" cy="65" r="28" fill="rgba(96,165,250,0.3)" stroke="#60a5fa" stroke-width="1.5"/>
+        <text x="145" y="115" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter" text-anchor="middle">Tight crop</text>
+        <!-- Partial -->
+        <circle cx="225" cy="60" r="45" fill="rgba(251,191,36,0.2)" stroke="#fbbf24" stroke-width="1.5"/>
+        <rect x="200" y="10" width="80" height="110" rx="0" fill="rgba(10,26,10,0.8)"/>
+        <line x1="200" y1="10" x2="200" y2="120" stroke="#fbbf24" stroke-width="2.5"/>
+        <text x="220" y="138" fill="rgba(255,255,255,0.4)" font-size="10" font-family="Inter">Partial crop</text>
+        <text x="70" y="210" fill="rgba(255,255,255,0.3)" font-size="10" font-family="Inter">Cropping changes mood, focus and energy</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Scale -->
+<div class="slide">
+  <div class="badge">Principle 4 of 8</div>
+  <div class="slide-title"><span class="accent">Scale</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The size of an element relative to other elements in the design. Scale creates visual hierarchy, depth, drama and communicates relative importance.</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#4ade80;margin-bottom:8px;">Scale vs Proportion</div>
+        <div class="card" style="background:rgba(74,222,128,0.08);border-color:rgba(74,222,128,0.25);margin-bottom:10px;">
+          <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);">
+            <strong style="color:#4ade80;">Scale</strong> = size of one element compared to <em>another element</em><br>
+            <strong style="color:#fbbf24;">Proportion</strong> = relationship between parts <em>within the same element</em>
+          </div>
+        </div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Large scale</strong> — importance, dominance, closeness</div>
+          <div><strong style="color:white;">Small scale</strong> — distance, subordination, delicacy</div>
+          <div><strong style="color:white;">Exaggerated scale</strong> — drama, surrealism, visual impact</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> large-scale, small-scale, relative size, dominance, exaggerated, monumental, intimate, depth, hierarchy</div>
+    </div>
+    <div class="visual-box">
+      <svg width="280" height="230" viewBox="0 0 280 230">
+        <circle cx="75" cy="120" r="70" fill="rgba(74,222,128,0.2)" stroke="#4ade80" stroke-width="2"/>
+        <circle cx="210" cy="150" r="35" fill="rgba(74,222,128,0.15)" stroke="#4ade80" stroke-width="1.5"/>
+        <circle cx="250" cy="80" r="15" fill="rgba(74,222,128,0.1)" stroke="#4ade80" stroke-width="1"/>
+        <text x="75" y="120" fill="rgba(255,255,255,0.7)" font-size="11" font-family="Inter" text-anchor="middle" dominant-baseline="middle">Primary</text>
+        <text x="210" y="150" fill="rgba(255,255,255,0.5)" font-size="10" font-family="Inter" text-anchor="middle" dominant-baseline="middle">Secondary</text>
+        <text x="250" y="80" fill="rgba(255,255,255,0.35)" font-size="8" font-family="Inter" text-anchor="middle" dominant-baseline="middle">Tertiary</text>
+        <text x="140" y="220" fill="rgba(255,255,255,0.3)" font-size="10" font-family="Inter" text-anchor="middle">Scale creates visual hierarchy</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: Proportion -->
+<div class="slide">
+  <div class="badge">Principle 5 of 8</div>
+  <div class="slide-title"><span class="accent">Proportion</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The relationship between the parts of a design or between a part and the whole. Good proportion creates harmony; distorted proportion creates unease or emphasis.</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#4ade80;margin-bottom:8px;">Key Ideas</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Golden ratio (φ = 1:1.618)</strong> — mathematically harmonious proportion found in nature and classical design</div>
+          <div><strong style="color:white;">Rule of thirds</strong> — dividing composition into thirds creates natural proportion</div>
+          <div><strong style="color:white;">Distorted proportion</strong> — used deliberately for emphasis, satire or surrealism</div>
+          <div><strong style="color:white;">Page proportion</strong> — margins, columns and gutters in layout design</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> golden ratio, harmonious, distorted, exaggerated, relative, balanced, classical, natural proportion</div>
+    </div>
+    <div class="visual-box">
+      <svg width="280" height="230" viewBox="0 0 280 230">
+        <!-- Golden rectangle -->
+        <text x="20" y="20" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Golden ratio 1:1.618</text>
+        <rect x="20" y="28" width="162" height="100" rx="4" fill="none" stroke="#4ade80" stroke-width="2"/>
+        <rect x="20" y="28" width="62" height="100" rx="4" fill="rgba(74,222,128,0.15)" stroke="#4ade80" stroke-width="1" stroke-dasharray="3"/>
+        <line x1="82" y1="28" x2="82" y2="128" stroke="rgba(255,255,255,0.2)" stroke-width="1" stroke-dasharray="3"/>
+        <text x="38" y="83" fill="rgba(255,255,255,0.35)" font-size="11" font-family="Inter">1</text>
+        <text x="110" y="83" fill="rgba(255,255,255,0.35)" font-size="11" font-family="Inter">1.618</text>
+        <!-- Distorted proportion -->
+        <text x="20" y="155" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Distorted proportion (emphasis)</text>
+        <ellipse cx="90" cy="195" rx="60" ry="20" fill="rgba(239,68,68,0.2)" stroke="#f87171" stroke-width="1.5"/>
+        <circle cx="90" cy="195" r="8" fill="#f87171"/>
+        <text x="175" y="200" fill="rgba(255,255,255,0.35)" font-size="10" font-family="Inter">Large head on small body = emphasis, satire</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 9: Hierarchy -->
+<div class="slide">
+  <div class="badge">Principle 6 of 8</div>
+  <div class="slide-title"><span class="accent">Hierarchy</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The visual organisation of elements by order of importance. Hierarchy guides the viewer's eye through the design in a deliberate sequence.</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#4ade80;margin-bottom:8px;">How to Create Hierarchy</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Size</strong> — larger = more important</div>
+          <div><strong style="color:white;">Weight</strong> — bold attracts before light</div>
+          <div><strong style="color:white;">Colour</strong> — saturated/bright draws eye first</div>
+          <div><strong style="color:white;">Position</strong> — top-left is read first in Western convention</div>
+          <div><strong style="color:white;">White space</strong> — isolation gives importance</div>
+          <div><strong style="color:white;">Contrast</strong> — most contrasting element is seen first</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> visual hierarchy, primary, secondary, tertiary, reading order, dominant, subordinate, entry point</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;justify-content:center;padding:20px 0;">
+      <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.35);margin-bottom:6px;">Typographic Hierarchy Example</div>
+      <div style="font-size:2.4rem;font-weight:900;color:white;line-height:1;">HEADING</div>
+      <div style="font-size:1.2rem;font-weight:700;color:rgba(255,255,255,0.65);">Subheading level two</div>
+      <div style="font-size:0.95rem;font-weight:400;color:rgba(255,255,255,0.45);line-height:1.6;max-width:260px;">Body text at third level — readable but subordinate to the headings above. Guides the reader through information.</div>
+      <div style="font-size:0.78rem;font-weight:600;color:#4ade80;margin-top:4px;">Call to action →</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: Pattern -->
+<div class="slide">
+  <div class="badge">Principle 7 of 8</div>
+  <div class="slide-title"><span class="accent">Pattern</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The repetition of a visual element (shape, line, colour, texture) to create visual cohesion, rhythm, texture and decoration.</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#4ade80;margin-bottom:8px;">Key Ideas</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Regular pattern</strong> — predictable repetition, creates order and calm</div>
+          <div><strong style="color:white;">Random pattern</strong> — irregular repetition, feels organic and natural</div>
+          <div><strong style="color:white;">Pattern break</strong> — interrupting a pattern draws immediate attention</div>
+          <div><strong style="color:white;">Cultural patterns</strong> — indigenous, geometric, motif-based carry meaning</div>
+        </div>
+      </div>
+      <div style="padding:12px 16px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:10px;font-size:0.85rem;color:rgba(255,255,255,0.65);">
+        <strong style="color:#fbbf24;">💡 Exam tip:</strong> Pattern can be created by any element — repeated lines, dots, shapes or colours.
+      </div>
+    </div>
+    <div class="visual-box">
+      <svg width="280" height="220" viewBox="0 0 280 220">
+        <!-- Regular pattern -->
+        <text x="10" y="16" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Regular pattern</text>
+        <g fill="rgba(74,222,128,0.6)">
+          <circle cx="25" cy="40" r="8"/><circle cx="55" cy="40" r="8"/><circle cx="85" cy="40" r="8"/><circle cx="115" cy="40" r="8"/>
+          <circle cx="25" cy="68" r="8"/><circle cx="55" cy="68" r="8"/><circle cx="85" cy="68" r="8"/><circle cx="115" cy="68" r="8"/>
+        </g>
+        <!-- Pattern break -->
+        <text x="155" y="16" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Pattern break</text>
+        <g fill="rgba(74,222,128,0.35)">
+          <rect x="160" y="25" width="16" height="16" rx="2"/><rect x="185" y="25" width="16" height="16" rx="2"/>
+          <rect x="160" y="50" width="16" height="16" rx="2"/>
+        </g>
+        <circle cx="249" cy="33" r="10" fill="#f87171"/>
+        <g fill="rgba(74,222,128,0.35)">
+          <rect x="185" y="50" width="16" height="16" rx="2"/>
+          <rect x="210" y="50" width="16" height="16" rx="2"/><rect x="235" y="50" width="16" height="16" rx="2"/>
+          <rect x="210" y="25" width="16" height="16" rx="2"/><rect x="235" y="25" width="16" height="16" rx="2"/>
+        </g>
+        <text x="225" y="80" fill="#f87171" font-size="10" font-family="Inter">← break!</text>
+        <!-- Wavy pattern -->
+        <text x="10" y="105" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter">Repeating elements = pattern</text>
+        <g stroke="rgba(96,165,250,0.6)" stroke-width="2" fill="none">
+          <path d="M10 130 Q35 110 60 130 Q85 150 110 130 Q135 110 160 130 Q185 150 210 130 Q235 110 260 130"/>
+          <path d="M10 155 Q35 135 60 155 Q85 175 110 155 Q135 135 160 155 Q185 175 210 155 Q235 135 260 155"/>
+          <path d="M10 180 Q35 160 60 180 Q85 200 110 180 Q135 160 160 180 Q185 200 210 180 Q235 160 260 180"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 11: Figure-Ground -->
+<div class="slide">
+  <div class="badge">Principle 8 of 8</div>
+  <div class="slide-title"><span class="accent">Figure-Ground</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The perceptual relationship between a subject (figure) and its background (ground). The viewer's brain naturally separates figure from ground to find meaning.</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#4ade80;margin-bottom:8px;">Key Concepts</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Figure</strong> — the subject, appears to come forward</div>
+          <div><strong style="color:white;">Ground</strong> — the background, appears to recede</div>
+          <div><strong style="color:white;">Stable</strong> — clear separation (figure reads easily)</div>
+          <div><strong style="color:white;">Ambiguous/Reversible</strong> — both figure and ground compete (e.g. Rubin's Vase) — used deliberately for engagement</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> figure, ground, positive space, negative space, stable, ambiguous, reversible, foreground, background, depth</div>
+    </div>
+    <div class="visual-box">
+      <svg width="260" height="220" viewBox="0 0 260 220">
+        <!-- Rubin vase style -->
+        <text x="130" y="16" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter" text-anchor="middle">Ambiguous figure-ground</text>
+        <!-- Black ground -->
+        <rect x="30" y="22" width="200" height="160" fill="#1a1a2e" rx="4"/>
+        <!-- White vase shape -->
+        <path d="M130 30 L145 50 Q160 70 150 100 Q170 120 170 160 L90 160 Q90 120 110 100 Q100 70 115 50 Z" fill="white"/>
+        <!-- Two faces (the negative space) -->
+        <text x="130" y="198" fill="rgba(255,255,255,0.35)" font-size="10" font-family="Inter" text-anchor="middle">Vase or two faces?</text>
+        <!-- Labels -->
+        <text x="48" y="100" fill="rgba(74,222,128,0.8)" font-size="10" font-family="Inter" transform="rotate(-90,48,100)">GROUND</text>
+        <text x="118" y="115" fill="rgba(0,0,0,0.6)" font-size="10" font-family="Inter" text-anchor="middle">FIGURE</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 12: Exam analysis -->
+<div class="slide">
+  <div class="badge">Exam Technique</div>
+  <div class="slide-title">Analysing <span class="accent">Principles</span> in the Exam</div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="background:rgba(88,204,2,0.08);border-color:rgba(88,204,2,0.3);margin-bottom:16px;">
+        <div style="font-size:1rem;font-weight:900;color:#4ade80;margin-bottom:10px;">Principle → Use → Effect on Audience</div>
+        <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">
+          <div><span style="color:#4ade80;font-weight:700;">1. Name</span> the principle</div>
+          <div><span style="color:#4ade80;font-weight:700;">2. Describe</span> how it's applied in the design</div>
+          <div><span style="color:#4ade80;font-weight:700;">3. Explain</span> the effect on the target audience</div>
+        </div>
+      </div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.4);line-height:1.8;">
+        <div style="color:#f87171;font-weight:700;margin-bottom:4px;">❌ Do NOT write:</div>
+        <div style="margin-bottom:12px;">"The design has good balance and looks nice."</div>
+        <div style="color:#4ade80;font-weight:700;margin-bottom:4px;">✓ Write this instead:</div>
+        <div>"Asymmetrical balance is achieved through a large product image on the left counterweighted by dense typographic content on the right, creating a <em>dynamic yet stable composition</em> that prevents the design from feeling static."</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.35);">Sentence Starters</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.65);line-height:2;">
+        <div>"<em>Hierarchical contrast</em> is established through..."</div>
+        <div>"The use of <em>asymmetrical balance</em> creates..."</div>
+        <div>"<em>Scale contrast</em> between [X] and [Y] conveys..."</div>
+        <div>"The <em>figure-ground relationship</em> is [stable/ambiguous], which..."</div>
+        <div>"Through tight <em>cropping</em> of the [subject], the designer..."</div>
+        <div>"Repetition of [X] creates a <em>pattern</em> that..."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 13: Summary -->
+<div class="slide">
+  <div class="badge">Summary</div>
+  <div class="slide-title">All 8 Principles — <span class="accent">Quick Reference</span></div>
+  <div class="grid-4" style="margin-top:8px;">
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#4ade80;margin-bottom:6px;">Balance</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Distribution of visual weight. Symmetrical, asymmetrical or radial.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#4ade80;margin-bottom:6px;">Contrast</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Opposition of visual qualities. Draws the eye, creates emphasis.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#4ade80;margin-bottom:6px;">Cropping</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">How much is shown in the frame. Controls focus and energy.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#4ade80;margin-bottom:6px;">Scale</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Relative size between elements. Creates hierarchy and depth.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#4ade80;margin-bottom:6px;">Proportion</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Relationship between parts of an element. Harmony or distortion.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#4ade80;margin-bottom:6px;">Hierarchy</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Ordering by importance. Guides reading order through the design.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#4ade80;margin-bottom:6px;">Pattern</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Repetition of elements. Creates texture, rhythm and cohesion.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#4ade80;margin-bottom:6px;">Figure-Ground</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Subject vs background relationship. Stable or ambiguous.</div></div>
+  </div>
+  <div style="margin-top:20px;padding:14px 20px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:12px;font-size:0.88rem;color:rgba(255,255,255,0.65);text-align:center;">
+    ⚠️ Reminder: <strong style="color:#f87171;">Emphasis, Unity, Harmony, Rhythm and Dominance are NOT in VCAA 2024.</strong> Do not use them in exam responses.
+  </div>
+</div>
+
+<div class="nav"><button id="prev">←</button><button id="next">→</button></div>
+<div class="counter"></div>
+<div class="hint">← → arrow keys to navigate</div>
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.querySelector('.counter');
+  function show(n) { slides.forEach(s => s.classList.remove('active')); slides[n].classList.add('active'); counter.textContent = (n+1)+' / '+slides.length; }
+  document.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key==='ArrowDown'){if(current<slides.length-1)show(++current);} if(e.key==='ArrowLeft'||e.key==='ArrowUp'){if(current>0)show(--current);} });
+  document.getElementById('prev').onclick = () => { if(current>0)show(--current); };
+  document.getElementById('next').onclick = () => { if(current<slides.length-1)show(++current); };
+  show(0);
+</script>
+</body>
+</html>

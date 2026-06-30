@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Workbook — VCE VCD Unit 1 AOS 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 16mm 16mm 16mm 16mm; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.4}
+  .page{max-width:178mm;margin:0 auto;padding:0}
+  /* Cover page */
+  .cover{min-height:240mm;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:3px solid #7c3aed;border-radius:12px;padding:30px;margin-bottom:20px;background:#faf5ff}
+  .cover h1{font-size:28pt;font-weight:900;color:#4c1d95;line-height:1.1;margin-bottom:10px}
+  .cover h2{font-size:14pt;font-weight:700;color:#7c3aed;margin-bottom:20px}
+  .cover .meta{background:#7c3aed;color:#fff;padding:10px 20px;border-radius:30px;font-size:9pt;font-weight:700;margin-bottom:20px}
+  .cover .student-box{border:2px solid #ddd6fe;border-radius:8px;padding:16px;width:100%;text-align:left;background:#fff}
+  .cover .student-box h3{color:#4c1d95;font-size:10pt;font-weight:800;margin-bottom:10px}
+  .field-row{display:flex;gap:12px;margin-bottom:8px}
+  .field-item{flex:1}
+  .field-item label{font-size:8pt;font-weight:700;color:#6d28d9;display:block;margin-bottom:2px}
+  .field-item .line{border-bottom:1.5px solid #ddd6fe;height:20px}
+  .toc{background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:8px;padding:12px;margin-bottom:15px}
+  .toc h3{color:#4c1d95;font-size:10pt;font-weight:800;margin-bottom:8px}
+  .toc-item{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #ede9fe;font-size:8.5pt}
+  .toc-item:last-child{border:none}
+  .toc-item .act{color:#374151}
+  .toc-item .dots{flex:1;border-bottom:1px dotted #c4b5fd;margin:0 8px;height:12px}
+  .toc-item .pg{color:#7c3aed;font-weight:700;font-size:8pt}
+  /* Activity sections */
+  .activity{margin-bottom:20px;page-break-inside:avoid}
+  .act-header{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:#fff;padding:9px 14px;border-radius:6px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .act-header h2{font-size:12pt;font-weight:900}
+  .act-header .num{background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4);padding:3px 10px;border-radius:20px;font-size:8pt;font-weight:700}
+  .section-title{font-size:8.5pt;font-weight:800;color:#4c1d95;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px;border-bottom:1.5px solid #ddd6fe;padding-bottom:2px}
+  .write-box{border:1.5px solid #ddd6fe;border-radius:6px;padding:8px;background:#faf5ff;margin-bottom:6px;min-height:40px}
+  .write-line{border-bottom:1px solid #e0e0e0;height:22px;margin-bottom:0}
+  .lines-block{margin-bottom:8px}
+  .instruction{background:#faf5ff;border-left:3px solid #7c3aed;padding:7px 10px;margin-bottom:8px;font-size:8.5pt;color:#374151;line-height:1.5}
+  .instruction strong{color:#4c1d95}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+  .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:8px}
+  .match-col h4{font-size:8pt;font-weight:800;color:#4c1d95;margin-bottom:6px;text-transform:uppercase}
+  .match-item{border:1.5px solid #ddd6fe;border-radius:5px;padding:6px 10px;background:#fff;margin-bottom:6px;font-size:8.5pt;display:flex;align-items:center;gap:8px}
+  .match-item .dot{width:16px;height:16px;border:1.5px solid #a78bfa;border-radius:50%;flex-shrink:0}
+  .match-item .letter{width:18px;height:18px;background:#7c3aed;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7.5pt;font-weight:800;flex-shrink:0}
+  .draw-box{border:1.5px dashed #ddd6fe;border-radius:6px;background:#faf5ff;display:flex;align-items:center;justify-content:center;font-size:8.5pt;color:#a78bfa;font-style:italic}
+  .mcq-item{border:1.5px solid #ddd6fe;border-radius:6px;padding:9px;background:#fff;margin-bottom:8px}
+  .mcq-item .q{font-size:9pt;font-weight:700;color:#374151;margin-bottom:6px}
+  .mcq-item .opt{display:flex;gap:8px;flex-direction:column}
+  .opt-row{display:flex;align-items:center;gap:8px;font-size:8.5pt;color:#374151}
+  .opt-row .circle{width:16px;height:16px;border:1.5px solid #a78bfa;border-radius:50%;flex-shrink:0}
+  .analysis-image{border:1.5px dashed #ddd6fe;border-radius:6px;background:#f3f0ff;display:flex;align-items:center;justify-content:center;font-size:8pt;color:#a78bfa;text-align:center;padding:8px}
+  .score-box{background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+  .score-box .label{font-size:8.5pt;font-weight:700;color:#4c1d95}
+  .score-box .marks{font-size:10pt;font-weight:900;color:#7c3aed;background:#ede9fe;padding:3px 12px;border-radius:20px}
+  .table-fill{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:8.5pt}
+  .table-fill th{background:#4c1d95;color:#fff;padding:6px 8px;text-align:left;font-size:8pt}
+  .table-fill td{border:1px solid #ddd6fe;padding:6px 8px;vertical-align:top;min-height:30px}
+  .table-fill .blank{height:28px;background:#faf5ff}
+  .table-fill tr:nth-child(even) .blank{background:#f5f0ff}
+  .model-answer{background:#f0fdf4;border:1.5px solid #86efac;border-radius:6px;padding:9px;margin-top:6px;font-size:8pt;color:#14532d}
+  .model-answer h5{color:#166534;font-size:7.5pt;font-weight:800;text-transform:uppercase;margin-bottom:4px}
+  .footer{margin-top:8px;text-align:center;font-size:7pt;color:#a78bfa;border-top:1px solid #ddd6fe;padding-top:6px}
+  .page-break{page-break-after:always}
+  @media print{body{background:#fff}.page{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- COVER PAGE -->
+  <div class="cover">
+    <div class="meta">VCE VISUAL COMMUNICATION DESIGN · VCAA 2024 · UNIT 1 AOS 1</div>
+    <h1>Student<br>Workbook</h1>
+    <h2>Elements · Principles · Gestalt · Typography</h2>
+    <div style="font-size:8.5pt;color:#6d28d9;margin-bottom:20px">8 Activities · Fill-in exercises · Exam practice · Model answers</div>
+    <div class="student-box">
+      <h3>📋 My Details</h3>
+      <div class="field-row">
+        <div class="field-item"><label>Name</label><div class="line"></div></div>
+        <div class="field-item"><label>Class</label><div class="line"></div></div>
+      </div>
+      <div class="field-row">
+        <div class="field-item"><label>Teacher</label><div class="line"></div></div>
+        <div class="field-item"><label>Year</label><div class="line"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h3>📖 Contents</h3>
+    <div class="toc-item"><span class="act">Activity 1: Elements — Match the Definition</span><span class="dots"></span><span class="pg">A1</span></div>
+    <div class="toc-item"><span class="act">Activity 2: Principles — True or False + Correct the Mistake</span><span class="dots"></span><span class="pg">A2</span></div>
+    <div class="toc-item"><span class="act">Activity 3: Gestalt — Fill the Table</span><span class="dots"></span><span class="pg">A3</span></div>
+    <div class="toc-item"><span class="act">Activity 4: Typography — Anatomy Labelling</span><span class="dots"></span><span class="pg">A4</span></div>
+    <div class="toc-item"><span class="act">Activity 5: Colour Theory — Warm/Cool/Complementary</span><span class="dots"></span><span class="pg">A5</span></div>
+    <div class="toc-item"><span class="act">Activity 6: Design Analysis — Exam Practice (short)</span><span class="dots"></span><span class="pg">A6</span></div>
+    <div class="toc-item"><span class="act">Activity 7: Extended Analysis — Exam Practice (long)</span><span class="dots"></span><span class="pg">A7</span></div>
+    <div class="toc-item"><span class="act">Activity 8: Reflection — What I Know / Still Learning</span><span class="dots"></span><span class="pg">A8</span></div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ACTIVITY 1: MATCH THE DEFINITION -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 1: Elements — Match the Definition</h2>
+      <div class="num">A1</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">16 marks</span></div>
+    <div class="instruction">Draw a line connecting each <strong>Design Element</strong> on the left to its correct <strong>definition</strong> on the right.</div>
+    <div class="match-grid">
+      <div class="match-col">
+        <h4>Design Elements</h4>
+        <div class="match-item"><div class="dot"></div>Line</div>
+        <div class="match-item"><div class="dot"></div>Shape</div>
+        <div class="match-item"><div class="dot"></div>Colour</div>
+        <div class="match-item"><div class="dot"></div>Tone</div>
+        <div class="match-item"><div class="dot"></div>Texture</div>
+        <div class="match-item"><div class="dot"></div>Form</div>
+        <div class="match-item"><div class="dot"></div>Point / Dot</div>
+        <div class="match-item"><div class="dot"></div>Type</div>
+      </div>
+      <div class="match-col">
+        <h4>Definitions</h4>
+        <div class="match-item"><div class="letter">A</div>The lightness or darkness of a colour or surface</div>
+        <div class="match-item"><div class="letter">B</div>A 3D object with volume, depth, and mass</div>
+        <div class="match-item"><div class="letter">C</div>A mark made by a moving point; has length and direction</div>
+        <div class="match-item"><div class="letter">D</div>The surface quality of an object — real or implied</div>
+        <div class="match-item"><div class="letter">E</div>A 2D enclosed area defined by edges or boundaries</div>
+        <div class="match-item"><div class="letter">F</div>Letterforms used as a visual and communication element</div>
+        <div class="match-item"><div class="letter">G</div>The smallest visual unit; a single mark or dot</div>
+        <div class="match-item"><div class="letter">H</div>The visual property perceived from reflected light; has hue, saturation, and value</div>
+      </div>
+    </div>
+    <div class="instruction" style="margin-top:6px">Now write a sentence for <strong>THREE</strong> elements of your choice, explaining how a designer might use each one in a real design. Use the format: <em>"The element of [X] can be used to..."</em></div>
+    <div class="lines-block">
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 2: PRINCIPLES — TRUE/FALSE -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 2: Principles — True or False?</h2>
+      <div class="num">A2</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">10 marks</span></div>
+    <div class="instruction">For each statement, circle <strong>T (True)</strong> or <strong>F (False)</strong>. If the statement is FALSE, write the correct version on the line below it.</div>
+
+    <div class="mcq-item">
+      <div class="q">1. "Emphasis" is one of the 8 VCAA 2024 Design Principles. &nbsp;&nbsp;&nbsp; <strong>T &nbsp;&nbsp;&nbsp; F</strong></div>
+      <div class="write-line" style="margin-top:4px"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">2. The principle of <em>contrast</em> can be achieved through differences in tone, colour, scale, or texture. &nbsp;&nbsp;&nbsp; <strong>T &nbsp;&nbsp;&nbsp; F</strong></div>
+      <div class="write-line" style="margin-top:4px"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">3. <em>Cropping</em> refers to the use of repeating visual elements to create a pattern. &nbsp;&nbsp;&nbsp; <strong>T &nbsp;&nbsp;&nbsp; F</strong></div>
+      <div class="write-line" style="margin-top:4px"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">4. <em>Hierarchy</em> in design guides the viewer's reading order through size, weight, colour, and position. &nbsp;&nbsp;&nbsp; <strong>T &nbsp;&nbsp;&nbsp; F</strong></div>
+      <div class="write-line" style="margin-top:4px"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">5. In VCAA 2024, "Continuity" is the correct name for the gestalt principle where the eye follows a smooth path. &nbsp;&nbsp;&nbsp; <strong>T &nbsp;&nbsp;&nbsp; F</strong></div>
+      <div class="write-line" style="margin-top:4px"></div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ACTIVITY 3: GESTALT TABLE -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 3: Gestalt — Fill the Table</h2>
+      <div class="num">A3</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">18 marks</span></div>
+    <div class="instruction">Complete the table by filling in the <strong>missing definition</strong> or <strong>real-world example</strong> for each gestalt principle. ⚠️ Check your spelling of <em>Continuation</em>!</div>
+    <table class="table-fill">
+      <tr><th>Gestalt Principle</th><th>Definition (in your own words)</th><th>Real-World Design Example</th></tr>
+      <tr>
+        <td><strong>Similarity</strong></td>
+        <td class="blank"></td>
+        <td>Navigation bar items in the same font/colour are grouped perceptually</td>
+      </tr>
+      <tr>
+        <td><strong>Proximity</strong></td>
+        <td>Elements that are close together are perceived as a group</td>
+        <td class="blank"></td>
+      </tr>
+      <tr>
+        <td><strong>Closure</strong></td>
+        <td class="blank"></td>
+        <td class="blank"></td>
+      </tr>
+      <tr>
+        <td><strong>Figure-Ground</strong></td>
+        <td class="blank"></td>
+        <td>FedEx logo — negative space creates an arrow</td>
+      </tr>
+      <tr>
+        <td><strong>Continuation</strong></td>
+        <td>The eye follows the smoothest path through elements</td>
+        <td class="blank"></td>
+      </tr>
+      <tr>
+        <td><strong>Area</strong></td>
+        <td class="blank"></td>
+        <td class="blank"></td>
+      </tr>
+    </table>
+    <div class="instruction" style="margin-top:6px">List the <strong>6 VCAA 2024 Gestalt Principles</strong> from memory:</div>
+    <div class="write-box" style="min-height:28px;display:flex;gap:8px;align-items:center">
+      <span style="flex:1;border-bottom:1px solid #ddd6fe;height:20px"></span>
+      <span style="color:#c4b5fd">·</span>
+      <span style="flex:1;border-bottom:1px solid #ddd6fe;height:20px"></span>
+      <span style="color:#c4b5fd">·</span>
+      <span style="flex:1;border-bottom:1px solid #ddd6fe;height:20px"></span>
+    </div>
+    <div class="write-box" style="min-height:28px;display:flex;gap:8px;align-items:center">
+      <span style="flex:1;border-bottom:1px solid #ddd6fe;height:20px"></span>
+      <span style="color:#c4b5fd">·</span>
+      <span style="flex:1;border-bottom:1px solid #ddd6fe;height:20px"></span>
+      <span style="color:#c4b5fd">·</span>
+      <span style="flex:1;border-bottom:1px solid #ddd6fe;height:20px"></span>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 4: TYPOGRAPHY ANATOMY -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 4: Typography — Anatomy Labelling</h2>
+      <div class="num">A4</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">12 marks</span></div>
+    <div class="instruction">Label the anatomy of the letterforms below using the word bank. Draw a line from each label to the correct part of the letter.</div>
+    <div style="display:grid;grid-template-columns:1fr 180px;gap:16px;align-items:center">
+      <div>
+        <svg width="260" height="160" viewBox="0 0 260 160" style="display:block;border:1.5px dashed #ddd6fe;border-radius:6px;background:#faf5ff;padding:4px">
+          <!-- Baseline -->
+          <line x1="10" y1="120" x2="250" y2="120" stroke="#a78bfa" stroke-width="1" stroke-dasharray="6 3"/>
+          <!-- x-height -->
+          <line x1="10" y1="82" x2="180" y2="82" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4 3"/>
+          <!-- cap height -->
+          <line x1="10" y1="38" x2="120" y2="38" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4 3"/>
+          <!-- descender -->
+          <line x1="10" y1="142" x2="250" y2="142" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4 3"/>
+          <!-- ascender line -->
+          <line x1="140" y1="18" x2="250" y2="18" stroke="#a78bfa" stroke-width="1" stroke-dasharray="4 3"/>
+          <!-- Letters - large -->
+          <text x="10" y="120" font-size="88" font-family="Georgia,serif" font-weight="700" fill="#4c1d95" opacity=".85">H</text>
+          <text x="95" y="120" font-size="88" font-family="Georgia,serif" font-weight="700" fill="#7c3aed" opacity=".7">p</text>
+          <text x="170" y="120" font-size="88" font-family="Georgia,serif" font-weight="700" fill="#9333ea" opacity=".6">d</text>
+        </svg>
+        <p style="font-size:7.5pt;color:#a78bfa;margin-top:4px;text-align:center">Label each marked line and the structural parts of each letterform</p>
+      </div>
+      <div>
+        <p style="font-size:8pt;font-weight:800;color:#4c1d95;margin-bottom:6px">Word Bank:</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <div style="background:#ede9fe;border:1px solid #ddd6fe;border-radius:4px;padding:4px 6px;font-size:7.5pt;font-weight:600;color:#4c1d95">Baseline</div>
+          <div style="background:#ede9fe;border:1px solid #ddd6fe;border-radius:4px;padding:4px 6px;font-size:7.5pt;font-weight:600;color:#4c1d95">x-height</div>
+          <div style="background:#ede9fe;border:1px solid #ddd6fe;border-radius:4px;padding:4px 6px;font-size:7.5pt;font-weight:600;color:#4c1d95">Cap height</div>
+          <div style="background:#ede9fe;border:1px solid #ddd6fe;border-radius:4px;padding:4px 6px;font-size:7.5pt;font-weight:600;color:#4c1d95">Ascender</div>
+          <div style="background:#ede9fe;border:1px solid #ddd6fe;border-radius:4px;padding:4px 6px;font-size:7.5pt;font-weight:600;color:#4c1d95">Descender</div>
+          <div style="background:#ede9fe;border:1px solid #ddd6fe;border-radius:4px;padding:4px 6px;font-size:7.5pt;font-weight:600;color:#4c1d95">Serif</div>
+          <div style="background:#ede9fe;border:1px solid #ddd6fe;border-radius:4px;padding:4px 6px;font-size:7.5pt;font-weight:600;color:#4c1d95">Counter</div>
+          <div style="background:#ede9fe;border:1px solid #ddd6fe;border-radius:4px;padding:4px 6px;font-size:7.5pt;font-weight:600;color:#4c1d95">Stem</div>
+        </div>
+        <p style="font-size:8pt;font-weight:800;color:#4c1d95;margin:8px 0 4px">Classifications:</p>
+        <p style="font-size:8pt;color:#374151">Name the typeface classification for each specimen:</p>
+        <div style="font-family:Georgia,serif;font-size:14pt;margin:5px 0">Serif: <span style="border-bottom:1px solid #ddd6fe;display:inline-block;width:60px">&nbsp;</span></div>
+        <div style="font-family:Arial,sans-serif;font-size:14pt;margin:5px 0">Sans: <span style="border-bottom:1px solid #ddd6fe;display:inline-block;width:60px">&nbsp;</span></div>
+        <div style="font-family:cursive;font-size:14pt;margin:5px 0">Script: <span style="border-bottom:1px solid #ddd6fe;display:inline-block;width:60px">&nbsp;</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ACTIVITY 5: COLOUR THEORY -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 5: Colour Theory</h2>
+      <div class="num">A5</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">12 marks</span></div>
+    <div class="instruction">Answer the questions below about colour theory as it applies to VCE VCD.</div>
+
+    <div class="section-title">Part A: Colour Vocabulary</div>
+    <table class="table-fill">
+      <tr><th>Term</th><th>Definition</th></tr>
+      <tr><td><strong>Hue</strong></td><td class="blank"></td></tr>
+      <tr><td><strong>Value / Tone</strong></td><td class="blank"></td></tr>
+      <tr><td><strong>Saturation / Chroma</strong></td><td class="blank"></td></tr>
+      <tr><td><strong>Tint</strong></td><td class="blank"></td></tr>
+      <tr><td><strong>Shade</strong></td><td class="blank"></td></tr>
+    </table>
+
+    <div class="section-title">Part B: Colour Relationships</div>
+    <div class="instruction">Label each colour scheme type and draw or name an example colour combination:</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div class="write-box" style="min-height:60px;text-align:center">
+        <div style="display:flex;gap:3px;justify-content:center;margin-bottom:6px">
+          <div style="width:20px;height:20px;background:#ef4444;border-radius:3px"></div>
+          <div style="width:20px;height:20px;background:#f97316;border-radius:3px"></div>
+          <div style="width:20px;height:20px;background:#fbbf24;border-radius:3px"></div>
+        </div>
+        <div style="border-bottom:1px solid #ddd6fe;margin:0 4px"></div>
+        <p style="font-size:7.5pt;color:#a78bfa;margin-top:3px">scheme name:</p>
+      </div>
+      <div class="write-box" style="min-height:60px;text-align:center">
+        <div style="display:flex;gap:3px;justify-content:center;margin-bottom:6px">
+          <div style="width:20px;height:20px;background:#3b82f6;border-radius:3px"></div>
+          <div style="width:20px;height:20px;background:#f97316;border-radius:3px"></div>
+        </div>
+        <div style="border-bottom:1px solid #ddd6fe;margin:0 4px"></div>
+        <p style="font-size:7.5pt;color:#a78bfa;margin-top:3px">scheme name:</p>
+      </div>
+      <div class="write-box" style="min-height:60px;text-align:center">
+        <div style="display:flex;gap:3px;justify-content:center;margin-bottom:6px">
+          <div style="width:20px;height:20px;background:#3b82f6;border-radius:3px"></div>
+          <div style="width:20px;height:20px;background:#60a5fa;border-radius:3px"></div>
+          <div style="width:20px;height:20px;background:#93c5fd;border-radius:3px"></div>
+        </div>
+        <div style="border-bottom:1px solid #ddd6fe;margin:0 4px"></div>
+        <p style="font-size:7.5pt;color:#a78bfa;margin-top:3px">scheme name:</p>
+      </div>
+      <div class="write-box" style="min-height:60px;text-align:center">
+        <div style="font-size:7.5pt;color:#a78bfa;font-style:italic;margin-top:10px">Draw your own example</div>
+        <div style="border-bottom:1px solid #ddd6fe;margin:10px 4px 0"></div>
+        <p style="font-size:7.5pt;color:#a78bfa;margin-top:3px">scheme name:</p>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:8px">Part C: Colour and Audience</div>
+    <div class="instruction">Choose ONE of the design scenarios below. In the space provided, recommend a colour scheme and explain your reasoning using design language.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px">
+      <div style="background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:6px;padding:7px 10px;font-size:8pt">
+        <strong style="color:#4c1d95">Scenario A:</strong> A health and wellness app for young adults (18–30) promoting mindfulness and stress reduction.
+      </div>
+      <div style="background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:6px;padding:7px 10px;font-size:8pt">
+        <strong style="color:#4c1d95">Scenario B:</strong> A children's science museum poster promoting a space exhibition for families.
+      </div>
+    </div>
+    <div style="margin-bottom:4px;font-size:8pt;font-weight:700;color:#4c1d95">I chose Scenario: ____</div>
+    <div class="lines-block">
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ACTIVITY 6: SHORT EXAM PRACTICE -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 6: Short Analysis — Exam Practice</h2>
+      <div class="num">A6</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">8 marks (2 marks each)</span></div>
+    <div class="instruction">For each image description below, write a <strong>2-mark analysis sentence</strong> naming the element or principle and describing its specific use in the design. Use the formula: <strong>NAME → EVIDENCE → EFFECT</strong>.</div>
+
+    <div class="mcq-item">
+      <div class="q">1. A concert poster uses a large white starburst shape on a solid black background.</div>
+      <div class="instruction" style="margin:4px 0;font-size:7.5pt;padding:4px 8px">Identify and analyse ONE design <em>principle</em> evident in this design.</div>
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">2. A logo for a law firm uses a serif typeface in dark navy, with the firm's initials in large capital letters.</div>
+      <div class="instruction" style="margin:4px 0;font-size:7.5pt;padding:4px 8px">Identify and analyse ONE design <em>element</em> or typographic choice in this design.</div>
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">3. A website groups the title, date, and location of an event in a small cluster at the bottom of the page.</div>
+      <div class="instruction" style="margin:4px 0;font-size:7.5pt;padding:4px 8px">Identify and analyse ONE <em>gestalt principle</em> evident in this design.</div>
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">4. A product image shows a small coffee cup on a large marble bench top photographed from above.</div>
+      <div class="instruction" style="margin:4px 0;font-size:7.5pt;padding:4px 8px">Identify and analyse ONE design <em>principle</em> evident in this design.</div>
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 7: EXTENDED ANALYSIS -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 7: Extended Analysis — Exam Practice</h2>
+      <div class="num">A7</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">10 marks</span></div>
+    <div class="instruction">Look at the design described below. Write an extended analysis (approx. 3–4 sentences) that discusses <strong>TWO design elements or principles</strong> and ONE <strong>gestalt principle</strong>. Use the NAME → EVIDENCE → EFFECT formula throughout.</div>
+    <div style="background:#f3f0ff;border:1.5px solid #ddd6fe;border-radius:8px;padding:12px;margin-bottom:8px">
+      <p style="font-size:8.5pt;font-weight:700;color:#4c1d95;margin-bottom:4px">Design to Analyse:</p>
+      <p style="font-size:8.5pt;color:#374151;line-height:1.6">A fundraising poster for a children's hospital charity. The poster features a large, full-bleed photograph of a smiling child's face, cropped tightly at the top of the frame, against a bright orange background. In the lower third, white sans-serif text reads "GIVE HOPE" in bold, followed by a smaller tagline in lighter weight. The charity's logo appears in the bottom right corner, isolated by a generous amount of white space around it.</p>
+    </div>
+    <div class="lines-block">
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+      <div class="write-line"></div>
+    </div>
+    <div class="model-answer">
+      <h5>✅ Sample response (refer to after completing)</h5>
+      <p>"The design element of <strong>colour</strong> is used through the bright orange background, which creates a warm, energetic tone that conveys optimism and urgency, appropriate for a fundraising context. The principle of <strong>cropping</strong> is applied to the child's face by cutting the top of the image frame, creating an intimate, close-up framing that draws the viewer's eye directly to the subject's expression. The gestalt principle of <strong>hierarchy</strong> — established through the large, bold white 'GIVE HOPE' text against the orange ground — signals the primary call-to-action as the most important message, with the tagline and logo at reduced scale establishing secondary reading order."</p>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ACTIVITY 8: REFLECTION -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 8: Reflection — What I Know</h2>
+      <div class="num">A8</div>
+    </div>
+    <div class="instruction">Use this page to reflect on your learning so far. Be honest — this helps you study smarter!</div>
+
+    <div class="section-title">Confidence Check</div>
+    <div style="margin-bottom:8px">
+      <p style="font-size:8pt;color:#374151;margin-bottom:5px">Rate your confidence (1 = not sure · 3 = confident · 5 = could teach it):</p>
+      <table style="width:100%;border-collapse:collapse;font-size:8.5pt">
+        <tr style="background:#faf5ff"><th style="text-align:left;padding:4px 8px;font-size:7.5pt;color:#4c1d95;border:1px solid #ddd6fe">Topic</th><th style="padding:4px 8px;font-size:7.5pt;color:#4c1d95;border:1px solid #ddd6fe;width:100px">Rating (circle one)</th><th style="padding:4px 8px;font-size:7.5pt;color:#4c1d95;border:1px solid #ddd6fe">What I'm unsure about</th></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #ddd6fe">The 8 Design Elements and their definitions</td><td style="padding:5px 8px;border:1px solid #ddd6fe;text-align:center;color:#7c3aed;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #ddd6fe"></td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #ddd6fe">The 8 VCAA Design Principles (2024)</td><td style="padding:5px 8px;border:1px solid #ddd6fe;text-align:center;color:#7c3aed;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #ddd6fe"></td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #ddd6fe">The 6 Gestalt Principles (spelling included)</td><td style="padding:5px 8px;border:1px solid #ddd6fe;text-align:center;color:#7c3aed;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #ddd6fe"></td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #ddd6fe">Typography anatomy and classifications</td><td style="padding:5px 8px;border:1px solid #ddd6fe;text-align:center;color:#7c3aed;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #ddd6fe"></td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #ddd6fe">Writing design analysis (Name → Evidence → Effect)</td><td style="padding:5px 8px;border:1px solid #ddd6fe;text-align:center;color:#7c3aed;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #ddd6fe"></td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #ddd6fe">Colour theory (hue, value, saturation, schemes)</td><td style="padding:5px 8px;border:1px solid #ddd6fe;text-align:center;color:#7c3aed;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #ddd6fe"></td></tr>
+      </table>
+    </div>
+
+    <div class="section-title">My Learning Goals</div>
+    <div class="instruction">Before next lesson, I will review / practise:</div>
+    <div class="lines-block">
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+    </div>
+
+    <div class="section-title">One thing I found surprising or interesting:</div>
+    <div class="lines-block">
+      <div class="write-line"></div><div class="write-line"></div>
+    </div>
+
+    <div class="section-title">My key vocab list (write 10 design terms you want to remember):</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+      <div style="border-bottom:1px solid #ddd6fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#a78bfa">1.</div>
+      <div style="border-bottom:1px solid #ddd6fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#a78bfa">2.</div>
+      <div style="border-bottom:1px solid #ddd6fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#a78bfa">3.</div>
+      <div style="border-bottom:1px solid #ddd6fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#a78bfa">4.</div>
+      <div style="border-bottom:1px solid #ddd6fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#a78bfa">5.</div>
+      <div style="border-bottom:1px solid #ddd6fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#a78bfa">6.</div>
+      <div style="border-bottom:1px solid #ddd6fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#a78bfa">7.</div>
+      <div style="border-bottom:1px solid #ddd6fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#a78bfa">8.</div>
+      <div style="border-bottom:1px solid #ddd6fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#a78bfa">9.</div>
+      <div style="border-bottom:1px solid #ddd6fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#a78bfa">10.</div>
+    </div>
+  </div>
+
+  <div class="footer">VCE Visual Communication Design · Student Workbook · Unit 1 AOS 1 · VCAA 2024 Study Design · Total: 86 marks</div>
+</div>
+</body>
+</html>

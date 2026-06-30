@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design History — VCE VCD Reference Handout</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 14mm 14mm 14mm 14mm; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.4}
+  .page{max-width:182mm;margin:0 auto;padding:0}
+  .header{background:linear-gradient(135deg,#0c0a1a,#4c1d95);color:#fff;padding:10px 14px;border-radius:6px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .header h1{font-size:16pt;font-weight:900;margin-bottom:2px}
+  .header p{font-size:8pt;opacity:.85}
+  .header .badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);padding:4px 10px;border-radius:20px;font-size:7.5pt;font-weight:700;white-space:nowrap}
+  .section-title{font-size:8.5pt;font-weight:800;color:#4c1d95;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px;border-bottom:1.5px solid #ddd6fe;padding-bottom:2px}
+  .timeline{display:flex;gap:0;margin-bottom:10px;border:1px solid #ddd6fe;border-radius:8px;overflow:hidden}
+  .t-era{flex:1;padding:6px 8px;text-align:center;font-size:7.5pt}
+  .t-era .year{font-weight:900;font-size:9pt;display:block;margin-bottom:1px}
+  .t-era .name{font-weight:700;display:block;margin-bottom:1px}
+  .t-era .desc{font-size:7pt;opacity:.8}
+  .bauhaus{background:#1e1b4b;color:#c4b5fd}
+  .swiss{background:#14532d;color:#86efac}
+  .post{background:#7f1d1d;color:#fca5a5}
+  .cont{background:#1e3a5f;color:#93c5fd}
+  .movement-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:8px}
+  .mv-card{border-radius:8px;padding:11px;border:1.5px solid}
+  .mv-card h2{font-size:10pt;font-weight:900;margin-bottom:3px}
+  .mv-card .period{font-size:7.5pt;font-weight:700;margin-bottom:5px}
+  .mv-card .def{font-size:8pt;color:#374151;line-height:1.5;margin-bottom:5px}
+  .mv-card .chars{margin:0;padding-left:14px}
+  .mv-card .chars li{font-size:7.5pt;margin-bottom:2px;line-height:1.4}
+  .mv-card .designers{font-size:7.5pt;font-weight:600;margin-top:5px}
+  .mv-card .works{font-size:7pt;font-style:italic;margin-top:2px}
+  .bh{background:#f5f3ff;border-color:#c4b5fd}
+  .bh h2,.bh .period{color:#4c1d95}
+  .bh .chars li{color:#374151}
+  .bh .designers{color:#6d28d9}
+  .sw{background:#f0fdf4;border-color:#bbf7d0}
+  .sw h2,.sw .period{color:#166534}
+  .sw .chars li{color:#374151}
+  .sw .designers{color:#15803d}
+  .pm{background:#fff1f2;border-color:#fecdd3}
+  .pm h2,.pm .period{color:#9f1239}
+  .pm .chars li{color:#374151}
+  .pm .designers{color:#be185d}
+  .comparison-table{width:100%;border-collapse:collapse;font-size:8pt;margin-bottom:8px}
+  .comparison-table th{background:#4c1d95;color:#fff;padding:5px 8px;text-align:left;font-size:7.5pt}
+  .comparison-table td{padding:5px 8px;border-bottom:1px solid #ddd6fe;vertical-align:top}
+  .comparison-table tr:nth-child(even) td{background:#faf5ff}
+  .exam-box{background:#faf5ff;border:1.5px solid #ddd6fe;border-radius:6px;padding:9px 12px;margin-bottom:6px;font-size:8pt}
+  .exam-box h4{color:#4c1d95;font-size:8pt;font-weight:800;margin-bottom:4px}
+  .exam-box p{color:#374151;line-height:1.5}
+  .exam-box strong{color:#4c1d95}
+  .footer{margin-top:8px;text-align:center;font-size:7pt;color:#a78bfa;border-top:1px solid #ddd6fe;padding-top:6px}
+  @media print{body{background:#fff}.page{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>Design History</h1>
+      <p>VCE Visual Communication Design · Key Movements · VCAA 2024</p>
+    </div>
+    <div class="badge">VCAA-VCD-HIST1</div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="section-title">Timeline of Major Design Movements</div>
+  <div class="timeline">
+    <div class="t-era bauhaus"><span class="year">1919–33</span><span class="name">Bauhaus</span><span class="desc">Form follows function</span></div>
+    <div class="t-era" style="background:#1a1a3e;color:#818cf8"><span class="year">1930s–40s</span><span class="name">Art Deco</span><span class="desc">Luxury &amp; geometry</span></div>
+    <div class="t-era swiss"><span class="year">1950s–70s</span><span class="name">Swiss / Intl</span><span class="desc">Grid &amp; objectivity</span></div>
+    <div class="t-era" style="background:#1c2a1c;color:#6ee7b7"><span class="year">1960s</span><span class="name">Pop Art</span><span class="desc">Mass culture imagery</span></div>
+    <div class="t-era post"><span class="year">1980s–90s</span><span class="name">Postmodernism</span><span class="desc">Rules are broken</span></div>
+    <div class="t-era cont"><span class="year">2000s–now</span><span class="name">Digital / Flat</span><span class="desc">Screen-first design</span></div>
+  </div>
+
+  <!-- 3 KEY MOVEMENTS -->
+  <div class="movement-grid">
+    <!-- BAUHAUS -->
+    <div class="mv-card bh">
+      <h2>🏛️ Bauhaus</h2>
+      <div class="period">Germany · 1919–1933</div>
+      <div class="def">A German design school that unified fine art, craft, and industrial manufacturing under the philosophy: <em>"form follows function."</em> Bauhaus sought to make good design accessible to all through mass production.</div>
+      <ul class="chars">
+        <li>Geometric, simplified forms</li>
+        <li>Primary colours (red, yellow, blue)</li>
+        <li>Sans-serif typography (Universal typeface)</li>
+        <li>Rejection of unnecessary ornament</li>
+        <li>Unity of art, craft, and technology</li>
+        <li>Grid-based composition</li>
+      </ul>
+      <div class="designers">Key figures: Walter Gropius (founder), László Moholy-Nagy, Herbert Bayer, Marcel Breuer, Paul Klee, Wassily Kandinsky</div>
+      <div class="works">Notable works: Breuer's Wassily Chair, Bayer's Universal typeface, Kandinsky's colour/form theory</div>
+    </div>
+
+    <!-- SWISS / INTERNATIONAL TYPOGRAPHIC STYLE -->
+    <div class="mv-card sw">
+      <h2>🇨🇭 Swiss Style</h2>
+      <div class="period">Switzerland/Germany · 1950s–1970s</div>
+      <div class="def">Also called the <strong>International Typographic Style</strong>. Developed in Zurich and Basel — emphasised mathematical grid systems, objective photography, and clean sans-serif typography to communicate universally.</div>
+      <ul class="chars">
+        <li>Mathematical grid systems</li>
+        <li>Helvetica &amp; Akzidenz-Grotesk typefaces</li>
+        <li>Flush-left, ragged-right text</li>
+        <li>Objective photography (not illustration)</li>
+        <li>Asymmetric, structured layouts</li>
+        <li>Neutral, universal communication</li>
+      </ul>
+      <div class="designers">Key figures: Josef Müller-Brockmann, Armin Hofmann, Emil Ruder, Max Bill</div>
+      <div class="works">Notable works: Müller-Brockmann's concert posters, NYC subway signage system, Helvetica typeface (1957)</div>
+    </div>
+
+    <!-- POSTMODERNISM -->
+    <div class="mv-card pm">
+      <h2>🎨 Postmodernism</h2>
+      <div class="period">USA/Europe · 1980s–1990s</div>
+      <div class="def">A reaction against the rigid rationalism of Modernism/Swiss Style. Postmodern designers deliberately <strong>broke the rules</strong> — mixing typefaces, layering images, using irony, historical references, and visual complexity.</div>
+      <ul class="chars">
+        <li>Mixed typefaces and decorative fonts</li>
+        <li>Overlapping, layered compositions</li>
+        <li>Bright, clashing, unexpected colours</li>
+        <li>Historical references and pastiche</li>
+        <li>Irony, wit, and cultural commentary</li>
+        <li>No single "universal" design language</li>
+      </ul>
+      <div class="designers">Key figures: David Carson, Paula Scher, Neville Brody, April Greiman, Wolfgang Weingart</div>
+      <div class="works">Notable works: Ray Gun magazine (Carson), NYTM poster lettering (Scher), The Face magazine (Brody)</div>
+    </div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="section-title">Key Movements Comparison</div>
+  <table class="comparison-table">
+    <tr><th>Movement</th><th>Typeface style</th><th>Colour palette</th><th>Layout approach</th><th>Core philosophy</th></tr>
+    <tr><td><strong>Bauhaus</strong></td><td>Geometric sans-serif</td><td>Primary colours + black/white</td><td>Grid-based, simplified</td><td>Form follows function</td></tr>
+    <tr><td><strong>Swiss / Intl</strong></td><td>Helvetica, clean sans-serif</td><td>Neutral, functional</td><td>Mathematical grid, asymmetric</td><td>Objectivity, universality</td></tr>
+    <tr><td><strong>Postmodern</strong></td><td>Mixed, decorative, expressive</td><td>Clashing, unexpected</td><td>Layered, rule-breaking</td><td>Plurality, irony, expression</td></tr>
+  </table>
+
+  <!-- EXAM TECHNIQUE -->
+  <div class="section-title">Discussing Design History in Exam Responses</div>
+  <div class="exam-box">
+    <h4>How to connect a design to a historical movement</h4>
+    <p>"This poster reflects the <strong>Swiss International Style</strong> through its use of a <strong>mathematical grid</strong> to organise information, <strong>Helvetica</strong> typeface for its neutral legibility, and <strong>objective photography</strong> in place of illustration. These choices prioritise clarity and universal communication consistent with the movement's philosophy."</p>
+  </div>
+  <div class="exam-box">
+    <h4>Discussing influence across movements</h4>
+    <p>"While the design draws on <strong>Bauhaus principles</strong> in its geometric, simplified forms and use of primary colour, the overlapping typography and mixed type sizes suggest a <strong>postmodern influence</strong> — using modernist visual language ironically rather than literally."</p>
+  </div>
+
+  <div class="footer">VCE Visual Communication Design · Design History · Bauhaus · Swiss Style · Postmodernism · VCAA 2024</div>
+</div>
+</body>
+</html>

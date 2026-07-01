@@ -3,6 +3,74 @@ import { persist } from 'zustand/middleware';
 import { BADGES } from '../data/badges';
 import { saveSessionResult, fetchProfile, fetchStudentResults } from '../lib/db';
 
+// ── Player Level System ────────────────────────────────────────────────────
+// Level is derived from lifetimeStarsEarned (never decreases).
+export const PLAYER_LEVELS = [
+  { level: 1,  minStars: 0,     label: 'Seedling',     emoji: '🌱' },
+  { level: 2,  minStars: 50,    label: 'Explorer',     emoji: '🔍' },
+  { level: 3,  minStars: 130,   label: 'Scholar',      emoji: '📖' },
+  { level: 4,  minStars: 260,   label: 'Achiever',     emoji: '🎯' },
+  { level: 5,  minStars: 450,   label: 'Champion',     emoji: '🏅' },
+  { level: 6,  minStars: 700,   label: 'Expert',       emoji: '💡' },
+  { level: 7,  minStars: 1050,  label: 'Master',       emoji: '🏆' },
+  { level: 8,  minStars: 1500,  label: 'Elite',        emoji: '💫' },
+  { level: 9,  minStars: 2100,  label: 'Legend',       emoji: '⚡' },
+  { level: 10, minStars: 2900,  label: 'Myth',         emoji: '🌟' },
+  { level: 11, minStars: 3900,  label: 'Titan',        emoji: '🔥' },
+  { level: 12, minStars: 5100,  label: 'Cosmic',       emoji: '🌙' },
+  { level: 13, minStars: 6600,  label: 'Divine',       emoji: '✨' },
+  { level: 14, minStars: 8500,  label: 'Immortal',     emoji: '💎' },
+  { level: 15, minStars: 11000, label: 'Transcendent', emoji: '🌈' },
+  { level: 16, minStars: 14000, label: 'Celestial',    emoji: '🌠' },
+  { level: 17, minStars: 18000, label: 'Galactic',     emoji: '🪐' },
+  { level: 18, minStars: 23000, label: 'Universal',    emoji: '🚀' },
+  { level: 19, minStars: 29000, label: 'Infinite',     emoji: '∞' },
+  { level: 20, minStars: 36000, label: 'Legendary',    emoji: '👑' },
+] as const;
+
+export function getPlayerLevel(lifetimeStars: number): number {
+  let level = 1;
+  for (const tier of PLAYER_LEVELS) {
+    if (lifetimeStars >= tier.minStars) level = tier.level;
+    else break;
+  }
+  return level;
+}
+
+// ── Farm Animal Config ──────────────────────────────────────────────────────
+export const FARM_ANIMAL_CONFIG: Record<string, {
+  rate: number; babyChance: number; babyBonus: number; levelRequired: number;
+}> = {
+  chicken:  { rate: 1,  babyChance: 0.12, babyBonus: 5,   levelRequired: 1  },
+  sheep:    { rate: 2,  babyChance: 0.10, babyBonus: 8,   levelRequired: 1  },
+  cow:      { rate: 4,  babyChance: 0.08, babyBonus: 15,  levelRequired: 1  },
+  horse:    { rate: 6,  babyChance: 0.06, babyBonus: 25,  levelRequired: 1  },
+  peacock:  { rate: 8,  babyChance: 0.05, babyBonus: 40,  levelRequired: 3  },
+  llama:    { rate: 12, babyChance: 0.04, babyBonus: 70,  levelRequired: 5  },
+  elephant: { rate: 18, babyChance: 0.03, babyBonus: 120, levelRequired: 7  },
+  tiger:    { rate: 25, babyChance: 0.02, babyBonus: 200, levelRequired: 10 },
+  dragon:   { rate: 35, babyChance: 0.015,babyBonus: 400, levelRequired: 15 },
+  unicorn:  { rate: 50, babyChance: 0.01, babyBonus: 800, levelRequired: 20 },
+};
+
+export const FARM_DAILY_CAP = 100; // max farm stars per day
+
+// ── Chest / Mystery Gift ────────────────────────────────────────────────────
+export interface ChestReward {
+  type: 'stars' | 'mega_stars' | 'baby';
+  label: string;
+  emoji: string;
+  stars: number;
+  animalId?: string;
+}
+
+// ── Baby Bonus ──────────────────────────────────────────────────────────────
+export interface BabyBonus {
+  animalId: string;
+  emoji: string;
+  bonusStars: number;
+}
+
 export type Subject = 'english' | 'maths' | 'science' | 'hass' | 'vcd';
 export type Mascot = 'owl' | 'fox' | 'panda';
 export type Density = 'younger' | 'older';
@@ -75,6 +143,8 @@ export interface AppState {
   weeklyLessonsCount: number; // lessons completed this ISO week
   weeklyLessonsWeek: string;  // ISO week string e.g. "2025-W14"
   weeklyChallengeCollected: string; // ISO week when weekly bonus was collected
+  pendingChest: ChestReward | null; // set after lesson if lucky chest drops
+  pendingBabyBonus: BabyBonus | null; // set after farm collect if baby produced
   unlockedBadges: string[];
   firstLoginDate: string; // ISO date, set once on first login, never overwritten
   classPin: string;
@@ -103,6 +173,8 @@ export interface AppActions {
   sellFarmAnimal: (animalId: string, refund: number) => void;
   claimDailyBonus: () => void;
   claimWeeklyBonus: () => void;
+  dismissChest: () => void;
+  dismissBabyBonus: () => void;
   unlockBadge: (id: string) => void;
   addStars: (n: number) => void;
   previewFeedback: (sessionId: string, score: number, total: number) => void;
@@ -143,14 +215,7 @@ const defaultState: AppState = {
   lastActiveDate: '',
   itemPositions: {},
   itemQuantities: {},
-  farmPlots: [
-    { id: 'plot-0', animalId: null, placedAt: '' },
-    { id: 'plot-1', animalId: null, placedAt: '' },
-    { id: 'plot-2', animalId: null, placedAt: '' },
-    { id: 'plot-3', animalId: null, placedAt: '' },
-    { id: 'plot-4', animalId: null, placedAt: '' },
-    { id: 'plot-5', animalId: null, placedAt: '' },
-  ],
+  farmPlots: Array.from({ length: 10 }, (_, i) => ({ id: `plot-${i}`, animalId: null as string | null, placedAt: '' })),
   lastFarmCollect: '',
   farmStarsPending: 0,
   farmDailyStars: 0,
@@ -160,6 +225,8 @@ const defaultState: AppState = {
   weeklyLessonsCount: 0,
   weeklyLessonsWeek: '',
   weeklyChallengeCollected: '',
+  pendingChest: null,
+  pendingBabyBonus: null,
   unlockedBadges: [],
   firstLoginDate: '',
   classPin: '',
@@ -231,15 +298,28 @@ export const useAppStore = create<AppState & AppActions>()(
           timeSpentMinutes: minutes,
         };
         const starsEarned = result.starsEarned;
+        // Chest probability: 20% chance of a mystery chest after lesson
+        let chest: ChestReward | null = null;
+        const roll = Math.random();
+        if (roll < 0.05) {
+          // 5% — Mega Stars
+          const bonus = 50 + Math.floor(Math.random() * 100);
+          chest = { type: 'mega_stars', label: `Mega Star Blast! +${bonus} bonus stars!`, emoji: '🌟', stars: bonus };
+        } else if (roll < 0.20) {
+          // 15% — Star Burst
+          const bonus = 15 + Math.floor(Math.random() * 35);
+          chest = { type: 'stars', label: `Star Burst! +${bonus} bonus stars!`, emoji: '⭐', stars: bonus };
+        }
         // Track weekly lessons for weekly challenge
         const todayWeek = isoWeek(new Date());
         set(s => ({
-          totalStars: s.totalStars + starsEarned,
-          lifetimeStarsEarned: s.lifetimeStarsEarned + starsEarned,
+          totalStars: s.totalStars + starsEarned + (chest?.stars ?? 0),
+          lifetimeStarsEarned: s.lifetimeStarsEarned + starsEarned + (chest?.stars ?? 0),
           completedSessions: [...new Set([...s.completedSessions, result.sessionId])],
           sessionResults: [...s.sessionResults, full],
           weeklyLessonsCount: s.weeklyLessonsWeek === todayWeek ? s.weeklyLessonsCount + 1 : 1,
           weeklyLessonsWeek: todayWeek,
+          pendingChest: chest,
           view: 'feedback',
         }));
         const newState = get();
@@ -343,19 +423,29 @@ export const useAppStore = create<AppState & AppActions>()(
 
       collectFarmStars: () => {
         const state = get();
-        // Reduced rates: chicken 1/hr, sheep 2/hr, cow 4/hr, horse 8/hr
-        const RATES: Record<string, number> = { chicken: 1, sheep: 2, cow: 4, horse: 8 };
-        const DAILY_CAP = 30;
         const today = new Date().toISOString().slice(0, 10);
         const todayFarmStars = state.farmLastDay === today ? state.farmDailyStars : 0;
-        const remaining = Math.max(0, DAILY_CAP - todayFarmStars);
+        const remaining = Math.max(0, FARM_DAILY_CAP - todayFarmStars);
         if (remaining === 0) return;
         const now = Date.now();
         let raw = 0;
+        let baby: BabyBonus | null = null;
         state.farmPlots.forEach(plot => {
           if (!plot.animalId || !plot.placedAt) return;
+          const cfg = FARM_ANIMAL_CONFIG[plot.animalId];
+          if (!cfg) return;
           const hoursElapsed = (now - new Date(plot.placedAt).getTime()) / 3600000;
-          raw += Math.floor(hoursElapsed * (RATES[plot.animalId] ?? 1));
+          raw += Math.floor(hoursElapsed * cfg.rate);
+          // Baby probability (independent roll per animal per collect)
+          if (!baby && Math.random() < cfg.babyChance) {
+            const emojiMap: Record<string, string> = {
+              chicken: '🐔', sheep: '🐑', cow: '🐄', horse: '🐴',
+              peacock: '🦚', llama: '🦙', elephant: '🐘', tiger: '🐯',
+              dragon: '🐉', unicorn: '🦄',
+            };
+            baby = { animalId: plot.animalId, emoji: emojiMap[plot.animalId] ?? '🐣', bonusStars: cfg.babyBonus };
+            raw += cfg.babyBonus;
+          }
         });
         const earned = Math.min(raw, remaining);
         if (earned > 0) {
@@ -364,11 +454,15 @@ export const useAppStore = create<AppState & AppActions>()(
             lifetimeStarsEarned: s.lifetimeStarsEarned + earned,
             farmDailyStars: todayFarmStars + earned,
             farmLastDay: today,
+            pendingBabyBonus: baby,
             farmPlots: s.farmPlots.map(p => ({ ...p, placedAt: p.animalId ? new Date().toISOString() : '' })),
             lastFarmCollect: new Date().toISOString(),
           }));
         }
       },
+
+      dismissChest: () => set({ pendingChest: null }),
+      dismissBabyBonus: () => set({ pendingBabyBonus: null }),
 
       previewFeedback: (sessionId, score, total) =>
         set({ activeSessionId: sessionId, currentScore: { correct: score, total }, view: 'feedback' }),

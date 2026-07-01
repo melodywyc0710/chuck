@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Target, Clock, Trophy, Home } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { englishSession } from '../data/english-session';
@@ -11,7 +12,8 @@ const THEME_DARK  = { purple: '#7C3AED', blue: '#0E8FC4', green: '#46A302', oran
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 
 export default function ClassSummary() {
-  const { sessionResults, profile, setView, currentStreak } = useAppStore();
+  const { sessionResults, profile, setView, currentStreak, pendingChest, dismissChest } = useAppStore();
+  const [chestOpen, setChestOpen] = useState(false);
   if (!profile) return null;
 
   const latest = sessionResults[sessionResults.length - 1];
@@ -101,6 +103,49 @@ export default function ClassSummary() {
             </div>
           </div>
         ))}
+
+        {/* Mega Chest reveal */}
+        {pendingChest && (
+          <div className="card p-5 text-center border-2 border-yellow-300" style={{ background: 'linear-gradient(135deg, #fefce8, #fef9c3)' }}>
+            <AnimatePresence mode="wait">
+              {!chestOpen ? (
+                <motion.div key="closed" initial={{ scale: 0.8 }} animate={{ scale: 1 }}>
+                  <div className="text-6xl mb-3">🎁</div>
+                  <div className="font-black text-yellow-800 text-lg mb-1">Mystery Chest!</div>
+                  <div className="text-sm text-yellow-700 mb-4">You earned a surprise after this lesson!</div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                    onClick={() => setChestOpen(true)}
+                    className="btn-duo text-white font-black px-6 py-3 rounded-2xl"
+                    style={{ background: '#F59E0B', borderBottomColor: '#D97706' }}
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 1.2, repeat: Infinity }}
+                  >
+                    Open Chest! 🎉
+                  </motion.button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="open"
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 200 }}
+                >
+                  <div className="text-6xl mb-3">{pendingChest.emoji}</div>
+                  <div className="font-black text-yellow-800 text-xl mb-1">{pendingChest.label}</div>
+                  <div className="text-sm text-yellow-700 mb-4">Added to your star balance!</div>
+                  <button
+                    onClick={dismissChest}
+                    className="btn-duo text-white font-black px-6 py-2 rounded-2xl text-sm"
+                    style={{ background: '#10B981', borderBottomColor: '#059669' }}
+                  >
+                    Awesome! ✨
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
 
         {/* Navigation */}
         <div className="flex gap-3 no-print pb-6">

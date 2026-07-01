@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppStore } from '../store/appStore';
+import { useAppStore, PLAYER_LEVELS, getPlayerLevel, FARM_ANIMAL_CONFIG, FARM_DAILY_CAP } from '../store/appStore';
 import { ROOM_ITEMS } from '../data/rewards';
 import { BADGES } from '../data/badges';
 import { sounds } from '../utils/sounds';
@@ -10,12 +10,15 @@ const THEME_DARK  = { purple: '#7C3AED', blue: '#0E8FC4', green: '#46A302', oran
 type TabType = 'room' | 'shop' | 'farm' | 'badges';
 type Category = 'all' | 'furniture' | 'pet' | 'decoration' | 'window';
 
-const FARM_ANIMALS = ['chicken', 'sheep', 'cow', 'horse'];
-const ANIMAL_EMOJI: Record<string, string> = { chicken: '🐔', sheep: '🐑', cow: '🐄', horse: '🐴' };
-// Rates match appStore: chicken 1/hr, sheep 2/hr, cow 4/hr, horse 8/hr
-const ANIMAL_RATE: Record<string, number> = { chicken: 1, sheep: 2, cow: 4, horse: 8 };
-const ANIMAL_COST: Record<string, number> = { chicken: 8, sheep: 20, cow: 45, horse: 80 };
-const DAILY_FARM_CAP = 30;
+const FARM_ANIMALS = ['chicken', 'sheep', 'cow', 'horse', 'peacock', 'llama', 'elephant', 'tiger', 'dragon', 'unicorn'];
+const ANIMAL_EMOJI: Record<string, string> = {
+  chicken: '🐔', sheep: '🐑', cow: '🐄', horse: '🐴',
+  peacock: '🦚', llama: '🦙', elephant: '🐘', tiger: '🐯', dragon: '🐉', unicorn: '🦄',
+};
+const ANIMAL_COST: Record<string, number> = {
+  chicken: 8, sheep: 20, cow: 45, horse: 80,
+  peacock: 150, llama: 300, elephant: 600, tiger: 1200, dragon: 2500, unicorn: 5000,
+};
 const WEEKLY_GOAL = 5;
 
 // Star rank system based on lifetime stars earned
@@ -121,6 +124,7 @@ export default function RewardsRoom() {
     farmDailyStars, farmLastDay, lifetimeStarsEarned,
     lastLoginBonus, currentStreak, claimDailyBonus,
     weeklyLessonsCount, weeklyLessonsWeek, weeklyChallengeCollected, claimWeeklyBonus,
+    pendingBabyBonus, dismissBabyBonus,
   } = useAppStore();
 
   // Fix: default to 0 weeks (not 99) so new items are properly locked
@@ -196,16 +200,25 @@ export default function RewardsRoom() {
   // Farm: pending stars and daily cap
   const today = new Date().toISOString().slice(0, 10);
   const todayFarmStars = farmLastDay === today ? farmDailyStars : 0;
-  const farmCapRemaining = Math.max(0, DAILY_FARM_CAP - todayFarmStars);
+  const farmCapRemaining = Math.max(0, FARM_DAILY_CAP - todayFarmStars);
   const now = Date.now();
-  const RATES: Record<string, number> = { chicken: 1, sheep: 2, cow: 4, horse: 8 };
   let pendingStars = 0;
   farmPlots.forEach(plot => {
     if (!plot.animalId || !plot.placedAt) return;
+    const cfg = FARM_ANIMAL_CONFIG[plot.animalId];
+    if (!cfg) return;
     const h = (now - new Date(plot.placedAt).getTime()) / 3600000;
-    pendingStars += Math.floor(h * (RATES[plot.animalId] ?? 1));
+    pendingStars += Math.floor(h * cfg.rate);
   });
   const collectableStars = Math.min(pendingStars, farmCapRemaining);
+
+  // Player level (based on lifetime stars earned)
+  const playerLevel = getPlayerLevel(lifetimeStarsEarned);
+  const currentLevelData = PLAYER_LEVELS[playerLevel - 1];
+  const nextLevelData = PLAYER_LEVELS[playerLevel] ?? null;
+  const levelProgress = nextLevelData
+    ? Math.round(((lifetimeStarsEarned - currentLevelData.minStars) / (nextLevelData.minStars - currentLevelData.minStars)) * 100)
+    : 100;
 
   // Rank
   const rank = getRank(lifetimeStarsEarned);
@@ -243,22 +256,65 @@ export default function RewardsRoom() {
         )}
       </AnimatePresence>
 
+      {/* Baby Bonus Toast */}
+      <AnimatePresence>
+        {pendingBabyBonus && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7, x: '-50%', y: '-50%' }}
+            animate={{ opacity: 1, scale: 1, x: '-50%', y: '-50%' }}
+            exit={{ opacity: 0, scale: 0.7 }}
+            className="fixed top-1/2 left-1/2 z-50 bg-white rounded-3xl shadow-2xl p-6 text-center w-72"
+            style={{ border: '3px solid #FCD34D' }}
+          >
+            <div className="text-6xl mb-2">{pendingBabyBonus.emoji}</div>
+            <div className="text-2xl mb-1">🐣</div>
+            <div className="font-black text-gray-800 text-lg mb-1">Baby {pendingBabyBonus.animalId.charAt(0).toUpperCase() + pendingBabyBonus.animalId.slice(1)}!</div>
+            <div className="text-sm text-gray-500 mb-4">Your animal had a baby!<br/>+⭐{pendingBabyBonus.bonusStars} bonus stars!</div>
+            <button
+              onClick={dismissBabyBonus}
+              className="btn-duo text-white font-black px-6 py-2 rounded-2xl text-sm"
+              style={{ background: '#F59E0B', borderBottomColor: '#D97706' }}
+            >
+              Yay! 🎉
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {pendingBabyBonus && <div className="fixed inset-0 bg-black/30 z-40" onClick={dismissBabyBonus} />}
+
       {/* Header */}
       <div className="sticky top-0 z-10" style={{ background: 'linear-gradient(135deg, #7C3AED, #A855F7)' }}>
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <button onClick={() => setView('home')} className="text-white/70 hover:text-white text-sm font-bold">← Home</button>
           <h2 className="font-black text-white">{hasTreehouse ? '🌳 My Treehouse' : '🛏️ My Room'}</h2>
           <div className="flex items-center gap-2">
-            {/* Rank badge */}
+            {/* Level badge */}
             <div className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-black"
               style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
-              {rank.emoji} {rank.name}
+              {currentLevelData.emoji} Lv.{playerLevel}
             </div>
             <div className="flex items-center gap-1 bg-yellow-400 px-3 py-1.5 rounded-full" style={{ borderBottom: '2px solid #E0A800' }}>
               <span>⭐</span>
               <span className="font-black text-yellow-900">{totalStars}</span>
             </div>
           </div>
+        </div>
+        {/* Level progress bar (thin strip under header) */}
+        <div className="max-w-2xl mx-auto px-4 pb-1">
+          <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-yellow-300 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${levelProgress}%` }}
+              transition={{ duration: 0.8 }}
+            />
+          </div>
+          {nextLevelData && (
+            <div className="flex justify-between text-white/60 text-[10px] mt-0.5 px-0.5">
+              <span>{currentLevelData.label}</span>
+              <span>{nextLevelData.minStars - lifetimeStarsEarned} ⭐ to Lv.{playerLevel + 1} {nextLevelData.label}</span>
+            </div>
+          )}
         </div>
         <div className="max-w-2xl mx-auto px-4 pb-3 flex gap-2">
           {(['room', 'shop', 'farm', 'badges'] as TabType[]).map(t => (
@@ -526,6 +582,8 @@ export default function RewardsRoom() {
                   const owned = qty > 0;
                   const isFarmAnimal = FARM_ANIMALS.includes(item.id);
                   const alreadyOwned = isFarmAnimal && owned;
+                  const levelReq = item.levelRequired ?? 1;
+                  const levelLocked = playerLevel < levelReq;
                   const canAfford = totalStars >= item.cost;
                   return (
                     <motion.div
@@ -533,8 +591,17 @@ export default function RewardsRoom() {
                       layout
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className={`bg-white rounded-2xl p-4 border-2 shadow-sm ${owned ? 'border-green-300' : 'border-gray-100'}`}
+                      className={`bg-white rounded-2xl p-4 border-2 shadow-sm relative ${
+                        levelLocked ? 'border-gray-200 opacity-60' : owned ? 'border-green-300' : 'border-gray-100'
+                      }`}
                     >
+                      {levelLocked && (
+                        <div className="absolute inset-0 rounded-2xl flex items-center justify-center bg-black/5">
+                          <div className="bg-gray-800 text-white text-xs font-black px-3 py-1.5 rounded-full">
+                            🔒 Level {levelReq}
+                          </div>
+                        </div>
+                      )}
                       <div className="text-4xl text-center mb-2">{item.emoji}</div>
                       <div className="font-bold text-gray-800 text-sm text-center">{item.name}</div>
                       <div className="text-xs text-gray-400 text-center mb-3">{item.description}</div>
@@ -543,6 +610,10 @@ export default function RewardsRoom() {
                       ) : alreadyOwned ? (
                         <div className="w-full py-2 rounded-xl text-xs font-black text-center bg-green-50 text-green-600 border border-green-200">
                           ✓ Owned — go to Farm
+                        </div>
+                      ) : levelLocked ? (
+                        <div className="w-full py-2 rounded-xl text-xs font-black text-center bg-gray-50 text-gray-400 border border-gray-200">
+                          Reach Level {levelReq} to unlock
                         </div>
                       ) : (
                         <motion.button
@@ -555,7 +626,7 @@ export default function RewardsRoom() {
                             ? { background: themeColor, borderBottomColor: themeDark, color: 'white' }
                             : { background: '#f3f4f6', borderBottomColor: '#d1d5db', color: '#9ca3af' }}
                         >
-                          ⭐ {item.cost} {owned ? 'Buy another' : canAfford ? 'Buy' : '— need more stars'}
+                          ⭐ {item.cost} {canAfford ? 'Buy' : '— need more stars'}
                         </motion.button>
                       )}
                     </motion.div>
@@ -588,34 +659,56 @@ export default function RewardsRoom() {
         {/* ── FARM TAB ── */}
         {tab === 'farm' && (
           <div className="space-y-5">
-            {/* Farm scene */}
-            <div className="relative rounded-3xl overflow-hidden shadow-xl" style={{ height: 200 }}>
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #7dd3fc 0%, #bae6fd 60%, #86efac 60%, #4ade80 100%)' }}/>
-              <div className="absolute top-4 right-8 w-10 h-10 rounded-full bg-yellow-300 shadow-lg" style={{ boxShadow: '0 0 20px rgba(253,224,71,0.8)' }}/>
-              <div className="absolute top-6 left-8 flex gap-1">
-                <div className="w-12 h-5 bg-white rounded-full opacity-90"/>
-                <div className="w-8 h-5 bg-white rounded-full opacity-90 -ml-3"/>
+            {/* Farm scene with walking animals */}
+            <div className="relative rounded-3xl overflow-hidden shadow-xl" style={{ height: 220 }}>
+              {/* Sky */}
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #7dd3fc 0%, #bae6fd 55%, #86efac 55%, #4ade80 100%)' }}/>
+              {/* Sun */}
+              <div className="absolute top-3 right-6 w-10 h-10 rounded-full bg-yellow-300" style={{ boxShadow: '0 0 22px rgba(253,224,71,0.9)' }}/>
+              {/* Clouds */}
+              <div className="absolute top-5 left-6 flex gap-1">
+                <div className="w-14 h-5 bg-white rounded-full opacity-90"/>
+                <div className="w-8 h-5 bg-white rounded-full opacity-90 -ml-4"/>
               </div>
-              <div className="absolute bottom-12 inset-x-0 flex justify-around px-4">
-                {[...Array(8)].map((_, i) => (
-                  <div key={i} className="w-2.5 bg-amber-700 rounded-t-sm" style={{ height: 24 }}/>
+              {/* Fence posts */}
+              <div className="absolute inset-x-0 flex justify-around px-4" style={{ bottom: 52 }}>
+                {[...Array(10)].map((_, i) => (
+                  <div key={i} className="w-2.5 bg-amber-800 rounded-t-sm" style={{ height: 22 }}/>
                 ))}
               </div>
-              <div className="absolute inset-x-0 bottom-20 h-2 bg-amber-700 mx-4 rounded-full"/>
-              <div className="absolute bottom-0 inset-x-0 h-12" style={{ background: 'linear-gradient(180deg, #86efac 0%, #4ade80 100%)' }}/>
-              <div className="absolute bottom-2 inset-x-0 flex justify-around px-8">
-                {farmPlots.filter(p => p.animalId).map(plot => (
-                  <motion.div
-                    key={plot.id}
-                    animate={{ y: [0, -3, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, delay: Math.random() }}
-                    className="text-2xl"
-                  >
-                    {ANIMAL_EMOJI[plot.animalId!]}
-                  </motion.div>
-                ))}
-                {farmPlots.filter(p => p.animalId).length === 0 && (
-                  <p className="text-white/60 text-xs font-semibold self-center">Place animals below to earn stars!</p>
+              {/* Fence rail */}
+              <div className="absolute inset-x-4 h-1.5 bg-amber-700 rounded-full" style={{ bottom: 64 }}/>
+              {/* Green ground */}
+              <div className="absolute bottom-0 inset-x-0 h-14" style={{ background: 'linear-gradient(180deg, #86efac 0%, #4ade80 100%)' }}/>
+              {/* Walking animals */}
+              <div className="absolute bottom-1 inset-x-0 h-12 overflow-hidden">
+                {farmPlots.filter(p => p.animalId).length === 0 ? (
+                  <p className="text-center text-white/70 text-xs font-semibold mt-3">Place animals below to earn stars!</p>
+                ) : (
+                  farmPlots.filter(p => p.animalId).map((plot, idx) => {
+                    const totalAnimals = farmPlots.filter(p => p.animalId).length;
+                    const startX = (idx / totalAnimals) * 85 + 5; // spread across width %
+                    const walkRange = Math.min(20, 80 / totalAnimals);
+                    return (
+                      <motion.div
+                        key={plot.id}
+                        style={{ position: 'absolute', bottom: 4, fontSize: '1.7rem', lineHeight: 1 }}
+                        animate={{
+                          x: [`${startX}%`, `${startX + walkRange}%`, `${startX}%`],
+                          scaleX: [1, 1, -1, -1, 1],
+                        }}
+                        transition={{
+                          duration: 3.5 + idx * 0.4,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                          delay: idx * 0.7,
+                          times: [0, 0.45, 0.45, 0.95, 1],
+                        }}
+                      >
+                        {ANIMAL_EMOJI[plot.animalId!]}
+                      </motion.div>
+                    );
+                  })
                 )}
               </div>
             </div>
@@ -624,20 +717,18 @@ export default function RewardsRoom() {
             <div className="bg-white rounded-2xl p-4 border border-amber-100 shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-black text-gray-700">Daily farm stars</div>
-                <div className="text-sm font-black text-amber-600">⭐ {todayFarmStars} / {DAILY_FARM_CAP}</div>
+                <div className="text-sm font-black text-amber-600">⭐ {todayFarmStars} / {FARM_DAILY_CAP}</div>
               </div>
               <div className="h-2.5 bg-amber-100 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all"
-                  style={{ width: `${(todayFarmStars / DAILY_FARM_CAP) * 100}%`, background: '#f59e0b' }}
+                  style={{ width: `${(todayFarmStars / FARM_DAILY_CAP) * 100}%`, background: '#f59e0b' }}
                 />
               </div>
-              {farmCapRemaining === 0 && (
-                <p className="text-xs text-amber-600 font-semibold mt-1">✓ Daily limit reached — resets at midnight!</p>
-              )}
-              {farmCapRemaining > 0 && (
-                <p className="text-xs text-gray-400 mt-1">{farmCapRemaining} stars remaining today</p>
-              )}
+              {farmCapRemaining === 0
+                ? <p className="text-xs text-amber-600 font-semibold mt-1">✓ Daily limit reached — resets at midnight!</p>
+                : <p className="text-xs text-gray-400 mt-1">{farmCapRemaining} stars remaining today</p>
+              }
             </div>
 
             {/* Collect stars button */}
@@ -661,47 +752,48 @@ export default function RewardsRoom() {
 
             {/* Farm plots */}
             <div>
-              <h3 className="font-black text-gray-700 mb-3 text-sm uppercase tracking-wide">Farm plots</h3>
-              <div className="grid grid-cols-3 gap-3">
-                {farmPlots.map(plot => (
-                  <motion.div
-                    key={plot.id}
-                    whileTap={{ scale: 0.97 }}
-                    className="bg-white rounded-2xl p-3 border-2 border-amber-200 text-center cursor-pointer hover:border-amber-400 transition-colors"
-                    onClick={() => {
-                      if (plot.animalId) {
-                        removeFarmAnimal(plot.id);
-                      } else if (selectedFarmAnimal) {
-                        placeFarmAnimal(plot.id, selectedFarmAnimal);
-                        setSelectedFarmAnimal(null);
-                      }
-                    }}
-                  >
-                    <div className="text-3xl mb-1">{plot.animalId ? ANIMAL_EMOJI[plot.animalId] : '🟫'}</div>
-                    <div className="text-xs font-semibold text-gray-600">
-                      {plot.animalId
-                        ? plot.animalId.charAt(0).toUpperCase() + plot.animalId.slice(1)
-                        : selectedFarmAnimal ? 'Tap to place' : 'Empty'}
-                    </div>
-                    {plot.animalId && (
-                      <div className="text-xs text-amber-600 mt-0.5">+{ANIMAL_RATE[plot.animalId]}/hr</div>
-                    )}
-                    {plot.animalId && (
-                      <div className="text-xs text-red-400 mt-1">Tap to recall</div>
-                    )}
-                  </motion.div>
-                ))}
+              <h3 className="font-black text-gray-700 mb-3 text-sm uppercase tracking-wide">Farm plots (10 total)</h3>
+              <div className="grid grid-cols-5 gap-2">
+                {farmPlots.map(plot => {
+                  const cfg = plot.animalId ? FARM_ANIMAL_CONFIG[plot.animalId] : null;
+                  return (
+                    <motion.div
+                      key={plot.id}
+                      whileTap={{ scale: 0.95 }}
+                      className={`rounded-2xl p-2 border-2 text-center cursor-pointer transition-colors ${
+                        plot.animalId
+                          ? 'border-amber-300 bg-amber-50'
+                          : selectedFarmAnimal
+                          ? 'border-dashed border-amber-400 bg-amber-50'
+                          : 'border-amber-200 bg-white'
+                      }`}
+                      onClick={() => {
+                        if (plot.animalId) {
+                          removeFarmAnimal(plot.id);
+                        } else if (selectedFarmAnimal) {
+                          placeFarmAnimal(plot.id, selectedFarmAnimal);
+                          setSelectedFarmAnimal(null);
+                        }
+                      }}
+                    >
+                      <div className="text-2xl">{plot.animalId ? ANIMAL_EMOJI[plot.animalId] : '🟫'}</div>
+                      {cfg && <div className="text-[9px] text-amber-600 font-bold mt-0.5">+{cfg.rate}/hr</div>}
+                      {plot.animalId && <div className="text-[8px] text-red-400">tap to recall</div>}
+                      {!plot.animalId && selectedFarmAnimal && <div className="text-[9px] text-amber-500 font-bold">place here</div>}
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Owned farm animals — with sell button */}
+            {/* Owned farm animals */}
             <div>
               <h3 className="font-black text-gray-700 mb-1 text-sm uppercase tracking-wide">Your animals</h3>
-              <p className="text-xs text-gray-400 mb-3">1 purchase = 1 animal · Sell unplaced animals for 60% back</p>
+              <p className="text-xs text-gray-400 mb-3">Each animal earns ⭐ and may produce babies 🐣 when collected</p>
               {FARM_ANIMALS.filter(a => ownedItems.includes(a)).length === 0 ? (
                 <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center">
                   <p className="text-amber-700 text-sm font-semibold">No farm animals yet.</p>
-                  <p className="text-amber-600 text-xs mt-1">Buy from the Shop → Pet category. Each purchase gives you 1 animal to place on a plot.</p>
+                  <p className="text-amber-600 text-xs mt-1">Buy from Shop → Pet. Rarer animals need higher player levels.</p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -710,21 +802,21 @@ export default function RewardsRoom() {
                     const placed = farmPlots.filter(p => p.animalId === animalId).length;
                     const unplaced = owned - placed;
                     const isSelected = selectedFarmAnimal === animalId;
+                    const cfg = FARM_ANIMAL_CONFIG[animalId];
                     const sellRefund = Math.floor(ANIMAL_COST[animalId] * 0.6);
                     return (
                       <div key={animalId} className={`bg-white rounded-2xl border-2 overflow-hidden ${isSelected ? 'border-amber-400' : 'border-gray-200'}`}>
                         <div className="flex items-center gap-3 p-3">
                           <span className="text-3xl">{ANIMAL_EMOJI[animalId]}</span>
-                          <div className="flex-1">
+                          <div className="flex-1 min-w-0">
                             <div className="text-sm font-black text-gray-700 capitalize">{animalId}</div>
-                            <div className="text-xs text-gray-400">+{ANIMAL_RATE[animalId]} stars/hr · costs ⭐{ANIMAL_COST[animalId]}</div>
-                            <div className="flex gap-2 mt-1 text-xs font-semibold">
-                              <span className="text-gray-500">Owned: {owned}</span>
+                            <div className="text-xs text-gray-400">+{cfg?.rate ?? 1} ⭐/hr · 🐣 {((cfg?.babyChance ?? 0) * 100).toFixed(0)}% baby · ⭐{ANIMAL_COST[animalId]}</div>
+                            <div className="flex gap-2 mt-0.5 text-xs font-semibold">
                               <span className="text-green-600">Placed: {placed}</span>
                               <span className={unplaced > 0 ? 'text-amber-600' : 'text-gray-400'}>Free: {unplaced}</span>
                             </div>
                           </div>
-                          <div className="flex flex-col gap-1.5">
+                          <div className="flex flex-col gap-1.5 shrink-0">
                             {unplaced > 0 && (
                               <button
                                 onClick={() => setSelectedFarmAnimal(isSelected ? null : animalId)}
@@ -737,13 +829,13 @@ export default function RewardsRoom() {
                             {unplaced > 0 && (
                               <button
                                 onClick={() => sellFarmAnimal(animalId, sellRefund)}
-                                className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-red-50 text-red-500 border border-red-200 hover:bg-red-100"
+                                className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-red-50 text-red-500 border border-red-200"
                               >
                                 Sell ⭐{sellRefund}
                               </button>
                             )}
                             {unplaced === 0 && placed > 0 && (
-                              <div className="text-xs text-gray-400 text-center px-2">All<br/>placed</div>
+                              <div className="text-xs text-gray-400 text-center px-1">All<br/>placed</div>
                             )}
                           </div>
                         </div>
@@ -759,14 +851,40 @@ export default function RewardsRoom() {
               )}
             </div>
 
-            {/* Farm info card */}
+            {/* Available animals to unlock */}
+            <div>
+              <h3 className="font-black text-gray-700 mb-2 text-sm uppercase tracking-wide">All Farm Animals</h3>
+              <div className="grid grid-cols-2 gap-2">
+                {FARM_ANIMALS.map(animalId => {
+                  const cfg = FARM_ANIMAL_CONFIG[animalId];
+                  const isOwned = ownedItems.includes(animalId);
+                  const lvlOk = playerLevel >= (cfg?.levelRequired ?? 1);
+                  return (
+                    <div key={animalId} className={`rounded-2xl p-3 border-2 flex items-center gap-2 ${isOwned ? 'border-green-300 bg-green-50' : lvlOk ? 'border-amber-200 bg-white' : 'border-gray-200 bg-gray-50 opacity-60'}`}>
+                      <span className="text-2xl">{ANIMAL_EMOJI[animalId]}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-black text-gray-700 capitalize">{animalId}
+                          {isOwned && <span className="ml-1 text-green-500">✓</span>}
+                        </div>
+                        <div className="text-[10px] text-gray-400">⭐{ANIMAL_COST[animalId]} · +{cfg?.rate}/hr · 🐣{((cfg?.babyChance ?? 0) * 100).toFixed(0)}%</div>
+                        {!lvlOk && <div className="text-[10px] text-gray-400 font-bold">🔒 Level {cfg?.levelRequired} required</div>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Farm info */}
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
               <div className="font-black text-amber-800 text-sm mb-2">🌾 How the farm works</div>
               <div className="space-y-1 text-xs text-amber-700">
-                <div>• Each animal you buy is <strong>one animal</strong> you can place on one plot</div>
-                <div>• Animals earn stars while you study (up to <strong>⭐{DAILY_FARM_CAP}/day</strong>)</div>
-                <div>• Daily cap resets at midnight — collect before you sleep!</div>
-                <div>• Sell unplaced animals for 60% back if you change your mind</div>
+                <div>• Each animal earns stars every hour — collect to claim!</div>
+                <div>• Daily cap: <strong>⭐{FARM_DAILY_CAP}/day</strong> — resets at midnight</div>
+                <div>• 🐣 <strong>Baby bonus:</strong> each collect has a chance a baby is born — bonus stars!</div>
+                <div>• Rarer animals earn more and have bigger baby bonuses</div>
+                <div>• Higher level animals require you to level up first</div>
+                <div>• Sell unplaced animals for 60% refund if you change your mind</div>
               </div>
             </div>
           </div>

@@ -8,7 +8,8 @@ export interface RoomItem {
   position: { x: number; y: number }; // percentage for room grid
   unlocked?: boolean;
   placed?: boolean;
-  weekUnlock?: number; // 0 or undefined = always available; 1+ = unlocks after that many weeks
+  weekUnlock?: number;    // 0 or undefined = always available; 1+ = unlocks after that many weeks
+  levelRequired?: number; // player level required to purchase; undefined = level 1
 }
 
 export const ROOM_ITEMS: RoomItem[] = [
@@ -40,10 +41,17 @@ export const ROOM_ITEMS: RoomItem[] = [
   { id: 'plant', name: 'Potted Plant', emoji: '🌿', cost: 2, category: 'decoration', description: 'Brings life to the room', position: { x: 78, y: 55 } },
   { id: 'posters', name: 'Cool Posters', emoji: '🖼️', cost: 3, category: 'decoration', description: 'Your favourite things', position: { x: 50, y: 15 } },
   { id: 'treehouse-upgrade', name: '🌳 Treehouse Upgrade!', emoji: '🌳', cost: 20, category: 'decoration', description: 'Transform your bedroom into a treehouse', position: { x: 50, y: 5 } },
-  { id: 'chicken', name: 'Chicken', emoji: '🐔', cost: 8, category: 'pet', description: 'Earns 2 stars per hour on the farm', unlocked: false, placed: false, position: { x: 20, y: 60 } },
-  { id: 'sheep', name: 'Sheep', emoji: '🐑', cost: 20, category: 'pet', description: 'Earns 5 stars per hour on the farm', unlocked: false, placed: false, position: { x: 40, y: 60 } },
-  { id: 'cow', name: 'Cow', emoji: '🐄', cost: 45, category: 'pet', description: 'Earns 10 stars per hour on the farm', unlocked: false, placed: false, position: { x: 60, y: 60 } },
-  { id: 'horse', name: 'Horse', emoji: '🐴', cost: 80, category: 'pet', description: 'Earns 20 stars per hour on the farm', unlocked: false, placed: false, position: { x: 80, y: 60 } },
+  // ── FARM ANIMALS (earn stars while you study) ─────────────────────────────
+  { id: 'chicken',  name: 'Chicken',  emoji: '🐔', cost: 8,    category: 'pet', description: '1 ⭐/hr · 12% baby chance',  unlocked: false, placed: false, position: { x: 20, y: 60 } },
+  { id: 'sheep',    name: 'Sheep',    emoji: '🐑', cost: 20,   category: 'pet', description: '2 ⭐/hr · 10% baby chance',  unlocked: false, placed: false, position: { x: 40, y: 60 } },
+  { id: 'cow',      name: 'Cow',      emoji: '🐄', cost: 45,   category: 'pet', description: '4 ⭐/hr · 8% baby chance',   unlocked: false, placed: false, position: { x: 60, y: 60 } },
+  { id: 'horse',    name: 'Horse',    emoji: '🐴', cost: 80,   category: 'pet', description: '6 ⭐/hr · 6% baby chance',   unlocked: false, placed: false, position: { x: 80, y: 60 } },
+  { id: 'peacock',  name: 'Peacock',  emoji: '🦚', cost: 150,  category: 'pet', description: '8 ⭐/hr · 5% baby chance',   unlocked: false, placed: false, position: { x: 20, y: 60 }, levelRequired: 3 },
+  { id: 'llama',    name: 'Llama',    emoji: '🦙', cost: 300,  category: 'pet', description: '12 ⭐/hr · 4% baby chance',  unlocked: false, placed: false, position: { x: 40, y: 60 }, levelRequired: 5 },
+  { id: 'elephant', name: 'Elephant', emoji: '🐘', cost: 600,  category: 'pet', description: '18 ⭐/hr · 3% baby chance',  unlocked: false, placed: false, position: { x: 60, y: 60 }, levelRequired: 7 },
+  { id: 'tiger',    name: 'Tiger',    emoji: '🐯', cost: 1200, category: 'pet', description: '25 ⭐/hr · 2% baby chance',  unlocked: false, placed: false, position: { x: 80, y: 60 }, levelRequired: 10 },
+  { id: 'dragon',   name: 'Dragon',   emoji: '🐉', cost: 2500, category: 'pet', description: '35 ⭐/hr · 1.5% baby chance', unlocked: false, placed: false, position: { x: 30, y: 60 }, levelRequired: 15 },
+  { id: 'unicorn',  name: 'Unicorn',  emoji: '🦄', cost: 5000, category: 'pet', description: '50 ⭐/hr · 1% baby chance',  unlocked: false, placed: false, position: { x: 70, y: 60 }, levelRequired: 20 },
 
   // ── WEEK 1 UNLOCK ──────────────────────────────────────────────────────────
   { id: 'gaming-chair', name: 'Gaming Chair', emoji: '🎮', cost: 12, category: 'furniture', description: 'The ultimate study setup!', position: { x: 70, y: 45 }, weekUnlock: 1 },
@@ -102,18 +110,17 @@ export const ROOM_ITEMS: RoomItem[] = [
   { id: 'science-lab', name: 'Science Lab Corner', emoji: '🧪', cost: 19, category: 'decoration', description: 'Beakers, flasks and experiments!', position: { x: 85, y: 55 }, weekUnlock: 8 },
 
   // ── WEEK 9 UNLOCK ──────────────────────────────────────────────────────────
-  { id: 'royal-throne', name: 'Royal Throne', emoji: '👑', cost: 35, category: 'furniture', description: 'Study like royalty!', position: { x: 40, y: 40 }, weekUnlock: 9 },
-  { id: 'hologram-table', name: 'Hologram Table', emoji: '🌐', cost: 25, category: 'decoration', description: 'Futuristic hologram displays', position: { x: 58, y: 38 }, weekUnlock: 9 },
+  { id: 'royal-throne', name: 'Royal Throne', emoji: '👑', cost: 35, category: 'furniture', description: 'Study like royalty!', position: { x: 40, y: 40 }, weekUnlock: 9, levelRequired: 8 },
+  { id: 'hologram-table', name: 'Hologram Table', emoji: '🌐', cost: 25, category: 'decoration', description: 'Futuristic hologram displays', position: { x: 58, y: 38 }, weekUnlock: 9, levelRequired: 8 },
   { id: 'baby-elephant', name: 'Baby Elephant', emoji: '🐘', cost: 22, category: 'pet', description: 'A gentle giant in your room', position: { x: 42, y: 65 }, weekUnlock: 9 },
   { id: 'rainbow-view', name: 'Rainbow Valley View', emoji: '🌈', cost: 20, category: 'window', description: 'A permanent rainbow outside!', position: { x: 45, y: 10 }, weekUnlock: 9 },
   { id: 'aquarium-wall', name: 'Aquarium Wall', emoji: '🪸', cost: 28, category: 'decoration', description: 'Entire wall is a fish tank!', position: { x: 48, y: 30 }, weekUnlock: 9 },
 
   // ── WEEK 10 UNLOCK ─────────────────────────────────────────────────────────
-  { id: 'space-capsule', name: 'Space Capsule Bed', emoji: '🚀', cost: 50, category: 'furniture', description: 'Sleep like an astronaut!', position: { x: 15, y: 45 }, weekUnlock: 10 },
-  { id: 'time-machine', name: 'Time Machine', emoji: '⏰', cost: 40, category: 'decoration', description: 'Travel through history!', position: { x: 68, y: 50 }, weekUnlock: 10 },
-  { id: 'unicorn', name: 'Unicorn', emoji: '🦄', cost: 35, category: 'pet', description: 'The rarest pet of all!', position: { x: 30, y: 58 }, weekUnlock: 10 },
-  { id: 'galaxy-view', name: 'Galaxy Portal View', emoji: '🌌', cost: 30, category: 'window', description: 'A swirling galaxy right outside!', position: { x: 45, y: 10 }, weekUnlock: 10 },
-  { id: 'gold-trophy-wall', name: 'Gold Trophy Wall', emoji: '🥇', cost: 45, category: 'decoration', description: 'Wall of legendary achievements', position: { x: 50, y: 20 }, weekUnlock: 10 },
+  { id: 'space-capsule', name: 'Space Capsule Bed', emoji: '🚀', cost: 50, category: 'furniture', description: 'Sleep like an astronaut!', position: { x: 15, y: 45 }, weekUnlock: 10, levelRequired: 10 },
+  { id: 'time-machine', name: 'Time Machine', emoji: '⏰', cost: 40, category: 'decoration', description: 'Travel through history!', position: { x: 68, y: 50 }, weekUnlock: 10, levelRequired: 10 },
+  { id: 'galaxy-view', name: 'Galaxy Portal View', emoji: '🌌', cost: 30, category: 'window', description: 'A swirling galaxy right outside!', position: { x: 45, y: 10 }, weekUnlock: 10, levelRequired: 10 },
+  { id: 'gold-trophy-wall', name: 'Gold Trophy Wall', emoji: '🥇', cost: 45, category: 'decoration', description: 'Wall of legendary achievements', position: { x: 50, y: 20 }, weekUnlock: 10, levelRequired: 10 },
 
   // ── ALWAYS AVAILABLE ───────────────────────────────────────────────────────
   { id: 'mug', name: 'Hot Cocoa Mug', emoji: '☕', cost: 2, category: 'decoration', description: 'Perfect study fuel', position: { x: 68, y: 28 } },

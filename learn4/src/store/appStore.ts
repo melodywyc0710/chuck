@@ -279,9 +279,9 @@ export const useAppStore = create<AppState & AppActions>()(
 
       placeFarmAnimal: (plotId, animalId) =>
         set(s => {
-          const owned = s.itemQuantities[animalId] ?? 0;
+          const owned = Math.min(s.itemQuantities[animalId] ?? 0, 1); // max 1 of each animal type
           const placed = s.farmPlots.filter(p => p.animalId === animalId).length;
-          if (placed >= owned) return s; // can't place more than owned
+          if (placed >= owned) return s;
           return {
             farmPlots: s.farmPlots.map(p =>
               p.id === plotId ? { ...p, animalId, placedAt: new Date().toISOString() } : p

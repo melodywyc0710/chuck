@@ -524,6 +524,8 @@ export default function RewardsRoom() {
                 {shopItems.map(item => {
                   const qty = itemQuantities[item.id] ?? 0;
                   const owned = qty > 0;
+                  const isFarmAnimal = FARM_ANIMALS.includes(item.id);
+                  const alreadyOwned = isFarmAnimal && owned;
                   const canAfford = totalStars >= item.cost;
                   return (
                     <motion.div
@@ -533,18 +535,15 @@ export default function RewardsRoom() {
                       animate={{ opacity: 1, scale: 1 }}
                       className={`bg-white rounded-2xl p-4 border-2 shadow-sm ${owned ? 'border-green-300' : 'border-gray-100'}`}
                     >
-                      <div className="relative text-4xl text-center mb-2">
-                        {item.emoji}
-                        {qty > 1 && (
-                          <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-black rounded-full w-5 h-5 flex items-center justify-center">
-                            {qty}
-                          </span>
-                        )}
-                      </div>
+                      <div className="text-4xl text-center mb-2">{item.emoji}</div>
                       <div className="font-bold text-gray-800 text-sm text-center">{item.name}</div>
                       <div className="text-xs text-gray-400 text-center mb-3">{item.description}</div>
                       {item.cost === 0 ? (
                         <div className="text-center text-gray-400 text-xs">Free starter item</div>
+                      ) : alreadyOwned ? (
+                        <div className="w-full py-2 rounded-xl text-xs font-black text-center bg-green-50 text-green-600 border border-green-200">
+                          ✓ Owned — go to Farm
+                        </div>
                       ) : (
                         <motion.button
                           whileHover={canAfford ? { scale: 1.03 } : {}}

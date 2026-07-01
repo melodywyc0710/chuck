@@ -68,6 +68,13 @@ export interface AppState {
   farmPlots: FarmPlot[];
   lastFarmCollect: string; // ISO datetime
   farmStarsPending: number;
+  farmDailyStars: number;   // stars collected from farm today
+  farmLastDay: string;      // YYYY-MM-DD of last farm collect
+  lifetimeStarsEarned: number; // total stars ever earned (never decreases)
+  lastLoginBonus: string;   // YYYY-MM-DD of last daily bonus claim
+  weeklyLessonsCount: number; // lessons completed this ISO week
+  weeklyLessonsWeek: string;  // ISO week string e.g. "2025-W14"
+  weeklyChallengeCollected: string; // ISO week when weekly bonus was collected
   unlockedBadges: string[];
   firstLoginDate: string; // ISO date, set once on first login, never overwritten
   classPin: string;
@@ -93,6 +100,9 @@ export interface AppActions {
   placeFarmAnimal: (plotId: string, animalId: string) => void;
   removeFarmAnimal: (plotId: string) => void;
   collectFarmStars: () => void;
+  sellFarmAnimal: (animalId: string, refund: number) => void;
+  claimDailyBonus: () => void;
+  claimWeeklyBonus: () => void;
   unlockBadge: (id: string) => void;
   addStars: (n: number) => void;
   previewFeedback: (sessionId: string, score: number, total: number) => void;
@@ -143,6 +153,13 @@ const defaultState: AppState = {
   ],
   lastFarmCollect: '',
   farmStarsPending: 0,
+  farmDailyStars: 0,
+  farmLastDay: '',
+  lifetimeStarsEarned: 0,
+  lastLoginBonus: '',
+  weeklyLessonsCount: 0,
+  weeklyLessonsWeek: '',
+  weeklyChallengeCollected: '',
   unlockedBadges: [],
   firstLoginDate: '',
   classPin: '',
@@ -214,10 +231,15 @@ export const useAppStore = create<AppState & AppActions>()(
           timeSpentMinutes: minutes,
         };
         const starsEarned = result.starsEarned;
+        // Track weekly lessons for weekly challenge
+        const todayWeek = isoWeek(new Date());
         set(s => ({
           totalStars: s.totalStars + starsEarned,
+          lifetimeStarsEarned: s.lifetimeStarsEarned + starsEarned,
           completedSessions: [...new Set([...s.completedSessions, result.sessionId])],
           sessionResults: [...s.sessionResults, full],
+          weeklyLessonsCount: s.weeklyLessonsWeek === todayWeek ? s.weeklyLessonsCount + 1 : 1,
+          weeklyLessonsWeek: todayWeek,
           view: 'feedback',
         }));
         const newState = get();
@@ -256,11 +278,16 @@ export const useAppStore = create<AppState & AppActions>()(
         set(s => ({ itemPositions: { ...s.itemPositions, [itemId]: pos } })),
 
       placeFarmAnimal: (plotId, animalId) =>
-        set(s => ({
-          farmPlots: s.farmPlots.map(p =>
-            p.id === plotId ? { ...p, animalId, placedAt: new Date().toISOString() } : p
-          ),
-        })),
+        set(s => {
+          const owned = s.itemQuantities[animalId] ?? 0;
+          const placed = s.farmPlots.filter(p => p.animalId === animalId).length;
+          if (placed >= owned) return s; // can't place more than owned
+          return {
+            farmPlots: s.farmPlots.map(p =>
+              p.id === plotId ? { ...p, animalId, placedAt: new Date().toISOString() } : p
+            ),
+          };
+        }),
 
       removeFarmAnimal: (plotId) =>
         set(s => ({
@@ -269,23 +296,74 @@ export const useAppStore = create<AppState & AppActions>()(
           ),
         })),
 
+      sellFarmAnimal: (animalId, refund) =>
+        set(s => {
+          const owned = s.itemQuantities[animalId] ?? 0;
+          const placed = s.farmPlots.filter(p => p.animalId === animalId).length;
+          const unplaced = owned - placed;
+          if (unplaced <= 0) return s; // nothing to sell
+          const newQty = owned - 1;
+          return {
+            totalStars: s.totalStars + refund,
+            lifetimeStarsEarned: s.lifetimeStarsEarned, // selling doesn't count as earning
+            itemQuantities: { ...s.itemQuantities, [animalId]: newQty },
+            ownedItems: newQty <= 0 ? s.ownedItems.filter(i => i !== animalId) : s.ownedItems,
+          };
+        }),
+
+      claimDailyBonus: () => {
+        const today = new Date().toISOString().slice(0, 10);
+        const state = get();
+        if (state.lastLoginBonus === today) return;
+        const streak = state.currentStreak;
+        const bonus = streak >= 7 ? 20 : streak >= 3 ? 10 : 5;
+        set(s => ({
+          totalStars: s.totalStars + bonus,
+          lifetimeStarsEarned: s.lifetimeStarsEarned + bonus,
+          lastLoginBonus: today,
+        }));
+      },
+
+      claimWeeklyBonus: () => {
+        const state = get();
+        const thisWeek = isoWeek(new Date());
+        if (state.weeklyChallengeCollected === thisWeek) return;
+        if (state.weeklyLessonsWeek !== thisWeek || state.weeklyLessonsCount < 5) return;
+        const bonus = 25;
+        set(s => ({
+          totalStars: s.totalStars + bonus,
+          lifetimeStarsEarned: s.lifetimeStarsEarned + bonus,
+          weeklyChallengeCollected: thisWeek,
+        }));
+      },
+
       unlockBadge: (id) => set(s => ({ unlockedBadges: [...new Set([...s.unlockedBadges, id])] })),
 
-      addStars: (n) => set(s => ({ totalStars: s.totalStars + n })),
+      addStars: (n) => set(s => ({ totalStars: s.totalStars + n, lifetimeStarsEarned: s.lifetimeStarsEarned + n })),
 
       collectFarmStars: () => {
         const state = get();
-        const RATES: Record<string, number> = { chicken: 2, sheep: 5, cow: 10, horse: 20 };
+        // Reduced rates: chicken 1/hr, sheep 2/hr, cow 4/hr, horse 8/hr
+        const RATES: Record<string, number> = { chicken: 1, sheep: 2, cow: 4, horse: 8 };
+        const DAILY_CAP = 30;
+        const today = new Date().toISOString().slice(0, 10);
+        const todayFarmStars = state.farmLastDay === today ? state.farmDailyStars : 0;
+        const remaining = Math.max(0, DAILY_CAP - todayFarmStars);
+        if (remaining === 0) return;
         const now = Date.now();
-        let earned = 0;
+        let raw = 0;
         state.farmPlots.forEach(plot => {
           if (!plot.animalId || !plot.placedAt) return;
           const hoursElapsed = (now - new Date(plot.placedAt).getTime()) / 3600000;
-          earned += Math.floor(hoursElapsed * (RATES[plot.animalId] ?? 2));
+          raw += Math.floor(hoursElapsed * (RATES[plot.animalId] ?? 1));
         });
+        const earned = Math.min(raw, remaining);
         if (earned > 0) {
           set(s => ({
             totalStars: s.totalStars + earned,
+            lifetimeStarsEarned: s.lifetimeStarsEarned + earned,
+            farmDailyStars: todayFarmStars + earned,
+            farmLastDay: today,
             farmPlots: s.farmPlots.map(p => ({ ...p, placedAt: p.animalId ? new Date().toISOString() : '' })),
             lastFarmCollect: new Date().toISOString(),
           }));

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Star, Target, Clock, Copy, Printer, Trophy, Home } from 'lucide-react';
+import { Star, Target, Clock, Trophy, Home } from 'lucide-react';
 import { useAppStore } from '../store/appStore';
 import { englishSession } from '../data/english-session';
 import { mathsSession } from '../data/maths-session';
@@ -10,12 +10,8 @@ const THEME_COLOR = { purple: '#A855F7', blue: '#1CB0F6', green: '#58CC02', oran
 const THEME_DARK  = { purple: '#7C3AED', blue: '#0E8FC4', green: '#46A302', orange: '#EA580C' };
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-}
-
 export default function ClassSummary() {
-  const { sessionResults, profile, setView, totalStars, currentAnswers, currentStreak } = useAppStore();
+  const { sessionResults, profile, setView, currentStreak } = useAppStore();
   if (!profile) return null;
 
   const latest = sessionResults[sessionResults.length - 1];
@@ -27,44 +23,6 @@ export default function ClassSummary() {
   const themeDark  = THEME_DARK[profile.colorTheme];
   const mascot = MASCOT_EMOJI[profile.mascot];
   const pct = latest.total > 0 ? Math.round((latest.score / latest.total) * 100) : 100;
-
-  // Build parent message
-  const freeRespSummary = Object.values(currentAnswers)
-    .filter(v => typeof v === 'string' && v.length > 30)
-    .slice(0, 2)
-    .map(v => `"${String(v).slice(0, 120)}${String(v).length > 120 ? '...' : ''}"`)
-    .join('\n');
-
-  const parentMessage = `📚 LEARN4 — Class Summary for ${profile.name}
-Date: ${formatDate(latest.completedAt)}
-Subject: ${session.subject === 'english' ? 'English' : 'Mathematics'} — ${session.title}
-Victorian Curriculum: ${session.victorianCode}
-
-✅ Session Completed in approximately ${latest.timeSpentMinutes || '~45'} minutes
-⭐ Stars Earned: ${latest.starsEarned} (Total: ${totalStars})
-📊 Quiz Score: ${latest.score}/${latest.total} (${pct}%)
-
-📝 WHAT WE LEARNED TODAY:
-${session.description}
-
-✏️ STUDENT WRITING SAMPLE:
-${freeRespSummary || '(Responses saved — ask your child to share their work!)'}
-
-🏠 HOMEWORK DUE NEXT CLASS:
-${session.steps.filter(s => s.type === 'homework').flatMap((s: any) => s.tasks.map((t: any) => `• ${t.label}`)).join('\n')}
-
-💬 HOW YOU CAN HELP AT HOME:
-${session.subject === 'english'
-  ? '• Ask your child to read their story to you\n• Encourage them to add more descriptive words\n• Celebrate their creativity!'
-  : '• Ask your child to explain what equivalent fractions are\n• Look for fractions together (recipes, measuring cups)\n• Praise their effort — fractions are tricky!'}
-
-Well done, ${profile.name}! Keep up the amazing work! ${mascot}
-
-— Chucky · chucky.app`;
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(parentMessage).then(() => alert('Copied! Paste it into an email or message.'));
-  };
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(180deg, #f0fff4 0%, #fafff7 100%)' }}>
@@ -143,20 +101,6 @@ Well done, ${profile.name}! Keep up the amazing work! ${mascot}
             </div>
           </div>
         ))}
-
-        {/* Parent summary — printable */}
-        <div className="card p-5">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-black text-gray-800">Send to Parents</h3>
-            <div className="flex gap-2">
-              <button onClick={copyToClipboard} className="btn-duo btn-green px-3 py-1.5 text-xs rounded-xl no-print flex items-center gap-1"><Copy size={12} /> Copy</button>
-              <button onClick={() => window.print()} className="btn-duo btn-ghost px-3 py-1.5 text-xs rounded-xl no-print flex items-center gap-1"><Printer size={12} /> Print</button>
-            </div>
-          </div>
-          <div className="text-sm text-gray-600 whitespace-pre-wrap bg-gray-50 rounded-xl p-4 leading-relaxed">
-            {parentMessage}
-          </div>
-        </div>
 
         {/* Navigation */}
         <div className="flex gap-3 no-print pb-6">

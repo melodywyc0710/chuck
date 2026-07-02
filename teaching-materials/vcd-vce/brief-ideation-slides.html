@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Brief &amp; Ideation — VCE VCD Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #04141a; color: white; height: 100vh; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 56px 72px; }
+  .slide.active { display: flex; }
+  .badge { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; background: rgba(56,189,248,0.18); color: #7dd3fc; border: 1px solid rgba(56,189,248,0.35); border-radius: 99px; padding: 4px 14px; margin-bottom: 18px; }
+  .slide-title { font-size: 2.6rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .accent { color: #38bdf8; }
+  .divider { width: 60px; height: 4px; background: #38bdf8; border-radius: 99px; margin-bottom: 28px; }
+  .nav { position: fixed; bottom: 28px; right: 32px; display: flex; gap: 10px; z-index: 100; }
+  .nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; transition: background 0.15s; }
+  .nav button:hover { background: rgba(56,189,248,0.4); }
+  .counter { position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 0.82rem; font-weight: 600; }
+  .hint { position: fixed; bottom: 36px; left: 32px; color: rgba(255,255,255,0.25); font-size: 0.78rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; flex: 1; }
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 22px; }
+  .card-sm { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; }
+  .p-def { font-size: 1rem; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 14px; }
+  .vocab { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
+  .vocab strong { color: rgba(255,255,255,0.7); }
+  .big-title { font-size: 4rem; font-weight: 900; line-height: 1; margin-bottom: 16px; }
+  .checklist-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" style="justify-content:center;align-items:flex-start;">
+  <div style="max-width:700px;">
+    <div class="badge">VCAA-VCD-BRIEF1 · Unit 3 AOS 2</div>
+    <div class="divider"></div>
+    <div class="big-title">The Brief &amp;<br><span class="accent">Ideation</span></div>
+    <div style="font-size:1.3rem;color:rgba(255,255,255,0.5);font-weight:400;margin-top:16px;">Visual Communication Design · Year 12 VCE</div>
+    <div style="margin-top:48px;font-size:0.9rem;color:rgba(255,255,255,0.3);">Use ← → arrow keys to navigate</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: From analysis to your own brief -->
+<div class="slide">
+  <div class="badge">Introduction</div>
+  <div class="slide-title">Writing Your <span class="accent">Own Brief</span></div>
+  <div class="grid-2" style="align-items:start;gap:32px;">
+    <div>
+      <p style="font-size:1.15rem;color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:24px;">Using your Unit 3 AOS 1 analysis and reinterpretation, you write a <strong style="color:#38bdf8;">design brief</strong> that will guide your folio work across Units 3 and 4.</p>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:20px;">This brief must be specific enough to guide two distinct concepts, but open enough to allow genuine creative exploration.</p>
+    </div>
+    <div class="card">
+      <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#38bdf8;margin-bottom:14px;">Your Brief Must State</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="checklist-item">Client / context</div>
+        <div class="checklist-item">Target audience</div>
+        <div class="checklist-item">Purpose &amp; communication objectives</div>
+        <div class="checklist-item">Constraints (time, materials, format)</div>
+        <div class="checklist-item">Two (2) obligatory design fields/outcomes</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Deconstructing a brief -->
+<div class="slide">
+  <div class="badge">Key Skill</div>
+  <div class="slide-title">Deconstructing a <span class="accent">Brief</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">Before generating ideas, break the brief into its component parts to ensure nothing is missed.</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Who</strong> — the target audience and their needs</div>
+        <div><strong style="color:white;">What</strong> — the required outcomes (obligatory design fields)</div>
+        <div><strong style="color:white;">Why</strong> — the purpose and desired effect</div>
+        <div><strong style="color:white;">Constraints</strong> — what limits the possible solutions</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#38bdf8;margin-bottom:10px;">Exam Tip</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.8;">Exam questions often ask you to identify a <strong style="color:white;">missing</strong> or <strong style="color:white;">unclear</strong> part of a given brief — practice spotting gaps in audience, purpose or constraints.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Ideation for two distinct concepts -->
+<div class="slide">
+  <div class="badge">Key Requirement</div>
+  <div class="slide-title">Generating <span class="accent">Two Distinct Concepts</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">Your folio must show a genuine range of ideas — leading to <strong>two distinctly different concepts</strong> that will each be developed and refined in Unit 4.</div>
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#38bdf8;margin-bottom:8px;">What Makes Concepts "Distinct"?</div>
+      <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div>Different visual approach (not just colour changes)</div>
+        <div>Different treatment of elements/principles</div>
+        <div>Different overall style or design field emphasis</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#38bdf8;margin-bottom:10px;">Ideation Methods (recap)</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.8;">Brainstorming, mind mapping, thumbnail sketches, mood boards, SCAMPER — see the Unit 1 AOS 2 Design Process materials for a full recap of these methods.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Research for a brief -->
+<div class="slide">
+  <div class="badge">Key Skill</div>
+  <div class="slide-title">Research to <span class="accent">Support Ideation</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">Targeted research ensures your ideas are grounded in the brief's real audience and context, not just personal preference.</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Audience research</strong> — interviews, surveys of the target group</div>
+        <div><strong style="color:white;">Visual research</strong> — mood boards, existing designs in the same field</div>
+        <div><strong style="color:white;">Contextual research</strong> — relevant trends, industry practice, materials</div>
+      </div>
+    </div>
+    <div class="card" style="background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.3);">
+      <p style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.6;">Link your research directly back to <strong style="color:#7dd3fc;">Unit 2</strong> concepts — current trends and industry connections should inform your ideas.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Exam technique -->
+<div class="slide">
+  <div class="badge">Exam Technique</div>
+  <div class="slide-title">Answering <span class="accent">Brief</span> Questions</div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.3);margin-bottom:16px;">
+        <div style="font-size:1rem;font-weight:900;color:#38bdf8;margin-bottom:10px;">Identify → Explain → Suggest</div>
+        <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">
+          <div><span style="color:#38bdf8;font-weight:700;">1. Identify</span> the missing/unclear brief element</div>
+          <div><span style="color:#38bdf8;font-weight:700;">2. Explain</span> why it matters for the design outcome</div>
+          <div><span style="color:#38bdf8;font-weight:700;">3. Suggest</span> what information should be added</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.35);">Sentence Starters</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.65);line-height:2;">
+        <div>"The brief does not specify <em>[element]</em>, which is important because..."</div>
+        <div>"To generate ideas, [method] could be used to..."</div>
+        <div>"These two concepts differ in that..."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Summary -->
+<div class="slide">
+  <div class="badge">Summary</div>
+  <div class="slide-title">Brief &amp; Ideation — <span class="accent">Quick Reference</span></div>
+  <div class="grid-4" style="margin-top:8px;">
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#38bdf8;margin-bottom:6px;">Brief Elements</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Client, audience, purpose, constraints, obligatory fields.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#38bdf8;margin-bottom:6px;">Deconstruct</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Who, what, why, constraints.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#38bdf8;margin-bottom:6px;">Two Concepts</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Must be genuinely distinct, not colour variants.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#38bdf8;margin-bottom:6px;">Research</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Audience, visual, contextual — links to Unit 2 trends.</div></div>
+  </div>
+  <div style="margin-top:20px;padding:14px 20px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:12px;font-size:0.88rem;color:rgba(255,255,255,0.65);text-align:center;">
+    💡 Reminder: these two concepts carry forward into <strong style="color:#7dd3fc;">Unit 4</strong>, where you develop and refine them.
+  </div>
+</div>
+
+<div class="nav"><button id="prev">←</button><button id="next">→</button></div>
+<div class="counter"></div>
+<div class="hint">← → arrow keys to navigate</div>
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.querySelector('.counter');
+  function show(n) { slides.forEach(s => s.classList.remove('active')); slides[n].classList.add('active'); counter.textContent = (n+1)+' / '+slides.length; }
+  document.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key==='ArrowDown'){if(current<slides.length-1)show(++current);} if(e.key==='ArrowLeft'||e.key==='ArrowUp'){if(current>0)show(--current);} });
+  document.getElementById('prev').onclick = () => { if(current>0)show(--current); };
+  document.getElementById('next').onclick = () => { if(current<slides.length-1)show(++current); };
+  show(0);
+</script>
+</body>
+</html>

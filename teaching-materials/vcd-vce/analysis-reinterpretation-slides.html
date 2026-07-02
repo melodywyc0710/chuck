@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Analysis &amp; Reinterpretation — VCE VCD Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #1a0510; color: white; height: 100vh; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 56px 72px; }
+  .slide.active { display: flex; }
+  .badge { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; background: rgba(251,113,133,0.18); color: #fda4af; border: 1px solid rgba(251,113,133,0.35); border-radius: 99px; padding: 4px 14px; margin-bottom: 18px; }
+  .slide-title { font-size: 2.6rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .accent { color: #fb7185; }
+  .divider { width: 60px; height: 4px; background: #fb7185; border-radius: 99px; margin-bottom: 28px; }
+  .nav { position: fixed; bottom: 28px; right: 32px; display: flex; gap: 10px; z-index: 100; }
+  .nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; transition: background 0.15s; }
+  .nav button:hover { background: rgba(251,113,133,0.4); }
+  .counter { position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 0.82rem; font-weight: 600; }
+  .hint { position: fixed; bottom: 36px; left: 32px; color: rgba(255,255,255,0.25); font-size: 0.78rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; flex: 1; }
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 22px; }
+  .card-sm { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; }
+  .visual-box { flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; min-height: 180px; }
+  .p-def { font-size: 1rem; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 14px; }
+  .vocab { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
+  .vocab strong { color: rgba(255,255,255,0.7); }
+  .big-title { font-size: 4rem; font-weight: 900; line-height: 1; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" style="justify-content:center;align-items:flex-start;">
+  <div style="max-width:700px;">
+    <div class="badge">VCAA-VCD-ANLY1 · Unit 3 AOS 1</div>
+    <div class="divider"></div>
+    <div class="big-title">Analysis &amp;<br><span class="accent">Reinterpretation</span></div>
+    <div style="font-size:1.3rem;color:rgba(255,255,255,0.5);font-weight:400;margin-top:16px;">Visual Communication Design · Year 12 VCE</div>
+    <div style="margin-top:48px;font-size:0.9rem;color:rgba(255,255,255,0.3);">Use ← → arrow keys to navigate</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: Overview -->
+<div class="slide">
+  <div class="badge">Introduction</div>
+  <div class="slide-title">Analysing &amp; <span class="accent">Reinterpreting</span> Designs</div>
+  <div class="grid-2" style="align-items:start;gap:32px;">
+    <div>
+      <p style="font-size:1.15rem;color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:24px;">In Unit 3, you select an <strong style="color:#fb7185;">existing design</strong> from one of the four design fields, analyse it in depth, then reinterpret it for a <strong style="color:#fb7185;">new context, audience or purpose.</strong></p>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:20px;">This process forms the foundation for your folio — the analysis and reinterpretation informs the two concepts you will develop across Units 3 and 4.</p>
+    </div>
+    <div class="card">
+      <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#fb7185;margin-bottom:14px;">The Two Stages</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:2;">
+        <div><strong style="color:white;">1. Analysis</strong> — understanding the original design in depth</div>
+        <div><strong style="color:white;">2. Reinterpretation</strong> — reimagining it for a different context</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Analysis framework -->
+<div class="slide">
+  <div class="badge">Key Skill</div>
+  <div class="slide-title">A Framework for <span class="accent">Analysis</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">A thorough analysis considers more than just appearance — it examines the design's full context of creation and use.</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Purpose &amp; audience</strong> — who was it made for, and why?</div>
+        <div><strong style="color:white;">Elements &amp; principles</strong> — what visual language is used, and to what effect?</div>
+        <div><strong style="color:white;">Materials &amp; methods</strong> — how was it made or produced?</div>
+        <div><strong style="color:white;">Context</strong> — when/where was it created; what design field and movement does it belong to?</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb7185;margin-bottom:10px;">Exam Tip</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.8;">Always support analysis with <strong style="color:white;">specific visual evidence</strong> from the design — not general impressions. Use the Name → Evidence → Effect formula.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Reconceptualisation vs Reinvention -->
+<div class="slide">
+  <div class="badge">Key Concept</div>
+  <div class="slide-title"><span class="accent">Reconceptualisation</span> vs <span class="accent">Reinvention</span></div>
+  <div class="grid-2">
+    <div class="card">
+      <div style="font-weight:900;color:#fb7185;font-size:1.1rem;margin-bottom:8px;">Reconceptualisation</div>
+      <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">Changing the design for a <strong style="color:white;">new audience, purpose or context</strong> while keeping its core visual identity recognisable.</div>
+      <div style="margin-top:10px;font-size:0.8rem;color:rgba(255,255,255,0.5);font-style:italic;">e.g. redesigning a children's brand identity for an adult luxury market</div>
+    </div>
+    <div class="card">
+      <div style="font-weight:900;color:#fb7185;font-size:1.1rem;margin-bottom:8px;">Reinvention</div>
+      <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">A more <strong style="color:white;">radical transformation</strong> — taking the underlying idea or function of a design and expressing it in an entirely new visual form or medium.</div>
+      <div style="margin-top:10px;font-size:0.8rem;color:rgba(255,255,255,0.5);font-style:italic;">e.g. reinventing a print poster campaign as an interactive app experience</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px;background:rgba(251,113,133,0.08);border-color:rgba(251,113,133,0.3);">
+    <p style="font-size:0.88rem;color:rgba(255,255,255,0.7);">Both approaches must be <strong style="color:#fda4af;">clearly justified</strong> — explain why the change suits the new audience/purpose, not just what changed.</p>
+  </div>
+</div>
+
+<!-- SLIDE 5: Methods of reinterpretation -->
+<div class="slide">
+  <div class="badge">Methods</div>
+  <div class="slide-title">Ways to <span class="accent">Reinterpret</span> a Design</div>
+  <div class="grid-4" style="margin-top:8px;">
+    <div class="card-sm"><div style="font-weight:800;color:#fb7185;margin-bottom:6px;">Change Audience</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Redesign for a different age group, culture, or market segment.</div></div>
+    <div class="card-sm"><div style="font-weight:800;color:#fb7185;margin-bottom:6px;">Change Field</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Move a concept from one design field to another (e.g. a logo to a spatial installation).</div></div>
+    <div class="card-sm"><div style="font-weight:800;color:#fb7185;margin-bottom:6px;">Change Era/Style</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Reimagine a historical design using a contemporary visual style, or vice versa.</div></div>
+    <div class="card-sm"><div style="font-weight:800;color:#fb7185;margin-bottom:6px;">Change Medium</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Translate a static design into digital, interactive or 3D form.</div></div>
+  </div>
+  <div class="vocab" style="margin-top:20px;"><strong>Exam vocab:</strong> reconceptualise, reinvent, reinterpret, contemporary context, target audience shift, visual identity, transform</div>
+</div>
+
+<!-- SLIDE 6: Exam technique -->
+<div class="slide">
+  <div class="badge">Exam Technique</div>
+  <div class="slide-title">Answering <span class="accent">Analysis</span> Questions</div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="background:rgba(251,113,133,0.08);border-color:rgba(251,113,133,0.3);margin-bottom:16px;">
+        <div style="font-size:1rem;font-weight:900;color:#fb7185;margin-bottom:10px;">Feature → Evidence → Effect → Context</div>
+        <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">
+          <div><span style="color:#fb7185;font-weight:700;">1. Name</span> a visual feature (element/principle)</div>
+          <div><span style="color:#fb7185;font-weight:700;">2. Describe</span> specific evidence in the design</div>
+          <div><span style="color:#fb7185;font-weight:700;">3. Explain</span> the effect on the audience</div>
+          <div><span style="color:#fb7185;font-weight:700;">4. Link</span> to the design's context or purpose</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.35);">Sentence Starters</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.65);line-height:2;">
+        <div>"The original design uses <em>[element/principle]</em> to..."</div>
+        <div>"If reconceptualised for <em>[new audience]</em>, this could..."</div>
+        <div>"Reinventing this in <em>[new field/medium]</em> would require..."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Summary -->
+<div class="slide">
+  <div class="badge">Summary</div>
+  <div class="slide-title">Analysis &amp; Reinterpretation — <span class="accent">Quick Reference</span></div>
+  <div class="grid-4" style="margin-top:8px;">
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#fb7185;margin-bottom:6px;">Analysis</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Purpose, audience, elements/principles, materials, context.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#fb7185;margin-bottom:6px;">Reconceptualise</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Same core identity, new audience/purpose.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#fb7185;margin-bottom:6px;">Reinvent</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Radical transformation of form/medium.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#fb7185;margin-bottom:6px;">Justify</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Always explain why the change suits the new context.</div></div>
+  </div>
+  <div style="margin-top:20px;padding:14px 20px;background:rgba(251,113,133,0.1);border:1px solid rgba(251,113,133,0.3);border-radius:12px;font-size:0.88rem;color:rgba(255,255,255,0.65);text-align:center;">
+    💡 Reminder: this analysis directly feeds into the <strong style="color:#fda4af;">brief you write for your own folio work</strong> in AOS 2.
+  </div>
+</div>
+
+<div class="nav"><button id="prev">←</button><button id="next">→</button></div>
+<div class="counter"></div>
+<div class="hint">← → arrow keys to navigate</div>
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.querySelector('.counter');
+  function show(n) { slides.forEach(s => s.classList.remove('active')); slides[n].classList.add('active'); counter.textContent = (n+1)+' / '+slides.length; }
+  document.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key==='ArrowDown'){if(current<slides.length-1)show(++current);} if(e.key==='ArrowLeft'||e.key==='ArrowUp'){if(current>0)show(--current);} });
+  document.getElementById('prev').onclick = () => { if(current>0)show(--current); };
+  document.getElementById('next').onclick = () => { if(current<slides.length-1)show(++current); };
+  show(0);
+</script>
+</body>
+</html>

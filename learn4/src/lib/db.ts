@@ -14,6 +14,29 @@ interface SessionResult {
   timeSpentMinutes: number;
 }
 
+export interface GameState {
+  totalStars: number;
+  lifetimeStarsEarned: number;
+  ownedItems: string[];
+  itemQuantities: Record<string, number>;
+  placedItems: string[];
+  itemPositions: Record<string, { x: number; y: number }>;
+  farmPlots: { id: string; animalId: string | null; placedAt: string }[];
+  lastFarmCollect: string;
+  farmDailyStars: number;
+  farmLastDay: string;
+  petNames: Record<string, string>;
+  currentStreak: number;
+  lastActiveDate: string;
+  completedSessions: string[];
+  unlockedBadges: string[];
+  weeklyLessonsCount: number;
+  weeklyLessonsWeek: string;
+  weeklyChallengeCollected: string;
+  lastLoginBonus: string;
+  firstLoginDate: string;
+}
+
 export interface DbProfile {
   id: string;
   name: string;
@@ -23,6 +46,7 @@ export interface DbProfile {
   color_theme: string;
   teacher_id: string | null;
   created_at: string;
+  game_state?: GameState | null;
 }
 
 export async function upsertProfile(profile: Omit<DbProfile, 'created_at'>) {
@@ -61,6 +85,14 @@ export async function saveSessionResult(studentId: string, result: SessionResult
 }
 
 export type { SessionResult as DbSessionResult };
+
+export async function saveGameState(userId: string, state: GameState) {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ game_state: state })
+    .eq('id', userId);
+  if (error) console.error('saveGameState', error);
+}
 
 export async function fetchStudentResults(studentId: string): Promise<SessionResult[]> {
   const { data } = await supabase

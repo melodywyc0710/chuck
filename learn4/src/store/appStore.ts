@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { BADGES } from '../data/badges';
-import { saveSessionResult, fetchProfile, fetchStudentResults } from '../lib/db';
+import { saveSessionResult, fetchProfile, fetchStudentResults, saveGameState } from '../lib/db';
+import type { GameState } from '../lib/db';
 
 // ── Player Level System ────────────────────────────────────────────────────
 // Level is derived from lifetimeStarsEarned (never decreases).
@@ -187,6 +188,31 @@ export interface AppActions {
   unlockSessionForClass: (sessionId: string) => void;
 }
 
+function extractGameState(s: AppState): GameState {
+  return {
+    totalStars: s.totalStars,
+    lifetimeStarsEarned: s.lifetimeStarsEarned,
+    ownedItems: s.ownedItems,
+    itemQuantities: s.itemQuantities,
+    placedItems: s.placedItems,
+    itemPositions: s.itemPositions,
+    farmPlots: s.farmPlots,
+    lastFarmCollect: s.lastFarmCollect,
+    farmDailyStars: s.farmDailyStars,
+    farmLastDay: s.farmLastDay,
+    petNames: s.petNames,
+    currentStreak: s.currentStreak,
+    lastActiveDate: s.lastActiveDate,
+    completedSessions: s.completedSessions,
+    unlockedBadges: s.unlockedBadges,
+    weeklyLessonsCount: s.weeklyLessonsCount,
+    weeklyLessonsWeek: s.weeklyLessonsWeek,
+    weeklyChallengeCollected: s.weeklyChallengeCollected,
+    lastLoginBonus: s.lastLoginBonus,
+    firstLoginDate: s.firstLoginDate,
+  };
+}
+
 function isoWeek(date: Date): string {
   const d = new Date(date);
   d.setHours(0,0,0,0);
@@ -335,6 +361,7 @@ export const useAppStore = create<AppState & AppActions>()(
         const targetId = state.activeStudentId ?? state.userId;
         if (targetId) {
           saveSessionResult(targetId, full).catch(console.error);
+          saveGameState(targetId, extractGameState(get())).catch(console.error);
         }
       },
 
@@ -346,21 +373,26 @@ export const useAppStore = create<AppState & AppActions>()(
           ownedItems: s.ownedItems.includes(itemId) ? s.ownedItems : [...s.ownedItems, itemId],
           itemQuantities: { ...s.itemQuantities, [itemId]: (s.itemQuantities[itemId] ?? 0) + 1 },
         }));
+        const userId = get().userId;
+        if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
       },
 
-      togglePlaced: (itemId) =>
+      togglePlaced: (itemId) => {
         set(s => ({
           placedItems: s.placedItems.includes(itemId)
             ? s.placedItems.filter(i => i !== itemId)
             : [...s.placedItems, itemId],
-        })),
+        }));
+        const userId = get().userId;
+        if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
+      },
 
       reset: () => set(defaultState),
 
       setItemPosition: (itemId, pos) =>
         set(s => ({ itemPositions: { ...s.itemPositions, [itemId]: pos } })),
 
-      placeFarmAnimal: (plotId, animalId) =>
+      placeFarmAnimal: (plotId, animalId) => {
         set(s => {
           const owned = Math.min(s.itemQuantities[animalId] ?? 0, 1); // max 1 of each animal type
           const placed = s.farmPlots.filter(p => p.animalId === animalId).length;
@@ -370,14 +402,20 @@ export const useAppStore = create<AppState & AppActions>()(
               p.id === plotId ? { ...p, animalId, placedAt: new Date().toISOString() } : p
             ),
           };
-        }),
+        });
+        const userId = get().userId;
+        if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
+      },
 
-      removeFarmAnimal: (plotId) =>
+      removeFarmAnimal: (plotId) => {
         set(s => ({
           farmPlots: s.farmPlots.map(p =>
             p.id === plotId ? { ...p, animalId: null, placedAt: '' } : p
           ),
-        })),
+        }));
+        const userId = get().userId;
+        if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
+      },
 
       sellFarmAnimal: (animalId, refund) =>
         set(s => {
@@ -405,6 +443,8 @@ export const useAppStore = create<AppState & AppActions>()(
           lifetimeStarsEarned: s.lifetimeStarsEarned + bonus,
           lastLoginBonus: today,
         }));
+        const userId = get().userId;
+        if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
       },
 
       claimWeeklyBonus: () => {
@@ -418,6 +458,8 @@ export const useAppStore = create<AppState & AppActions>()(
           lifetimeStarsEarned: s.lifetimeStarsEarned + bonus,
           weeklyChallengeCollected: thisWeek,
         }));
+        const userId = get().userId;
+        if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
       },
 
       unlockBadge: (id) => set(s => ({ unlockedBadges: [...new Set([...s.unlockedBadges, id])] })),
@@ -461,10 +503,16 @@ export const useAppStore = create<AppState & AppActions>()(
             farmPlots: s.farmPlots.map(p => ({ ...p, placedAt: p.animalId ? new Date().toISOString() : '' })),
             lastFarmCollect: new Date().toISOString(),
           }));
+          const userId = get().userId;
+          if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
         }
       },
 
-      namePet: (itemId, name) => set(s => ({ petNames: { ...s.petNames, [itemId]: name.trim() || (s.petNames[itemId] ?? '') } })),
+      namePet: (itemId, name) => {
+        set(s => ({ petNames: { ...s.petNames, [itemId]: name.trim() || (s.petNames[itemId] ?? '') } }));
+        const userId = get().userId;
+        if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
+      },
       dismissChest: () => set({ pendingChest: null }),
       dismissBabyBonus: () => set({ pendingBabyBonus: null }),
 
@@ -486,6 +534,7 @@ export const useAppStore = create<AppState & AppActions>()(
       loadStudentData: async (studentId) => {
         const dbProfile = await fetchProfile(studentId);
         if (dbProfile) {
+          const gs = dbProfile.game_state;
           set({
             activeStudentId: studentId,
             profile: {
@@ -494,16 +543,38 @@ export const useAppStore = create<AppState & AppActions>()(
               density: dbProfile.density as StudentProfile['density'],
               colorTheme: dbProfile.color_theme as StudentProfile['colorTheme'],
             },
+            // Restore full game state from DB if present — this is the cross-device source of truth
+            ...(gs ? {
+              totalStars: gs.totalStars,
+              lifetimeStarsEarned: gs.lifetimeStarsEarned,
+              ownedItems: gs.ownedItems ?? [],
+              itemQuantities: gs.itemQuantities ?? {},
+              placedItems: gs.placedItems ?? [],
+              itemPositions: gs.itemPositions ?? {},
+              farmPlots: gs.farmPlots?.length
+                ? gs.farmPlots
+                : Array.from({ length: 10 }, (_, i) => ({ id: `plot-${i}`, animalId: null, placedAt: '' })),
+              lastFarmCollect: gs.lastFarmCollect ?? '',
+              farmDailyStars: gs.farmDailyStars ?? 0,
+              farmLastDay: gs.farmLastDay ?? '',
+              petNames: gs.petNames ?? {},
+              currentStreak: gs.currentStreak ?? 0,
+              lastActiveDate: gs.lastActiveDate ?? '',
+              completedSessions: gs.completedSessions ?? [],
+              unlockedBadges: gs.unlockedBadges ?? [],
+              weeklyLessonsCount: gs.weeklyLessonsCount ?? 0,
+              weeklyLessonsWeek: gs.weeklyLessonsWeek ?? '',
+              weeklyChallengeCollected: gs.weeklyChallengeCollected ?? '',
+              lastLoginBonus: gs.lastLoginBonus ?? '',
+              firstLoginDate: gs.firstLoginDate ?? '',
+            } : {}),
           });
         }
         const results = await fetchStudentResults(studentId);
-        // Merge DB completed sessions into local store so teacher-awarded completions show up
         const completedFromDb = results.map(r => r.sessionId);
-        const totalStarsFromDb = results.reduce((sum, r) => sum + r.starsEarned, 0);
         set(s => ({
           sessionResults: results,
           completedSessions: [...new Set([...s.completedSessions, ...completedFromDb])],
-          totalStars: Math.max(s.totalStars, totalStarsFromDb + 5),
         }));
       },
     }),

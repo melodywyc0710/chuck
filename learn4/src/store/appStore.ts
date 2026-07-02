@@ -464,7 +464,7 @@ export const useAppStore = create<AppState & AppActions>()(
         }
       },
 
-      namePet: (itemId, name) => set(s => ({ petNames: { ...s.petNames, [itemId]: name.trim() || s.petNames[itemId] ?? '' } })),
+      namePet: (itemId, name) => set(s => ({ petNames: { ...s.petNames, [itemId]: name.trim() || (s.petNames[itemId] ?? '') } })),
       dismissChest: () => set({ pendingChest: null }),
       dismissBabyBonus: () => set({ pendingBabyBonus: null }),
 

@@ -133,6 +133,7 @@ export interface AppState {
   lastActiveDate: string; // ISO date string YYYY-MM-DD
   itemPositions: Record<string, { x: number; y: number }>;
   itemQuantities: Record<string, number>;
+  petNames: Record<string, string>; // itemId -> custom name given by student
   farmPlots: FarmPlot[];
   lastFarmCollect: string; // ISO datetime
   farmStarsPending: number;
@@ -173,6 +174,7 @@ export interface AppActions {
   sellFarmAnimal: (animalId: string, refund: number) => void;
   claimDailyBonus: () => void;
   claimWeeklyBonus: () => void;
+  namePet: (itemId: string, name: string) => void;
   dismissChest: () => void;
   dismissBabyBonus: () => void;
   unlockBadge: (id: string) => void;
@@ -215,6 +217,7 @@ const defaultState: AppState = {
   lastActiveDate: '',
   itemPositions: {},
   itemQuantities: {},
+  petNames: {},
   farmPlots: Array.from({ length: 10 }, (_, i) => ({ id: `plot-${i}`, animalId: null as string | null, placedAt: '' })),
   lastFarmCollect: '',
   farmStarsPending: 0,
@@ -461,6 +464,7 @@ export const useAppStore = create<AppState & AppActions>()(
         }
       },
 
+      namePet: (itemId, name) => set(s => ({ petNames: { ...s.petNames, [itemId]: name.trim() || s.petNames[itemId] ?? '' } })),
       dismissChest: () => set({ pendingChest: null }),
       dismissBabyBonus: () => set({ pendingBabyBonus: null }),
 

@@ -125,6 +125,7 @@ export default function RewardsRoom() {
     lastLoginBonus, currentStreak, claimDailyBonus,
     weeklyLessonsCount, weeklyLessonsWeek, weeklyChallengeCollected, claimWeeklyBonus,
     pendingBabyBonus, dismissBabyBonus,
+    petNames, namePet,
   } = useAppStore();
 
   // Fix: default to 0 weeks (not 99) so new items are properly locked
@@ -687,12 +688,13 @@ export default function RewardsRoom() {
                 ) : (
                   farmPlots.filter(p => p.animalId).map((plot, idx) => {
                     const totalAnimals = farmPlots.filter(p => p.animalId).length;
-                    const startX = (idx / totalAnimals) * 85 + 5; // spread across width %
-                    const walkRange = Math.min(20, 80 / totalAnimals);
+                    const startX = (idx / totalAnimals) * 82 + 5;
+                    const walkRange = Math.min(18, 78 / totalAnimals);
+                    const customName = petNames[plot.animalId!];
                     return (
                       <motion.div
                         key={plot.id}
-                        style={{ position: 'absolute', bottom: 4, fontSize: '1.7rem', lineHeight: 1 }}
+                        style={{ position: 'absolute', bottom: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                         animate={{
                           x: [`${startX}%`, `${startX + walkRange}%`, `${startX}%`],
                           scaleX: [1, 1, -1, -1, 1],
@@ -705,7 +707,16 @@ export default function RewardsRoom() {
                           times: [0, 0.45, 0.45, 0.95, 1],
                         }}
                       >
-                        {ANIMAL_EMOJI[plot.animalId!]}
+                        {customName && (
+                          <div style={{
+                            fontSize: '9px', fontWeight: 800, color: '#fff',
+                            background: 'rgba(0,0,0,0.45)', borderRadius: 6,
+                            padding: '1px 5px', marginBottom: 1, whiteSpace: 'nowrap',
+                          }}>
+                            {customName}
+                          </div>
+                        )}
+                        <div style={{ fontSize: '1.7rem', lineHeight: 1 }}>{ANIMAL_EMOJI[plot.animalId!]}</div>
                       </motion.div>
                     );
                   })
@@ -777,7 +788,12 @@ export default function RewardsRoom() {
                       }}
                     >
                       <div className="text-2xl">{plot.animalId ? ANIMAL_EMOJI[plot.animalId] : '🟫'}</div>
-                      {cfg && <div className="text-[9px] text-amber-600 font-bold mt-0.5">+{cfg.rate}/hr</div>}
+                      {plot.animalId && (
+                        <div className="text-[9px] font-black text-gray-700 truncate w-full text-center px-0.5">
+                          {petNames[plot.animalId] || plot.animalId}
+                        </div>
+                      )}
+                      {cfg && <div className="text-[9px] text-amber-600 font-bold">+{cfg.rate}/hr</div>}
                       {plot.animalId && <div className="text-[8px] text-red-400">tap to recall</div>}
                       {!plot.animalId && selectedFarmAnimal && <div className="text-[9px] text-amber-500 font-bold">place here</div>}
                     </motion.div>
@@ -810,11 +826,20 @@ export default function RewardsRoom() {
                           <span className="text-3xl">{ANIMAL_EMOJI[animalId]}</span>
                           <div className="flex-1 min-w-0">
                             <div className="text-sm font-black text-gray-700 capitalize">{animalId}</div>
-                            <div className="text-xs text-gray-400">+{cfg?.rate ?? 1} ⭐/hr · 🐣 {((cfg?.babyChance ?? 0) * 100).toFixed(0)}% baby · ⭐{ANIMAL_COST[animalId]}</div>
+                            <div className="text-xs text-gray-400">+{cfg?.rate ?? 1} ⭐/hr · 🐣 {((cfg?.babyChance ?? 0) * 100).toFixed(0)}% baby</div>
                             <div className="flex gap-2 mt-0.5 text-xs font-semibold">
                               <span className="text-green-600">Placed: {placed}</span>
                               <span className={unplaced > 0 ? 'text-amber-600' : 'text-gray-400'}>Free: {unplaced}</span>
                             </div>
+                            <input
+                              type="text"
+                              maxLength={14}
+                              placeholder="Give me a name…"
+                              defaultValue={petNames[animalId] ?? ''}
+                              onBlur={e => namePet(animalId, e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+                              className="mt-1 w-full text-xs px-2 py-0.5 rounded-lg border border-gray-200 focus:outline-none focus:border-amber-400 placeholder-gray-300 font-semibold text-gray-700 bg-gray-50"
+                            />
                           </div>
                           <div className="flex flex-col gap-1.5 shrink-0">
                             {unplaced > 0 && (

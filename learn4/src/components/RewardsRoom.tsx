@@ -327,10 +327,9 @@ function WalkingAnimal({ plot, idx, petNames, containerRef }: {
   );
 }
 
-function FarmScene({ farmPlots, petNames, themeColor }: {
+function FarmScene({ farmPlots, petNames }: {
   farmPlots: { id: string; animalId: string | null; placedAt: string }[];
   petNames: Record<string, string>;
-  themeColor: string;
 }) {
   const occupied = farmPlots.filter(p => p.animalId);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -925,7 +924,6 @@ export default function RewardsRoom() {
             <FarmScene
               farmPlots={farmPlots}
               petNames={petNames}
-              themeColor={themeColor}
             />
 
             {/* Daily cap progress */}

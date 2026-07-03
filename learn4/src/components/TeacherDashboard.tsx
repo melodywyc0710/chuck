@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../store/appStore';
 import { supabase } from '../lib/supabase';
-import { fetchAllStudents, fetchStudentResults, saveSessionResult } from '../lib/db';
-import type { DbProfile } from '../lib/db';
+import { fetchAllStudents, fetchStudentResults, saveSessionResult, fetchProfile, saveGameState } from '../lib/db';
+import type { DbProfile, GameState } from '../lib/db';
 import type { SessionResult } from '../store/appStore';
 import { getSession, sessionsByYear } from '../data/curriculum/index';
 import type { Session } from '../data/types';
@@ -71,6 +71,26 @@ export default function TeacherDashboard() {
       timeSpentMinutes: session.estimatedMinutes ?? 30,
     };
     await saveSessionResult(student.id, result);
+
+    // Update the student's game_state so their star balance reflects the award
+    const dbProfile = await fetchProfile(student.id);
+    const gs: GameState = dbProfile?.game_state ?? {
+      totalStars: 0, lifetimeStarsEarned: 0,
+      ownedItems: [], itemQuantities: {}, placedItems: [], itemPositions: {},
+      farmPlots: Array.from({ length: 10 }, (_, i) => ({ id: `plot-${i}`, animalId: null, placedAt: '' })),
+      lastFarmCollect: '', farmDailyStars: 0, farmLastDay: '',
+      petNames: {}, currentStreak: 0, lastActiveDate: '',
+      completedSessions: [], unlockedBadges: [],
+      weeklyLessonsCount: 0, weeklyLessonsWeek: '', weeklyChallengeCollected: '',
+      lastLoginBonus: '', firstLoginDate: '',
+    };
+    gs.totalStars = (gs.totalStars ?? 0) + stars;
+    gs.lifetimeStarsEarned = (gs.lifetimeStarsEarned ?? 0) + stars;
+    if (!gs.completedSessions.includes(result.sessionId)) {
+      gs.completedSessions = [...gs.completedSessions, result.sessionId];
+    }
+    await saveGameState(student.id, gs);
+
     // Refresh results
     const updated = await fetchStudentResults(student.id);
     setStudentResults(updated);

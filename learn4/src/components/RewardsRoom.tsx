@@ -128,64 +128,105 @@ const ANIMAL_GREETINGS: Record<string, string[]> = {
   unicorn: ['Sparkle! ✨', 'Magic! 🌈', 'Shine! ⭐'],
 };
 
-interface WalkState {
-  fromX: number;
-  toX: number;
-  duration: number;
-  facing: 1 | -1;
-}
-
-function useWalker(idx: number): { x: number; facing: 1 | -1; bump: () => void } {
-  const SEED_OFFSETS = [7, 23, 41, 13, 57, 31, 3, 47, 19, 61];
-  const seedOff = SEED_OFFSETS[idx % SEED_OFFSETS.length];
-  const [state, setState] = useState<WalkState>(() => {
-    const from = (seedOff + idx * 9) % 72 + 4;
-    const to = Math.min(96, from + 15 + (idx * 7) % 30);
-    return { fromX: from, toX: to, duration: 4 + (idx * 1.3) % 4, facing: 1 };
+// Direct-DOM walker — no React state for position, no re-render storm
+function useAnimalWalker(
+  idx: number,
+  elRef: React.RefObject<HTMLDivElement | null>,
+  containerRef: React.RefObject<HTMLDivElement | null>,
+) {
+  const SEEDS = [7, 23, 41, 13, 57, 31, 3, 47, 19, 61];
+  const w = useRef({
+    fromX:   (SEEDS[idx % 10] + idx * 9) % 72 + 4,
+    toX:     0,
+    startMs: 0,
+    durMs:   (4 + (idx * 1.3) % 4) * 1000,
+    facing:  1 as 1 | -1,
+    curX:    (SEEDS[idx % 10] + idx * 9) % 72 + 4,
+    paused:  false,
+    raf:     0,
   });
-  const [x, setX] = useState(state.fromX);
-  const rafRef = useRef<number>(0);
-  const startRef = useRef<number>(0);
-  const stateRef = useRef(state);
-  stateRef.current = state;
+  w.current.toX = Math.min(92, w.current.fromX + 15 + (idx * 7) % 30);
+
+  const applyDOM = (x: number, facing: 1 | -1) => {
+    const el = elRef.current;
+    if (!el) return;
+    el.style.left = `${x}%`;
+    el.style.transform = `scaleX(${facing})`;
+    // keep name pill right-reading regardless of flip
+    const pill = el.querySelector<HTMLElement>('.animal-name-pill');
+    if (pill) pill.style.transform = `scaleX(${facing})`;
+  };
 
   useEffect(() => {
-    let running = true;
+    const s = w.current;
+
     function tick(now: number) {
-      if (!running) return;
-      if (!startRef.current) startRef.current = now;
-      const elapsed = (now - startRef.current) / 1000;
-      const s = stateRef.current;
-      const t = Math.min(1, elapsed / s.duration);
-      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-      setX(s.fromX + (s.toX - s.fromX) * eased);
-      if (t >= 1) {
-        // Pick a new random destination anywhere across the farm
-        const newFrom = s.toX;
-        const span = 20 + Math.floor(Math.random() * 55);
-        const goRight = Math.random() > 0.5;
-        const newTo = goRight
-          ? Math.min(92, newFrom + span)
-          : Math.max(4, newFrom - span);
-        startRef.current = now;
-        setState({ fromX: newFrom, toX: newTo, duration: 3 + Math.random() * 5, facing: newTo > newFrom ? 1 : -1 });
+      if (!s.paused) {
+        if (!s.startMs) s.startMs = now;
+        const t = Math.min(1, (now - s.startMs) / s.durMs);
+        const e = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+        s.curX = s.fromX + (s.toX - s.fromX) * e;
+        applyDOM(s.curX, s.facing);
+        if (t >= 1) {
+          const span = 20 + Math.floor(Math.random() * 55);
+          const right = Math.random() > 0.5;
+          const newTo = right ? Math.min(92, s.toX + span) : Math.max(4, s.toX - span);
+          s.fromX = s.toX;
+          s.toX = newTo;
+          s.facing = newTo > s.fromX ? 1 : -1;
+          s.startMs = now;
+          s.durMs = (3 + Math.random() * 5) * 1000;
+        }
       }
-      rafRef.current = requestAnimationFrame(tick);
+      s.raf = requestAnimationFrame(tick);
     }
-    rafRef.current = requestAnimationFrame(tick);
-    return () => { running = false; cancelAnimationFrame(rafRef.current); };
+    s.raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(s.raf);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const bump = () => {
-    // On tap, spring toward a new spot on the other side
-    void stateRef.current;
-    const currentX = x;
-    const newTo = currentX > 50 ? 4 + Math.random() * 30 : 60 + Math.random() * 30;
-    startRef.current = 0;
-    setState({ fromX: currentX, toX: newTo, duration: 1.5 + Math.random() * 1.5, facing: newTo > currentX ? 1 : -1 });
+    const s = w.current;
+    const newTo = s.curX > 50 ? 4 + Math.random() * 30 : 60 + Math.random() * 30;
+    s.fromX = s.curX;
+    s.toX = newTo;
+    s.facing = newTo > s.curX ? 1 : -1;
+    s.startMs = 0;
+    s.durMs = (1.5 + Math.random() * 1.5) * 1000;
   };
 
-  return { x, facing: state.facing, bump };
+  const startDrag = () => {
+    const s = w.current;
+    s.paused = true;
+    const onMove = (e: MouseEvent | TouchEvent) => {
+      const cx = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const pct = Math.max(2, Math.min(92, ((cx - rect.left) / rect.width) * 100));
+      const newFacing: 1 | -1 = pct > s.curX ? 1 : -1;
+      s.curX = pct;
+      s.facing = newFacing;
+      applyDOM(pct, newFacing);
+    };
+    const onEnd = () => {
+      s.paused = false;
+      s.fromX = s.curX;
+      s.toX = s.curX > 50 ? 4 + Math.random() * 30 : 60 + Math.random() * 30;
+      s.facing = s.toX > s.curX ? 1 : -1;
+      s.startMs = 0;
+      s.durMs = (2 + Math.random() * 3) * 1000;
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('mouseup', onEnd);
+      document.removeEventListener('touchend', onEnd);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('touchmove', onMove, { passive: true });
+    document.addEventListener('mouseup', onEnd);
+    document.addEventListener('touchend', onEnd);
+  };
+
+  return { bump, startDrag };
 }
 
 function WalkingAnimal({ plot, idx, petNames, containerRef }: {
@@ -194,51 +235,21 @@ function WalkingAnimal({ plot, idx, petNames, containerRef }: {
   petNames: Record<string, string>;
   containerRef: React.RefObject<HTMLDivElement | null>;
 }) {
-  const { x, facing, bump } = useWalker(idx);
+  const elRef = useRef<HTMLDivElement>(null);
+  const { bump, startDrag } = useAnimalWalker(idx, elRef, containerRef);
   const [bubble, setBubble] = useState<string | null>(null);
   const [hearts, setHearts] = useState(false);
-  const [dragging, setDragging] = useState(false);
-  const [dragX, setDragX] = useState<number | null>(null);
   const animalId = plot.animalId!;
   const customName = petNames[animalId];
-
-  const displayX = dragX !== null ? dragX : x;
-  const displayFacing = dragX !== null ? (dragX > x ? 1 : -1) : facing;
-
-  const startDrag = (_clientX: number) => {
-    setDragging(true);
-    setDragX(x);
-    const onMove = (e: MouseEvent | TouchEvent) => {
-      const cx = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
-      const rect = containerRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      const pct = Math.max(2, Math.min(92, ((cx - rect.left) / rect.width) * 100));
-      setDragX(pct);
-    };
-    const onEnd = () => {
-      setDragging(false);
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('touchmove', onMove);
-      document.removeEventListener('mouseup', onEnd);
-      document.removeEventListener('touchend', onEnd);
-      // Release back to autonomous walking from current drag position
-      setDragX(null);
-      bump();
-    };
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('touchmove', onMove, { passive: true });
-    document.addEventListener('mouseup', onEnd);
-    document.addEventListener('touchend', onEnd);
-  };
+  const SEEDS = [7, 23, 41, 13, 57, 31, 3, 47, 19, 61];
+  const initialX = (SEEDS[idx % 10] + idx * 9) % 72 + 4;
 
   const handlePointerDown = (e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
-    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-    startDrag(clientX);
+    startDrag();
   };
 
   const handleTap = () => {
-    if (dragging) return;
     bump();
     const msgs = ANIMAL_GREETINGS[animalId] ?? ['Hi! ⭐'];
     setBubble(msgs[Math.floor(Math.random() * msgs.length)]);
@@ -249,25 +260,23 @@ function WalkingAnimal({ plot, idx, petNames, containerRef }: {
 
   return (
     <div
+      ref={elRef}
       onMouseDown={handlePointerDown}
       onTouchStart={handlePointerDown}
       onClick={handleTap}
       style={{
         position: 'absolute',
         bottom: 2,
-        left: `${displayX}%`,
-        transform: `scaleX(${displayFacing})`,
+        left: `${initialX}%`,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        cursor: dragging ? 'grabbing' : 'grab',
+        cursor: 'grab',
         userSelect: 'none',
-        transition: dragging ? 'none' : 'left 0.05s linear',
-        zIndex: dragging ? 30 : 10,
+        zIndex: 10,
         touchAction: 'none',
       }}
     >
-      {/* Speech bubble */}
       <AnimatePresence>
         {bubble && (
           <motion.div
@@ -276,19 +285,11 @@ function WalkingAnimal({ plot, idx, petNames, containerRef }: {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.8 }}
             style={{
-              position: 'absolute',
-              bottom: '110%',
-              left: '50%',
-              transform: `translateX(-50%) scaleX(${facing})`,
-              background: 'white',
-              borderRadius: 10,
-              padding: '3px 8px',
-              fontSize: 11,
-              fontWeight: 800,
-              color: '#374151',
-              whiteSpace: 'nowrap',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              zIndex: 20,
+              position: 'absolute', bottom: '110%', left: '50%',
+              transform: 'translateX(-50%) scaleX(1)',
+              background: 'white', borderRadius: 10, padding: '3px 8px',
+              fontSize: 11, fontWeight: 800, color: '#374151',
+              whiteSpace: 'nowrap', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', zIndex: 20,
             }}
           >
             {bubble}
@@ -296,28 +297,20 @@ function WalkingAnimal({ plot, idx, petNames, containerRef }: {
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Heart burst */}
       <AnimatePresence>
         {hearts && (
-          <motion.div
-            key="hearts"
-            initial={{ opacity: 1, y: 0 }}
-            animate={{ opacity: 0, y: -20 }}
-            exit={{ opacity: 0 }}
+          <motion.div key="hearts" initial={{ opacity: 1, y: 0 }} animate={{ opacity: 0, y: -20 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.9 }}
-            style={{ position: 'absolute', bottom: '130%', fontSize: 14, pointerEvents: 'none', zIndex: 20 }}
-          >
+            style={{ position: 'absolute', bottom: '130%', fontSize: 14, pointerEvents: 'none', zIndex: 20 }}>
             ❤️
           </motion.div>
         )}
       </AnimatePresence>
-      {/* Name tag */}
       {customName && (
-        <div style={{
+        <div className="animal-name-pill" style={{
           fontSize: '9px', fontWeight: 800, color: '#fff',
           background: 'rgba(0,0,0,0.5)', borderRadius: 6,
           padding: '1px 5px', marginBottom: 1, whiteSpace: 'nowrap',
-          transform: `scaleX(${facing})`,
         }}>
           {customName}
         </div>

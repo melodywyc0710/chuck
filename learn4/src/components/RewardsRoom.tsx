@@ -178,7 +178,7 @@ function useWalker(idx: number): { x: number; facing: 1 | -1; bump: () => void }
 
   const bump = () => {
     // On tap, spring toward a new spot on the other side
-    const s = stateRef.current;
+    void stateRef.current;
     const currentX = x;
     const newTo = currentX > 50 ? 4 + Math.random() * 30 : 60 + Math.random() * 30;
     startRef.current = 0;
@@ -188,12 +188,11 @@ function useWalker(idx: number): { x: number; facing: 1 | -1; bump: () => void }
   return { x, facing: state.facing, bump };
 }
 
-function WalkingAnimal({ plot, idx, petNames, themeColor, containerRef }: {
+function WalkingAnimal({ plot, idx, petNames, containerRef }: {
   plot: { id: string; animalId: string | null; placedAt: string };
   idx: number;
   petNames: Record<string, string>;
-  themeColor: string;
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const { x, facing, bump } = useWalker(idx);
   const [bubble, setBubble] = useState<string | null>(null);
@@ -206,7 +205,7 @@ function WalkingAnimal({ plot, idx, petNames, themeColor, containerRef }: {
   const displayX = dragX !== null ? dragX : x;
   const displayFacing = dragX !== null ? (dragX > x ? 1 : -1) : facing;
 
-  const startDrag = (clientX: number) => {
+  const startDrag = (_clientX: number) => {
     setDragging(true);
     setDragX(x);
     const onMove = (e: MouseEvent | TouchEvent) => {
@@ -365,7 +364,7 @@ function FarmScene({ farmPlots, petNames, themeColor }: {
           <p className="text-center text-white/80 text-xs font-bold mt-4">Place animals below to earn stars!</p>
         ) : (
           occupied.map((plot, idx) => (
-            <WalkingAnimal key={plot.id} plot={plot} idx={idx} petNames={petNames} themeColor={themeColor} containerRef={containerRef} />
+            <WalkingAnimal key={plot.id} plot={plot} idx={idx} petNames={petNames} containerRef={containerRef} />
           ))
         )}
       </div>

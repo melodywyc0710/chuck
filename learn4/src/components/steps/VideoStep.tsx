@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { Play, CheckCircle } from 'lucide-react';
 import type { VideoStep as VideoStepType } from '../../data/types';
 import { useAppStore } from '../../store/appStore';

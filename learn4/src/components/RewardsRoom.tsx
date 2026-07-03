@@ -118,7 +118,7 @@ function PetBody({ type, size = 80 }: { type: 'owl' | 'fox' | 'panda'; size?: nu
 export default function RewardsRoom() {
   const {
     profile, totalStars, ownedItems, placedItems, buyItem, togglePlaced, setView,
-    completedSessions, itemPositions, setItemPosition, itemQuantities,
+    itemPositions, setItemPosition, itemQuantities,
     farmPlots, placeFarmAnimal, removeFarmAnimal, collectFarmStars, sellFarmAnimal,
     unlockedBadges, firstLoginDate,
     farmDailyStars, farmLastDay, lifetimeStarsEarned,
@@ -929,7 +929,7 @@ export default function RewardsRoom() {
             <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
               <div className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Your Rank</div>
               <div className="flex gap-2 overflow-x-auto">
-                {RANKS.map((r, i) => {
+                {RANKS.map((r) => {
                   const reached = lifetimeStarsEarned >= r.min;
                   return (
                     <div key={r.name} className={`flex-shrink-0 text-center px-3 py-2 rounded-xl border-2 transition-all ${

@@ -572,20 +572,27 @@ export const useAppStore = create<AppState & AppActions>()(
         }
         const results = await fetchStudentResults(studentId);
         const completedFromDb = results.map(r => r.sessionId);
-        // session_results is the authoritative star ledger — always use it as the floor
+        // session_results is the authoritative earned-star ledger.
+        // totalStars = starsFromResults - spent; we never let it go below (starsFromResults - spent).
         const starsFromResults = results.reduce((sum, r) => sum + r.starsEarned, 0);
-        set(s => ({
-          sessionResults: results,
-          completedSessions: [...new Set([...s.completedSessions, ...completedFromDb])],
-          // Take the higher of game_state balance vs sum of all session results so
-          // teacher-awarded stars and any spend/earn since last sync are both respected
-          totalStars: Math.max(s.totalStars, starsFromResults),
-          lifetimeStarsEarned: Math.max(s.lifetimeStarsEarned, starsFromResults),
-        }));
+        set(s => {
+          // How much has the student spent? Derive from prior game_state: lifetime - current balance.
+          // This is 0 if they haven't bought anything yet.
+          const priorSpent = Math.max(0, s.lifetimeStarsEarned - s.totalStars);
+          const correctLifetime = Math.max(s.lifetimeStarsEarned, starsFromResults);
+          const correctBalance = Math.max(s.totalStars, correctLifetime - priorSpent);
+          return {
+            sessionResults: results,
+            completedSessions: [...new Set([...s.completedSessions, ...completedFromDb])],
+            lifetimeStarsEarned: correctLifetime,
+            totalStars: correctBalance,
+          };
+        });
         // Persist the reconciled balance back so future loads start correct
         const reconciled = get();
-        const userId = reconciled.userId;
-        if (userId) saveGameState(userId, extractGameState(reconciled)).catch(console.error);
+        if (reconciled.userId) {
+          saveGameState(reconciled.userId, extractGameState(reconciled)).catch(console.error);
+        }
       },
     }),
     {

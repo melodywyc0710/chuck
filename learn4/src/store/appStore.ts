@@ -572,10 +572,20 @@ export const useAppStore = create<AppState & AppActions>()(
         }
         const results = await fetchStudentResults(studentId);
         const completedFromDb = results.map(r => r.sessionId);
+        // session_results is the authoritative star ledger — always use it as the floor
+        const starsFromResults = results.reduce((sum, r) => sum + r.starsEarned, 0);
         set(s => ({
           sessionResults: results,
           completedSessions: [...new Set([...s.completedSessions, ...completedFromDb])],
+          // Take the higher of game_state balance vs sum of all session results so
+          // teacher-awarded stars and any spend/earn since last sync are both respected
+          totalStars: Math.max(s.totalStars, starsFromResults),
+          lifetimeStarsEarned: Math.max(s.lifetimeStarsEarned, starsFromResults),
         }));
+        // Persist the reconciled balance back so future loads start correct
+        const reconciled = get();
+        const userId = reconciled.userId;
+        if (userId) saveGameState(userId, extractGameState(reconciled)).catch(console.error);
       },
     }),
     {

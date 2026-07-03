@@ -115,6 +115,268 @@ function PetBody({ type, size = 80 }: { type: 'owl' | 'fox' | 'panda'; size?: nu
   );
 }
 
+const ANIMAL_GREETINGS: Record<string, string[]> = {
+  chicken: ['Cluck cluck! 🐣', 'Bawk bawk! 🌾', 'Cluck! ⭐'],
+  sheep:   ['Baaaa! 🌿', 'Baaa! ⭐', 'Fluffy hug! 🤗'],
+  cow:     ['Mooooo! 🌾', 'Moo! ⭐', 'Mooo! 🥛'],
+  horse:   ['Neigh! 🌟', 'Nay nay! ⭐', 'Gallop! 🏇'],
+  peacock: ['Screech! 🦚', 'So pretty! ✨', 'Look at me! 🌟'],
+  llama:   ['Mwwah! 🦙', 'Spit! 💦', 'Llama love! ⭐'],
+  elephant:['Trumpet! 🎺', 'Toot toot! ⭐', 'Big hug! 🤗'],
+  tiger:   ['Roarrr! 🐯', 'Grr! ⭐', 'Pounce! 💥'],
+  dragon:  ['RAWR! 🔥', 'Fire! 🐉', 'Fly! ⭐'],
+  unicorn: ['Sparkle! ✨', 'Magic! 🌈', 'Shine! ⭐'],
+};
+
+interface WalkState {
+  fromX: number;
+  toX: number;
+  duration: number;
+  facing: 1 | -1;
+}
+
+function useWalker(idx: number): { x: number; facing: 1 | -1; bump: () => void } {
+  const SEED_OFFSETS = [7, 23, 41, 13, 57, 31, 3, 47, 19, 61];
+  const seedOff = SEED_OFFSETS[idx % SEED_OFFSETS.length];
+  const [state, setState] = useState<WalkState>(() => {
+    const from = (seedOff + idx * 9) % 72 + 4;
+    const to = Math.min(96, from + 15 + (idx * 7) % 30);
+    return { fromX: from, toX: to, duration: 4 + (idx * 1.3) % 4, facing: 1 };
+  });
+  const [x, setX] = useState(state.fromX);
+  const rafRef = useRef<number>(0);
+  const startRef = useRef<number>(0);
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  useEffect(() => {
+    let running = true;
+    function tick(now: number) {
+      if (!running) return;
+      if (!startRef.current) startRef.current = now;
+      const elapsed = (now - startRef.current) / 1000;
+      const s = stateRef.current;
+      const t = Math.min(1, elapsed / s.duration);
+      const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      setX(s.fromX + (s.toX - s.fromX) * eased);
+      if (t >= 1) {
+        // Pick a new random destination anywhere across the farm
+        const newFrom = s.toX;
+        const span = 20 + Math.floor(Math.random() * 55);
+        const goRight = Math.random() > 0.5;
+        const newTo = goRight
+          ? Math.min(92, newFrom + span)
+          : Math.max(4, newFrom - span);
+        startRef.current = now;
+        setState({ fromX: newFrom, toX: newTo, duration: 3 + Math.random() * 5, facing: newTo > newFrom ? 1 : -1 });
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    }
+    rafRef.current = requestAnimationFrame(tick);
+    return () => { running = false; cancelAnimationFrame(rafRef.current); };
+  }, []);
+
+  const bump = () => {
+    // On tap, spring toward a new spot on the other side
+    const s = stateRef.current;
+    const currentX = x;
+    const newTo = currentX > 50 ? 4 + Math.random() * 30 : 60 + Math.random() * 30;
+    startRef.current = 0;
+    setState({ fromX: currentX, toX: newTo, duration: 1.5 + Math.random() * 1.5, facing: newTo > currentX ? 1 : -1 });
+  };
+
+  return { x, facing: state.facing, bump };
+}
+
+function WalkingAnimal({ plot, idx, petNames, themeColor, containerRef }: {
+  plot: { id: string; animalId: string | null; placedAt: string };
+  idx: number;
+  petNames: Record<string, string>;
+  themeColor: string;
+  containerRef: React.RefObject<HTMLDivElement>;
+}) {
+  const { x, facing, bump } = useWalker(idx);
+  const [bubble, setBubble] = useState<string | null>(null);
+  const [hearts, setHearts] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [dragX, setDragX] = useState<number | null>(null);
+  const animalId = plot.animalId!;
+  const customName = petNames[animalId];
+
+  const displayX = dragX !== null ? dragX : x;
+  const displayFacing = dragX !== null ? (dragX > x ? 1 : -1) : facing;
+
+  const startDrag = (clientX: number) => {
+    setDragging(true);
+    setDragX(x);
+    const onMove = (e: MouseEvent | TouchEvent) => {
+      const cx = 'touches' in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const pct = Math.max(2, Math.min(92, ((cx - rect.left) / rect.width) * 100));
+      setDragX(pct);
+    };
+    const onEnd = () => {
+      setDragging(false);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('mouseup', onEnd);
+      document.removeEventListener('touchend', onEnd);
+      // Release back to autonomous walking from current drag position
+      setDragX(null);
+      bump();
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('touchmove', onMove, { passive: true });
+    document.addEventListener('mouseup', onEnd);
+    document.addEventListener('touchend', onEnd);
+  };
+
+  const handlePointerDown = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    startDrag(clientX);
+  };
+
+  const handleTap = () => {
+    if (dragging) return;
+    bump();
+    const msgs = ANIMAL_GREETINGS[animalId] ?? ['Hi! ⭐'];
+    setBubble(msgs[Math.floor(Math.random() * msgs.length)]);
+    setHearts(true);
+    setTimeout(() => setBubble(null), 1800);
+    setTimeout(() => setHearts(false), 1000);
+  };
+
+  return (
+    <div
+      onMouseDown={handlePointerDown}
+      onTouchStart={handlePointerDown}
+      onClick={handleTap}
+      style={{
+        position: 'absolute',
+        bottom: 2,
+        left: `${displayX}%`,
+        transform: `scaleX(${displayFacing})`,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        cursor: dragging ? 'grabbing' : 'grab',
+        userSelect: 'none',
+        transition: dragging ? 'none' : 'left 0.05s linear',
+        zIndex: dragging ? 30 : 10,
+        touchAction: 'none',
+      }}
+    >
+      {/* Speech bubble */}
+      <AnimatePresence>
+        {bubble && (
+          <motion.div
+            key="bubble"
+            initial={{ opacity: 0, y: 4, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.8 }}
+            style={{
+              position: 'absolute',
+              bottom: '110%',
+              left: '50%',
+              transform: `translateX(-50%) scaleX(${facing})`,
+              background: 'white',
+              borderRadius: 10,
+              padding: '3px 8px',
+              fontSize: 11,
+              fontWeight: 800,
+              color: '#374151',
+              whiteSpace: 'nowrap',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              zIndex: 20,
+            }}
+          >
+            {bubble}
+            <div style={{ position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid white' }} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Heart burst */}
+      <AnimatePresence>
+        {hearts && (
+          <motion.div
+            key="hearts"
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 0, y: -20 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.9 }}
+            style={{ position: 'absolute', bottom: '130%', fontSize: 14, pointerEvents: 'none', zIndex: 20 }}
+          >
+            ❤️
+          </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Name tag */}
+      {customName && (
+        <div style={{
+          fontSize: '9px', fontWeight: 800, color: '#fff',
+          background: 'rgba(0,0,0,0.5)', borderRadius: 6,
+          padding: '1px 5px', marginBottom: 1, whiteSpace: 'nowrap',
+          transform: `scaleX(${facing})`,
+        }}>
+          {customName}
+        </div>
+      )}
+      <div style={{ fontSize: '1.8rem', lineHeight: 1 }}>{ANIMAL_EMOJI[animalId]}</div>
+    </div>
+  );
+}
+
+function FarmScene({ farmPlots, petNames, themeColor }: {
+  farmPlots: { id: string; animalId: string | null; placedAt: string }[];
+  petNames: Record<string, string>;
+  themeColor: string;
+}) {
+  const occupied = farmPlots.filter(p => p.animalId);
+  const containerRef = useRef<HTMLDivElement>(null);
+  return (
+    <div ref={containerRef} className="relative rounded-3xl overflow-hidden shadow-xl" style={{ height: 240 }}>
+      {/* Sky */}
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #7dd3fc 0%, #bae6fd 55%, #86efac 55%, #4ade80 100%)' }}/>
+      {/* Sun */}
+      <div className="absolute top-3 right-6 w-10 h-10 rounded-full bg-yellow-300" style={{ boxShadow: '0 0 22px rgba(253,224,71,0.9)' }}/>
+      {/* Clouds */}
+      <div className="absolute top-5 left-6 flex gap-1">
+        <div className="w-14 h-5 bg-white rounded-full opacity-90"/>
+        <div className="w-8 h-5 bg-white rounded-full opacity-90 -ml-4"/>
+      </div>
+      <div className="absolute top-8 left-24 flex gap-1">
+        <div className="w-10 h-4 bg-white rounded-full opacity-70"/>
+        <div className="w-6 h-4 bg-white rounded-full opacity-70 -ml-3"/>
+      </div>
+      {/* Fence */}
+      <div className="absolute inset-x-0 flex justify-around px-4" style={{ bottom: 52 }}>
+        {[...Array(10)].map((_, i) => (
+          <div key={i} className="w-2.5 bg-amber-800 rounded-t-sm" style={{ height: 22 }}/>
+        ))}
+      </div>
+      <div className="absolute inset-x-4 h-1.5 bg-amber-700 rounded-full" style={{ bottom: 64 }}/>
+      {/* Ground */}
+      <div className="absolute bottom-0 inset-x-0 h-14" style={{ background: 'linear-gradient(180deg, #86efac 0%, #4ade80 100%)' }}/>
+      {/* Animals */}
+      <div className="absolute bottom-1 inset-x-0" style={{ height: 56 }}>
+        {occupied.length === 0 ? (
+          <p className="text-center text-white/80 text-xs font-bold mt-4">Place animals below to earn stars!</p>
+        ) : (
+          occupied.map((plot, idx) => (
+            <WalkingAnimal key={plot.id} plot={plot} idx={idx} petNames={petNames} themeColor={themeColor} containerRef={containerRef} />
+          ))
+        )}
+      </div>
+      {/* Tap hint */}
+      {occupied.length > 0 && (
+        <div className="absolute top-3 left-4 text-xs font-bold text-white/60 pointer-events-none">Tap an animal! 👆</div>
+      )}
+    </div>
+  );
+}
+
 export default function RewardsRoom() {
   const {
     profile, totalStars, ownedItems, placedItems, buyItem, togglePlaced, setView,
@@ -661,68 +923,11 @@ export default function RewardsRoom() {
         {tab === 'farm' && (
           <div className="space-y-5">
             {/* Farm scene with walking animals */}
-            <div className="relative rounded-3xl overflow-hidden shadow-xl" style={{ height: 220 }}>
-              {/* Sky */}
-              <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, #7dd3fc 0%, #bae6fd 55%, #86efac 55%, #4ade80 100%)' }}/>
-              {/* Sun */}
-              <div className="absolute top-3 right-6 w-10 h-10 rounded-full bg-yellow-300" style={{ boxShadow: '0 0 22px rgba(253,224,71,0.9)' }}/>
-              {/* Clouds */}
-              <div className="absolute top-5 left-6 flex gap-1">
-                <div className="w-14 h-5 bg-white rounded-full opacity-90"/>
-                <div className="w-8 h-5 bg-white rounded-full opacity-90 -ml-4"/>
-              </div>
-              {/* Fence posts */}
-              <div className="absolute inset-x-0 flex justify-around px-4" style={{ bottom: 52 }}>
-                {[...Array(10)].map((_, i) => (
-                  <div key={i} className="w-2.5 bg-amber-800 rounded-t-sm" style={{ height: 22 }}/>
-                ))}
-              </div>
-              {/* Fence rail */}
-              <div className="absolute inset-x-4 h-1.5 bg-amber-700 rounded-full" style={{ bottom: 64 }}/>
-              {/* Green ground */}
-              <div className="absolute bottom-0 inset-x-0 h-14" style={{ background: 'linear-gradient(180deg, #86efac 0%, #4ade80 100%)' }}/>
-              {/* Walking animals */}
-              <div className="absolute bottom-1 inset-x-0 h-12 overflow-hidden">
-                {farmPlots.filter(p => p.animalId).length === 0 ? (
-                  <p className="text-center text-white/70 text-xs font-semibold mt-3">Place animals below to earn stars!</p>
-                ) : (
-                  farmPlots.filter(p => p.animalId).map((plot, idx) => {
-                    const totalAnimals = farmPlots.filter(p => p.animalId).length;
-                    const startX = (idx / totalAnimals) * 82 + 5;
-                    const walkRange = Math.min(18, 78 / totalAnimals);
-                    const customName = petNames[plot.animalId!];
-                    return (
-                      <motion.div
-                        key={plot.id}
-                        style={{ position: 'absolute', bottom: 2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                        animate={{
-                          x: [`${startX}%`, `${startX + walkRange}%`, `${startX}%`],
-                          scaleX: [1, 1, -1, -1, 1],
-                        }}
-                        transition={{
-                          duration: 3.5 + idx * 0.4,
-                          repeat: Infinity,
-                          ease: 'easeInOut',
-                          delay: idx * 0.7,
-                          times: [0, 0.45, 0.45, 0.95, 1],
-                        }}
-                      >
-                        {customName && (
-                          <div style={{
-                            fontSize: '9px', fontWeight: 800, color: '#fff',
-                            background: 'rgba(0,0,0,0.45)', borderRadius: 6,
-                            padding: '1px 5px', marginBottom: 1, whiteSpace: 'nowrap',
-                          }}>
-                            {customName}
-                          </div>
-                        )}
-                        <div style={{ fontSize: '1.7rem', lineHeight: 1 }}>{ANIMAL_EMOJI[plot.animalId!]}</div>
-                      </motion.div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
+            <FarmScene
+              farmPlots={farmPlots}
+              petNames={petNames}
+              themeColor={themeColor}
+            />
 
             {/* Daily cap progress */}
             <div className="bg-white rounded-2xl p-4 border border-amber-100 shadow-sm">

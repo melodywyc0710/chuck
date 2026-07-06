@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppStore, PLAYER_LEVELS, getPlayerLevel, FARM_ANIMAL_CONFIG, FARM_DAILY_CAP } from '../store/appStore';
+import { useAppStore, PLAYER_LEVELS, getPlayerLevel, FARM_ANIMAL_CONFIG, FARM_DAILY_CAP, getFarmDailyCap } from '../store/appStore';
 import { ROOM_ITEMS } from '../data/rewards';
 import { BADGES } from '../data/badges';
 import { sounds } from '../utils/sounds';
@@ -240,7 +240,7 @@ function WalkingAnimal({ plot, idx, petNames, containerRef }: {
   const [bubble, setBubble] = useState<string | null>(null);
   const [hearts, setHearts] = useState(false);
   const animalId = plot.animalId!;
-  const customName = petNames[animalId];
+  const customName = petNames[plot.id] ?? petNames[animalId];
   const SEEDS = [7, 23, 41, 13, 57, 31, 3, 47, 19, 61];
   const initialX = (SEEDS[idx % 10] + idx * 9) % 72 + 4;
 
@@ -466,7 +466,8 @@ export default function RewardsRoom() {
   // Farm: pending stars and daily cap
   const today = new Date().toISOString().slice(0, 10);
   const todayFarmStars = farmLastDay === today ? farmDailyStars : 0;
-  const farmCapRemaining = Math.max(0, FARM_DAILY_CAP - todayFarmStars);
+  const dailyFarmCap = getFarmDailyCap(playerLevel);
+  const farmCapRemaining = Math.max(0, dailyFarmCap - todayFarmStars);
   const now = Date.now();
   let pendingStars = 0;
   farmPlots.forEach(plot => {
@@ -735,10 +736,15 @@ export default function RewardsRoom() {
                         whileDrag={{ scale: 1.2, zIndex: 50 }}
                         whileHover={{ scale: 1.1 }}
                         style={{ cursor: 'grab' }}
-                        className="text-4xl select-none touch-none block"
+                        className="select-none touch-none flex flex-col items-center"
                         title={`${item.name} — drag to move`}
                       >
-                        {item.emoji}
+                        <span className="text-4xl">{item.emoji}</span>
+                        {item.category === 'pet' && (() => {
+                          const nameKey = instanceIdx === 0 ? item.id : `${item.id}-${instanceIdx}`;
+                          const n = petNames[nameKey];
+                          return n ? <span style={{ fontSize: 9, fontWeight: 800, background: 'rgba(0,0,0,0.45)', color: '#fff', borderRadius: 5, padding: '0 4px', marginTop: 1, whiteSpace: 'nowrap' }}>{n}</span> : null;
+                        })()}
                       </motion.div>
                     </div>
                   );
@@ -798,24 +804,32 @@ export default function RewardsRoom() {
                     const owned = itemQuantities[item.id] ?? 1;
                     const inRoom = placedItems.filter(id => id === item.id).length;
                     return (
-                      <div key={item.id} className={`p-3 rounded-2xl border-2 flex items-center gap-2 transition-all ${inRoom > 0 ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-white'}`}>
-                        <span className="text-2xl">{item.emoji}</span>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-bold text-gray-700 truncate">{item.name}</div>
-                          <div className="text-xs text-gray-400">{inRoom > 0 ? `${inRoom} in room` : 'Not placed'}{owned > 1 ? ` · own ${owned}` : ''}</div>
+                      <div key={item.id} className={`p-3 rounded-2xl border-2 flex flex-col gap-2 transition-all ${inRoom > 0 ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-white'}`}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-2xl">{item.emoji}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-bold text-gray-700 truncate">{item.name}</div>
+                            <div className="text-xs text-gray-400">{inRoom > 0 ? `${inRoom} in room` : 'Not placed'}{owned > 1 ? ` · own ${owned}` : ''}</div>
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <button onClick={() => addToRoom(item.id)} disabled={inRoom >= owned}
+                              className="w-7 h-7 rounded-lg bg-green-500 text-white font-black text-sm flex items-center justify-center disabled:opacity-30">+</button>
+                            <button onClick={() => removeFromRoom(item.id)} disabled={inRoom === 0}
+                              className="w-7 h-7 rounded-lg bg-red-400 text-white font-black text-sm flex items-center justify-center disabled:opacity-30">−</button>
+                          </div>
                         </div>
-                        <div className="flex flex-col gap-1">
-                          <button
-                            onClick={() => addToRoom(item.id)}
-                            disabled={inRoom >= owned}
-                            className="w-7 h-7 rounded-lg bg-green-500 text-white font-black text-sm flex items-center justify-center disabled:opacity-30"
-                          >+</button>
-                          <button
-                            onClick={() => removeFromRoom(item.id)}
-                            disabled={inRoom === 0}
-                            className="w-7 h-7 rounded-lg bg-red-400 text-white font-black text-sm flex items-center justify-center disabled:opacity-30"
-                          >−</button>
-                        </div>
+                        {item.category === 'pet' && inRoom > 0 && Array.from({ length: inRoom }).map((_, i) => {
+                          const nameKey = i === 0 ? item.id : `${item.id}-${i}`;
+                          return (
+                            <input key={nameKey} type="text" maxLength={14}
+                              placeholder={`Name ${inRoom > 1 ? `#${i + 1}` : 'this pet'}…`}
+                              defaultValue={petNames[nameKey] ?? ''}
+                              onBlur={e => namePet(nameKey, e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+                              className="w-full text-xs px-2 py-0.5 rounded-lg border border-gray-200 focus:outline-none focus:border-purple-400 placeholder-gray-300 font-semibold text-gray-700 bg-white"
+                            />
+                          );
+                        })}
                       </div>
                     );
                   })}
@@ -897,7 +911,7 @@ export default function RewardsRoom() {
                             ? { background: themeColor, borderBottomColor: themeDark, color: 'white' }
                             : { background: '#f3f4f6', borderBottomColor: '#d1d5db', color: '#9ca3af' }}
                         >
-                          ⭐ {item.cost} {canAfford ? (isFarmAnimal && qty > 0 ? `Buy (own ${qty})` : 'Buy') : '— need more stars'}
+                          ⭐ {item.cost} {canAfford ? (qty > 0 ? `Buy (own ${qty})` : 'Buy') : '— need more stars'}
                         </motion.button>
                       )}
                     </motion.div>
@@ -940,12 +954,12 @@ export default function RewardsRoom() {
             <div className="bg-white rounded-2xl p-4 border border-amber-100 shadow-sm">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-black text-gray-700">Daily farm stars</div>
-                <div className="text-sm font-black text-amber-600">⭐ {todayFarmStars} / {FARM_DAILY_CAP}</div>
+                <div className="text-sm font-black text-amber-600">⭐ {todayFarmStars} / {dailyFarmCap}</div>
               </div>
               <div className="h-2.5 bg-amber-100 rounded-full overflow-hidden">
                 <div
                   className="h-full rounded-full transition-all"
-                  style={{ width: `${(todayFarmStars / FARM_DAILY_CAP) * 100}%`, background: '#f59e0b' }}
+                  style={{ width: `${(todayFarmStars / dailyFarmCap) * 100}%`, background: '#f59e0b' }}
                 />
               </div>
               {farmCapRemaining === 0
@@ -1002,7 +1016,7 @@ export default function RewardsRoom() {
                       <div className="text-2xl">{plot.animalId ? ANIMAL_EMOJI[plot.animalId] : '🟫'}</div>
                       {plot.animalId && (
                         <div className="text-[9px] font-black text-gray-700 truncate w-full text-center px-0.5">
-                          {petNames[plot.animalId] || plot.animalId}
+                          {petNames[plot.id] ?? petNames[plot.animalId] ?? plot.animalId}
                         </div>
                       )}
                       {cfg && <div className="text-[9px] text-amber-600 font-bold">+{cfg.rate}/hr</div>}
@@ -1043,15 +1057,18 @@ export default function RewardsRoom() {
                               <span className="text-green-600">Placed: {placed}</span>
                               <span className={unplaced > 0 ? 'text-amber-600' : 'text-gray-400'}>Free: {unplaced}</span>
                             </div>
-                            <input
-                              type="text"
-                              maxLength={14}
-                              placeholder="Give me a name…"
-                              defaultValue={petNames[animalId] ?? ''}
-                              onBlur={e => namePet(animalId, e.target.value)}
-                              onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-                              className="mt-1 w-full text-xs px-2 py-0.5 rounded-lg border border-gray-200 focus:outline-none focus:border-amber-400 placeholder-gray-300 font-semibold text-gray-700 bg-gray-50"
-                            />
+                            {farmPlots.filter(p => p.animalId === animalId).map(p => (
+                              <input
+                                key={p.id}
+                                type="text"
+                                maxLength={14}
+                                placeholder={`Name this ${animalId}…`}
+                                defaultValue={petNames[p.id] ?? ''}
+                                onBlur={e => namePet(p.id, e.target.value)}
+                                onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+                                className="mt-1 w-full text-xs px-2 py-0.5 rounded-lg border border-gray-200 focus:outline-none focus:border-amber-400 placeholder-gray-300 font-semibold text-gray-700 bg-gray-50"
+                              />
+                            ))}
                           </div>
                           <div className="flex flex-col gap-1.5 shrink-0">
                             {unplaced > 0 && (
@@ -1117,7 +1134,7 @@ export default function RewardsRoom() {
               <div className="font-black text-amber-800 text-sm mb-2">🌾 How the farm works</div>
               <div className="space-y-1 text-xs text-amber-700">
                 <div>• Each animal earns stars every hour — collect to claim!</div>
-                <div>• Daily cap: <strong>⭐{FARM_DAILY_CAP}/day</strong> — resets at midnight</div>
+                <div>• Daily cap: <strong>⭐{dailyFarmCap}/day</strong> — resets at midnight</div>
                 <div>• 🐣 <strong>Baby bonus:</strong> each collect has a chance a baby is born — bonus stars!</div>
                 <div>• Rarer animals earn more and have bigger baby bonuses</div>
                 <div>• Higher level animals require you to level up first</div>

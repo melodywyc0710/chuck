@@ -54,7 +54,10 @@ export const FARM_ANIMAL_CONFIG: Record<string, {
   unicorn:  { rate: 50, babyChance: 0.01, babyBonus: 800, levelRequired: 20 },
 };
 
-export const FARM_DAILY_CAP = 100; // max farm stars per day
+export const FARM_DAILY_CAP = 150; // base max farm stars per day (grows with level)
+export function getFarmDailyCap(playerLevel: number): number {
+  return FARM_DAILY_CAP + (playerLevel - 1) * 15; // +15 per level above 1
+}
 
 // ── Chest / Mystery Gift ────────────────────────────────────────────────────
 export interface ChestReward {
@@ -496,7 +499,8 @@ export const useAppStore = create<AppState & AppActions>()(
         const state = get();
         const today = new Date().toISOString().slice(0, 10);
         const todayFarmStars = state.farmLastDay === today ? state.farmDailyStars : 0;
-        const remaining = Math.max(0, FARM_DAILY_CAP - todayFarmStars);
+        const cap = getFarmDailyCap(getPlayerLevel(state.lifetimeStarsEarned));
+        const remaining = Math.max(0, cap - todayFarmStars);
         if (remaining === 0) return;
         const now = Date.now();
         let raw = 0;

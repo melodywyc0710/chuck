@@ -29,7 +29,7 @@ export const ROOM_ITEMS: RoomItem[] = [
   { id: 'bunny', name: 'Bunny', emoji: '🐰', cost: 5, category: 'pet', description: 'Hops around your room', position: { x: 20, y: 70 } },
   { id: 'fish', name: 'Fish Tank', emoji: '🐠', cost: 7, category: 'pet', description: 'Calming to watch', position: { x: 80, y: 30 } },
   { id: 'parrot', name: 'Parrot', emoji: '🦜', cost: 10, category: 'pet', description: 'Repeats your vocabulary words!', position: { x: 65, y: 25 } },
-  { id: 'dragon', name: 'Mini Dragon', emoji: '🐲', cost: 15, category: 'pet', description: 'Rare! Only for top students', position: { x: 55, y: 45 } },
+  { id: 'mini-dragon', name: 'Mini Dragon', emoji: '🐲', cost: 15, category: 'pet', description: 'Rare! Only for top students', position: { x: 55, y: 45 } },
   // Windows / views
   { id: 'window-beach', name: 'Beach View', emoji: '🏖️', cost: 5, category: 'window', description: 'Waves outside your window', position: { x: 45, y: 10 } },
   { id: 'window-forest', name: 'Forest View', emoji: '🌲', cost: 5, category: 'window', description: 'Trees and birdsong', position: { x: 45, y: 10 } },

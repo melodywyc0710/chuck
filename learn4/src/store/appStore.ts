@@ -167,6 +167,8 @@ export interface AppActions {
   updateStreak: () => void;
   buyItem: (itemId: string, cost: number) => void;
   togglePlaced: (itemId: string) => void;
+  addToRoom: (itemId: string) => void;
+  removeFromRoom: (itemId: string) => void;
   reset: () => void;
   setItemPosition: (itemId: string, pos: { x: number; y: number }) => void;
   placeFarmAnimal: (plotId: string, animalId: string) => void;
@@ -378,11 +380,35 @@ export const useAppStore = create<AppState & AppActions>()(
       },
 
       togglePlaced: (itemId) => {
+        // Legacy: adds first instance or removes all instances
         set(s => ({
           placedItems: s.placedItems.includes(itemId)
             ? s.placedItems.filter(i => i !== itemId)
             : [...s.placedItems, itemId],
         }));
+        const userId = get().userId;
+        if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
+      },
+
+      addToRoom: (itemId) => {
+        set(s => {
+          const owned = s.itemQuantities[itemId] ?? (s.ownedItems.includes(itemId) ? 1 : 0);
+          const placed = s.placedItems.filter(i => i === itemId).length;
+          if (placed >= owned) return s;
+          return { placedItems: [...s.placedItems, itemId] };
+        });
+        const userId = get().userId;
+        if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
+      },
+
+      removeFromRoom: (itemId) => {
+        set(s => {
+          const idx = s.placedItems.lastIndexOf(itemId);
+          if (idx === -1) return s;
+          const next = [...s.placedItems];
+          next.splice(idx, 1);
+          return { placedItems: next };
+        });
         const userId = get().userId;
         if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);
       },

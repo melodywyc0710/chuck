@@ -370,7 +370,8 @@ function FarmScene({ farmPlots, petNames }: {
 
 export default function RewardsRoom() {
   const {
-    profile, totalStars, ownedItems, placedItems, buyItem, togglePlaced, setView,
+    profile, totalStars, ownedItems, placedItems, buyItem, setView,
+    addToRoom, removeFromRoom,
     itemPositions, setItemPosition, itemQuantities,
     farmPlots, placeFarmAnimal, removeFarmAnimal, collectFarmStars, sellFarmAnimal,
     unlockedBadges, firstLoginDate,
@@ -424,6 +425,17 @@ export default function RewardsRoom() {
   const themeColor = THEME_COLOR[profile.colorTheme];
   const themeDark = THEME_DARK[profile.colorTheme];
   const mascotType = profile.mascot;
+  // Build instances: one entry per occurrence in placedItems so multiples render separately
+  const placedInstances: { item: typeof ROOM_ITEMS[0]; instanceKey: string; instanceIdx: number }[] = [];
+  const instanceCountSeen: Record<string, number> = {};
+  for (const id of placedItems) {
+    if (FARM_ANIMALS.includes(id)) continue;
+    const item = ROOM_ITEMS.find(i => i.id === id);
+    if (!item) continue;
+    const n = instanceCountSeen[id] ?? 0;
+    placedInstances.push({ item, instanceKey: `${id}-${n}`, instanceIdx: n });
+    instanceCountSeen[id] = n + 1;
+  }
   const placed = ROOM_ITEMS.filter(i => placedItems.includes(i.id) && !FARM_ANIMALS.includes(i.id));
   const shopItems = ROOM_ITEMS.filter(i =>
     (filter === 'all' || i.category === filter) &&
@@ -700,21 +712,22 @@ export default function RewardsRoom() {
                   background: hasTreehouse ? '#7c2d12' : '#fef9c3',
                   filter: 'brightness(0.75)',
                 }}/>
-                {placed.map(item => {
-                  const savedPos = itemPositions[item.id];
-                  const xPct = savedPos ? savedPos.x : (item.position?.x ?? 50);
-                  const yPct = savedPos ? savedPos.y : (item.position?.y ?? 55);
+                {placedInstances.map(({ item, instanceKey, instanceIdx }) => {
+                  const posKey = instanceIdx === 0 ? item.id : instanceKey;
+                  const savedPos = itemPositions[posKey] ?? itemPositions[item.id];
+                  const defaultOffset = instanceIdx * 6; // spread duplicates slightly
+                  const xPct = savedPos ? savedPos.x : Math.min(92, (item.position?.x ?? 50) + defaultOffset);
+                  const yPct = savedPos ? savedPos.y : Math.min(88, (item.position?.y ?? 55) + defaultOffset);
                   return (
-                    <div key={item.id} style={{ position: 'absolute', left: `${xPct}%`, top: `${yPct}%`, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
+                    <div key={instanceKey} style={{ position: 'absolute', left: `${xPct}%`, top: `${yPct}%`, transform: 'translate(-50%, -50%)', zIndex: 10 }}>
                       <motion.div
-                        key={`${item.id}-${xPct}-${yPct}`}
                         drag dragMomentum={false} dragConstraints={roomRef}
                         onDragEnd={(_, info) => {
                           if (!roomRef.current) return;
                           const rect = roomRef.current.getBoundingClientRect();
                           const newXPx = rect.width * xPct / 100 + info.offset.x;
                           const newYPx = rect.height * yPct / 100 + info.offset.y;
-                          setItemPosition(item.id, {
+                          setItemPosition(posKey, {
                             x: Math.max(4, Math.min(96, (newXPx / rect.width) * 100)),
                             y: Math.max(4, Math.min(92, (newYPx / rect.height) * 100)),
                           });
@@ -730,7 +743,7 @@ export default function RewardsRoom() {
                     </div>
                   );
                 })}
-                {placed.length === 0 && (
+                {placedInstances.length === 0 && (
                   <div className="absolute inset-0 flex items-center justify-center pb-12">
                     <p className="text-black/30 font-semibold text-sm text-center px-8">
                       Your room is empty.<br/>Buy items from the Shop and place them here.
@@ -781,22 +794,31 @@ export default function RewardsRoom() {
                 <p className="text-gray-400 text-sm">No items yet — earn stars and visit the shop!</p>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
-                  {ROOM_ITEMS.filter(i => ownedItems.includes(i.id) && !FARM_ANIMALS.includes(i.id)).map(item => (
-                    <motion.button
-                      key={item.id}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => togglePlaced(item.id)}
-                      className={`p-3 rounded-2xl border-2 text-left flex items-center gap-2 transition-all ${
-                        placedItems.includes(item.id) ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-white'
-                      }`}
-                    >
-                      <span className="text-2xl">{item.emoji}</span>
-                      <div>
-                        <div className="text-sm font-bold text-gray-700">{item.name}</div>
-                        <div className="text-xs text-gray-400">{placedItems.includes(item.id) ? '✓ In room' : 'Tap to place'}</div>
+                  {ROOM_ITEMS.filter(i => ownedItems.includes(i.id) && !FARM_ANIMALS.includes(i.id)).map(item => {
+                    const owned = itemQuantities[item.id] ?? 1;
+                    const inRoom = placedItems.filter(id => id === item.id).length;
+                    return (
+                      <div key={item.id} className={`p-3 rounded-2xl border-2 flex items-center gap-2 transition-all ${inRoom > 0 ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-white'}`}>
+                        <span className="text-2xl">{item.emoji}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-bold text-gray-700 truncate">{item.name}</div>
+                          <div className="text-xs text-gray-400">{inRoom > 0 ? `${inRoom} in room` : 'Not placed'}{owned > 1 ? ` · own ${owned}` : ''}</div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <button
+                            onClick={() => addToRoom(item.id)}
+                            disabled={inRoom >= owned}
+                            className="w-7 h-7 rounded-lg bg-green-500 text-white font-black text-sm flex items-center justify-center disabled:opacity-30"
+                          >+</button>
+                          <button
+                            onClick={() => removeFromRoom(item.id)}
+                            disabled={inRoom === 0}
+                            className="w-7 h-7 rounded-lg bg-red-400 text-white font-black text-sm flex items-center justify-center disabled:opacity-30"
+                          >−</button>
+                        </div>
                       </div>
-                    </motion.button>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>

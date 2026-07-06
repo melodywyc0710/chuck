@@ -47,11 +47,11 @@ export const FARM_ANIMAL_CONFIG: Record<string, {
   cow:      { rate: 4,  babyChance: 0.08, babyBonus: 15,  levelRequired: 1  },
   horse:    { rate: 6,  babyChance: 0.06, babyBonus: 25,  levelRequired: 1  },
   peacock:  { rate: 8,  babyChance: 0.05, babyBonus: 40,  levelRequired: 5  },
-  llama:    { rate: 12, babyChance: 0.04, babyBonus: 70,  levelRequired: 6  },
-  elephant: { rate: 18, babyChance: 0.03, babyBonus: 120, levelRequired: 7  },
-  tiger:    { rate: 25, babyChance: 0.02, babyBonus: 200, levelRequired: 8  },
-  dragon:   { rate: 35, babyChance: 0.015,babyBonus: 400, levelRequired: 9  },
-  unicorn:  { rate: 50, babyChance: 0.01, babyBonus: 800, levelRequired: 10 },
+  llama:    { rate: 12, babyChance: 0.04, babyBonus: 70,  levelRequired: 8  },
+  elephant: { rate: 18, babyChance: 0.03, babyBonus: 120, levelRequired: 11 },
+  tiger:    { rate: 25, babyChance: 0.02, babyBonus: 200, levelRequired: 14 },
+  dragon:   { rate: 35, babyChance: 0.015,babyBonus: 400, levelRequired: 17 },
+  unicorn:  { rate: 50, babyChance: 0.01, babyBonus: 800, levelRequired: 20 },
 };
 
 export const FARM_DAILY_CAP = 150; // base max farm stars per day (grows with level)

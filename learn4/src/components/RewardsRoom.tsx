@@ -835,7 +835,6 @@ export default function RewardsRoom() {
                   const qty = itemQuantities[item.id] ?? 0;
                   const owned = qty > 0;
                   const isFarmAnimal = FARM_ANIMALS.includes(item.id);
-                  const alreadyOwned = isFarmAnimal && owned;
                   const levelReq = item.levelRequired ?? 1;
                   const levelLocked = playerLevel < levelReq;
                   const canAfford = totalStars >= item.cost;
@@ -846,7 +845,7 @@ export default function RewardsRoom() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       className={`bg-white rounded-2xl p-4 border-2 shadow-sm relative ${
-                        levelLocked ? 'border-gray-200 opacity-60' : owned ? 'border-green-300' : 'border-gray-100'
+                        levelLocked ? 'border-gray-200 opacity-60' : (owned && !isFarmAnimal) ? 'border-green-300' : 'border-gray-100'
                       }`}
                     >
                       {levelLocked && (
@@ -861,10 +860,6 @@ export default function RewardsRoom() {
                       <div className="text-xs text-gray-400 text-center mb-3">{item.description}</div>
                       {item.cost === 0 ? (
                         <div className="text-center text-gray-400 text-xs">Free starter item</div>
-                      ) : alreadyOwned ? (
-                        <div className="w-full py-2 rounded-xl text-xs font-black text-center bg-green-50 text-green-600 border border-green-200">
-                          ✓ Owned — go to Farm
-                        </div>
                       ) : levelLocked ? (
                         <div className="w-full py-2 rounded-xl text-xs font-black text-center bg-gray-50 text-gray-400 border border-gray-200">
                           Reach Level {levelReq} to unlock
@@ -880,7 +875,7 @@ export default function RewardsRoom() {
                             ? { background: themeColor, borderBottomColor: themeDark, color: 'white' }
                             : { background: '#f3f4f6', borderBottomColor: '#d1d5db', color: '#9ca3af' }}
                         >
-                          ⭐ {item.cost} {canAfford ? 'Buy' : '— need more stars'}
+                          ⭐ {item.cost} {canAfford ? (isFarmAnimal && qty > 0 ? `Buy (own ${qty})` : 'Buy') : '— need more stars'}
                         </motion.button>
                       )}
                     </motion.div>

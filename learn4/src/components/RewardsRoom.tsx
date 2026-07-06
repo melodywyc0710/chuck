@@ -10,14 +10,26 @@ const THEME_DARK  = { purple: '#7C3AED', blue: '#0E8FC4', green: '#46A302', oran
 type TabType = 'room' | 'shop' | 'farm' | 'badges';
 type Category = 'all' | 'furniture' | 'pet' | 'decoration' | 'window';
 
-const FARM_ANIMALS = ['chicken', 'sheep', 'cow', 'horse', 'peacock', 'llama', 'elephant', 'tiger', 'dragon', 'unicorn'];
+const FARM_ANIMALS = [
+  'chicken', 'rabbit', 'duck', 'goat',
+  'sheep', 'pig', 'cow', 'deer',
+  'horse', 'fox', 'peacock', 'panda',
+  'llama', 'zebra', 'elephant', 'phoenix',
+  'tiger', 'griffin', 'dragon', 'unicorn',
+];
 const ANIMAL_EMOJI: Record<string, string> = {
-  chicken: '🐔', sheep: '🐑', cow: '🐄', horse: '🐴',
-  peacock: '🦚', llama: '🦙', elephant: '🐘', tiger: '🐯', dragon: '🐉', unicorn: '🦄',
+  chicken: '🐔', rabbit: '🐰', duck: '🦆', goat: '🐐',
+  sheep: '🐑',  pig: '🐷',    cow: '🐄',  deer: '🦌',
+  horse: '🐴',  fox: '🦊',    peacock: '🦚', panda: '🐼',
+  llama: '🦙',  zebra: '🦓',  elephant: '🐘', phoenix: '🔥',
+  tiger: '🐯',  griffin: '🦅', dragon: '🐉', unicorn: '🦄',
 };
 const ANIMAL_COST: Record<string, number> = {
-  chicken: 8, sheep: 20, cow: 45, horse: 80,
-  peacock: 150, llama: 300, elephant: 600, tiger: 1200, dragon: 2500, unicorn: 5000,
+  chicken: 8,    rabbit: 12,   duck: 18,    goat: 30,
+  sheep: 45,     pig: 60,      cow: 80,     deer: 110,
+  horse: 150,    fox: 200,     peacock: 280, panda: 380,
+  llama: 500,    zebra: 650,   elephant: 850, phoenix: 1100,
+  tiger: 1400,   griffin: 1800, dragon: 2500, unicorn: 5000,
 };
 const WEEKLY_GOAL = 5;
 
@@ -117,13 +129,23 @@ function PetBody({ type, size = 80 }: { type: 'owl' | 'fox' | 'panda'; size?: nu
 
 const ANIMAL_GREETINGS: Record<string, string[]> = {
   chicken: ['Cluck cluck! 🐣', 'Bawk bawk! 🌾', 'Cluck! ⭐'],
+  rabbit:  ['Hop hop! 🐰', 'Boing! ⭐', 'So fluffy! 🌸'],
+  duck:    ['Quack! 🦆', 'Quack quack! 💧', 'Waddle! ⭐'],
+  goat:    ['Mehhh! 🐐', 'Baaa! ⭐', 'Nom nom! 🌿'],
   sheep:   ['Baaaa! 🌿', 'Baaa! ⭐', 'Fluffy hug! 🤗'],
+  pig:     ['Oink oink! 🐷', 'Snort! ⭐', 'Roll in mud! 💦'],
   cow:     ['Mooooo! 🌾', 'Moo! ⭐', 'Mooo! 🥛'],
+  deer:    ['Prance! 🦌', 'So graceful! ⭐', 'Leap! 🌿'],
   horse:   ['Neigh! 🌟', 'Nay nay! ⭐', 'Gallop! 🏇'],
+  fox:     ['Yip yip! 🦊', 'Sly! ⭐', 'Pounce! 🍂'],
   peacock: ['Screech! 🦚', 'So pretty! ✨', 'Look at me! 🌟'],
+  panda:   ['Munch munch! 🐼', 'Bamboo! ⭐', 'Roll! 🎋'],
   llama:   ['Mwwah! 🦙', 'Spit! 💦', 'Llama love! ⭐'],
+  zebra:   ['Zap! 🦓', 'Stripe power! ⭐', 'Gallop! 🌟'],
   elephant:['Trumpet! 🎺', 'Toot toot! ⭐', 'Big hug! 🤗'],
+  phoenix: ['Arise! 🔥', 'Reborn! ⭐', 'Blaze! 🌅'],
   tiger:   ['Roarrr! 🐯', 'Grr! ⭐', 'Pounce! 💥'],
+  griffin: ['Screee! 🦅', 'Mighty! ⭐', 'Soar! 🌤️'],
   dragon:  ['RAWR! 🔥', 'Fire! 🐉', 'Fly! ⭐'],
   unicorn: ['Sparkle! ✨', 'Magic! 🌈', 'Shine! ⭐'],
 };

@@ -42,16 +42,26 @@ export function getPlayerLevel(lifetimeStars: number): number {
 export const FARM_ANIMAL_CONFIG: Record<string, {
   rate: number; babyChance: number; babyBonus: number; levelRequired: number;
 }> = {
-  chicken:  { rate: 1,  babyChance: 0.12, babyBonus: 5,   levelRequired: 1  },
-  sheep:    { rate: 2,  babyChance: 0.10, babyBonus: 8,   levelRequired: 1  },
-  cow:      { rate: 4,  babyChance: 0.08, babyBonus: 15,  levelRequired: 1  },
-  horse:    { rate: 6,  babyChance: 0.06, babyBonus: 25,  levelRequired: 1  },
-  peacock:  { rate: 8,  babyChance: 0.05, babyBonus: 40,  levelRequired: 5  },
-  llama:    { rate: 12, babyChance: 0.04, babyBonus: 70,  levelRequired: 8  },
-  elephant: { rate: 18, babyChance: 0.03, babyBonus: 120, levelRequired: 11 },
-  tiger:    { rate: 25, babyChance: 0.02, babyBonus: 200, levelRequired: 14 },
-  dragon:   { rate: 35, babyChance: 0.015,babyBonus: 400, levelRequired: 17 },
-  unicorn:  { rate: 50, babyChance: 0.01, babyBonus: 800, levelRequired: 20 },
+  chicken:  { rate: 1,  babyChance: 0.12, babyBonus: 5,    levelRequired: 1  },
+  rabbit:   { rate: 2,  babyChance: 0.11, babyBonus: 7,    levelRequired: 2  },
+  duck:     { rate: 2,  babyChance: 0.11, babyBonus: 8,    levelRequired: 3  },
+  goat:     { rate: 3,  babyChance: 0.10, babyBonus: 10,   levelRequired: 4  },
+  sheep:    { rate: 3,  babyChance: 0.10, babyBonus: 12,   levelRequired: 5  },
+  pig:      { rate: 4,  babyChance: 0.09, babyBonus: 15,   levelRequired: 6  },
+  cow:      { rate: 5,  babyChance: 0.09, babyBonus: 20,   levelRequired: 7  },
+  deer:     { rate: 6,  babyChance: 0.08, babyBonus: 28,   levelRequired: 8  },
+  horse:    { rate: 8,  babyChance: 0.07, babyBonus: 38,   levelRequired: 9  },
+  fox:      { rate: 10, babyChance: 0.07, babyBonus: 50,   levelRequired: 10 },
+  peacock:  { rate: 12, babyChance: 0.06, babyBonus: 65,   levelRequired: 11 },
+  panda:    { rate: 15, babyChance: 0.05, babyBonus: 85,   levelRequired: 12 },
+  llama:    { rate: 18, babyChance: 0.05, babyBonus: 110,  levelRequired: 13 },
+  zebra:    { rate: 22, babyChance: 0.04, babyBonus: 140,  levelRequired: 14 },
+  elephant: { rate: 27, babyChance: 0.04, babyBonus: 180,  levelRequired: 15 },
+  phoenix:  { rate: 33, babyChance: 0.03, babyBonus: 230,  levelRequired: 16 },
+  tiger:    { rate: 40, babyChance: 0.03, babyBonus: 300,  levelRequired: 17 },
+  griffin:  { rate: 50, babyChance: 0.02, babyBonus: 400,  levelRequired: 18 },
+  dragon:   { rate: 65, babyChance: 0.015,babyBonus: 550,  levelRequired: 19 },
+  unicorn:  { rate: 85, babyChance: 0.01, babyBonus: 800,  levelRequired: 20 },
 };
 
 export const FARM_DAILY_CAP = 150; // base max farm stars per day (grows with level)

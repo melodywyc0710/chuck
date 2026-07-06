@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppStore, PLAYER_LEVELS, getPlayerLevel, FARM_ANIMAL_CONFIG, FARM_DAILY_CAP, getFarmDailyCap } from '../store/appStore';
+import { useAppStore, PLAYER_LEVELS, getPlayerLevel, FARM_ANIMAL_CONFIG, getFarmDailyCap } from '../store/appStore';
 import { ROOM_ITEMS } from '../data/rewards';
 import { BADGES } from '../data/badges';
 import { sounds } from '../utils/sounds';
@@ -485,6 +485,11 @@ export default function RewardsRoom() {
     }
   };
 
+  // Player level (based on lifetime stars earned)
+  const playerLevel = getPlayerLevel(lifetimeStarsEarned);
+  const currentLevelData = PLAYER_LEVELS[playerLevel - 1];
+  const nextLevelData = PLAYER_LEVELS[playerLevel] ?? null;
+
   // Farm: pending stars and daily cap
   const today = new Date().toISOString().slice(0, 10);
   const todayFarmStars = farmLastDay === today ? farmDailyStars : 0;
@@ -500,11 +505,6 @@ export default function RewardsRoom() {
     pendingStars += Math.floor(h * cfg.rate);
   });
   const collectableStars = Math.min(pendingStars, farmCapRemaining);
-
-  // Player level (based on lifetime stars earned)
-  const playerLevel = getPlayerLevel(lifetimeStarsEarned);
-  const currentLevelData = PLAYER_LEVELS[playerLevel - 1];
-  const nextLevelData = PLAYER_LEVELS[playerLevel] ?? null;
   const levelProgress = nextLevelData
     ? Math.round(((lifetimeStarsEarned - currentLevelData.minStars) / (nextLevelData.minStars - currentLevelData.minStars)) * 100)
     : 100;

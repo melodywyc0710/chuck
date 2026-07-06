@@ -381,10 +381,10 @@ export default function RewardsRoom() {
     petNames, namePet,
   } = useAppStore();
 
-  // Fix: default to 0 weeks (not 99) so new items are properly locked
+  // Week 1 = the first week of enrolment (weeksEnrolled starts at 0, so add 1)
   const weeksEnrolled = firstLoginDate
-    ? Math.floor((Date.now() - new Date(firstLoginDate).getTime()) / (7 * 24 * 3600 * 1000))
-    : 0;
+    ? Math.floor((Date.now() - new Date(firstLoginDate).getTime()) / (7 * 24 * 3600 * 1000)) + 1
+    : 1;
 
   const [tab, setTab] = useState<TabType>('room');
   const [filter, setFilter] = useState<Category>('all');

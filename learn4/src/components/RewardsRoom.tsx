@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useAppStore, PLAYER_LEVELS, getPlayerLevel, FARM_ANIMAL_CONFIG, getFarmDailyCap } from '../store/appStore';
+import { useAppStore, PLAYER_LEVELS, getPlayerLevel, FARM_ANIMAL_CONFIG, getFarmDailyCap, BABY_GROWTH_MS } from '../store/appStore';
 import { ROOM_ITEMS } from '../data/rewards';
 import { BADGES } from '../data/badges';
 import { sounds } from '../utils/sounds';
@@ -252,7 +252,7 @@ function useAnimalWalker(
 }
 
 function WalkingAnimal({ plot, idx, petNames, containerRef }: {
-  plot: { id: string; animalId: string | null; placedAt: string };
+  plot: { id: string; animalId: string | null; placedAt: string; isBaby?: boolean; babyBornAt?: string };
   idx: number;
   petNames: Record<string, string>;
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -263,6 +263,12 @@ function WalkingAnimal({ plot, idx, petNames, containerRef }: {
   const [hearts, setHearts] = useState(false);
   const animalId = plot.animalId!;
   const customName = petNames[plot.id] ?? petNames[animalId];
+
+  // Baby growth: scale from 0.38 → 1.0 over BABY_GROWTH_MS
+  const babyProgress = plot.isBaby && plot.babyBornAt
+    ? Math.min(1, (Date.now() - new Date(plot.babyBornAt).getTime()) / BABY_GROWTH_MS)
+    : 1;
+  const animalScale = plot.isBaby ? 0.38 + babyProgress * 0.62 : 1;
   const SEEDS = [7, 23, 41, 13, 57, 31, 3, 47, 19, 61];
   const initialX = (SEEDS[idx % 10] + idx * 9) % 72 + 4;
 
@@ -337,13 +343,20 @@ function WalkingAnimal({ plot, idx, petNames, containerRef }: {
           {customName}
         </div>
       )}
-      <div style={{ fontSize: '1.8rem', lineHeight: 1 }}>{ANIMAL_EMOJI[animalId]}</div>
+      {plot.isBaby && (
+        <div style={{ fontSize: '8px', fontWeight: 800, color: '#fff', background: '#f59e0b', borderRadius: 5, padding: '1px 4px', marginBottom: 1 }}>
+          🍼 {Math.round(babyProgress * 100)}%
+        </div>
+      )}
+      <div style={{ fontSize: '1.8rem', lineHeight: 1, transform: `scale(${animalScale})`, transformOrigin: 'bottom center', transition: 'transform 2s ease' }}>
+        {ANIMAL_EMOJI[animalId]}
+      </div>
     </div>
   );
 }
 
 function FarmScene({ farmPlots, petNames }: {
-  farmPlots: { id: string; animalId: string | null; placedAt: string }[];
+  farmPlots: { id: string; animalId: string | null; placedAt: string; isBaby?: boolean; babyBornAt?: string }[];
   petNames: Record<string, string>;
 }) {
   const occupied = farmPlots.filter(p => p.animalId);
@@ -555,10 +568,10 @@ export default function RewardsRoom() {
             className="fixed top-1/2 left-1/2 z-50 bg-white rounded-3xl shadow-2xl p-6 text-center w-72"
             style={{ border: '3px solid #FCD34D' }}
           >
-            <div className="text-6xl mb-2">{pendingBabyBonus.emoji}</div>
-            <div className="text-2xl mb-1">🐣</div>
-            <div className="font-black text-gray-800 text-lg mb-1">Baby {pendingBabyBonus.animalId.charAt(0).toUpperCase() + pendingBabyBonus.animalId.slice(1)}!</div>
-            <div className="text-sm text-gray-500 mb-4">Your animal had a baby!<br/>+⭐{pendingBabyBonus.bonusStars} bonus stars!</div>
+            <div className="text-6xl mb-2">🍼</div>
+            <div className="text-2xl mb-1">{ANIMAL_EMOJI[pendingBabyBonus.animalId] ?? '🐣'}</div>
+            <div className="font-black text-gray-800 text-lg mb-1">A baby {pendingBabyBonus.animalId} was born!</div>
+            <div className="text-sm text-gray-500 mb-4">Check your farm — it's tiny now but will grow into a full adult over 7 days! 🌱</div>
             <button
               onClick={dismissBabyBonus}
               className="btn-duo text-white font-black px-6 py-2 rounded-2xl text-sm"

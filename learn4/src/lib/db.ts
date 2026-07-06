@@ -21,7 +21,7 @@ export interface GameState {
   itemQuantities: Record<string, number>;
   placedItems: string[];
   itemPositions: Record<string, { x: number; y: number }>;
-  farmPlots: { id: string; animalId: string | null; placedAt: string }[];
+  farmPlots: { id: string; animalId: string | null; placedAt: string; isBaby?: boolean; babyBornAt?: string }[];
   lastFarmCollect: string;
   farmDailyStars: number;
   farmLastDay: string;

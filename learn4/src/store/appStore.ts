@@ -120,10 +120,15 @@ export interface RoomItem {
 }
 
 export interface FarmPlot {
-  id: string;          // 'plot-0' .. 'plot-5'
+  id: string;          // 'plot-0' .. 'plot-9'
   animalId: string | null;
   placedAt: string;    // ISO datetime when animal was placed
+  isBaby?: boolean;    // true while animal is still growing
+  babyBornAt?: string; // ISO datetime when baby was born
 }
+
+// Baby animals grow to adult over 7 days
+export const BABY_GROWTH_MS = 7 * 24 * 3600000;
 
 export interface AppState {
   view: View;
@@ -512,36 +517,66 @@ export const useAppStore = create<AppState & AppActions>()(
         const cap = getFarmDailyCap(getPlayerLevel(state.lifetimeStarsEarned));
         const remaining = Math.max(0, cap - todayFarmStars);
         if (remaining === 0) return;
-        const now = Date.now();
+        const nowMs = Date.now();
+        const nowIso = new Date(nowMs).toISOString();
         let raw = 0;
-        let baby: BabyBonus | null = null;
-        state.farmPlots.forEach(plot => {
-          if (!plot.animalId || !plot.placedAt) return;
+        let newBabyAnimalId: string | null = null;
+
+        // First pass: grow babies that have matured, calculate stars
+        const updatedPlots = state.farmPlots.map(plot => {
+          if (!plot.animalId || !plot.placedAt) return plot;
           const cfg = FARM_ANIMAL_CONFIG[plot.animalId];
-          if (!cfg) return;
-          const hoursElapsed = (now - new Date(plot.placedAt).getTime()) / 3600000;
-          raw += Math.floor(hoursElapsed * cfg.rate);
-          // Baby probability (independent roll per animal per collect)
-          if (!baby && Math.random() < cfg.babyChance) {
-            const emojiMap: Record<string, string> = {
-              chicken: '🐔', sheep: '🐑', cow: '🐄', horse: '🐴',
-              peacock: '🦚', llama: '🦙', elephant: '🐘', tiger: '🐯',
-              dragon: '🐉', unicorn: '🦄',
-            };
-            baby = { animalId: plot.animalId, emoji: emojiMap[plot.animalId] ?? '🐣', bonusStars: cfg.babyBonus };
-            raw += cfg.babyBonus;
+          if (!cfg) return plot;
+
+          // Check if baby has grown to adult
+          if (plot.isBaby && plot.babyBornAt) {
+            const age = nowMs - new Date(plot.babyBornAt).getTime();
+            if (age >= BABY_GROWTH_MS) {
+              // Graduated to adult — reset placedAt so star timer starts fresh
+              return { ...plot, isBaby: false, babyBornAt: undefined, placedAt: nowIso };
+            }
+            // Still a baby: earns at 30% of adult rate
+            const hoursElapsed = (nowMs - new Date(plot.placedAt).getTime()) / 3600000;
+            raw += Math.floor(hoursElapsed * cfg.rate * 0.3);
+            return { ...plot, placedAt: nowIso };
           }
+
+          // Adult animal
+          const hoursElapsed = (nowMs - new Date(plot.placedAt).getTime()) / 3600000;
+          raw += Math.floor(hoursElapsed * cfg.rate);
+
+          // Baby chance roll
+          if (!newBabyAnimalId && Math.random() < cfg.babyChance) {
+            newBabyAnimalId = plot.animalId;
+          }
+          return { ...plot, placedAt: nowIso };
         });
+
+        // Place baby on the first empty plot (if one was born and a slot is free)
+        let finalPlots = updatedPlots;
+        let baby: BabyBonus | null = null;
+        if (newBabyAnimalId) {
+          const emptyIdx = updatedPlots.findIndex(p => !p.animalId);
+          if (emptyIdx >= 0) {
+            finalPlots = updatedPlots.map((p, i) =>
+              i === emptyIdx
+                ? { ...p, animalId: newBabyAnimalId, placedAt: nowIso, isBaby: true, babyBornAt: nowIso }
+                : p
+            );
+            baby = { animalId: newBabyAnimalId, emoji: '🐣', bonusStars: 0 };
+          }
+        }
+
         const earned = Math.min(raw, remaining);
-        if (earned > 0) {
+        if (earned > 0 || baby) {
           set(s => ({
             totalStars: s.totalStars + earned,
             lifetimeStarsEarned: s.lifetimeStarsEarned + earned,
             farmDailyStars: todayFarmStars + earned,
             farmLastDay: today,
             pendingBabyBonus: baby,
-            farmPlots: s.farmPlots.map(p => ({ ...p, placedAt: p.animalId ? new Date().toISOString() : '' })),
-            lastFarmCollect: new Date().toISOString(),
+            farmPlots: finalPlots,
+            lastFarmCollect: nowIso,
           }));
           const userId = get().userId;
           if (userId) saveGameState(userId, extractGameState(get())).catch(console.error);

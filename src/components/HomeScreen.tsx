@@ -3,6 +3,7 @@ import { Plus, LogOut, Flame } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_ } from '../lib/supabase';
+import { applyDecayIfNeeded, recordCompletion } from '../lib/petEngine';
 
 function petColor(hue: number) {
   return `hsl(${hue}, 50%, 65%)`;
@@ -26,11 +27,21 @@ export default function HomeScreen() {
   const pet = useAuthStore(s => s.pet);
   const profile = useAuthStore(s => s.profile);
   const signOut = useAuthStore(s => s.signOut);
+  const updatePetState = useAuthStore(s => s.setPetLocal);
   const [promises, setPromises] = useState<Promise_[]>([]);
   const [showAdd, setShowAdd] = useState(false);
   const [newTitle, setNewTitle] = useState('');
 
-  useEffect(() => { loadPromises(); }, []);
+  useEffect(() => {
+    loadPromises();
+    // Apply passive happiness decay on load
+    if (pet) {
+      const userId = pet.user_id;
+      applyDecayIfNeeded(pet, userId).then(updated => {
+        if (updated) updatePetState(updated);
+      });
+    }
+  }, []);
 
   async function loadPromises() {
     const { data } = await supabase.from('promises').select('*').eq('active', true).order('created_at', { ascending: true });
@@ -184,8 +195,10 @@ function PromiseCard({ promise, index, color }: { promise: Promise_; index: numb
   const [verifying, setVerifying] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
+  const [levelUp, setLevelUp] = useState(false);
   const user = useAuthStore(s => s.user);
-  const refreshPet = useAuthStore(s => s.refreshPet);
+  const pet = useAuthStore(s => s.pet);
+  const setPet = useAuthStore(s => s.setPetLocal);
 
   useEffect(() => {
     async function check() {
@@ -209,9 +222,24 @@ function PromiseCard({ promise, index, color }: { promise: Promise_; index: numb
   }, [timerRunning]);
 
   async function completePromise() {
-    if (!user) return;
-    const { error } = await supabase.from('completions').insert({ user_id: user.id, promise_id: promise.id, date_key: today, proof_type: 'timer' });
-    if (!error) { setCompleted(true); setVerifying(false); await refreshPet(); }
+    if (!user || !pet) return;
+    const prevLevel = pet.level;
+    // Record completion row
+    const { error } = await supabase.from('completions').insert({
+      user_id: user.id, promise_id: promise.id, date_key: today, proof_type: 'timer',
+    });
+    if (error) return;
+    // Update pet stats (XP, happiness, streak, level)
+    const updated = await recordCompletion(pet, user.id);
+    if (updated) {
+      setPet(updated);
+      if (updated.level > prevLevel) {
+        setLevelUp(true);
+        setTimeout(() => setLevelUp(false), 2500);
+      }
+    }
+    setCompleted(true);
+    setVerifying(false);
   }
 
   const durationSecs = (promise.timer_duration_mins ?? 1) * 60;
@@ -238,19 +266,26 @@ function PromiseCard({ promise, index, color }: { promise: Promise_; index: numb
   }
 
   return (
-    <button
-      onClick={() => !completed && setVerifying(true)}
-      className={`${completed ? 'liquid-glass' : 'liquid-glass'} rounded-[28px] p-4 flex flex-col text-left transition-all active:scale-[0.97] fade-up`}
-      style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s`, opacity: completed ? 0.5 : 1 }}
-    >
-      <span className="text-white/40 text-xs font-medium mb-auto">{num}</span>
-      <div>
-        <p className={`text-white text-base font-medium ${completed ? 'line-through' : ''}`}>{promise.title}</p>
-        {completed
-          ? <p className="text-white/30 text-xs mt-0.5">done ✓</p>
-          : <p className="text-white/30 text-xs mt-0.5">tap to verify</p>
-        }
-      </div>
-    </button>
+    <div className="relative">
+      {levelUp && (
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-50 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-bounce whitespace-nowrap">
+          ⬆️ Level up!
+        </div>
+      )}
+      <button
+        onClick={() => !completed && setVerifying(true)}
+        className="liquid-glass rounded-[28px] p-4 flex flex-col text-left transition-all active:scale-[0.97] fade-up w-full"
+        style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s`, opacity: completed ? 0.5 : 1 }}
+      >
+        <span className="text-white/40 text-xs font-medium mb-auto">{num}</span>
+        <div>
+          <p className={`text-white text-base font-medium ${completed ? 'line-through' : ''}`}>{promise.title}</p>
+          {completed
+            ? <p className="text-white/30 text-xs mt-0.5">done ✓</p>
+            : <p className="text-white/30 text-xs mt-0.5">tap to verify</p>
+          }
+        </div>
+      </button>
+    </div>
   );
 }

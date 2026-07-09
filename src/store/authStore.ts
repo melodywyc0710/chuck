@@ -17,7 +17,8 @@ interface AuthActions {
   signIn: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   refreshPet: () => Promise<void>;
-  updatePet: (updates: Partial<Pet>) => Promise<void>;
+  updatePet: (updates: Partial<Pet> | Pet) => Promise<void>;
+  setPetLocal: (pet: Pet) => void;
 }
 
 export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
@@ -77,6 +78,8 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
       .single();
     if (data) set({ pet: data });
   },
+
+  setPetLocal: (pet) => set({ pet }),
 
   updatePet: async (updates) => {
     const { user, pet } = get();

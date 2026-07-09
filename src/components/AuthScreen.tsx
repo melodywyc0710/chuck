@@ -1,5 +1,63 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { Timer, ArrowRight, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+
+function SlideToConfirm({ onConfirm, label }: { onConfirm: () => void; label: string }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [dragging, setDragging] = useState(false);
+  const [x, setX] = useState(0);
+  const startX = useRef(0);
+
+  function getTrackWidth() {
+    return (trackRef.current?.offsetWidth ?? 300) - 52 - 8; // track - thumb - padding
+  }
+
+  function onPointerDown(e: React.PointerEvent) {
+    setDragging(true);
+    startX.current = e.clientX - x;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }
+
+  function onPointerMove(e: React.PointerEvent) {
+    if (!dragging) return;
+    const nx = Math.max(0, Math.min(e.clientX - startX.current, getTrackWidth()));
+    setX(nx);
+  }
+
+  function onPointerUp() {
+    if (!dragging) return;
+    setDragging(false);
+    if (x / getTrackWidth() > 0.85) {
+      setX(getTrackWidth());
+      setTimeout(onConfirm, 200);
+    } else {
+      setX(0);
+    }
+  }
+
+  return (
+    <div ref={trackRef} className="relative liquid-glass rounded-full h-14 flex items-center px-1 select-none">
+      {/* Thumb */}
+      <div
+        className="absolute left-1 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md z-10 cursor-grab active:cursor-grabbing touch-none"
+        style={{ transform: `translateX(${x}px)`, transition: dragging ? 'none' : 'transform 0.35s cubic-bezier(0.22,1,0.36,1)' }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+      >
+        <ArrowRight size={18} className="text-gray-800" />
+      </div>
+      {/* Label */}
+      <span className="flex-1 text-center text-white/60 text-sm font-medium pointer-events-none">{label}</span>
+      {/* Chevrons */}
+      <div className="flex items-center gap-0.5 pr-3 pointer-events-none">
+        <ChevronRight size={14} className="text-white/40" />
+        <ChevronRight size={14} className="text-white/50" />
+        <ChevronRight size={14} className="text-white/60" />
+      </div>
+    </div>
+  );
+}
 
 export default function AuthScreen() {
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
@@ -13,8 +71,7 @@ export default function AuthScreen() {
   const signIn = useAuthStore(s => s.signIn);
   const signUp = useAuthStore(s => s.signUp);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSubmit() {
     setError('');
     setLoading(true);
     if (mode === 'signup') {
@@ -24,116 +81,116 @@ export default function AuthScreen() {
       setDone(true);
     } else {
       const err = await signIn(email, password);
-      if (err) setError(err);
+      if (err) { setError(err); setLoading(false); return; }
     }
     setLoading(false);
   }
 
   if (done) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0e0c0a] px-6 text-center">
-        <div className="text-6xl mb-6 hero-anim hero-reveal" style={{ animationDelay: '0s', opacity: 0 }}>📬</div>
-        <h2 className="font-playfair italic text-3xl text-white mb-3 hero-anim hero-reveal" style={{ animationDelay: '0.15s', opacity: 0 }}>
-          Check your email
-        </h2>
-        <p className="text-white/50 text-sm max-w-xs leading-relaxed hero-anim hero-fade" style={{ animationDelay: '0.3s', opacity: 0 }}>
-          We sent a link to <span className="text-white/80">{email}</span>. Click it, then come back and sign in.
-        </p>
-        <button
-          onClick={() => { setMode('signin'); setDone(false); }}
-          className="mt-8 text-[#e8a87c] text-sm underline underline-offset-4 hero-anim hero-fade"
-          style={{ animationDelay: '0.45s', opacity: 0 }}
-        >
-          Back to sign in
-        </button>
-      </div>
+      <>
+        <div className="scene-bg" />
+        <div className="scene-overlay" />
+        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 text-center">
+          <div className="text-6xl mb-6 fade-up" style={{ animationDelay: '0.1s' }}>📬</div>
+          <h2 className="font-playfair italic text-white text-3xl mb-3 fade-up" style={{ animationDelay: '0.25s', letterSpacing: '-0.04em' }}>
+            Check your email
+          </h2>
+          <p className="text-white/50 text-sm leading-relaxed max-w-xs fade-up" style={{ animationDelay: '0.4s' }}>
+            We sent a link to <span className="text-white/80">{email}</span>. Click it then come back to sign in.
+          </p>
+          <button
+            onClick={() => { setMode('signin'); setDone(false); }}
+            className="mt-8 text-white/50 text-sm underline underline-offset-4 hover:text-white/80 transition-colors fade-up"
+            style={{ animationDelay: '0.55s' }}
+          >
+            Back to sign in
+          </button>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0e0c0a] px-6 tracking-[-0.02em]" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <>
+      <div className="scene-bg" />
+      <div className="scene-overlay" />
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
 
-      {/* Background texture */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(200,130,80,0.12)_0%,transparent_65%)] pointer-events-none" />
+        {/* Badge */}
+        <div className="fade-up mb-10" style={{ animationDelay: '0.1s' }}>
+          <div className="liquid-glass flex items-center gap-2 px-3 py-2.5 rounded-full">
+            <Timer size={12} className="text-white/80" />
+            <span className="text-white/90 text-xs font-medium">Nagi · accountability companion</span>
+          </div>
+        </div>
 
-      {/* Logo */}
-      <div className="flex flex-col items-center mb-12 hero-anim hero-reveal" style={{ animationDelay: '0s', opacity: 0 }}>
-        <div className="text-6xl mb-5">🥚</div>
-        <h1 className="font-playfair italic text-white text-4xl leading-none" style={{ letterSpacing: '-0.04em' }}>
-          Nagi
-        </h1>
-        <p className="text-white/40 text-xs mt-2 tracking-widest uppercase">your accountability companion</p>
-      </div>
+        {/* Title */}
+        <div className="text-center mb-8 fade-up" style={{ animationDelay: '0.25s' }}>
+          <p className="text-white/60 text-sm mb-2">Welcome back</p>
+          <h1 className="font-playfair italic text-white text-4xl leading-tight" style={{ letterSpacing: '-0.04em' }}>
+            {mode === 'signin' ? 'Sign in to\nyour companion' : 'Meet your\ncompanion'}
+          </h1>
+        </div>
 
-      {/* Tab toggle */}
-      <div
-        className="flex bg-white/8 border border-white/10 rounded-full p-1 mb-8 w-full max-w-xs hero-anim hero-fade"
-        style={{ animationDelay: '0.2s', opacity: 0 }}
-      >
-        {(['signin', 'signup'] as const).map(m => (
-          <button
-            key={m}
-            onClick={() => { setMode(m); setError(''); }}
-            className={`flex-1 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-              mode === m
-                ? 'bg-white text-[#1a1410] shadow-sm'
-                : 'text-white/50 hover:text-white/80'
-            }`}
-          >
-            {m === 'signin' ? 'Sign in' : 'Sign up'}
-          </button>
-        ))}
-      </div>
+        {/* Tab toggle */}
+        <div className="liquid-glass rounded-full p-1 flex w-full max-w-xs mb-6 fade-up" style={{ animationDelay: '0.32s' }}>
+          {(['signin', 'signup'] as const).map(m => (
+            <button
+              key={m}
+              onClick={() => { setMode(m); setError(''); }}
+              className={`flex-1 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                mode === m ? 'bg-white text-gray-900 shadow-sm' : 'text-white/50 hover:text-white/80'
+              }`}
+            >
+              {m === 'signin' ? 'Sign in' : 'Sign up'}
+            </button>
+          ))}
+        </div>
 
-      {/* Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-xs space-y-3 hero-anim hero-fade"
-        style={{ animationDelay: '0.32s', opacity: 0 }}
-      >
-        {mode === 'signup' && (
+        {/* Inputs */}
+        <div className="w-full max-w-xs space-y-2.5 mb-6 fade-up" style={{ animationDelay: '0.4s' }}>
+          {mode === 'signup' && (
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              className="w-full px-4 py-3.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all liquid-glass focus:bg-white/10"
+              style={{ background: 'rgba(255,255,255,0.07)' }}
+            />
+          )}
           <input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-2xl bg-white/6 border border-white/10 text-white placeholder-white/25 text-sm outline-none focus:border-[#e8a87c]/60 focus:bg-white/8 transition-all"
-            autoComplete="username"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="w-full px-4 py-3.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all liquid-glass focus:bg-white/10"
+            style={{ background: 'rgba(255,255,255,0.07)' }}
           />
-        )}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          className="w-full px-4 py-3.5 rounded-2xl bg-white/6 border border-white/10 text-white placeholder-white/25 text-sm outline-none focus:border-[#e8a87c]/60 focus:bg-white/8 transition-all"
-          autoComplete="email"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          className="w-full px-4 py-3.5 rounded-2xl bg-white/6 border border-white/10 text-white placeholder-white/25 text-sm outline-none focus:border-[#e8a87c]/60 focus:bg-white/8 transition-all"
-          autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-        />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            className="w-full px-4 py-3.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all liquid-glass focus:bg-white/10"
+            style={{ background: 'rgba(255,255,255,0.07)' }}
+          />
+          {error && <p className="text-red-400/80 text-xs text-center pt-1">{error}</p>}
+        </div>
 
-        {error && (
-          <p className="text-red-400/80 text-xs text-center px-2 pt-1">{error}</p>
-        )}
+        {/* Slide to confirm */}
+        <div className="w-full max-w-xs fade-up" style={{ animationDelay: '0.55s' }}>
+          <SlideToConfirm
+            onConfirm={handleSubmit}
+            label={loading ? '…' : mode === 'signin' ? 'Slide to sign in' : 'Slide to create'}
+          />
+        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-3.5 mt-1 rounded-2xl bg-[#e8702a] hover:bg-[#d2611f] text-white font-semibold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg hover:shadow-[#e8702a]/25 disabled:opacity-50 disabled:hover:scale-100"
-        >
-          {loading ? '…' : mode === 'signin' ? 'Sign in' : 'Create account'}
-        </button>
-      </form>
-
-      <p className="text-white/20 text-xs mt-10 text-center max-w-xs leading-relaxed hero-anim hero-fade" style={{ animationDelay: '0.5s', opacity: 0 }}>
-        By continuing you agree to our Terms of Service and Privacy Policy
-      </p>
-    </div>
+        <p className="text-white/20 text-xs mt-8 text-center max-w-xs leading-relaxed fade-up" style={{ animationDelay: '0.7s' }}>
+          By continuing you agree to our Terms of Service and Privacy Policy
+        </p>
+      </div>
+    </>
   );
 }

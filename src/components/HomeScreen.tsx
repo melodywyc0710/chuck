@@ -4,18 +4,15 @@ import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_ } from '../lib/supabase';
 
-const MOOD_EMOJI: Record<string, string> = {
-  excited: '🤩',
-  happy:   '😊',
-  neutral: '😐',
-  sad:     '😢',
-};
+function petColor(hue: number) {
+  return `hsl(${hue}, 50%, 65%)`;
+}
 
+const MOOD_EMOJI: Record<string, string> = {
+  excited: '🤩', happy: '😊', neutral: '😐', sad: '😢',
+};
 const MOOD_LABEL: Record<string, string> = {
-  excited: 'Feeling amazing!',
-  happy:   'Doing well~',
-  neutral: 'Needs attention',
-  sad:     'Please help me',
+  excited: 'Feeling amazing!', happy: 'Doing well~', neutral: 'Needs attention', sad: 'Please help me',
 };
 
 function moodFromHappiness(h: number) {
@@ -36,168 +33,152 @@ export default function HomeScreen() {
   useEffect(() => { loadPromises(); }, []);
 
   async function loadPromises() {
-    const { data } = await supabase
-      .from('promises')
-      .select('*')
-      .eq('active', true)
-      .order('created_at', { ascending: true });
+    const { data } = await supabase.from('promises').select('*').eq('active', true).order('created_at', { ascending: true });
     if (data) setPromises(data);
   }
 
   async function addPromise() {
     if (!newTitle.trim()) return;
-    const { data } = await supabase
-      .from('promises')
-      .insert({ title: newTitle.trim(), frequency: 'daily', verify_method: 'timer' })
-      .select()
-      .single();
-    if (data) {
-      setPromises(p => [...p, data]);
-      setNewTitle('');
-      setShowAdd(false);
-    }
+    const { data } = await supabase.from('promises').insert({ title: newTitle.trim(), frequency: 'daily', verify_method: 'timer' }).select().single();
+    if (data) { setPromises(p => [...p, data]); setNewTitle(''); setShowAdd(false); }
   }
 
   if (!pet) return null;
 
   const mood = moodFromHappiness(pet.happiness);
   const xpPct = Math.round((pet.xp / pet.xp_to_next) * 100);
+  const color = petColor(pet.color_seed);
 
   return (
-    <div
-      className="min-h-screen bg-[#0e0c0a] flex flex-col max-w-md mx-auto tracking-[-0.02em]"
-      style={{ fontFamily: "'Inter', sans-serif" }}
-    >
-      {/* Ambient glow */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(200,130,80,0.10)_0%,transparent_60%)] pointer-events-none z-0" />
+    <>
+      <div className="scene-bg" />
+      <div className="scene-overlay" />
+      <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-6 pt-14 pb-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
 
-      {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between px-5 pt-10 pb-4">
-        <div>
-          <p className="text-white/30 text-xs tracking-widest uppercase">hello</p>
-          <h1 className="font-playfair italic text-white text-2xl leading-tight" style={{ letterSpacing: '-0.03em' }}>
-            {profile?.username}
-          </h1>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 bg-white/8 border border-white/10 rounded-full px-3 py-1.5">
-            <Flame size={13} className="text-[#e8702a]" />
-            <span className="text-white text-xs font-semibold">{pet.streak}</span>
+        {/* Nav */}
+        <div className="flex items-center justify-between mb-10 fade-up" style={{ animationDelay: '0.05s' }}>
+          <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
+            <Flame size={12} className="text-orange-400" />
+            <span className="text-white/90 text-xs font-medium">Day {pet.streak} streak</span>
           </div>
-          <button
-            onClick={signOut}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/6 border border-white/10 text-white/40 hover:text-white/80 transition-colors"
-          >
-            <LogOut size={13} />
-          </button>
-        </div>
-      </nav>
-
-      {/* Pet section */}
-      <div className="relative z-10 flex flex-col items-center py-8 px-5 hero-anim hero-reveal" style={{ animationDelay: '0.1s', opacity: 0 }}>
-        {/* Glow ring */}
-        <div
-          className="relative w-40 h-40 flex items-center justify-center"
-        >
-          <div
-            className="absolute inset-0 rounded-full blur-2xl opacity-30"
-            style={{ backgroundColor: petColor(pet.color_seed) }}
-          />
-          <div
-            className="relative w-36 h-36 rounded-full flex items-center justify-center text-6xl shadow-2xl border border-white/10"
-            style={{ backgroundColor: petColor(pet.color_seed) + '33', backdropFilter: 'blur(8px)' }}
-          >
-            {MOOD_EMOJI[mood]}
-          </div>
-        </div>
-
-        <div className="mt-4 text-center">
-          <p className="font-playfair italic text-white text-2xl" style={{ letterSpacing: '-0.03em' }}>{pet.name}</p>
-          <p className="text-white/40 text-xs mt-1">{MOOD_LABEL[mood]}</p>
-        </div>
-
-        {/* Bars */}
-        <div className="w-full max-w-xs mt-6 space-y-3">
-          <div>
-            <div className="flex justify-between text-xs text-white/30 mb-1.5">
-              <span>happiness</span>
-              <span>{pet.happiness}/100</span>
-            </div>
-            <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${pet.happiness}%`, backgroundColor: petColor(pet.color_seed) }}
-              />
-            </div>
-          </div>
-          <div>
-            <div className="flex justify-between text-xs text-white/30 mb-1.5">
-              <span>level {pet.level}</span>
-              <span>{pet.xp} / {pet.xp_to_next} xp</span>
-            </div>
-            <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-[#e8702a] rounded-full transition-all duration-700"
-                style={{ width: `${xpPct}%` }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Divider */}
-      <div className="relative z-10 mx-5 border-t border-white/6" />
-
-      {/* Promises */}
-      <div className="relative z-10 flex-1 px-5 pt-6 hero-anim hero-fade" style={{ animationDelay: '0.3s', opacity: 0 }}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-white/80 text-sm font-semibold tracking-wide">Today's promises</h2>
-          <button
-            onClick={() => setShowAdd(v => !v)}
-            className="w-7 h-7 flex items-center justify-center rounded-full bg-[#e8702a]/20 border border-[#e8702a]/30 text-[#e8702a] hover:bg-[#e8702a]/30 transition-colors"
-          >
-            <Plus size={14} />
-          </button>
-        </div>
-
-        {showAdd && (
-          <div className="flex gap-2 mb-4">
-            <input
-              type="text"
-              placeholder="e.g. meditate 10 min"
-              value={newTitle}
-              onChange={e => setNewTitle(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && addPromise()}
-              autoFocus
-              className="flex-1 px-4 py-2.5 rounded-xl bg-white/6 border border-white/10 text-white placeholder-white/25 text-sm outline-none focus:border-[#e8a87c]/50 transition-all"
-            />
+          <div className="flex items-center gap-2">
+            <span className="text-white/40 text-sm">{profile?.username}</span>
             <button
-              onClick={addPromise}
-              className="px-4 py-2.5 bg-[#e8702a] text-white rounded-xl text-sm font-medium hover:bg-[#d2611f] transition-colors"
+              onClick={signOut}
+              className="liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors"
             >
-              Add
+              <LogOut size={13} />
             </button>
           </div>
-        )}
+        </div>
 
-        {promises.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-white/20 text-sm">No promises yet.</p>
-            <p className="text-white/20 text-sm mt-1">Add one to keep {pet.name} happy.</p>
+        {/* Pet */}
+        <div className="flex flex-col items-center mb-10 fade-up" style={{ animationDelay: '0.1s' }}>
+          <div className="relative mb-4">
+            {/* Glow */}
+            <div className="absolute inset-0 rounded-full blur-3xl opacity-40 scale-150" style={{ backgroundColor: color }} />
+            <div
+              className="relative w-32 h-32 rounded-full flex items-center justify-center text-5xl liquid-glass"
+              style={{ background: color + '22' }}
+            >
+              {MOOD_EMOJI[mood]}
+            </div>
           </div>
-        )}
+          <h1 className="font-playfair italic text-white text-3xl mb-1" style={{ letterSpacing: '-0.04em' }}>{pet.name}</h1>
+          <p className="text-white/40 text-xs">{MOOD_LABEL[mood]}</p>
 
-        <div className="space-y-2.5 pb-10">
-          {promises.map(p => (
-            <PromiseCard key={p.id} promise={p} petName={pet.name} petHue={pet.color_seed} />
-          ))}
+          {/* Bars */}
+          <div className="w-full mt-6 space-y-3">
+            <div>
+              <div className="flex justify-between text-xs text-white/30 mb-1.5">
+                <span>happiness</span><span>{pet.happiness}/100</span>
+              </div>
+              <div className="h-1 bg-white/8 rounded-full overflow-hidden">
+                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pet.happiness}%`, backgroundColor: color }} />
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs text-white/30 mb-1.5">
+                <span>level {pet.level}</span><span>{pet.xp}/{pet.xp_to_next} xp</span>
+              </div>
+              <div className="h-1 bg-white/8 rounded-full overflow-hidden">
+                <div className="h-full rounded-full bg-orange-400/70 transition-all duration-700" style={{ width: `${xpPct}%` }} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Voice button */}
+        <div className="flex flex-col items-center my-2 mb-8 fade-up" style={{ animationDelay: '0.25s' }}>
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full blur-2xl" style={{ background: 'radial-gradient(ellipse at center, rgba(220,200,80,0.45) 0%, rgba(180,160,40,0.18) 40%, transparent 70%)', transform: 'scale(2.2)' }} />
+            <button className="relative w-16 h-16 rounded-full liquid-glass flex items-center justify-center transition-all active:scale-95 hover:bg-white/10">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <line x1="4"  y1="14" x2="4"  y2="14" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="9"  y1="10" x2="9"  y2="18" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="14" y1="6"  x2="14" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="19" y1="10" x2="19" y2="18" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="24" y1="14" x2="24" y2="14" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
+          </div>
+          <span className="text-white/50 text-xs mt-2">voice check-in</span>
+        </div>
+
+        {/* Promises */}
+        <div className="flex-1 fade-up" style={{ animationDelay: '0.4s' }}>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-white/40 text-xs mb-0.5">Choose all that apply</p>
+              <h2 className="text-white text-lg font-medium leading-tight" style={{ letterSpacing: '-0.03em' }}>
+                Today's promises
+              </h2>
+            </div>
+            <button
+              onClick={() => setShowAdd(v => !v)}
+              className="liquid-glass w-9 h-9 flex items-center justify-center rounded-full text-white/60 hover:text-white/90 transition-colors"
+            >
+              <Plus size={15} />
+            </button>
+          </div>
+
+          {showAdd && (
+            <div className="flex gap-2 mb-3 fade-up" style={{ animationDelay: '0s' }}>
+              <input
+                type="text"
+                placeholder="e.g. meditate 10 min"
+                value={newTitle}
+                onChange={e => setNewTitle(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && addPromise()}
+                autoFocus
+                className="flex-1 px-4 py-2.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all liquid-glass"
+                style={{ background: 'rgba(255,255,255,0.07)' }}
+              />
+              <button onClick={addPromise} className="px-4 py-2.5 bg-orange-500/80 text-white rounded-2xl text-sm font-medium hover:bg-orange-500 transition-colors">
+                Add
+              </button>
+            </div>
+          )}
+
+          {promises.length === 0 && (
+            <div className="text-center py-10">
+              <p className="text-white/20 text-sm">No promises yet.</p>
+              <p className="text-white/20 text-sm mt-1">Add one to keep {pet.name} happy.</p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-3">
+            {promises.map((p, i) => (
+              <PromiseCard key={p.id} promise={p} index={i} petName={pet.name} color={color} />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
-function PromiseCard({ promise, petName, petHue }: { promise: Promise_; petName: string; petHue: number }) {
+function PromiseCard({ promise, index, color }: { promise: Promise_; index: number; petName?: string; color: string }) {
   const today = new Date().toISOString().slice(0, 10);
   const [completed, setCompleted] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -209,12 +190,7 @@ function PromiseCard({ promise, petName, petHue }: { promise: Promise_; petName:
   useEffect(() => {
     async function check() {
       if (!user) return;
-      const { data } = await supabase
-        .from('completions')
-        .select('id')
-        .eq('promise_id', promise.id)
-        .eq('date_key', today)
-        .single();
+      const { data } = await supabase.from('completions').select('id').eq('promise_id', promise.id).eq('date_key', today).single();
       if (data) setCompleted(true);
     }
     check();
@@ -225,12 +201,7 @@ function PromiseCard({ promise, petName, petHue }: { promise: Promise_; petName:
     const target = (promise.timer_duration_mins ?? 1) * 60;
     const interval = setInterval(() => {
       setSeconds(s => {
-        if (s + 1 >= target) {
-          clearInterval(interval);
-          setTimerRunning(false);
-          completePromise();
-          return target;
-        }
+        if (s + 1 >= target) { clearInterval(interval); setTimerRunning(false); completePromise(); return target; }
         return s + 1;
       });
     }, 1000);
@@ -239,83 +210,47 @@ function PromiseCard({ promise, petName, petHue }: { promise: Promise_; petName:
 
   async function completePromise() {
     if (!user) return;
-    const { error } = await supabase.from('completions').insert({
-      user_id: user.id,
-      promise_id: promise.id,
-      date_key: today,
-      proof_type: 'timer',
-    });
-    if (!error) {
-      setCompleted(true);
-      setVerifying(false);
-      await refreshPet();
-    }
+    const { error } = await supabase.from('completions').insert({ user_id: user.id, promise_id: promise.id, date_key: today, proof_type: 'timer' });
+    if (!error) { setCompleted(true); setVerifying(false); await refreshPet(); }
   }
 
   const durationSecs = (promise.timer_duration_mins ?? 1) * 60;
   const pct = Math.round((seconds / durationSecs) * 100);
-  const color = petColor(petHue);
-
-  if (completed) {
-    return (
-      <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white/4 border border-white/8">
-        <span className="text-base">✅</span>
-        <span className="text-sm text-white/30 line-through">{promise.title}</span>
-      </div>
-    );
-  }
+  const num = String(index + 1).padStart(2, '0');
 
   if (verifying) {
     return (
-      <div className="px-4 py-4 rounded-2xl bg-white/6 border border-white/10">
-        <p className="text-sm font-medium text-white mb-1">{promise.title}</p>
-        <p className="text-xs text-white/35 mb-4">
-          Show {petName} you're doing it — keep the timer running!
-        </p>
-        <div className="h-1 bg-white/10 rounded-full overflow-hidden mb-3">
-          <div
-            className="h-full rounded-full transition-all"
-            style={{ width: `${pct}%`, backgroundColor: color }}
-          />
+      <div className="liquid-glass rounded-[28px] p-4 flex flex-col fade-up" style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s` }}>
+        <span className="text-white/40 text-xs font-medium mb-1">{num}</span>
+        <p className="text-white text-sm font-medium mb-2 leading-tight">{promise.title}</p>
+        <div className="h-0.5 bg-white/10 rounded-full overflow-hidden mb-2">
+          <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
         </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-white/30 font-mono">
-            {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, '0')} / {promise.timer_duration_mins ?? 1}:00
-          </span>
-          {!timerRunning ? (
-            <button
-              onClick={() => setTimerRunning(true)}
-              className="px-4 py-1.5 bg-[#e8702a] hover:bg-[#d2611f] text-white rounded-full text-xs font-medium transition-colors"
-            >
-              Start
-            </button>
-          ) : (
-            <button
-              onClick={() => { setTimerRunning(false); setVerifying(false); setSeconds(0); }}
-              className="px-4 py-1.5 bg-white/10 text-white/50 rounded-full text-xs transition-colors hover:bg-white/15"
-            >
-              Cancel
-            </button>
-          )}
+        <div className="flex items-center justify-between mt-auto">
+          <span className="text-white/30 text-xs font-mono">{Math.floor(seconds/60)}:{String(seconds%60).padStart(2,'0')}</span>
+          {!timerRunning
+            ? <button onClick={() => setTimerRunning(true)} className="text-xs text-white/80 font-medium px-2.5 py-1 rounded-full" style={{ background: color+'33' }}>Start</button>
+            : <button onClick={() => { setTimerRunning(false); setVerifying(false); setSeconds(0); }} className="text-xs text-white/40 px-2.5 py-1 rounded-full bg-white/10">Stop</button>
+          }
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-between px-4 py-3.5 rounded-2xl bg-white/6 border border-white/10 hover:bg-white/8 transition-colors">
-      <span className="text-sm text-white/80">{promise.title}</span>
-      <button
-        onClick={() => setVerifying(true)}
-        className="px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all hover:scale-[1.04] active:scale-95"
-        style={{ color, borderColor: color + '50', backgroundColor: color + '15' }}
-      >
-        Do it
-      </button>
-    </div>
+    <button
+      onClick={() => !completed && setVerifying(true)}
+      className={`${completed ? 'liquid-glass' : 'liquid-glass'} rounded-[28px] p-4 flex flex-col text-left transition-all active:scale-[0.97] fade-up`}
+      style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s`, opacity: completed ? 0.5 : 1 }}
+    >
+      <span className="text-white/40 text-xs font-medium mb-auto">{num}</span>
+      <div>
+        <p className={`text-white text-base font-medium ${completed ? 'line-through' : ''}`}>{promise.title}</p>
+        {completed
+          ? <p className="text-white/30 text-xs mt-0.5">done ✓</p>
+          : <p className="text-white/30 text-xs mt-0.5">tap to verify</p>
+        }
+      </div>
+    </button>
   );
-}
-
-function petColor(hue: number) {
-  return `hsl(${hue}, 50%, 65%)`;
 }

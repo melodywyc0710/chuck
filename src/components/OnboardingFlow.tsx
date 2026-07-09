@@ -1,31 +1,82 @@
 import { useState } from 'react';
+import { Sparkles, ArrowRight, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
 const TRAITS = [
-  { id: 'gentle',   emoji: '🌸', label: 'Gentle',   desc: 'Calm and nurturing' },
-  { id: 'playful',  emoji: '⚡', label: 'Playful',  desc: 'Energetic and fun' },
-  { id: 'focused',  emoji: '🎯', label: 'Focused',  desc: 'Disciplined and sharp' },
-  { id: 'creative', emoji: '🌈', label: 'Creative', desc: 'Curious and imaginative' },
+  { id: 'gentle',   num: '01', label: 'Gentle',   desc: 'Calm & nurturing' },
+  { id: 'playful',  num: '02', label: 'Playful',  desc: 'Energetic & fun' },
+  { id: 'focused',  num: '03', label: 'Focused',  desc: 'Disciplined & sharp' },
+  { id: 'creative', num: '04', label: 'Creative', desc: 'Curious & imaginative' },
 ];
+
+function SlideToHatch({ onConfirm, disabled }: { onConfirm: () => void; disabled: boolean }) {
+  const [x, setX] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const startX = useRef(0);
+  const trackWidth = 280 - 52 - 8;
+
+  function onPointerDown(e: React.PointerEvent) {
+    if (disabled) return;
+    setDragging(true);
+    startX.current = e.clientX - x;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }
+  function onPointerMove(e: React.PointerEvent) {
+    if (!dragging) return;
+    setX(Math.max(0, Math.min(e.clientX - startX.current, trackWidth)));
+  }
+  function onPointerUp() {
+    if (!dragging) return;
+    setDragging(false);
+    if (x / trackWidth > 0.85) { setX(trackWidth); setTimeout(onConfirm, 200); }
+    else setX(0);
+  }
+
+  return (
+    <div className="relative liquid-glass rounded-full h-14 flex items-center px-1 select-none" style={{ opacity: disabled ? 0.4 : 1 }}>
+      <div
+        className="absolute left-1 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md z-10 cursor-grab active:cursor-grabbing touch-none"
+        style={{ transform: `translateX(${x}px)`, transition: dragging ? 'none' : 'transform 0.35s cubic-bezier(0.22,1,0.36,1)' }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+      >
+        <ArrowRight size={18} className="text-gray-800" />
+      </div>
+      <span className="flex-1 text-center text-white/60 text-sm font-medium pointer-events-none">Slide to hatch 🥚</span>
+      <div className="flex items-center gap-0.5 pr-3 pointer-events-none">
+        <ChevronRight size={14} className="text-white/40" />
+        <ChevronRight size={14} className="text-white/50" />
+        <ChevronRight size={14} className="text-white/60" />
+      </div>
+    </div>
+  );
+}
+
+import { useRef } from 'react';
 
 export default function OnboardingFlow() {
   const [step, setStep] = useState<'name' | 'trait' | 'hatching' | 'done'>('name');
   const [petName, setPetName] = useState('');
-  const [trait, setTrait] = useState('');
+  const [selected, setSelected] = useState<string[]>([]);
   const [error, setError] = useState('');
 
   const user = useAuthStore(s => s.user);
   const refreshPet = useAuthStore(s => s.refreshPet);
 
+  function toggleTrait(id: string) {
+    setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+  }
+
   async function createPet() {
     if (!user) return;
-    const colorSeed = Math.floor(Math.random() * 360);
+    const trait = selected[0] ?? 'gentle';
     const { error: err } = await supabase.from('pets').insert({
       user_id: user.id,
       name: petName.trim() || 'Mochi',
       species: 'fluffkin',
-      color_seed: colorSeed,
+      color_seed: Math.floor(Math.random() * 360),
       personality_trait: trait,
       hatched: false,
     });
@@ -40,120 +91,167 @@ export default function OnboardingFlow() {
 
   if (step === 'hatching') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0e0c0a]">
-        <div className="relative">
-          <div className="text-8xl" style={{ animation: 'eggShake 0.4s ease-in-out infinite' }}>🥚</div>
-          <div className="absolute inset-0 rounded-full bg-[#e8702a]/20 blur-2xl scale-150 animate-pulse" />
+      <>
+        <div className="scene-bg" />
+        <div className="scene-overlay" />
+        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center">
+          <div className="relative">
+            <div className="text-8xl" style={{ animation: 'eggShake 0.4s ease-in-out infinite' }}>🥚</div>
+            <div className="absolute inset-0 rounded-full bg-yellow-300/20 blur-3xl scale-150 animate-pulse" />
+          </div>
+          <p className="mt-8 text-white/40 text-sm tracking-widest uppercase" style={{ animation: 'fadeIn 0.5s ease forwards' }}>hatching…</p>
         </div>
-        <p className="mt-8 text-white/40 text-sm tracking-widest uppercase" style={{ animation: 'fadeIn 0.5s ease forwards' }}>
-          hatching…
-        </p>
-      </div>
+      </>
     );
   }
 
   if (step === 'done') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0e0c0a] px-6 text-center tracking-[-0.02em]">
-        <div className="text-8xl mb-6 hero-anim hero-reveal" style={{ animationDelay: '0s', opacity: 0 }}>🐣</div>
-        <h2
-          className="font-playfair italic text-white text-4xl mb-3 hero-anim hero-reveal"
-          style={{ letterSpacing: '-0.04em', animationDelay: '0.15s', opacity: 0 }}
-        >
-          {petName || 'Mochi'} hatched!
-        </h2>
-        <p className="text-white/40 text-sm max-w-xs leading-relaxed hero-anim hero-fade" style={{ animationDelay: '0.3s', opacity: 0 }}>
-          Your companion is here. Keep your promises and watch them grow.
-        </p>
-        <button
-          onClick={() => refreshPet()}
-          className="mt-10 px-8 py-3.5 bg-[#e8702a] hover:bg-[#d2611f] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#e8702a]/25 transition-all hover:scale-[1.03] active:scale-95 hero-anim hero-fade"
-          style={{ animationDelay: '0.5s', opacity: 0 }}
-        >
-          Let's go →
-        </button>
-      </div>
+      <>
+        <div className="scene-bg" />
+        <div className="scene-overlay" />
+        <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 text-center">
+          <div className="text-8xl mb-6 fade-up" style={{ animationDelay: '0s' }}>🐣</div>
+          <h2 className="font-playfair italic text-white text-4xl mb-3 fade-up" style={{ animationDelay: '0.15s', letterSpacing: '-0.04em' }}>
+            {petName || 'Mochi'} hatched!
+          </h2>
+          <p className="text-white/40 text-sm max-w-xs leading-relaxed fade-up" style={{ animationDelay: '0.3s' }}>
+            Your companion is here. Keep your promises and watch them grow.
+          </p>
+          <button
+            onClick={() => refreshPet()}
+            className="mt-10 px-8 py-3.5 bg-white/10 liquid-glass text-white rounded-full font-medium text-sm transition-all hover:bg-white/15 active:scale-95 fade-up"
+            style={{ animationDelay: '0.5s' }}
+          >
+            Let's go →
+          </button>
+        </div>
+      </>
     );
   }
 
   if (step === 'trait') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0e0c0a] px-6 tracking-[-0.02em]">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(200,130,80,0.10)_0%,transparent_60%)] pointer-events-none" />
+      <>
+        <div className="scene-bg" />
+        <div className="scene-overlay" />
+        <div className="relative z-10 min-h-screen flex flex-col px-6 pt-14 pb-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
 
-        <div className="text-center mb-10 hero-anim hero-reveal" style={{ animationDelay: '0s', opacity: 0 }}>
-          <h2 className="font-playfair italic text-white text-4xl mb-2" style={{ letterSpacing: '-0.04em' }}>
-            What's their vibe?
-          </h2>
-          <p className="text-white/40 text-sm">This shapes {petName || 'your companion'}'s personality.</p>
+          {/* Badge */}
+          <div className="fade-up mb-10" style={{ animationDelay: '0.1s' }}>
+            <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
+              <Sparkles size={12} className="text-white/80" />
+              <span className="text-white/90 text-xs font-medium">Nagi Onboarding</span>
+            </div>
+          </div>
+
+          {/* Title */}
+          <div className="mb-8 fade-up" style={{ animationDelay: '0.25s' }}>
+            <p className="text-white/60 text-sm mb-2">Choose all that apply</p>
+            <h2 className="font-playfair italic text-white text-3xl leading-tight" style={{ letterSpacing: '-0.04em' }}>
+              What best describes {petName || 'your companion'}?
+            </h2>
+          </div>
+
+          {/* Selection grid */}
+          <div className="grid grid-cols-2 gap-3 flex-1 fade-up" style={{ animationDelay: '0.4s' }}>
+            {TRAITS.map((t, i) => {
+              const isSelected = selected.includes(t.id);
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => toggleTrait(t.id)}
+                  className={`rounded-[32px] p-4 flex flex-col justify-between text-left transition-all duration-200 active:scale-[0.97] fade-up`}
+                  style={{
+                    height: 100,
+                    animationDelay: `${0.4 + i * 0.08}s`,
+                  }}
+                >
+                  <div className={`absolute inset-0 rounded-[32px] ${isSelected ? 'liquid-glass-selected' : 'liquid-glass'}`} />
+                  <span className="relative text-white/50 text-xs font-medium">{t.num}</span>
+                  <div className="relative">
+                    <p className="text-white text-base font-medium">{t.label}</p>
+                    <p className="text-white/40 text-xs mt-0.5">{t.desc}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {error && <p className="text-red-400/80 text-xs text-center mt-4">{error}</p>}
+
+          {/* Slide to hatch */}
+          <div className="mt-6 fade-up" style={{ animationDelay: '0.85s' }}>
+            <SlideToHatch onConfirm={createPet} disabled={selected.length === 0} />
+          </div>
         </div>
-
-        <div className="grid grid-cols-2 gap-3 w-full max-w-xs hero-anim hero-fade" style={{ animationDelay: '0.2s', opacity: 0 }}>
-          {TRAITS.map(t => (
-            <button
-              key={t.id}
-              onClick={() => setTrait(t.id)}
-              className={`flex flex-col items-center p-5 rounded-2xl border transition-all duration-200 ${
-                trait === t.id
-                  ? 'border-[#e8702a]/60 bg-[#e8702a]/10'
-                  : 'border-white/10 bg-white/4 hover:bg-white/8 hover:border-white/20'
-              }`}
-            >
-              <span className="text-3xl mb-2">{t.emoji}</span>
-              <span className="text-sm font-semibold text-white">{t.label}</span>
-              <span className="text-xs text-white/40 mt-0.5">{t.desc}</span>
-            </button>
-          ))}
-        </div>
-
-        {error && <p className="text-red-400/80 text-xs mt-4">{error}</p>}
-
-        <button
-          disabled={!trait}
-          onClick={createPet}
-          className="mt-8 w-full max-w-xs py-3.5 bg-[#e8702a] hover:bg-[#d2611f] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#e8702a]/25 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-30 disabled:hover:scale-100 hero-anim hero-fade"
-          style={{ animationDelay: '0.35s', opacity: 0 }}
-        >
-          Hatch my egg 🥚
-        </button>
-      </div>
+      </>
     );
   }
 
-  // step === 'name'
+  // Name step
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0e0c0a] px-6 tracking-[-0.02em]">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_20%,rgba(200,130,80,0.10)_0%,transparent_60%)] pointer-events-none" />
+    <>
+      <div className="scene-bg" />
+      <div className="scene-overlay" />
+      <div className="relative z-10 min-h-screen flex flex-col px-6 pt-14 pb-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
 
-      <div className="text-7xl mb-8 hero-anim hero-reveal" style={{ animationDelay: '0s', opacity: 0 }}>🥚</div>
+        {/* Badge */}
+        <div className="fade-up mb-10" style={{ animationDelay: '0.1s' }}>
+          <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
+            <Sparkles size={12} className="text-white/80" />
+            <span className="text-white/90 text-xs font-medium">Nagi Onboarding</span>
+          </div>
+        </div>
 
-      <div className="text-center mb-10 hero-anim hero-reveal" style={{ animationDelay: '0.15s', opacity: 0 }}>
-        <h2 className="font-playfair italic text-white text-4xl mb-2" style={{ letterSpacing: '-0.04em' }}>
-          You found an egg!
-        </h2>
-        <p className="text-white/40 text-sm max-w-xs leading-relaxed">
-          Give your companion a name, then discover their personality.
-        </p>
+        {/* Egg */}
+        <div className="flex justify-center mb-8 fade-up" style={{ animationDelay: '0.2s' }}>
+          <div className="text-8xl">🥚</div>
+        </div>
+
+        {/* Title */}
+        <div className="mb-8 fade-up" style={{ animationDelay: '0.25s' }}>
+          <p className="text-white/60 text-sm mb-2">Step 1 of 2</p>
+          <h2 className="font-playfair italic text-white text-3xl leading-tight" style={{ letterSpacing: '-0.04em' }}>
+            You found an egg!<br />What will you name them?
+          </h2>
+        </div>
+
+        <div className="flex-1" />
+
+        {/* Name input */}
+        <div className="space-y-4 fade-up" style={{ animationDelay: '0.4s' }}>
+          <input
+            type="text"
+            placeholder="Name your companion…"
+            value={petName}
+            onChange={e => setPetName(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && setStep('trait')}
+            maxLength={20}
+            autoFocus
+            className="w-full px-4 py-3.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all text-center liquid-glass"
+            style={{ background: 'rgba(255,255,255,0.07)' }}
+          />
+
+          {/* Slide to next */}
+          <div className="fade-up" style={{ animationDelay: '0.55s' }}>
+            <div
+              className="relative liquid-glass rounded-full h-14 flex items-center px-1 select-none cursor-pointer"
+              onClick={() => setStep('trait')}
+            >
+              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md z-10">
+                <ArrowRight size={18} className="text-gray-800" />
+              </div>
+              <span className="flex-1 text-center text-white/60 text-sm font-medium">Next step →</span>
+              <div className="flex items-center gap-0.5 pr-3">
+                <ChevronRight size={14} className="text-white/40" />
+                <ChevronRight size={14} className="text-white/50" />
+                <ChevronRight size={14} className="text-white/60" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <input
-        type="text"
-        placeholder="Name your companion…"
-        value={petName}
-        onChange={e => setPetName(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && setStep('trait')}
-        maxLength={20}
-        className="w-full max-w-xs px-4 py-3.5 rounded-2xl bg-white/6 border border-white/10 text-white placeholder-white/25 text-sm outline-none focus:border-[#e8a87c]/60 focus:bg-white/8 transition-all text-center hero-anim hero-fade"
-        style={{ animationDelay: '0.3s', opacity: 0 }}
-      />
-
-      <button
-        onClick={() => setStep('trait')}
-        className="mt-4 w-full max-w-xs py-3.5 bg-[#e8702a] hover:bg-[#d2611f] text-white rounded-full font-semibold text-sm shadow-lg shadow-[#e8702a]/25 transition-all hover:scale-[1.02] active:scale-95 hero-anim hero-fade"
-        style={{ animationDelay: '0.42s', opacity: 0 }}
-      >
-        Next →
-      </button>
-    </div>
+    </>
   );
 }

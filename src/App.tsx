@@ -5,8 +5,9 @@ import AuthScreen from './components/AuthScreen';
 import OnboardingFlow from './components/OnboardingFlow';
 import HomeScreen from './components/HomeScreen';
 import FriendsScreen from './components/FriendsScreen';
+import DailyEgg from './components/DailyEgg';
 
-type Screen = 'home' | 'friends';
+type Screen = 'home' | 'friends' | 'egg';
 
 export default function App() {
   const init = useAuthStore(s => s.init);
@@ -32,5 +33,6 @@ export default function App() {
   if (!user) return <AuthScreen />;
   if (!pet) return <OnboardingFlow />;
   if (screen === 'friends') return <FriendsScreen onBack={() => setScreen('home')} />;
-  return <HomeScreen onFriends={() => setScreen('friends')} />;
+  if (screen === 'egg') return <DailyEgg onClose={() => setScreen('home')} />;
+  return <HomeScreen onFriends={() => setScreen('friends')} onEgg={() => setScreen('egg')} />;
 }

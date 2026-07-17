@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, LogOut, Flame, Users } from 'lucide-react';
+import { Plus, LogOut, Flame, Users, Gift } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_ } from '../lib/supabase';
@@ -23,12 +23,13 @@ function moodFromHappiness(h: number) {
   return 'sad';
 }
 
-export default function HomeScreen({ onFriends }: { onFriends: () => void }) {
+export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void; onEgg: () => void }) {
   const pet = useAuthStore(s => s.pet);
   const profile = useAuthStore(s => s.profile);
   const signOut = useAuthStore(s => s.signOut);
   const updatePetState = useAuthStore(s => s.setPetLocal);
   const [promises, setPromises] = useState<Promise_[]>([]);
+  const eggAvailable = !localStorage.getItem(`nagi_egg_${pet?.user_id}_${new Date().toISOString().slice(0,10)}`);
   const [showAdd, setShowAdd] = useState(false);
   const [newTitle, setNewTitle] = useState('');
 
@@ -74,6 +75,15 @@ export default function HomeScreen({ onFriends }: { onFriends: () => void }) {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-white/40 text-sm">{profile?.username}</span>
+            <button
+              onClick={onEgg}
+              className="relative liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/60 hover:text-white/90 transition-colors"
+            >
+              <Gift size={13} />
+              {eggAvailable && (
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full" />
+              )}
+            </button>
             <button
               onClick={onFriends}
               className="liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/60 hover:text-white/90 transition-colors"

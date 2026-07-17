@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Plus, LogOut, Flame, Users, Gift } from 'lucide-react';
+import { Plus, LogOut, Flame, Users, Gift, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
-import type { Promise_ } from '../lib/supabase';
+import type { Promise_, Completion } from '../lib/supabase';
 import { applyDecayIfNeeded, recordCompletion } from '../lib/petEngine';
+
+interface CompletionWithTitle extends Completion {
+  promise_title: string;
+}
 
 function petColor(hue: number) {
   return `hsl(${hue}, 50%, 65%)`;
@@ -29,12 +33,15 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
   const signOut = useAuthStore(s => s.signOut);
   const updatePetState = useAuthStore(s => s.setPetLocal);
   const [promises, setPromises] = useState<Promise_[]>([]);
+  const [history, setHistory] = useState<CompletionWithTitle[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
   const eggAvailable = !localStorage.getItem(`nagi_egg_${pet?.user_id}_${new Date().toISOString().slice(0,10)}`);
   const [showAdd, setShowAdd] = useState(false);
   const [newTitle, setNewTitle] = useState('');
 
   useEffect(() => {
     loadPromises();
+    loadHistory();
     // Apply passive happiness decay on load
     if (pet) {
       const userId = pet.user_id;
@@ -47,6 +54,23 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
   async function loadPromises() {
     const { data } = await supabase.from('promises').select('*').eq('active', true).order('created_at', { ascending: true });
     if (data) setPromises(data);
+  }
+
+  async function loadHistory() {
+    if (!pet) return;
+    const { data } = await supabase
+      .from('completions')
+      .select('*')
+      .eq('user_id', pet.user_id)
+      .order('completed_at', { ascending: false })
+      .limit(30);
+    if (!data) return;
+    // Enrich with promise titles
+    const enriched = await Promise.all(data.map(async c => {
+      const { data: p } = await supabase.from('promises').select('title').eq('id', c.promise_id).single();
+      return { ...c, promise_title: p?.title ?? 'Unknown promise' };
+    }));
+    setHistory(enriched);
   }
 
   async function addPromise() {
@@ -156,7 +180,7 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
         <div className="flex-1 fade-up" style={{ animationDelay: '0.4s' }}>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-white/40 text-xs mb-0.5">Choose all that apply</p>
+              <p className="text-white/40 text-xs mb-0.5">Track your day</p>
               <h2 className="text-white text-lg font-medium leading-tight" style={{ letterSpacing: '-0.03em' }}>
                 Today's promises
               </h2>
@@ -196,16 +220,58 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
 
           <div className="grid grid-cols-2 gap-3">
             {promises.map((p, i) => (
-              <PromiseCard key={p.id} promise={p} index={i} petName={pet.name} color={color} />
+              <PromiseCard key={p.id} promise={p} index={i} petName={pet.name} color={color} onComplete={loadHistory} />
             ))}
           </div>
         </div>
+
+        {/* Completion history */}
+        {history.length > 0 && (
+          <div className="mt-6 fade-up" style={{ animationDelay: '0.6s' }}>
+            <button
+              onClick={() => setShowHistory(v => !v)}
+              className="flex items-center justify-between w-full mb-3"
+            >
+              <div>
+                <p className="text-white/40 text-xs mb-0.5">all time</p>
+                <h2 className="text-white text-lg font-medium leading-tight text-left" style={{ letterSpacing: '-0.03em' }}>
+                  Completion history
+                </h2>
+              </div>
+              {showHistory ? <ChevronUp size={16} className="text-white/40" /> : <ChevronDown size={16} className="text-white/40" />}
+            </button>
+
+            {showHistory && (
+              <div className="space-y-2">
+                {history.map((c, i) => {
+                  const date = new Date(c.completed_at);
+                  const isToday = c.date_key === new Date().toISOString().slice(0, 10);
+                  const label = isToday ? 'Today' : date.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+                  return (
+                    <div key={c.id} className="liquid-glass rounded-2xl px-4 py-3 flex items-center justify-between fade-up" style={{ animationDelay: `${i * 0.03}s` }}>
+                      <div className="flex items-center gap-3">
+                        <span className="text-base">✅</span>
+                        <div>
+                          <p className="text-white/80 text-sm font-medium">{c.promise_title}</p>
+                          {c.verified_by && (
+                            <p className="text-white/30 text-xs mt-0.5">👁 witnessed</p>
+                          )}
+                        </div>
+                      </div>
+                      <span className="text-white/30 text-xs whitespace-nowrap ml-3">{label}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </>
   );
 }
 
-function PromiseCard({ promise, index, color }: { promise: Promise_; index: number; petName?: string; color: string }) {
+function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_; index: number; petName?: string; color: string; onComplete?: () => void }) {
   const today = new Date().toISOString().slice(0, 10);
   const [completed, setCompleted] = useState(false);
   const [completionId, setCompletionId] = useState<string | null>(null);
@@ -261,7 +327,7 @@ function PromiseCard({ promise, index, color }: { promise: Promise_; index: numb
     }
     setCompleted(true);
     setVerifying(false);
-    // Load friends for witness option
+    onComplete?.();
     loadFriends();
   }
 

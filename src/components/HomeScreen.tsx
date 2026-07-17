@@ -254,9 +254,6 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
   const today = new Date().toISOString().slice(0, 10);
   const [completed, setCompleted] = useState(false);
   const [completionId, setCompletionId] = useState<string | null>(null);
-  const [verifying, setVerifying] = useState(false);
-  const [seconds, setSeconds] = useState(0);
-  const [timerRunning, setTimerRunning] = useState(false);
   const [levelUp, setLevelUp] = useState(false);
   const [showWitness, setShowWitness] = useState(false);
   const [friends, setFriends] = useState<{ id: string; username: string }[]>([]);
@@ -274,24 +271,12 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
     check();
   }, [promise.id, today, user]);
 
-  useEffect(() => {
-    if (!timerRunning) return;
-    const target = (promise.timer_duration_mins ?? 1) * 60;
-    const interval = setInterval(() => {
-      setSeconds(s => {
-        if (s + 1 >= target) { clearInterval(interval); setTimerRunning(false); completePromise(); return target; }
-        return s + 1;
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [timerRunning]);
-
   async function completePromise() {
     if (!user || !pet) return;
     const prevLevel = pet.level;
     // Record completion row
     const { data: comp, error } = await supabase.from('completions').insert({
-      user_id: user.id, promise_id: promise.id, date_key: today, proof_type: 'timer',
+      user_id: user.id, promise_id: promise.id, date_key: today, proof_type: 'self',
     }).select().single();
     if (error) return;
     if (comp) setCompletionId(comp.id);
@@ -305,7 +290,6 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
       }
     }
     setCompleted(true);
-    setVerifying(false);
     onComplete?.();
     loadFriends();
   }
@@ -337,28 +321,7 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
     setShowWitness(false);
   }
 
-  const durationSecs = (promise.timer_duration_mins ?? 1) * 60;
-  const pct = Math.round((seconds / durationSecs) * 100);
   const num = String(index + 1).padStart(2, '0');
-
-  if (verifying) {
-    return (
-      <div className="liquid-glass rounded-[28px] p-4 flex flex-col fade-up" style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s` }}>
-        <span className="text-white/40 text-xs font-medium mb-1">{num}</span>
-        <p className="text-white text-sm font-medium mb-2 leading-tight">{promise.title}</p>
-        <div className="h-0.5 bg-white/10 rounded-full overflow-hidden mb-2">
-          <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
-        </div>
-        <div className="flex items-center justify-between mt-auto">
-          <span className="text-white/30 text-xs font-mono">{Math.floor(seconds/60)}:{String(seconds%60).padStart(2,'0')}</span>
-          {!timerRunning
-            ? <button onClick={() => setTimerRunning(true)} className="text-xs text-white/80 font-medium px-2.5 py-1 rounded-full" style={{ background: color+'33' }}>Start</button>
-            : <button onClick={() => { setTimerRunning(false); setVerifying(false); setSeconds(0); }} className="text-xs text-white/40 px-2.5 py-1 rounded-full bg-white/10">Stop</button>
-          }
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="relative">
@@ -368,7 +331,7 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
         </div>
       )}
       <button
-        onClick={() => !completed && setVerifying(true)}
+        onClick={() => !completed && completePromise()}
         className="liquid-glass rounded-[28px] p-4 flex flex-col text-left transition-all active:scale-[0.97] fade-up w-full"
         style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s`, opacity: completed && !showWitness ? 0.6 : 1 }}
       >
@@ -377,7 +340,7 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
           <p className={`text-white text-base font-medium ${completed ? 'line-through' : ''}`}>{promise.title}</p>
           {completed
             ? <p className="text-white/30 text-xs mt-0.5">done ✓</p>
-            : <p className="text-white/30 text-xs mt-0.5">tap to verify</p>
+            : <p className="text-white/30 text-xs mt-0.5">tap to complete</p>
           }
         </div>
       </button>

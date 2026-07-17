@@ -26,7 +26,7 @@ create table public.pets (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.profiles(id) on delete cascade not null unique,
   name text not null default 'Mochi',
-  species text not null default 'fluffkin',
+  species text not null default 'melmel',
   color_seed integer not null default 120,
   personality_trait text not null default 'gentle',
   level integer not null default 1,

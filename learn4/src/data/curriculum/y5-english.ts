@@ -2640,7 +2640,6 @@ export const y5English: Session[] = [
     starsAvailable: 5,
     color: '#7c3aed',
     icon: '✏️',
-    weekNumber: 11,
     steps: [
       {
         id: 'y5-eng-11-s1',
@@ -2908,7 +2907,6 @@ export const y5English: Session[] = [
     starsAvailable: 5,
     color: '#7c3aed',
     icon: '🔗',
-    weekNumber: 12,
     steps: [
       {
         id: 'y5-eng-12-s1',
@@ -3156,7 +3154,6 @@ export const y5English: Session[] = [
     starsAvailable: 5,
     color: '#7c3aed',
     icon: '⚙️',
-    weekNumber: 13,
     steps: [
       {
         id: 'y5-eng-13-s1',
@@ -3424,7 +3421,6 @@ export const y5English: Session[] = [
     starsAvailable: 5,
     color: '#7c3aed',
     icon: '📄',
-    weekNumber: 14,
     steps: [
       {
         id: 'y5-eng-14-s1',

@@ -27,6 +27,7 @@ serve(async (req) => {
     });
 
     const json = await res.json();
+    if (json.error) throw new Error(json.error.message);
     const message = json.content?.[0]?.text ?? "I'm here for you today 💛";
 
     return new Response(JSON.stringify({ message }), {

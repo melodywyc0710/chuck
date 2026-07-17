@@ -50,8 +50,8 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
   }
 
   async function addPromise() {
-    if (!newTitle.trim()) return;
-    const { data } = await supabase.from('promises').insert({ title: newTitle.trim(), frequency: 'daily', verify_method: 'timer' }).select().single();
+    if (!newTitle.trim() || !pet) return;
+    const { data } = await supabase.from('promises').insert({ user_id: pet.user_id, title: newTitle.trim(), frequency: 'daily', verify_method: 'timer' }).select().single();
     if (data) { setPromises(p => [...p, data]); setNewTitle(''); setShowAdd(false); }
   }
 

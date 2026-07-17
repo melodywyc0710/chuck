@@ -285,7 +285,7 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
                   { v: 'intelligence', emoji: '🧠', label: 'Intelligence' },
                   { v: 'agility', emoji: '⚡', label: 'Agility' },
                   { v: 'speed', emoji: '🌪️', label: 'Speed' },
-                ] as { v: GoalCategory; emoji: string; label: string }[]).map(({ v, emoji, label }) => (
+                ] as { v: GoalCategory; emoji: string; label: string }[]).map(({ v, emoji }) => (
                   <button
                     key={v}
                     onClick={() => setNewCategory(v)}
@@ -352,7 +352,7 @@ const TRAIT_EMOJI: Record<string, string> = {
   strength: '💪', intelligence: '🧠', agility: '⚡', speed: '🌪️', general: '✦',
 };
 
-function PromiseCard({ promise, index, color, onComplete, onTraitEarned }: { promise: Promise_; index: number; petName?: string; color: string; onComplete?: () => void; onTraitEarned?: () => void }) {
+function PromiseCard({ promise, index, onComplete, onTraitEarned }: { promise: Promise_; index: number; petName?: string; color?: string; onComplete?: () => void; onTraitEarned?: () => void }) {
   const today = new Date().toISOString().slice(0, 10);
   const [completed, setCompleted] = useState(false);
   const [completionId, setCompletionId] = useState<string | null>(null);

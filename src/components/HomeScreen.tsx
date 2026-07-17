@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, LogOut, Flame } from 'lucide-react';
+import { Plus, LogOut, Flame, Users } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_ } from '../lib/supabase';
@@ -23,7 +23,7 @@ function moodFromHappiness(h: number) {
   return 'sad';
 }
 
-export default function HomeScreen() {
+export default function HomeScreen({ onFriends }: { onFriends: () => void }) {
   const pet = useAuthStore(s => s.pet);
   const profile = useAuthStore(s => s.profile);
   const signOut = useAuthStore(s => s.signOut);
@@ -74,6 +74,12 @@ export default function HomeScreen() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-white/40 text-sm">{profile?.username}</span>
+            <button
+              onClick={onFriends}
+              className="liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/60 hover:text-white/90 transition-colors"
+            >
+              <Users size={13} />
+            </button>
             <button
               onClick={signOut}
               className="liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors"
@@ -192,10 +198,14 @@ export default function HomeScreen() {
 function PromiseCard({ promise, index, color }: { promise: Promise_; index: number; petName?: string; color: string }) {
   const today = new Date().toISOString().slice(0, 10);
   const [completed, setCompleted] = useState(false);
+  const [completionId, setCompletionId] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [timerRunning, setTimerRunning] = useState(false);
   const [levelUp, setLevelUp] = useState(false);
+  const [showWitness, setShowWitness] = useState(false);
+  const [friends, setFriends] = useState<{ id: string; username: string }[]>([]);
+  const [witnessSent, setWitnessSent] = useState(false);
   const user = useAuthStore(s => s.user);
   const pet = useAuthStore(s => s.pet);
   const setPet = useAuthStore(s => s.setPetLocal);
@@ -225,10 +235,11 @@ function PromiseCard({ promise, index, color }: { promise: Promise_; index: numb
     if (!user || !pet) return;
     const prevLevel = pet.level;
     // Record completion row
-    const { error } = await supabase.from('completions').insert({
+    const { data: comp, error } = await supabase.from('completions').insert({
       user_id: user.id, promise_id: promise.id, date_key: today, proof_type: 'timer',
-    });
+    }).select().single();
     if (error) return;
+    if (comp) setCompletionId(comp.id);
     // Update pet stats (XP, happiness, streak, level)
     const updated = await recordCompletion(pet, user.id);
     if (updated) {
@@ -240,6 +251,35 @@ function PromiseCard({ promise, index, color }: { promise: Promise_; index: numb
     }
     setCompleted(true);
     setVerifying(false);
+    // Load friends for witness option
+    loadFriends();
+  }
+
+  async function loadFriends() {
+    if (!user) return;
+    const { data } = await supabase
+      .from('friendships')
+      .select('*')
+      .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
+      .eq('status', 'accepted');
+    if (!data) return;
+    const list = await Promise.all(data.map(async f => {
+      const otherId = f.requester_id === user.id ? f.addressee_id : f.requester_id;
+      const { data: p } = await supabase.from('profiles').select('id,username').eq('id', otherId).single();
+      return p ? { id: p.id, username: p.username } : null;
+    }));
+    setFriends(list.filter(Boolean) as { id: string; username: string }[]);
+  }
+
+  async function sendWitnessRequest(witnessId: string) {
+    if (!user || !completionId) return;
+    await supabase.from('witness_requests').insert({
+      completion_id: completionId,
+      requester_id: user.id,
+      witness_id: witnessId,
+    });
+    setWitnessSent(true);
+    setShowWitness(false);
   }
 
   const durationSecs = (promise.timer_duration_mins ?? 1) * 60;
@@ -275,7 +315,7 @@ function PromiseCard({ promise, index, color }: { promise: Promise_; index: numb
       <button
         onClick={() => !completed && setVerifying(true)}
         className="liquid-glass rounded-[28px] p-4 flex flex-col text-left transition-all active:scale-[0.97] fade-up w-full"
-        style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s`, opacity: completed ? 0.5 : 1 }}
+        style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s`, opacity: completed && !showWitness ? 0.6 : 1 }}
       >
         <span className="text-white/40 text-xs font-medium mb-auto">{num}</span>
         <div>
@@ -286,6 +326,37 @@ function PromiseCard({ promise, index, color }: { promise: Promise_; index: numb
           }
         </div>
       </button>
+
+      {/* Witness row — shows after completion if user has friends */}
+      {completed && !witnessSent && friends.length > 0 && (
+        <div className="mt-2 fade-up" style={{ animationDelay: '0s' }}>
+          {!showWitness ? (
+            <button
+              onClick={() => setShowWitness(true)}
+              className="w-full text-center text-white/30 text-xs py-1 hover:text-white/60 transition-colors"
+            >
+              👁 Ask a friend to witness
+            </button>
+          ) : (
+            <div className="liquid-glass rounded-2xl p-3 space-y-2">
+              <p className="text-white/50 text-xs">Send witness request to:</p>
+              {friends.map(f => (
+                <button
+                  key={f.id}
+                  onClick={() => sendWitnessRequest(f.id)}
+                  className="w-full text-left px-3 py-2 rounded-xl bg-white/6 hover:bg-white/10 text-white/80 text-sm transition-colors"
+                >
+                  {f.username}
+                </button>
+              ))}
+              <button onClick={() => setShowWitness(false)} className="w-full text-white/30 text-xs pt-1 hover:text-white/50">cancel</button>
+            </div>
+          )}
+        </div>
+      )}
+      {witnessSent && (
+        <p className="text-center text-white/30 text-xs mt-1">👁 Witness request sent</p>
+      )}
     </div>
   );
 }

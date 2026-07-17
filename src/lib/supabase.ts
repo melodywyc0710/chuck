@@ -65,13 +65,22 @@ export interface Pet {
   costume_slot: string | null;
   unlocked_costumes: string[];
   hatched: boolean;
+  trait_points_available: number;
+  trait_strength: number;
+  trait_intelligence: number;
+  trait_agility: number;
+  trait_speed: number;
   created_at: string;
 }
+
+export type TraitKey = 'trait_strength' | 'trait_intelligence' | 'trait_agility' | 'trait_speed';
+export type GoalCategory = 'strength' | 'intelligence' | 'agility' | 'speed' | 'general';
 
 export interface Promise_ {
   id: string;
   user_id: string;
   title: string;
+  category: GoalCategory;
   frequency: 'daily' | 'weekly';
   verify_method: 'timer' | 'photo' | 'location' | 'friend';
   timer_duration_mins: number | null;

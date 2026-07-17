@@ -61,6 +61,9 @@ export async function recordCompletion(pet: Pet, userId: string): Promise<Pet | 
     newXpToNext = Math.round(newXpToNext * 1.3); // each level costs 30% more
   }
 
+  // Award 1 trait point per completion
+  const newTraitPoints = pet.trait_points_available + 1;
+
   const updates = {
     happiness: newHappiness,
     xp: newXp,
@@ -68,6 +71,7 @@ export async function recordCompletion(pet: Pet, userId: string): Promise<Pet | 
     xp_to_next: newXpToNext,
     streak: newStreak,
     last_active_date: todayStr,
+    trait_points_available: newTraitPoints,
   };
 
   const { data } = await supabase

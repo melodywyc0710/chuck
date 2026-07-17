@@ -3,6 +3,16 @@
 -- Run this in Supabase SQL Editor
 -- ─────────────────────────────────────────────
 
+-- ─── MIGRATION: add traits to pets ────────────
+-- Run this if pets table already exists:
+-- alter table public.pets add column if not exists trait_points_available integer not null default 0;
+-- alter table public.pets add column if not exists trait_strength integer not null default 0;
+-- alter table public.pets add column if not exists trait_intelligence integer not null default 0;
+-- alter table public.pets add column if not exists trait_agility integer not null default 0;
+-- alter table public.pets add column if not exists trait_speed integer not null default 0;
+-- alter table public.promises add column if not exists category text not null default 'general' check (category in ('strength','intelligence','agility','speed','general'));
+-- ──────────────────────────────────────────────
+
 -- Profiles: one per user
 create table public.profiles (
   id uuid references auth.users on delete cascade primary key,
@@ -28,6 +38,11 @@ create table public.pets (
   costume_slot text,
   unlocked_costumes text[] not null default '{}',
   hatched boolean not null default false,
+  trait_points_available integer not null default 0,
+  trait_strength integer not null default 0,
+  trait_intelligence integer not null default 0,
+  trait_agility integer not null default 0,
+  trait_speed integer not null default 0,
   created_at timestamptz not null default now()
 );
 
@@ -36,6 +51,7 @@ create table public.promises (
   id uuid primary key default gen_random_uuid(),
   user_id uuid references public.profiles(id) on delete cascade not null,
   title text not null,
+  category text not null default 'general' check (category in ('strength','intelligence','agility','speed','general')),
   frequency text not null default 'daily' check (frequency in ('daily','weekly')),
   verify_method text not null default 'timer' check (verify_method in ('timer','photo','location','friend')),
   timer_duration_mins integer,

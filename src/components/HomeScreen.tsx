@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Plus, LogOut, Flame, Users, Gift, ChevronDown, ChevronUp } from 'lucide-react';
 import HistoryChart from './HistoryChart';
+import TraitAllocator from './TraitAllocator';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
-import type { Promise_, Completion } from '../lib/supabase';
+import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
 import { applyDecayIfNeeded, recordCompletion } from '../lib/petEngine';
 
 interface CompletionWithTitle extends Completion {
@@ -39,6 +40,8 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
   const eggAvailable = !localStorage.getItem(`nagi_egg_${pet?.user_id}_${new Date().toISOString().slice(0,10)}`);
   const [showAdd, setShowAdd] = useState(false);
   const [newTitle, setNewTitle] = useState('');
+  const [newCategory, setNewCategory] = useState<GoalCategory>('general');
+  const [showTraits, setShowTraits] = useState(false);
 
   useEffect(() => {
     loadPromises();
@@ -76,8 +79,8 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
 
   async function addPromise() {
     if (!newTitle.trim() || !pet) return;
-    const { data } = await supabase.from('promises').insert({ user_id: pet.user_id, title: newTitle.trim(), frequency: 'daily', verify_method: 'timer' }).select().single();
-    if (data) { setPromises(p => [...p, data]); setNewTitle(''); setShowAdd(false); }
+    const { data } = await supabase.from('promises').insert({ user_id: pet.user_id, title: newTitle.trim(), category: newCategory, frequency: 'daily', verify_method: 'timer' }).select().single();
+    if (data) { setPromises(p => [...p, data]); setNewTitle(''); setNewCategory('general'); setShowAdd(false); }
   }
 
   if (!pet) return null;
@@ -90,6 +93,7 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
     <>
       <div className="scene-bg" />
       <div className="scene-overlay" />
+      {showTraits && <TraitAllocator onClose={() => setShowTraits(false)} />}
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-6 pt-14 pb-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
 
         {/* Nav */}
@@ -158,6 +162,37 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
               </div>
             </div>
           </div>
+
+          {/* Traits */}
+          <button
+            onClick={() => setShowTraits(true)}
+            className="w-full mt-4 liquid-glass rounded-2xl px-4 py-3 text-left hover:bg-white/10 transition-colors"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-white/40 text-xs">traits</span>
+              {pet.trait_points_available > 0 && (
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#e8702a33', color: '#e8702a' }}>
+                  {pet.trait_points_available} pts to spend
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {([
+                { key: 'trait_strength' as const,     emoji: '💪', color: '#f87171' },
+                { key: 'trait_intelligence' as const, emoji: '🧠', color: '#60a5fa' },
+                { key: 'trait_agility' as const,      emoji: '⚡', color: '#facc15' },
+                { key: 'trait_speed' as const,        emoji: '🌪️', color: '#34d399' },
+              ]).map(({ key, emoji, color: c }) => (
+                <div key={key} className="flex flex-col items-center gap-1">
+                  <span className="text-sm">{emoji}</span>
+                  <div className="w-full h-1 bg-white/8 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(pet[key] / 50) * 100}%`, backgroundColor: c }} />
+                  </div>
+                  <span className="text-white/30 text-[10px] tabular-nums">{pet[key]}</span>
+                </div>
+              ))}
+            </div>
+          </button>
         </div>
 
         {/* Voice button */}
@@ -195,20 +230,46 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
           </div>
 
           {showAdd && (
-            <div className="flex gap-2 mb-3 fade-up" style={{ animationDelay: '0s' }}>
-              <input
-                type="text"
-                placeholder="e.g. meditate 10 min"
-                value={newTitle}
-                onChange={e => setNewTitle(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addPromise()}
-                autoFocus
-                className="flex-1 px-4 py-2.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all liquid-glass"
-                style={{ background: 'rgba(255,255,255,0.07)' }}
-              />
-              <button onClick={addPromise} className="px-4 py-2.5 bg-orange-500/80 text-white rounded-2xl text-sm font-medium hover:bg-orange-500 transition-colors">
-                Add
-              </button>
+            <div className="mb-3 fade-up space-y-2" style={{ animationDelay: '0s' }}>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="e.g. meditate 10 min"
+                  value={newTitle}
+                  onChange={e => setNewTitle(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && addPromise()}
+                  autoFocus
+                  className="flex-1 px-4 py-2.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all liquid-glass"
+                  style={{ background: 'rgba(255,255,255,0.07)' }}
+                />
+                <button onClick={addPromise} className="px-4 py-2.5 bg-orange-500/80 text-white rounded-2xl text-sm font-medium hover:bg-orange-500 transition-colors">
+                  Add
+                </button>
+              </div>
+              <div className="flex gap-1.5">
+                {([
+                  { v: 'general', emoji: '✦', label: 'General' },
+                  { v: 'strength', emoji: '💪', label: 'Strength' },
+                  { v: 'intelligence', emoji: '🧠', label: 'Intelligence' },
+                  { v: 'agility', emoji: '⚡', label: 'Agility' },
+                  { v: 'speed', emoji: '🌪️', label: 'Speed' },
+                ] as { v: GoalCategory; emoji: string; label: string }[]).map(({ v, emoji, label }) => (
+                  <button
+                    key={v}
+                    onClick={() => setNewCategory(v)}
+                    className="flex-1 py-1.5 rounded-xl text-[10px] font-medium transition-all"
+                    style={{
+                      background: newCategory === v ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.06)',
+                      color: newCategory === v ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.35)',
+                    }}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+              <p className="text-white/25 text-[10px] text-center">
+                Category: {newCategory} — completions earn trait points for this category
+              </p>
             </div>
           )}
 
@@ -221,7 +282,7 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
 
           <div className="grid grid-cols-2 gap-3">
             {promises.map((p, i) => (
-              <PromiseCard key={p.id} promise={p} index={i} petName={pet.name} color={color} onComplete={loadHistory} />
+              <PromiseCard key={p.id} promise={p} index={i} petName={pet.name} color={color} onComplete={loadHistory} onTraitEarned={() => setShowTraits(true)} />
             ))}
           </div>
         </div>
@@ -250,7 +311,15 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
   );
 }
 
-function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_; index: number; petName?: string; color: string; onComplete?: () => void }) {
+// ─── Trait constants shared with PromiseCard ───
+const TRAIT_COLORS: Record<string, string> = {
+  strength: '#f87171', intelligence: '#60a5fa', agility: '#facc15', speed: '#34d399', general: '#a78bfa',
+};
+const TRAIT_EMOJI: Record<string, string> = {
+  strength: '💪', intelligence: '🧠', agility: '⚡', speed: '🌪️', general: '✦',
+};
+
+function PromiseCard({ promise, index, color, onComplete, onTraitEarned }: { promise: Promise_; index: number; petName?: string; color: string; onComplete?: () => void; onTraitEarned?: () => void }) {
   const today = new Date().toISOString().slice(0, 10);
   const [completed, setCompleted] = useState(false);
   const [completionId, setCompletionId] = useState<string | null>(null);
@@ -291,6 +360,7 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
     }
     setCompleted(true);
     onComplete?.();
+    onTraitEarned?.();
     loadFriends();
   }
 
@@ -335,12 +405,19 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
         className="liquid-glass rounded-[28px] p-4 flex flex-col text-left transition-all active:scale-[0.97] fade-up w-full"
         style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s`, opacity: completed && !showWitness ? 0.6 : 1 }}
       >
-        <span className="text-white/40 text-xs font-medium mb-auto">{num}</span>
+        <div className="flex items-center justify-between mb-auto">
+          <span className="text-white/40 text-xs font-medium">{num}</span>
+          {promise.category && promise.category !== 'general' && (
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: TRAIT_COLORS[promise.category] + '33', color: TRAIT_COLORS[promise.category] }}>
+              {TRAIT_EMOJI[promise.category]}
+            </span>
+          )}
+        </div>
         <div>
           <p className={`text-white text-base font-medium ${completed ? 'line-through' : ''}`}>{promise.title}</p>
           {completed
             ? <p className="text-white/30 text-xs mt-0.5">done ✓</p>
-            : <p className="text-white/30 text-xs mt-0.5">tap to verify</p>
+            : <p className="text-white/30 text-xs mt-0.5">tap to complete</p>
           }
         </div>
       </button>

@@ -254,9 +254,6 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
   const today = new Date().toISOString().slice(0, 10);
   const [completed, setCompleted] = useState(false);
   const [completionId, setCompletionId] = useState<string | null>(null);
-  const [verifying, setVerifying] = useState(false);
-  const [seconds, setSeconds] = useState(0);
-  const [timerRunning, setTimerRunning] = useState(false);
   const [levelUp, setLevelUp] = useState(false);
   const [showWitness, setShowWitness] = useState(false);
   const [friends, setFriends] = useState<{ id: string; username: string }[]>([]);
@@ -273,14 +270,6 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
     }
     check();
   }, [promise.id, today, user]);
-
-  useEffect(() => {
-    if (!timerRunning) return;
-    const interval = setInterval(() => {
-      setSeconds(s => s + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [timerRunning]);
 
   async function completePromise() {
     if (!user || !pet) return;
@@ -301,8 +290,6 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
       }
     }
     setCompleted(true);
-    setVerifying(false);
-    setTimerRunning(false);
     onComplete?.();
     loadFriends();
   }
@@ -336,27 +323,6 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
 
   const num = String(index + 1).padStart(2, '0');
 
-  if (verifying) {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return (
-      <div className="liquid-glass rounded-[28px] p-4 flex flex-col fade-up" style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s` }}>
-        <span className="text-white/40 text-xs font-medium mb-1">{num}</span>
-        <p className="text-white text-sm font-medium mb-3 leading-tight">{promise.title}</p>
-        <div className="flex items-center justify-between mt-auto">
-          <span className="text-white/50 text-sm font-mono tabular-nums">{mins}:{String(secs).padStart(2, '0')}</span>
-          <div className="flex items-center gap-2">
-            {!timerRunning
-              ? <button onClick={() => setTimerRunning(true)} className="text-xs text-white/70 font-medium px-2.5 py-1 rounded-full" style={{ background: color + '33' }}>Start</button>
-              : <button onClick={() => setTimerRunning(false)} className="text-xs text-white/40 px-2.5 py-1 rounded-full bg-white/10">Pause</button>
-            }
-            <button onClick={completePromise} className="text-xs text-white font-semibold px-3 py-1 rounded-full" style={{ backgroundColor: color }}>Done</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="relative">
       {levelUp && (
@@ -365,7 +331,7 @@ function PromiseCard({ promise, index, color, onComplete }: { promise: Promise_;
         </div>
       )}
       <button
-        onClick={() => !completed && setVerifying(true)}
+        onClick={() => !completed && completePromise()}
         className="liquid-glass rounded-[28px] p-4 flex flex-col text-left transition-all active:scale-[0.97] fade-up w-full"
         style={{ minHeight: 120, animationDelay: `${0.4 + index * 0.08}s`, opacity: completed && !showWitness ? 0.6 : 1 }}
       >

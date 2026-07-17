@@ -152,20 +152,22 @@ export default function DailyEgg({ onClose }: Props) {
       <div className="scene-overlay" />
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
 
-        {/* Close */}
-        <button
-          onClick={onClose}
-          className="absolute top-14 right-6 liquid-glass w-9 h-9 flex items-center justify-center rounded-full text-white/50 hover:text-white/80 transition-colors"
-        >
-          <X size={15} />
-        </button>
-
-        {/* Header */}
-        <div className="mb-10 fade-up" style={{ animationDelay: '0.1s' }}>
-          <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full mb-6">
+        {/* Nav row */}
+        <div className="flex items-center justify-between w-full mb-10 fade-up" style={{ animationDelay: '0.05s' }}>
+          <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
             <span className="text-xs">🥚</span>
             <span className="text-white/90 text-xs font-medium">Daily Egg</span>
           </div>
+          <button
+            onClick={onClose}
+            className="liquid-glass w-9 h-9 flex items-center justify-center rounded-full text-white/50 hover:text-white/80 transition-colors"
+          >
+            <X size={15} />
+          </button>
+        </div>
+
+        {/* Header */}
+        <div className="mb-10 fade-up" style={{ animationDelay: '0.1s' }}>
           <h1 className="font-playfair italic text-white text-3xl leading-tight" style={{ letterSpacing: '-0.04em' }}>
             {alreadyOpened && phase !== 'reveal'
               ? "Come back\ntomorrow"

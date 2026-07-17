@@ -24,10 +24,18 @@ function shortDate(dateKey: string) {
   return d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
 }
 
+const PROMISE_COLORS = [
+  '#e8702a', '#7c6af7', '#3db9cf', '#f59e0b', '#34d399', '#f472b6', '#60a5fa', '#a78bfa',
+];
+
+function promiseColor(index: number) {
+  return PROMISE_COLORS[index % PROMISE_COLORS.length];
+}
+
 export default function HistoryChart({ history, promises, color }: Props) {
   const days = getLast30Days();
 
-  // Count completions per day
+  // Count completions per day (total, for summary pills)
   const dailyCounts = useMemo(() => {
     const map: Record<string, number> = {};
     for (const d of days) map[d] = 0;
@@ -37,23 +45,21 @@ export default function HistoryChart({ history, promises, color }: Props) {
     return days.map(d => ({ date: d, count: map[d] }));
   }, [history]);
 
-  const maxCount = Math.max(...dailyCounts.map(d => d.count), 1);
+  // Per-promise daily presence (1 or 0) for individual lines
+  const promiseLines = useMemo(() => {
+    return promises.map((p, i) => {
+      const pHistory = history.filter(c => c.promise_id === p.id);
+      const counts = days.map(d => ({ date: d, done: pHistory.some(c => c.date_key === d) ? 1 : 0 }));
+      return { promise: p, counts, color: promiseColor(i) };
+    });
+  }, [history, promises]);
 
   // SVG area chart
   const W = 320;
-  const H = 80;
+  const H = 100;
   const PAD = { left: 4, right: 4, top: 8, bottom: 4 };
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
-
-  const points = dailyCounts.map((d, i) => {
-    const x = PAD.left + (i / (days.length - 1)) * innerW;
-    const y = PAD.top + innerH - (d.count / maxCount) * innerH;
-    return { x, y, ...d };
-  });
-
-  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-  const areaPath = `${linePath} L${points[points.length - 1].x.toFixed(1)},${(PAD.top + innerH).toFixed(1)} L${PAD.left},${(PAD.top + innerH).toFixed(1)} Z`;
 
   // Per-promise breakdown: total completions + last 7 days streak
   const promiseStats = useMemo(() => {
@@ -99,40 +105,51 @@ export default function HistoryChart({ history, promises, color }: Props) {
         </div>
       </div>
 
-      {/* Area chart */}
+      {/* Area chart — one line per promise */}
       <div className="liquid-glass rounded-2xl px-4 pt-4 pb-3">
         <p className="text-white/50 text-xs mb-3">completions · last 30 days</p>
-        <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ height: 80, display: 'block' }}>
-          <defs>
-            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity="0.4" />
-              <stop offset="100%" stopColor={color} stopOpacity="0.02" />
-            </linearGradient>
-          </defs>
+        <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ height: 100, display: 'block' }}>
           {/* Horizontal grid lines */}
-          {[0.25, 0.5, 0.75, 1].map(v => (
-            <line
-              key={v}
-              x1={PAD.left} y1={PAD.top + innerH - v * innerH}
-              x2={W - PAD.right} y2={PAD.top + innerH - v * innerH}
-              stroke="rgba(255,255,255,0.06)" strokeWidth="1"
-            />
+          {[0.5, 1].map(v => (
+            <line key={v} x1={PAD.left} y1={PAD.top + innerH - v * innerH} x2={W - PAD.right} y2={PAD.top + innerH - v * innerH} stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
           ))}
-          {/* Area fill */}
-          <path d={areaPath} fill="url(#areaGrad)" />
-          {/* Line */}
-          <path d={linePath} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-          {/* Dots for days with completions */}
-          {points.filter(p => p.count > 0).map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r="2.5" fill={color} />
-          ))}
+          {promiseLines.map(({ promise: p, counts, color: c }) => {
+            const pts = counts.map((d, i) => ({
+              x: PAD.left + (i / (days.length - 1)) * innerW,
+              y: PAD.top + innerH - d.done * innerH,
+              done: d.done,
+            }));
+            const path = pts.map((pt, i) => `${i === 0 ? 'M' : 'L'}${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');
+            return (
+              <g key={p.id}>
+                <path d={path} fill="none" stroke={c} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" strokeOpacity="0.8" />
+                {pts.filter(pt => pt.done).map((pt, i) => (
+                  <circle key={i} cx={pt.x} cy={pt.y} r="2.5" fill={c} />
+                ))}
+              </g>
+            );
+          })}
+          {promiseLines.length === 0 && (
+            <text x={W / 2} y={H / 2} textAnchor="middle" fill="rgba(255,255,255,0.2)" fontSize="10">no data yet</text>
+          )}
         </svg>
-        {/* X axis labels: first, middle, last */}
+        {/* X axis labels */}
         <div className="flex justify-between mt-1">
           <span className="text-white/25 text-[10px]">{shortDate(days[0])}</span>
           <span className="text-white/25 text-[10px]">{shortDate(days[14])}</span>
           <span className="text-white/25 text-[10px]">Today</span>
         </div>
+        {/* Legend */}
+        {promiseLines.length > 0 && (
+          <div className="flex flex-wrap gap-x-3 gap-y-1 mt-3">
+            {promiseLines.map(({ promise: p, color: c }) => (
+              <div key={p.id} className="flex items-center gap-1.5">
+                <div className="w-3 h-0.5 rounded-full" style={{ backgroundColor: c }} />
+                <span className="text-white/35 text-[10px] truncate max-w-[80px]">{p.title}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Last 14 days dot grid */}
@@ -172,19 +189,20 @@ export default function HistoryChart({ history, promises, color }: Props) {
         <div className="liquid-glass rounded-2xl px-4 py-3">
           <p className="text-white/50 text-xs mb-3">by promise</p>
           <div className="space-y-3">
-            {promiseStats.map(({ promise, total, last7 }) => {
+            {promiseStats.map(({ promise, total, last7 }, i) => {
               const pct = total === 0 ? 0 : Math.min(100, (last7 / 7) * 100);
+              const c = promiseColor(i);
               return (
                 <div key={promise.id}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-white/70 text-xs truncate max-w-[200px]">{promise.title}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: c }} />
+                      <span className="text-white/70 text-xs truncate max-w-[180px]">{promise.title}</span>
+                    </div>
                     <span className="text-white/30 text-xs ml-2 whitespace-nowrap">{total}× total</span>
                   </div>
                   <div className="h-1.5 bg-white/8 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-700"
-                      style={{ width: `${pct}%`, backgroundColor: color }}
-                    />
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, backgroundColor: c }} />
                   </div>
                   <p className="text-white/25 text-[10px] mt-0.5">{last7}/7 days this week</p>
                 </div>

@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react';
 import { Plus, LogOut, Flame, Users, Gift, ChevronDown, ChevronUp } from 'lucide-react';
 import HistoryChart from './HistoryChart';
 import TraitAllocator from './TraitAllocator';
+import UpgradeModal from './UpgradeModal';
+import SpeciesSelector from './SpeciesSelector';
+import AiCheckin from './AiCheckin';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
 import { applyDecayIfNeeded, recordCompletion } from '../lib/petEngine';
+import { isPlus, isPro, SPECIES_LIST } from '../lib/species';
 
 interface CompletionWithTitle extends Completion {
   promise_title: string;
@@ -42,6 +46,14 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
   const [newTitle, setNewTitle] = useState('');
   const [newCategory, setNewCategory] = useState<GoalCategory>('general');
   const [showTraits, setShowTraits] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [upgradeReason, setUpgradeReason] = useState('');
+  const [showSpecies, setShowSpecies] = useState(false);
+
+  const tier = profile?.subscription_tier ?? 'free';
+  const plus = isPlus(tier);
+  const pro = isPro(tier);
+  const FREE_GOAL_LIMIT = 5;
 
   useEffect(() => {
     loadPromises();
@@ -62,12 +74,18 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
 
   async function loadHistory() {
     if (!pet) return;
-    const { data } = await supabase
+    const query = supabase
       .from('completions')
       .select('*')
       .eq('user_id', pet.user_id)
-      .order('completed_at', { ascending: false })
-      .limit(30);
+      .order('completed_at', { ascending: false });
+    // Free users: last 30 days only
+    if (!plus) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - 30);
+      query.gte('date_key', cutoff.toISOString().slice(0, 10));
+    }
+    const { data } = await query;
     if (!data) return;
     // Enrich with promise titles
     const enriched = await Promise.all(data.map(async c => {
@@ -79,6 +97,11 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
 
   async function addPromise() {
     if (!newTitle.trim() || !pet) return;
+    if (!plus && promises.length >= FREE_GOAL_LIMIT) {
+      setUpgradeReason(`You've reached ${FREE_GOAL_LIMIT} goals — upgrade for unlimited`);
+      setShowUpgrade(true);
+      return;
+    }
     const { data } = await supabase.from('promises').insert({ user_id: pet.user_id, title: newTitle.trim(), category: newCategory, frequency: 'daily', verify_method: 'timer' }).select().single();
     if (data) { setPromises(p => [...p, data]); setNewTitle(''); setNewCategory('general'); setShowAdd(false); }
   }
@@ -88,12 +111,16 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
   const mood = moodFromHappiness(pet.happiness);
   const xpPct = Math.round((pet.xp / pet.xp_to_next) * 100);
   const color = petColor(pet.color_seed);
+  const speciesData = SPECIES_LIST.find(s => s.id === pet.species) ?? SPECIES_LIST[0];
+  const petEmoji = speciesData.emoji;
 
   return (
     <>
       <div className="scene-bg" />
       <div className="scene-overlay" />
       {showTraits && <TraitAllocator onClose={() => setShowTraits(false)} />}
+      {showUpgrade && <UpgradeModal reason={upgradeReason} onClose={() => setShowUpgrade(false)} />}
+      {showSpecies && <SpeciesSelector onClose={() => setShowSpecies(false)} />}
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-6 pt-14 pb-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
 
         {/* Nav */}
@@ -133,12 +160,14 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
           <div className="relative mb-4">
             {/* Glow */}
             <div className="absolute inset-0 rounded-full blur-3xl opacity-40 scale-150" style={{ backgroundColor: color }} />
-            <div
-              className="relative w-32 h-32 rounded-full flex items-center justify-center text-5xl liquid-glass"
+            <button
+              onClick={() => setShowSpecies(true)}
+              className="relative w-32 h-32 rounded-full flex items-center justify-center text-5xl liquid-glass hover:bg-white/10 transition-colors"
               style={{ background: color + '22' }}
             >
-              {MOOD_EMOJI[mood]}
-            </div>
+              {petEmoji}
+              <span className="absolute bottom-1 right-1 text-base">{MOOD_EMOJI[mood]}</span>
+            </button>
           </div>
           <h1 className="font-playfair italic text-white text-3xl mb-1" style={{ letterSpacing: '-0.04em' }}>{pet.name}</h1>
           <p className="text-white/40 text-xs">{MOOD_LABEL[mood]}</p>
@@ -195,21 +224,24 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
           </button>
         </div>
 
-        {/* Voice button */}
-        <div className="flex flex-col items-center my-2 mb-8 fade-up" style={{ animationDelay: '0.25s' }}>
-          <div className="relative">
-            <div className="absolute inset-0 rounded-full blur-2xl" style={{ background: 'radial-gradient(ellipse at center, rgba(220,200,80,0.45) 0%, rgba(180,160,40,0.18) 40%, transparent 70%)', transform: 'scale(2.2)' }} />
-            <button className="relative w-16 h-16 rounded-full liquid-glass flex items-center justify-center transition-all active:scale-95 hover:bg-white/10">
-              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                <line x1="4"  y1="14" x2="4"  y2="14" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="9"  y1="10" x2="9"  y2="18" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="14" y1="6"  x2="14" y2="22" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="19" y1="10" x2="19" y2="18" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="24" y1="14" x2="24" y2="14" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-          </div>
-          <span className="text-white/50 text-xs mt-2">voice check-in</span>
+        {/* AI check-in (Pro) or upgrade prompt */}
+        <div className="my-2 mb-8 fade-up" style={{ animationDelay: '0.25s' }}>
+          {pro
+            ? <AiCheckin petEmoji={petEmoji} color={color} />
+            : (
+              <button
+                onClick={() => { setUpgradeReason('AI daily check-ins are a Pro feature'); setShowUpgrade(true); }}
+                className="w-full liquid-glass rounded-2xl px-4 py-3.5 flex items-center gap-3 hover:bg-white/10 transition-colors"
+              >
+                <span className="text-xl">{petEmoji}</span>
+                <div className="flex-1 text-left">
+                  <p className="text-white/50 text-xs">morning check-in</p>
+                  <p className="text-white/25 text-xs mt-0.5">Upgrade to Pro — your pet talks to you daily</p>
+                </div>
+                <span className="text-[10px] px-2 py-1 rounded-full font-semibold" style={{ background: '#e8702a22', color: '#e8702a' }}>Pro</span>
+              </button>
+            )
+          }
         </div>
 
         {/* Promises */}
@@ -295,9 +327,10 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
           >
             <div>
               <p className="text-white/40 text-xs mb-0.5">your progress</p>
-              <h2 className="text-white text-lg font-medium leading-tight text-left" style={{ letterSpacing: '-0.03em' }}>
-                History
-              </h2>
+              <div className="flex items-center gap-2">
+                <h2 className="text-white text-lg font-medium leading-tight" style={{ letterSpacing: '-0.03em' }}>History</h2>
+                {!plus && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: 'rgba(124,106,247,0.2)', color: '#7c6af7' }}>30 days · Plus for full</span>}
+              </div>
             </div>
             {showHistory ? <ChevronUp size={16} className="text-white/40" /> : <ChevronDown size={16} className="text-white/40" />}
           </button>

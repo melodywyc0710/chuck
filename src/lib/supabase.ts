@@ -45,6 +45,7 @@ export type Database = {
 export interface Profile {
   id: string;
   username: string;
+  subscription_tier: 'free' | 'plus' | 'pro';
   created_at: string;
 }
 

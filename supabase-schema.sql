@@ -3,20 +3,21 @@
 -- Run this in Supabase SQL Editor
 -- ─────────────────────────────────────────────
 
--- ─── MIGRATION: add traits to pets ────────────
--- Run this if pets table already exists:
+-- ─── MIGRATION: run these if tables already exist ─
 -- alter table public.pets add column if not exists trait_points_available integer not null default 0;
 -- alter table public.pets add column if not exists trait_strength integer not null default 0;
 -- alter table public.pets add column if not exists trait_intelligence integer not null default 0;
 -- alter table public.pets add column if not exists trait_agility integer not null default 0;
 -- alter table public.pets add column if not exists trait_speed integer not null default 0;
 -- alter table public.promises add column if not exists category text not null default 'general' check (category in ('strength','intelligence','agility','speed','general'));
--- ──────────────────────────────────────────────
+-- alter table public.profiles add column if not exists subscription_tier text not null default 'free' check (subscription_tier in ('free','plus','pro'));
+-- ──────────────────────────────────────────────────
 
 -- Profiles: one per user
 create table public.profiles (
   id uuid references auth.users on delete cascade primary key,
   username text not null unique,
+  subscription_tier text not null default 'free' check (subscription_tier in ('free','plus','pro')),
   created_at timestamptz not null default now()
 );
 

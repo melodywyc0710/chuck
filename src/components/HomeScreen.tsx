@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Plus, LogOut, Flame, Users, Gift, ChevronDown, ChevronUp } from 'lucide-react';
+import HistoryChart from './HistoryChart';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_, Completion } from '../lib/supabase';
@@ -225,47 +226,25 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
           </div>
         </div>
 
-        {/* Completion history */}
-        {history.length > 0 && (
-          <div className="mt-6 fade-up" style={{ animationDelay: '0.6s' }}>
-            <button
-              onClick={() => setShowHistory(v => !v)}
-              className="flex items-center justify-between w-full mb-3"
-            >
-              <div>
-                <p className="text-white/40 text-xs mb-0.5">all time</p>
-                <h2 className="text-white text-lg font-medium leading-tight text-left" style={{ letterSpacing: '-0.03em' }}>
-                  Completion history
-                </h2>
-              </div>
-              {showHistory ? <ChevronUp size={16} className="text-white/40" /> : <ChevronDown size={16} className="text-white/40" />}
-            </button>
+        {/* Completion history chart */}
+        <div className="mt-6 fade-up" style={{ animationDelay: '0.6s' }}>
+          <button
+            onClick={() => setShowHistory(v => !v)}
+            className="flex items-center justify-between w-full mb-3"
+          >
+            <div>
+              <p className="text-white/40 text-xs mb-0.5">your progress</p>
+              <h2 className="text-white text-lg font-medium leading-tight text-left" style={{ letterSpacing: '-0.03em' }}>
+                History
+              </h2>
+            </div>
+            {showHistory ? <ChevronUp size={16} className="text-white/40" /> : <ChevronDown size={16} className="text-white/40" />}
+          </button>
 
-            {showHistory && (
-              <div className="space-y-2">
-                {history.map((c, i) => {
-                  const date = new Date(c.completed_at);
-                  const isToday = c.date_key === new Date().toISOString().slice(0, 10);
-                  const label = isToday ? 'Today' : date.toLocaleDateString('en', { month: 'short', day: 'numeric' });
-                  return (
-                    <div key={c.id} className="liquid-glass rounded-2xl px-4 py-3 flex items-center justify-between fade-up" style={{ animationDelay: `${i * 0.03}s` }}>
-                      <div className="flex items-center gap-3">
-                        <span className="text-base">✅</span>
-                        <div>
-                          <p className="text-white/80 text-sm font-medium">{c.promise_title}</p>
-                          {c.verified_by && (
-                            <p className="text-white/30 text-xs mt-0.5">👁 witnessed</p>
-                          )}
-                        </div>
-                      </div>
-                      <span className="text-white/30 text-xs whitespace-nowrap ml-3">{label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        )}
+          {showHistory && (
+            <HistoryChart history={history} promises={promises} color={color} />
+          )}
+        </div>
       </div>
     </>
   );

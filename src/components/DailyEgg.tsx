@@ -63,6 +63,14 @@ interface Props {
   onClose: () => void;
 }
 
+const EGG_IMAGES: Record<string, string> = {
+  melmel: '/eggs/egg-melmel.png',
+  lolo:   '/eggs/egg-lolo.png',
+  didi:   '/eggs/egg-didi.png',
+  chacha: '/eggs/egg-chacha.png',
+  kiki:   '/eggs/egg-kiki.png',
+};
+
 export default function DailyEgg({ onClose }: Props) {
   const pet = useAuthStore(s => s.pet);
   const user = useAuthStore(s => s.user);
@@ -197,9 +205,18 @@ export default function DailyEgg({ onClose }: Props) {
                 className="absolute inset-0 rounded-full blur-3xl scale-150"
                 style={{ background: 'radial-gradient(ellipse at center, rgba(220,200,80,0.4) 0%, transparent 70%)' }}
               />
-              <span className="relative text-9xl select-none" style={{ display: 'block' }}>
-                {phase === 'cracking' ? '🪺' : '🥚'}
-              </span>
+              {phase === 'cracking' ? (
+                <span className="relative text-9xl select-none" style={{ display: 'block' }}>🪺</span>
+              ) : EGG_IMAGES[pet?.species ?? ''] ? (
+                <img
+                  src={EGG_IMAGES[pet?.species ?? '']}
+                  alt="Daily egg"
+                  className="relative w-48 h-48 object-contain select-none"
+                  style={{ mixBlendMode: 'multiply' }}
+                />
+              ) : (
+                <span className="relative text-9xl select-none" style={{ display: 'block' }}>🥚</span>
+              )}
             </button>
           ) : reward ? (
             <div className="flex flex-col items-center">

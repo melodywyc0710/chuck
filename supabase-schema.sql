@@ -114,7 +114,20 @@ create table public.fitness_logs (
   logged_at timestamptz not null default now()
 );
 
+-- Focus sessions: deep work timer records
+create table public.focus_sessions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  duration_mins integer not null,
+  actual_mins integer,
+  completed boolean not null default false,
+  date_key text not null,
+  started_at timestamptz not null default now(),
+  ended_at timestamptz
+);
+
 -- ─── Row Level Security ────────────────────────
+alter table public.focus_sessions    enable row level security;
 alter table public.fitness_logs      enable row level security;
 alter table public.profiles         enable row level security;
 alter table public.pets             enable row level security;
@@ -122,6 +135,12 @@ alter table public.promises         enable row level security;
 alter table public.completions      enable row level security;
 alter table public.friendships      enable row level security;
 alter table public.witness_requests enable row level security;
+
+-- Focus sessions: own only
+create policy "focus_select" on public.focus_sessions for select using (auth.uid() = user_id);
+create policy "focus_insert" on public.focus_sessions for insert with check (auth.uid() = user_id);
+create policy "focus_update" on public.focus_sessions for update using (auth.uid() = user_id);
+create policy "focus_delete" on public.focus_sessions for delete using (auth.uid() = user_id);
 
 -- Fitness logs: own only
 create policy "fitness_select" on public.fitness_logs for select using (auth.uid() = user_id);

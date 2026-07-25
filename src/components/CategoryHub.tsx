@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
 import { recordCompletion } from '../lib/petEngine';
 import MetricPanels from './MetricPanels';
+import DeepWorkTimer from './DeepWorkTimer';
 
 interface Props {
   category: GoalCategory;
@@ -231,12 +232,11 @@ export default function CategoryHub({ category, onClose }: Props) {
           </div>
         )}
 
-        {/* Focus placeholder */}
+        {/* Focus: deep work timer */}
         {category === 'focus' && (
-          <div className="fade-up liquid-glass rounded-[28px] p-6 text-center" style={{ animationDelay: '0.35s' }}>
-            <p className="text-4xl mb-3">🧠</p>
-            <p className="text-white/50 text-sm font-medium">Focus tracking</p>
-            <p className="text-white/25 text-xs mt-1">Coming soon — deep work timer, reading log & more</p>
+          <div className="fade-up" style={{ animationDelay: '0.35s' }}>
+            <p className="text-white/40 text-xs uppercase tracking-widest mb-3">Deep Work</p>
+            <DeepWorkTimer userId={user.id} />
           </div>
         )}
 

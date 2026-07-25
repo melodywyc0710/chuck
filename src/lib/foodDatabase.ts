@@ -1,0 +1,195 @@
+export interface FoodItem {
+  name: string;
+  cal: number;     // kcal per serving
+  serving: string; // serving description
+}
+
+// ~200 common foods — cal per typical serving
+export const FOODS: FoodItem[] = [
+  // ── Breakfast ───────────────────────────────────────
+  { name: 'Scrambled eggs (2)',        cal: 182, serving: '2 large eggs' },
+  { name: 'Fried egg',                 cal: 90,  serving: '1 large egg' },
+  { name: 'Boiled egg',                cal: 78,  serving: '1 large egg' },
+  { name: 'Omelette (plain)',          cal: 154, serving: '2-egg' },
+  { name: 'Oatmeal',                   cal: 150, serving: '1 cup cooked' },
+  { name: 'Greek yogurt (plain)',      cal: 100, serving: '170g' },
+  { name: 'Greek yogurt (flavoured)',  cal: 150, serving: '170g' },
+  { name: 'Granola',                   cal: 200, serving: '¼ cup / 40g' },
+  { name: 'White toast',               cal: 79,  serving: '1 slice' },
+  { name: 'Whole-wheat toast',         cal: 81,  serving: '1 slice' },
+  { name: 'Butter',                    cal: 102, serving: '1 tbsp' },
+  { name: 'Peanut butter',             cal: 188, serving: '2 tbsp' },
+  { name: 'Almond butter',             cal: 196, serving: '2 tbsp' },
+  { name: 'Jam / jelly',               cal: 56,  serving: '1 tbsp' },
+  { name: 'Avocado toast',             cal: 250, serving: '1 slice + ½ avocado' },
+  { name: 'Pancakes (plain, x2)',      cal: 300, serving: '2 medium' },
+  { name: 'Waffle (plain)',            cal: 218, serving: '1 round' },
+  { name: 'Bagel (plain)',             cal: 270, serving: '1 medium' },
+  { name: 'Cream cheese',              cal: 99,  serving: '2 tbsp' },
+  { name: 'Croissant',                 cal: 272, serving: '1 medium' },
+  { name: 'Muffin (blueberry)',        cal: 340, serving: '1 large' },
+  { name: 'Cereal (corn flakes)',      cal: 100, serving: '1 cup' },
+  { name: 'Muesli',                    cal: 289, serving: '1 cup dry' },
+  { name: 'Smoothie (banana berry)',   cal: 250, serving: '350ml' },
+  { name: 'Acai bowl',                 cal: 380, serving: '1 bowl' },
+
+  // ── Bread & Grains ───────────────────────────────────
+  { name: 'White rice (cooked)',       cal: 206, serving: '1 cup' },
+  { name: 'Brown rice (cooked)',       cal: 216, serving: '1 cup' },
+  { name: 'Pasta (cooked)',            cal: 220, serving: '1 cup' },
+  { name: 'Spaghetti with tomato',     cal: 350, serving: '1 serving' },
+  { name: 'Bread roll',                cal: 120, serving: '1 medium' },
+  { name: 'Sourdough (1 slice)',       cal: 90,  serving: '1 slice' },
+  { name: 'Roti / chapati',            cal: 120, serving: '1 piece' },
+  { name: 'Naan bread',               cal: 262, serving: '1 piece' },
+  { name: 'Quinoa (cooked)',           cal: 222, serving: '1 cup' },
+  { name: 'Couscous (cooked)',         cal: 176, serving: '1 cup' },
+
+  // ── Protein / Meat ───────────────────────────────────
+  { name: 'Chicken breast (grilled)', cal: 165, serving: '100g' },
+  { name: 'Chicken thigh (grilled)',  cal: 209, serving: '100g' },
+  { name: 'Chicken wing',             cal: 99,  serving: '1 wing' },
+  { name: 'Ground beef (lean)',       cal: 218, serving: '100g' },
+  { name: 'Steak (sirloin)',          cal: 207, serving: '100g' },
+  { name: 'Pork chop (grilled)',      cal: 187, serving: '100g' },
+  { name: 'Bacon (2 strips)',         cal: 86,  serving: '2 strips' },
+  { name: 'Ham (sliced)',             cal: 46,  serving: '1 slice / 30g' },
+  { name: 'Salmon (baked)',           cal: 208, serving: '100g' },
+  { name: 'Tuna (canned in water)',   cal: 109, serving: '100g' },
+  { name: 'Shrimp (cooked)',          cal: 99,  serving: '100g' },
+  { name: 'Tofu (firm)',              cal: 144, serving: '100g' },
+  { name: 'Tempeh',                   cal: 195, serving: '100g' },
+  { name: 'Edamame',                  cal: 188, serving: '1 cup' },
+
+  // ── Dairy ────────────────────────────────────────────
+  { name: 'Whole milk',               cal: 149, serving: '1 cup / 244ml' },
+  { name: 'Skim milk',                cal: 83,  serving: '1 cup / 244ml' },
+  { name: 'Oat milk',                 cal: 120, serving: '1 cup / 244ml' },
+  { name: 'Almond milk (unsw.)',      cal: 30,  serving: '1 cup / 244ml' },
+  { name: 'Soy milk',                 cal: 80,  serving: '1 cup / 244ml' },
+  { name: 'Cheddar cheese',           cal: 113, serving: '30g / 1 oz' },
+  { name: 'Mozzarella',               cal: 85,  serving: '30g' },
+  { name: 'Cottage cheese',           cal: 206, serving: '1 cup' },
+  { name: 'Ice cream (vanilla)',      cal: 207, serving: '½ cup' },
+
+  // ── Vegetables ───────────────────────────────────────
+  { name: 'Salad (green, plain)',     cal: 20,  serving: '2 cups' },
+  { name: 'Broccoli (steamed)',       cal: 55,  serving: '1 cup' },
+  { name: 'Spinach (raw)',            cal: 7,   serving: '1 cup' },
+  { name: 'Carrot (raw)',             cal: 25,  serving: '1 medium' },
+  { name: 'Cucumber',                 cal: 16,  serving: '1 cup sliced' },
+  { name: 'Tomato',                   cal: 22,  serving: '1 medium' },
+  { name: 'Bell pepper',              cal: 31,  serving: '1 medium' },
+  { name: 'Corn (1 ear)',             cal: 132, serving: '1 ear' },
+  { name: 'Sweet potato (baked)',     cal: 103, serving: '1 medium' },
+  { name: 'White potato (baked)',     cal: 161, serving: '1 medium' },
+  { name: 'French fries',             cal: 365, serving: 'medium serve' },
+  { name: 'Edamame (shelled)',        cal: 188, serving: '1 cup' },
+  { name: 'Peas (frozen, cooked)',    cal: 134, serving: '1 cup' },
+  { name: 'Mushrooms (sautéed)',      cal: 29,  serving: '½ cup' },
+  { name: 'Onion (raw)',              cal: 44,  serving: '1 medium' },
+
+  // ── Fruit ────────────────────────────────────────────
+  { name: 'Apple',                    cal: 95,  serving: '1 medium' },
+  { name: 'Banana',                   cal: 105, serving: '1 medium' },
+  { name: 'Orange',                   cal: 62,  serving: '1 medium' },
+  { name: 'Mango',                    cal: 201, serving: '1 cup / 165g' },
+  { name: 'Strawberries',             cal: 49,  serving: '1 cup' },
+  { name: 'Blueberries',              cal: 84,  serving: '1 cup' },
+  { name: 'Grapes',                   cal: 104, serving: '1 cup' },
+  { name: 'Watermelon',               cal: 86,  serving: '2 cups diced' },
+  { name: 'Avocado',                  cal: 234, serving: '1 whole' },
+  { name: 'Pineapple',                cal: 74,  serving: '1 cup chunks' },
+  { name: 'Peach',                    cal: 58,  serving: '1 medium' },
+  { name: 'Pear',                     cal: 101, serving: '1 medium' },
+  { name: 'Cherries',                 cal: 87,  serving: '1 cup' },
+  { name: 'Kiwi',                     cal: 42,  serving: '1 medium' },
+  { name: 'Lemon',                    cal: 17,  serving: '1 medium' },
+
+  // ── Snacks ───────────────────────────────────────────
+  { name: 'Almonds',                  cal: 164, serving: '28g / 23 nuts' },
+  { name: 'Cashews',                  cal: 157, serving: '28g' },
+  { name: 'Walnuts',                  cal: 185, serving: '28g' },
+  { name: 'Mixed nuts',               cal: 168, serving: '28g' },
+  { name: 'Sunflower seeds',          cal: 165, serving: '28g' },
+  { name: 'Popcorn (plain)',          cal: 31,  serving: '1 cup' },
+  { name: 'Potato chips',             cal: 152, serving: '28g / ~15 chips' },
+  { name: 'Rice cakes (plain)',       cal: 35,  serving: '1 cake' },
+  { name: 'Hummus',                   cal: 70,  serving: '2 tbsp' },
+  { name: 'Crackers (wheat)',         cal: 75,  serving: '5 crackers' },
+  { name: 'Dark chocolate (70%)',     cal: 167, serving: '28g / 3 squares' },
+  { name: 'Milk chocolate',           cal: 154, serving: '28g' },
+  { name: 'Protein bar',              cal: 200, serving: '1 bar (avg)' },
+  { name: 'Protein shake',            cal: 150, serving: '1 scoop in water' },
+
+  // ── Fast Food / Meals ────────────────────────────────
+  { name: 'Burger (beef, plain)',     cal: 354, serving: '1 regular' },
+  { name: 'Cheeseburger',             cal: 440, serving: '1 regular' },
+  { name: 'Chicken sandwich',         cal: 400, serving: '1 regular' },
+  { name: 'Hot dog',                  cal: 290, serving: '1 with bun' },
+  { name: 'Pizza (cheese, 1 slice)', cal: 272, serving: '1 slice medium' },
+  { name: 'Pizza (pepperoni)',        cal: 313, serving: '1 slice medium' },
+  { name: 'Burrito',                  cal: 490, serving: '1 large' },
+  { name: 'Tacos (beef, x2)',        cal: 340, serving: '2 tacos' },
+  { name: 'Sushi (6 pieces)',        cal: 300, serving: '6-pc roll' },
+  { name: 'Caesar salad',            cal: 360, serving: '1 serving' },
+  { name: 'Club sandwich',           cal: 540, serving: '1 sandwich' },
+  { name: 'Wrap (chicken)',           cal: 380, serving: '1 wrap' },
+  { name: 'Fried rice',              cal: 356, serving: '1 cup' },
+  { name: 'Pad thai',                cal: 400, serving: '1 serving' },
+  { name: 'Ramen',                   cal: 436, serving: '1 bowl' },
+  { name: 'Curry (chicken)',         cal: 320, serving: '1 serving' },
+  { name: 'Stir fry (veg)',          cal: 200, serving: '1 cup' },
+  { name: 'Soup (tomato)',           cal: 90,  serving: '1 cup' },
+  { name: 'Soup (chicken noodle)',   cal: 75,  serving: '1 cup' },
+  { name: 'Mac and cheese',         cal: 380, serving: '1 cup' },
+
+  // ── Drinks ───────────────────────────────────────────
+  { name: 'Water',                   cal: 0,   serving: 'any amount' },
+  { name: 'Black coffee',            cal: 2,   serving: '240ml' },
+  { name: 'Coffee with milk',        cal: 30,  serving: '240ml' },
+  { name: 'Latte (whole milk)',      cal: 190, serving: '480ml / large' },
+  { name: 'Cappuccino',              cal: 120, serving: '360ml' },
+  { name: 'Green tea',               cal: 2,   serving: '240ml' },
+  { name: 'Orange juice',            cal: 112, serving: '240ml' },
+  { name: 'Apple juice',             cal: 114, serving: '240ml' },
+  { name: 'Coca-Cola',               cal: 140, serving: '355ml can' },
+  { name: 'Diet Coke',               cal: 0,   serving: '355ml can' },
+  { name: 'Beer (regular)',          cal: 153, serving: '355ml' },
+  { name: 'Wine (red)',              cal: 125, serving: '150ml glass' },
+  { name: 'Wine (white)',            cal: 121, serving: '150ml glass' },
+  { name: 'Spirits (vodka/gin)',     cal: 97,  serving: '30ml shot' },
+  { name: 'Sports drink',            cal: 140, serving: '600ml bottle' },
+  { name: 'Energy drink',            cal: 110, serving: '250ml can' },
+  { name: 'Coconut water',           cal: 46,  serving: '240ml' },
+
+  // ── Condiments ───────────────────────────────────────
+  { name: 'Ketchup',                 cal: 20,  serving: '1 tbsp' },
+  { name: 'Mayonnaise',              cal: 94,  serving: '1 tbsp' },
+  { name: 'Mustard',                 cal: 9,   serving: '1 tbsp' },
+  { name: 'Soy sauce',               cal: 11,  serving: '1 tbsp' },
+  { name: 'Olive oil',               cal: 119, serving: '1 tbsp' },
+  { name: 'Salad dressing (ranch)',  cal: 73,  serving: '2 tbsp' },
+  { name: 'Salad dressing (Italian)',cal: 43,  serving: '2 tbsp' },
+  { name: 'Honey',                   cal: 64,  serving: '1 tbsp' },
+  { name: 'Sugar',                   cal: 49,  serving: '1 tbsp' },
+  { name: 'Maple syrup',             cal: 52,  serving: '1 tbsp' },
+  { name: 'Hot sauce',               cal: 0,   serving: '1 tsp' },
+
+  // ── Desserts ─────────────────────────────────────────
+  { name: 'Chocolate cake (slice)',  cal: 352, serving: '1 slice / 100g' },
+  { name: 'Cheesecake (slice)',      cal: 401, serving: '1 slice / 100g' },
+  { name: 'Cookie (choc chip)',      cal: 148, serving: '1 large' },
+  { name: 'Brownie',                 cal: 243, serving: '1 piece / 57g' },
+  { name: 'Donut (glazed)',          cal: 269, serving: '1 donut' },
+  { name: 'Banana bread (slice)',    cal: 196, serving: '1 slice / 60g' },
+  { name: 'Fruit salad',             cal: 75,  serving: '1 cup' },
+];
+
+export function searchFoods(query: string): FoodItem[] {
+  if (!query.trim()) return [];
+  const q = query.toLowerCase();
+  return FOODS
+    .filter(f => f.name.toLowerCase().includes(q))
+    .slice(0, 8);
+}

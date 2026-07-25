@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-import { X, ChevronDown, ChevronUp, Plus, Target, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { X, ChevronDown, ChevronUp, Plus, Target, Trash2, Search } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
+import { searchFoods, type FoodItem } from '../lib/foodDatabase';
 
 type Metric = 'calories' | 'steps' | 'weight';
 type AggMode = 'sum' | 'latest'; // how to aggregate multiple entries per day
@@ -153,6 +154,11 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
   const [showGoalEditor, setShowGoalEditor] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  // Food search (calories only)
+  const [foodQuery, setFoodQuery] = useState('');
+  const [foodResults, setFoodResults] = useState<FoodItem[]>([]);
+  const [searchMode, setSearchMode] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
   const today = todayKey();
 
   // Goal stored in localStorage per metric
@@ -194,8 +200,24 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
     if (data) setLogs(prev => [...prev, data]);
     setInputVal('');
     setInputNote('');
+    setFoodQuery('');
+    setFoodResults([]);
+    setSearchMode(false);
     setShowAddForm(false);
     setSaving(false);
+  }
+
+  function onFoodQueryChange(q: string) {
+    setFoodQuery(q);
+    setFoodResults(searchFoods(q));
+  }
+
+  function selectFood(food: FoodItem) {
+    setInputVal(String(food.cal));
+    setInputNote(food.name + ' (' + food.serving + ')');
+    setFoodQuery('');
+    setFoodResults([]);
+    setSearchMode(false);
   }
 
   async function deleteEntry(id: string) {
@@ -277,6 +299,61 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
             </button>
           ) : (
             <div className="space-y-2 fade-up" style={{ animationDelay: '0s' }}>
+
+              {/* Food search (calories only) */}
+              {metric === 'calories' && (
+                <div>
+                  {!searchMode ? (
+                    <button
+                      onClick={() => { setSearchMode(true); setTimeout(() => searchRef.current?.focus(), 50); }}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm text-white/40 hover:text-white/70 transition-colors"
+                      style={{ background: 'rgba(255,255,255,0.05)' }}
+                    >
+                      <Search size={13} />
+                      Search food database…
+                    </button>
+                  ) : (
+                    <div>
+                      <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl liquid-glass" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                        <Search size={13} className="text-white/40 shrink-0" />
+                        <input
+                          ref={searchRef}
+                          type="text"
+                          placeholder="e.g. banana, chicken breast, latte…"
+                          value={foodQuery}
+                          onChange={e => onFoodQueryChange(e.target.value)}
+                          className="flex-1 bg-transparent text-white placeholder-white/30 text-sm outline-none"
+                        />
+                        <button onClick={() => { setSearchMode(false); setFoodQuery(''); setFoodResults([]); }} className="text-white/25 hover:text-white/60 text-xs">✕</button>
+                      </div>
+                      {foodResults.length > 0 && (
+                        <div className="mt-1 rounded-2xl overflow-hidden" style={{ background: 'rgba(20,20,30,0.85)' }}>
+                          {foodResults.map((f, i) => (
+                            <button
+                              key={i}
+                              onClick={() => selectFood(f)}
+                              className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-white/8 transition-colors text-left border-b border-white/5 last:border-0"
+                            >
+                              <div>
+                                <p className="text-white text-sm">{f.name}</p>
+                                <p className="text-white/30 text-[10px]">{f.serving}</p>
+                              </div>
+                              <span className="text-sm font-semibold ml-3 shrink-0" style={{ color: cfg.color }}>
+                                {f.cal} kcal
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {foodQuery.length > 1 && foodResults.length === 0 && (
+                        <p className="text-white/25 text-xs px-1 mt-1">No match — type the kcal manually below</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Manual value input */}
               <div className="flex gap-2">
                 <input
                   type="number"
@@ -285,7 +362,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
                   value={inputVal}
                   onChange={e => setInputVal(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && addEntry()}
-                  autoFocus
+                  autoFocus={metric !== 'calories'}
                   className="flex-1 px-4 py-2.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none liquid-glass"
                   style={{ background: 'rgba(255,255,255,0.07)' }}
                 />
@@ -300,13 +377,13 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
               </div>
               <input
                 type="text"
-                placeholder="Note (optional) — e.g. breakfast, morning run"
+                placeholder={metric === 'calories' ? 'Food name (filled automatically from search)' : 'Note (optional)'}
                 value={inputNote}
                 onChange={e => setInputNote(e.target.value)}
                 className="w-full px-4 py-2 rounded-2xl text-white placeholder-white/25 text-xs outline-none liquid-glass"
                 style={{ background: 'rgba(255,255,255,0.05)' }}
               />
-              <button onClick={() => setShowAddForm(false)} className="w-full text-white/25 text-xs py-1 hover:text-white/50">cancel</button>
+              <button onClick={() => { setShowAddForm(false); setSearchMode(false); setFoodQuery(''); setFoodResults([]); }} className="w-full text-white/25 text-xs py-1 hover:text-white/50">cancel</button>
             </div>
           )}
 

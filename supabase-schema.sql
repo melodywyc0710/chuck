@@ -11,7 +11,7 @@
 -- alter table public.pets add column if not exists trait_speed integer not null default 0;
 -- alter table public.promises add column if not exists category text not null default 'general' check (category in ('strength','intelligence','agility','speed','general'));
 -- alter table public.profiles add column if not exists subscription_tier text not null default 'free' check (subscription_tier in ('free','plus','pro'));
--- create table if not exists public.fitness_logs (id uuid primary key default gen_random_uuid(), user_id uuid references public.profiles(id) on delete cascade not null, metric text not null check (metric in ('calories','steps','weight')), value numeric not null, date_key text not null, logged_at timestamptz not null default now(), unique(user_id, metric, date_key));
+-- create table if not exists public.fitness_logs (id uuid primary key default gen_random_uuid(), user_id uuid references public.profiles(id) on delete cascade not null, metric text not null check (metric in ('calories','steps','weight')), value numeric not null, note text, date_key text not null, logged_at timestamptz not null default now());
 -- alter table public.fitness_logs enable row level security;
 -- create policy "fitness_select" on public.fitness_logs for select using (auth.uid() = user_id);
 -- create policy "fitness_insert" on public.fitness_logs for insert with check (auth.uid() = user_id);
@@ -105,9 +105,9 @@ create table public.fitness_logs (
   user_id uuid references public.profiles(id) on delete cascade not null,
   metric text not null check (metric in ('calories','steps','weight')),
   value numeric not null,
+  note text,
   date_key text not null,
-  logged_at timestamptz not null default now(),
-  unique(user_id, metric, date_key)
+  logged_at timestamptz not null default now()
 );
 
 -- ─── Row Level Security ────────────────────────

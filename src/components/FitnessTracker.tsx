@@ -154,6 +154,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
   const [showGoalEditor, setShowGoalEditor] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [dbError, setDbError] = useState<string | null>(null);
   // Food search (calories only)
   const [foodQuery, setFoodQuery] = useState('');
   const [foodResults, setFoodResults] = useState<FoodItem[]>([]);
@@ -192,12 +193,19 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
     const num = parseFloat(inputVal);
     if (isNaN(num) || num <= 0) return;
     setSaving(true);
-    const { data } = await supabase
-      .from('fitness_logs')
-      .insert({ user_id: userId, metric, value: num, note: inputNote.trim() || null, date_key: today })
-      .select()
-      .single();
-    if (data) setLogs(prev => [...prev, { ...data, value: Number(data.value) }]);
+    setDbError(null);
+
+    // Optimistic update — show immediately in UI
+    const tempEntry: LogEntry = {
+      id: `temp-${Date.now()}`,
+      user_id: userId,
+      metric,
+      value: num,
+      note: inputNote.trim() || null,
+      date_key: today,
+      logged_at: new Date().toISOString(),
+    };
+    setLogs(prev => [...prev, tempEntry]);
     setInputVal('');
     setInputNote('');
     setFoodQuery('');
@@ -205,6 +213,21 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
     setSearchMode(false);
     setShowAddForm(false);
     setSaving(false);
+
+    // Persist to DB
+    const { data, error } = await supabase
+      .from('fitness_logs')
+      .insert({ user_id: userId, metric, value: num, note: tempEntry.note, date_key: today })
+      .select()
+      .single();
+    if (error) {
+      setDbError(error.message);
+      // Remove the optimistic entry on failure
+      setLogs(prev => prev.filter(l => l.id !== tempEntry.id));
+    } else if (data) {
+      // Replace temp entry with real DB row
+      setLogs(prev => prev.map(l => l.id === tempEntry.id ? { ...data, value: Number(data.value) } : l));
+    }
   }
 
   function onFoodQueryChange(q: string) {
@@ -274,6 +297,15 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
 
       {expanded && (
         <div className="mt-4 space-y-4">
+
+          {/* DB error banner */}
+          {dbError && (
+            <div className="px-3 py-2 rounded-xl text-xs text-red-300/80" style={{ background: 'rgba(248,113,113,0.12)' }}>
+              <p className="font-medium mb-0.5">Could not save to database</p>
+              <p className="text-red-300/50">{dbError}</p>
+              <p className="text-red-300/40 mt-1">Run the fitness_logs migration SQL in Supabase to fix this.</p>
+            </div>
+          )}
 
           {/* Goal setting */}
           <button

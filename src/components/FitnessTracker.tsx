@@ -50,7 +50,7 @@ function formatTime(iso: string) {
 }
 
 /** Aggregate logs into daily values for chart */
-function aggregateByDay(logs: (LogEntry & { value: number })[], agg: AggMode): { date: string; value: number }[] {
+function aggregateByDay(logs: LogEntry[], agg: AggMode): { date: string; value: number }[] {
   const byDay: Record<string, number[]> = {};
   for (const l of logs) {
     if (!byDay[l.date_key]) byDay[l.date_key] = [];
@@ -185,7 +185,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
       .eq('metric', metric)
       .gte('date_key', cutoff.toISOString().slice(0, 10))
       .order('logged_at', { ascending: true });
-    if (data) setLogs(data);
+    if (data) setLogs(data.map(l => ({ ...l, value: Number(l.value) })));
   }
 
   async function addEntry() {
@@ -197,7 +197,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
       .insert({ user_id: userId, metric, value: num, note: inputNote.trim() || null, date_key: today })
       .select()
       .single();
-    if (data) setLogs(prev => [...prev, data]);
+    if (data) setLogs(prev => [...prev, { ...data, value: Number(data.value) }]);
     setInputVal('');
     setInputNote('');
     setFoodQuery('');
@@ -225,10 +225,8 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
     setLogs(prev => prev.filter(l => l.id !== id));
   }
 
-  // Supabase returns numeric columns as strings — coerce to number
-  const numLogs = logs.map(l => ({ ...l, value: Number(l.value) }));
-  const dailyData = aggregateByDay(numLogs, cfg.agg);
-  const todayLogs = numLogs.filter(l => l.date_key === today);
+  const dailyData = aggregateByDay(logs, cfg.agg);
+  const todayLogs = logs.filter(l => l.date_key === today);
   const todayTotal = cfg.agg === 'sum'
     ? todayLogs.length > 0 ? todayLogs.reduce((s, l) => s + l.value, 0) : null
     : (todayLogs[todayLogs.length - 1]?.value ?? null);

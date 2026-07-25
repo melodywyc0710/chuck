@@ -211,8 +211,7 @@ export default function DailyEgg({ onClose }: Props) {
                 <img
                   src={EGG_IMAGES[pet?.species ?? '']}
                   alt="Daily egg"
-                  className="relative w-48 h-48 object-contain select-none"
-                  style={{ mixBlendMode: 'multiply' }}
+                  className="relative w-48 h-48 object-contain select-none drop-shadow-2xl"
                 />
               ) : (
                 <span className="relative text-9xl select-none" style={{ display: 'block' }}>🥚</span>

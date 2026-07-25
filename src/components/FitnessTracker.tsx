@@ -107,22 +107,19 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
     const num = parseFloat(inputVal);
     if (isNaN(num) || num <= 0) return;
     setSaving(true);
-    if (todayLog) {
-      // Update existing
-      const { data } = await supabase
-        .from('fitness_logs')
-        .update({ value: num })
-        .eq('id', todayLog.id)
-        .select()
-        .single();
-      if (data) setLogs(prev => prev.map(l => l.id === data.id ? data : l));
-    } else {
-      const { data } = await supabase
-        .from('fitness_logs')
-        .insert({ user_id: userId, metric, value: num, date_key: today })
-        .select()
-        .single();
-      if (data) setLogs(prev => [...prev, data]);
+    const { data } = await supabase
+      .from('fitness_logs')
+      .upsert(
+        { user_id: userId, metric, value: num, date_key: today },
+        { onConflict: 'user_id,metric,date_key' }
+      )
+      .select()
+      .single();
+    if (data) {
+      setLogs(prev => {
+        const exists = prev.find(l => l.id === data.id);
+        return exists ? prev.map(l => l.id === data.id ? data : l) : [...prev, data];
+      });
     }
     setInputVal('');
     setSaving(false);

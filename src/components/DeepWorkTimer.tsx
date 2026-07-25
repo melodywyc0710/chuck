@@ -70,7 +70,7 @@ function CircleTimer({ pct, secs, color }: { pct: number; secs: number; color: s
 }
 
 export default function DeepWorkTimer({ userId }: { userId: string }) {
-  const pet = useAuthStore(s => s.pet);
+  useAuthStore(s => s.pet);
   const [selectedMins, setSelectedMins] = useState(25);
   const [customInput, setCustomInput] = useState('');
   const [showCustom, setShowCustom] = useState(false);

@@ -75,7 +75,7 @@ export interface Pet {
 }
 
 export type TraitKey = 'trait_strength' | 'trait_intelligence' | 'trait_agility' | 'trait_speed';
-export type GoalCategory = 'strength' | 'intelligence' | 'agility' | 'speed' | 'general';
+export type GoalCategory = 'fitness' | 'focus';
 
 export interface Promise_ {
   id: string;

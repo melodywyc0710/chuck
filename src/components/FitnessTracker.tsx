@@ -486,6 +486,14 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
   );
 }
 
+export function MetricPanels({ userId }: { userId: string }) {
+  return (
+    <div className="space-y-4">
+      {METRICS.map(m => <MetricPanel key={m} metric={m} userId={userId} />)}
+    </div>
+  );
+}
+
 export default function FitnessTracker({ onClose }: { onClose: () => void }) {
   const user = useAuthStore(s => s.user);
   if (!user) return null;

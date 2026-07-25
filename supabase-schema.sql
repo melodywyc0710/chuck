@@ -9,7 +9,11 @@
 -- alter table public.pets add column if not exists trait_intelligence integer not null default 0;
 -- alter table public.pets add column if not exists trait_agility integer not null default 0;
 -- alter table public.pets add column if not exists trait_speed integer not null default 0;
--- alter table public.promises add column if not exists category text not null default 'general' check (category in ('strength','intelligence','agility','speed','general'));
+-- alter table public.promises add column if not exists category text not null default 'fitness' check (category in ('fitness','focus'));
+-- UPDATE public.promises SET category = 'fitness' WHERE category IN ('strength','agility','speed','general');
+-- UPDATE public.promises SET category = 'focus' WHERE category = 'intelligence';
+-- ALTER TABLE public.promises DROP CONSTRAINT IF EXISTS promises_category_check;
+-- ALTER TABLE public.promises ADD CONSTRAINT promises_category_check CHECK (category IN ('fitness','focus'));
 -- alter table public.profiles add column if not exists subscription_tier text not null default 'free' check (subscription_tier in ('free','plus','pro'));
 -- create table if not exists public.fitness_logs (id uuid primary key default gen_random_uuid(), user_id uuid references public.profiles(id) on delete cascade not null, metric text not null check (metric in ('calories','steps','weight')), value numeric not null, note text, date_key text not null, logged_at timestamptz not null default now());
 -- alter table public.fitness_logs enable row level security;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, LogOut, Flame, Users, Gift, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, LogOut, Flame, Users, Gift, ChevronDown, ChevronUp, Activity } from 'lucide-react';
 import HistoryChart from './HistoryChart';
 import TraitAllocator from './TraitAllocator';
 import UpgradeModal from './UpgradeModal';
@@ -33,7 +33,7 @@ function moodFromHappiness(h: number) {
   return 'sad';
 }
 
-export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void; onEgg: () => void }) {
+export default function HomeScreen({ onFriends, onEgg, onFitness }: { onFriends: () => void; onEgg: () => void; onFitness: () => void }) {
   const pet = useAuthStore(s => s.pet);
   const profile = useAuthStore(s => s.profile);
   const signOut = useAuthStore(s => s.signOut);
@@ -139,6 +139,12 @@ export default function HomeScreen({ onFriends, onEgg }: { onFriends: () => void
               {eggAvailable && (
                 <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full" />
               )}
+            </button>
+            <button
+              onClick={onFitness}
+              className="liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/60 hover:text-white/90 transition-colors"
+            >
+              <Activity size={13} />
             </button>
             <button
               onClick={onFriends}

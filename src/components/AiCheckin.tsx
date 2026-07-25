@@ -5,17 +5,7 @@ function todayKey() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function topTrait(pet: { trait_strength: number; trait_intelligence: number; trait_agility: number; trait_speed: number }) {
-  const traits = [
-    { name: 'strength', val: pet.trait_strength },
-    { name: 'intelligence', val: pet.trait_intelligence },
-    { name: 'agility', val: pet.trait_agility },
-    { name: 'speed', val: pet.trait_speed },
-  ];
-  return traits.sort((a, b) => b.val - a.val)[0].name;
-}
-
-function generateMessage(name: string, happiness: number, streak: number, level: number): string {
+function generateMessage(_name: string, happiness: number, streak: number, level: number): string {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
 

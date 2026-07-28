@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Mail, Leaf } from 'lucide-react';
+import { Mail, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
@@ -13,6 +13,7 @@ export default function AuthScreen() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
+  const [showPwd, setShowPwd] = useState(false);
 
   const signIn = useAuthStore(s => s.signIn);
   const signUp = useAuthStore(s => s.signUp);
@@ -45,9 +46,9 @@ export default function AuthScreen() {
 
   if (done) {
     return (
-      <section className="min-h-screen bg-black flex items-center justify-center px-4">
+      <section className="min-h-screen flex items-center justify-center px-4" style={{ background: '#0A0A0A' }}>
         <div className="flex flex-col items-center gap-4 text-center max-w-sm">
-          <div className="w-14 h-14 flex items-center justify-center rounded-2xl" style={{ background: '#141414', border: '1px solid #2a2a2a' }}><Mail size={24} strokeWidth={1.5} className="text-white/60" /></div>
+          <div className="w-14 h-14 flex items-center justify-center rounded-2xl" style={{ background: '#141414', border: '1px solid #1E1E1E' }}><Mail size={24} strokeWidth={1.5} className="text-white/60" /></div>
           <h2 className="text-white text-xl font-semibold">Check your email</h2>
           <p className="text-white/50 text-sm leading-relaxed">
             We sent a confirmation link to <span className="text-white/80">{email}</span>. Click it, then come back to sign in.
@@ -61,15 +62,14 @@ export default function AuthScreen() {
   }
 
   return (
-    <section className="min-h-screen bg-black flex items-center justify-center px-4 py-12">
+    <section className="min-h-screen flex items-center justify-center px-4 py-12" style={{ background: '#0A0A0A' }}>
       <div className="w-full max-w-sm flex flex-col gap-8">
 
         {/* Logo + heading */}
         <div className="flex flex-col items-center gap-5 text-center">
-          <div className="relative w-16 h-16 flex items-center justify-center rounded-2xl" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
-            {/* Dot grid behind logo */}
-            <div className="absolute inset-0 rounded-2xl overflow-hidden opacity-40" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)', backgroundSize: '8px 8px' }} />
-            <Leaf size={22} strokeWidth={1.5} className="relative text-white/80" />
+          <div className="relative w-16 h-16 flex items-center justify-center rounded-2xl flex-shrink-0" style={{ background: '#141414' }}>
+            <span style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif", fontWeight: 900, fontSize: 22, letterSpacing: '-0.04em', color: '#F2EEE8', lineHeight: 1, transform: 'translateY(-3px)', display: 'block' }}>IAM</span>
+            <div style={{ position: 'absolute', bottom: 10, left: 12, right: 12, height: 2.5, background: '#C91818', borderRadius: 100 }} />
           </div>
           <div className="flex flex-col gap-1.5">
             <h1 className="text-white text-2xl font-semibold tracking-tight">
@@ -81,7 +81,7 @@ export default function AuthScreen() {
           </div>
 
           {/* Tab switcher */}
-          <div className="w-full flex rounded-lg p-1" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="w-full flex rounded-lg p-1" style={{ background: '#111111', border: '1px solid #1E1E1E' }}>
             {(['signup', 'login'] as const).map(m => (
               <button
                 key={m}
@@ -124,20 +124,30 @@ export default function AuthScreen() {
                 onChange={e => setEmail(e.target.value)}
                 required
                 className="auth-input"
-                style={{ padding: '12px 14px', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, background: 'rgba(255,255,255,0.05)', color: 'white', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                style={{ padding: '12px 14px', border: '1px solid #1E1E1E', borderRadius: 10, background: '#111111', color: 'white', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }}
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-white/70 text-sm font-medium">Password</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                className="auth-input"
-                style={{ padding: '12px 14px', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 10, background: 'rgba(255,255,255,0.05)', color: 'white', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }}
-              />
+              <div className="relative">
+                <input
+                  type={showPwd ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  required
+                  className="auth-input"
+                  style={{ padding: '12px 44px 12px 14px', border: '1px solid #1E1E1E', borderRadius: 10, background: '#111111', color: 'white', fontSize: 14, outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPwd(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  aria-label={showPwd ? 'Hide password' : 'Show password'}
+                >
+                  {showPwd ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -185,7 +195,7 @@ export default function AuthScreen() {
               type="button"
               onClick={handleGoogle}
               className="w-full py-3 rounded-xl text-sm font-medium text-white flex items-center justify-center gap-3 transition-all active:scale-[0.98]"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}
+              style={{ background: '#111111', border: '1px solid #1E1E1E' }}
             >
               <svg viewBox="0 0 24 24" className="w-4 h-4" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

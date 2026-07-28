@@ -381,7 +381,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; font-family: 'Inter', sans-serif; background: #000000; color: white; }
+html, body { margin: 0; font-family: 'Inter', sans-serif; background: #0A0A0A; color: white; }
 
 @keyframes eggShake { 0%,100%{transform:rotate(-8deg) scale(1.05)} 50%{transform:rotate(8deg) scale(1.05)} }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
@@ -391,7 +391,7 @@ html, body { margin: 0; font-family: 'Inter', sans-serif; background: #000000; c
 /* Surface styles */
 .liquid-glass {
   background: #141414;
-  border: 1px solid #2a2a2a;
+  border: 1px solid #1E1E1E;
 }
 .liquid-glass-selected {
   background: #1e1e1e;
@@ -467,7 +467,7 @@ html, body { margin: 0; font-family: 'Inter', sans-serif; background: #000000; c
 .scene-bg {
   position: fixed;
   inset: 0;
-  background: #000000;
+  background: #0A0A0A;
   z-index: 0;
   pointer-events: none;
 }

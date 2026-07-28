@@ -207,8 +207,7 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
                   value={searchUsername}
                   onChange={e => setSearchUsername(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && searchUser()}
-                  className="flex-1 px-4 py-3 rounded-2xl text-white placeholder-white/30 text-sm outline-none liquid-glass"
-                  style={{ background: 'rgba(255,255,255,0.07)' }}
+                  className="app-input flex-1"
                 />
                 <button
                   onClick={searchUser}

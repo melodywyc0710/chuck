@@ -228,8 +228,7 @@ export default function OnboardingFlow() {
               onKeyDown={e => e.key === 'Enter' && setStep('trait')}
               maxLength={20}
               autoFocus
-              className="w-full px-4 py-3.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all text-center liquid-glass"
-              style={{ background: 'rgba(255,255,255,0.07)' }}
+              className="app-input text-center"
             />
             <div
               className="relative liquid-glass rounded-full h-14 flex items-center px-1 select-none cursor-pointer"

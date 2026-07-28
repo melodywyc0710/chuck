@@ -242,8 +242,7 @@ export default function CategoryHub({ category, onClose }: Props) {
                 onChange={e => setNewTitle(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && addPromise()}
                 autoFocus
-                className="flex-1 px-4 py-2.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none liquid-glass"
-                style={{ background: 'rgba(255,255,255,0.07)' }}
+                className="app-input flex-1"
               />
               <button onClick={addPromise} className="px-4 py-2.5 rounded-2xl text-sm font-medium text-white" style={{ background: cfg.color + 'cc' }}>
                 Add

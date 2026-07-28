@@ -156,8 +156,7 @@ export default function AuthScreen() {
               placeholder="Username"
               value={username}
               onChange={e => setUsername(e.target.value)}
-              className="w-full px-4 py-3.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all liquid-glass focus:bg-white/10"
-              style={{ background: 'rgba(255,255,255,0.07)' }}
+              className="app-input"
             />
           )}
           <input

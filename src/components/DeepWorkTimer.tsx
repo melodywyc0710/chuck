@@ -242,8 +242,7 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
               onChange={e => setCustomInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && applyCustom()}
               autoFocus
-              className="flex-1 px-4 py-2 rounded-2xl text-white placeholder-white/30 text-sm outline-none liquid-glass"
-              style={{ background: 'rgba(255,255,255,0.07)' }}
+              className="app-input flex-1"
             />
             <button onClick={applyCustom} className="px-4 py-2 rounded-2xl text-sm font-medium text-white" style={{ background: color + 'cc' }}>Set</button>
           </div>

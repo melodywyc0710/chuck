@@ -128,8 +128,7 @@ function GoalEditor({ metric, goal, onSave, onClose }: { metric: Metric; goal: n
           onChange={e => setVal(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { onSave(parseFloat(val) || 0); onClose(); } }}
           autoFocus
-          className="flex-1 px-3 py-2 rounded-xl text-white placeholder-white/30 text-sm outline-none liquid-glass"
-          style={{ background: 'rgba(255,255,255,0.07)' }}
+          className="app-input flex-1"
           placeholder={cfg.placeholder}
         />
         <button
@@ -395,8 +394,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
                   onChange={e => setInputVal(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && addEntry()}
                   autoFocus={metric !== 'calories'}
-                  className="flex-1 px-4 py-2.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none liquid-glass"
-                  style={{ background: 'rgba(255,255,255,0.07)' }}
+                  className="app-input flex-1"
                 />
                 <button
                   onClick={addEntry}
@@ -412,8 +410,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
                 placeholder={metric === 'calories' ? 'Food name (filled automatically from search)' : 'Note (optional)'}
                 value={inputNote}
                 onChange={e => setInputNote(e.target.value)}
-                className="w-full px-4 py-2 rounded-2xl text-white placeholder-white/25 text-xs outline-none liquid-glass"
-                style={{ background: 'rgba(255,255,255,0.05)' }}
+                className="app-input"
               />
               <button onClick={() => { setShowAddForm(false); setSearchMode(false); setFoodQuery(''); setFoodResults([]); }} className="w-full text-white/25 text-xs py-1 hover:text-white/50">cancel</button>
             </div>

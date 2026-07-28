@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { Play, Pause, Square, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
+import { Play, Pause, Square, RotateCcw } from 'lucide-react';
+import Toggle from './Toggle';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
@@ -318,10 +319,10 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
       {/* Session history */}
       {sessions.length > 0 && (
         <div className="liquid-glass rounded-[28px] p-5">
-          <button onClick={() => setShowHistory(v => !v)} className="w-full flex items-center justify-between">
+          <div className="w-full flex items-center justify-between">
             <p className="text-white/40 text-xs uppercase tracking-widest">Session history</p>
-            {showHistory ? <ChevronUp size={14} className="text-white/30" /> : <ChevronDown size={14} className="text-white/30" />}
-          </button>
+            <Toggle checked={showHistory} onChange={setShowHistory} color={color} />
+          </div>
           {showHistory && (
             <div className="mt-3 space-y-2">
               {sessions.slice(0, 20).map(s => (

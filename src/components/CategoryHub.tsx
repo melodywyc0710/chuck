@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { X, Plus, ChevronDown, ChevronUp } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
+import Toggle from './Toggle';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
@@ -291,10 +292,10 @@ export default function CategoryHub({ category, onClose }: Props) {
         {/* History */}
         {history.length > 0 && (
           <div className="mt-6 fade-up" style={{ animationDelay: '0.5s' }}>
-            <button onClick={() => setShowHistory(v => !v)} className="flex items-center justify-between w-full mb-3">
+            <div className="flex items-center justify-between w-full mb-3">
               <p className="text-white/40 text-xs uppercase tracking-widest">History</p>
-              {showHistory ? <ChevronUp size={14} className="text-white/30" /> : <ChevronDown size={14} className="text-white/30" />}
-            </button>
+              <Toggle checked={showHistory} onChange={setShowHistory} color={cfg.color} />
+            </div>
             {showHistory && (
               <div className="space-y-1.5">
                 {history.slice(0, 20).map(h => {

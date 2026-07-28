@@ -26,7 +26,10 @@ export default function App() {
         <div className="scene-bg" />
         <div className="scene-overlay" />
         <div className="relative z-10 min-h-screen flex items-center justify-center">
-          <div className="text-5xl animate-pulse">🥚</div>
+          <div className="bounce-loader">
+            <div className="dot" /><div className="dot" /><div className="dot" />
+            <div className="shadow" /><div className="shadow" /><div className="shadow" />
+          </div>
         </div>
       </>
     );

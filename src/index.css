@@ -13,6 +13,34 @@
 .hero-zoom { animation:heroZoom 1.8s cubic-bezier(0.16,1,0.3,1) forwards; }
 @media (prefers-reduced-motion: reduce){ .hero-anim,.hero-zoom{ animation:none; opacity:1; } }
 
+@keyframes bounceDot {
+  0%   { top: 60px; height: 5px; border-radius: 50px 50px 25px 25px; transform: scaleX(1.7); }
+  40%  { height: 20px; border-radius: 50%; transform: scaleX(1); }
+  100% { top: 0%; }
+}
+@keyframes bounceShadow {
+  0%   { transform: scaleX(1.5); }
+  40%  { transform: scaleX(1); opacity: .7; }
+  100% { transform: scaleX(.2); opacity: .4; }
+}
+.bounce-loader {
+  width: 200px; height: 60px; position: relative;
+}
+.bounce-loader .dot {
+  width: 20px; height: 20px; position: absolute; border-radius: 50%;
+  background-color: #fff; left: 15%; transform-origin: 50%;
+  animation: bounceDot .5s alternate infinite ease;
+}
+.bounce-loader .dot:nth-child(2) { left: 45%; animation-delay: .2s; }
+.bounce-loader .dot:nth-child(3) { left: auto; right: 15%; animation-delay: .3s; }
+.bounce-loader .shadow {
+  width: 20px; height: 4px; border-radius: 50%; background-color: rgba(255,255,255,0.15);
+  position: absolute; top: 62px; transform-origin: 50%; left: 15%;
+  filter: blur(1px); animation: bounceShadow .5s alternate infinite ease;
+}
+.bounce-loader .shadow:nth-child(4) { left: 45%; animation-delay: .2s; }
+.bounce-loader .shadow:nth-child(5) { left: auto; right: 15%; animation-delay: .3s; }
+
 @keyframes rotBGimg {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }

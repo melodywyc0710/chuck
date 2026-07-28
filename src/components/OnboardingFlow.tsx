@@ -108,7 +108,7 @@ export default function OnboardingFlow() {
       <>
         <div className="scene-bg" />
         <div className="scene-overlay" />
-        <div className="relative z-10 min-h-screen flex flex-col px-6 pt-14 pb-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+        <div className="relative z-10 min-h-screen flex flex-col px-6 pt-14 pb-6">
 
           <div className="fade-up mb-8" style={{ animationDelay: '0.1s' }}>
             <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
@@ -196,7 +196,7 @@ export default function OnboardingFlow() {
       <>
         <div className="scene-bg" />
         <div className="scene-overlay" />
-        <div className="relative z-10 min-h-screen flex flex-col px-6 pt-14 pb-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+        <div className="relative z-10 min-h-screen flex flex-col px-6 pt-14 pb-6">
 
           <div className="fade-up mb-8" style={{ animationDelay: '0.1s' }}>
             <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
@@ -256,7 +256,7 @@ export default function OnboardingFlow() {
       <>
         <div className="scene-bg" />
         <div className="scene-overlay" />
-        <div className="relative z-10 min-h-screen flex flex-col px-6 pt-14 pb-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+        <div className="relative z-10 min-h-screen flex flex-col px-6 pt-14 pb-6">
 
           <div className="fade-up mb-8" style={{ animationDelay: '0.1s' }}>
             <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">

@@ -501,7 +501,7 @@ export default function FitnessTracker({ onClose }: { onClose: () => void }) {
       <div className="scene-overlay" />
       <div
         className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-6 pt-14 pb-10"
-        style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}
+       
       >
         <div className="flex items-center justify-between w-full mb-10 fade-up" style={{ animationDelay: '0.05s' }}>
           <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">

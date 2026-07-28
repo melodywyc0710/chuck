@@ -115,7 +115,7 @@ export default function AuthScreen() {
     <>
       <div className="scene-bg" />
       <div className="scene-overlay" />
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6">
 
         {/* Badge */}
         <div className="fade-up mb-10" style={{ animationDelay: '0.1s' }}>

@@ -158,7 +158,7 @@ export default function DailyEgg({ onClose }: Props) {
     <>
       <div className="scene-bg" />
       <div className="scene-overlay" />
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 text-center">
 
         {/* Nav row */}
         <div className="flex items-center justify-between w-full mb-10 fade-up" style={{ animationDelay: '0.05s' }}>

@@ -162,7 +162,7 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
     <>
       <div className="scene-bg" />
       <div className="scene-overlay" />
-      <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-6 pt-14 pb-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+      <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-6 pt-14 pb-6">
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-8 fade-up" style={{ animationDelay: '0.05s' }}>

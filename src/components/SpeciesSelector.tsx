@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Lock } from 'lucide-react';
+import { X, Lock, Star } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { SPECIES_LIST, canAccessSpecies } from '../lib/species';
@@ -45,7 +45,7 @@ export default function SpeciesSelector({ onClose }: Props) {
       <div className="liquid-glass rounded-[32px] w-full max-w-md p-6 fade-up" style={{ animationDelay: '0s' }}>
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="font-playfair italic text-white text-2xl" style={{ letterSpacing: '-0.04em' }}>Choose species</h2>
+            <h2 className="text-white text-2xl font-semibold" style={{ letterSpacing: '-0.04em' }}>Choose species</h2>
             <p className="text-white/40 text-xs mt-0.5">Your pet's form and soul</p>
           </div>
           <button onClick={onClose} className="liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors">
@@ -68,7 +68,7 @@ export default function SpeciesSelector({ onClose }: Props) {
                   opacity: saving ? 0.7 : 1,
                 }}
               >
-                <span className="text-3xl">{species.emoji}</span>
+                <Star size={24} strokeWidth={1.5} className="text-white/60" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-white text-sm font-medium">{species.name}</span>
@@ -76,7 +76,7 @@ export default function SpeciesSelector({ onClose }: Props) {
                     {!unlocked && (
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{
                         background: species.requiredTier === 'pro' ? 'rgba(232,112,42,0.2)' : 'rgba(124,106,247,0.2)',
-                        color: species.requiredTier === 'pro' ? '#e8702a' : '#7c6af7',
+                        color: species.requiredTier === 'pro' ? '#FF4D4D' : '#3D8EFF',
                       }}>
                         {species.requiredTier === 'pro' ? 'Pro' : 'Plus'}
                       </span>

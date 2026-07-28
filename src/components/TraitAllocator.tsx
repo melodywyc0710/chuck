@@ -1,14 +1,16 @@
 import { useState } from 'react';
+import { Dumbbell, Brain, Zap, Wind } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { TraitKey } from '../lib/supabase';
 
-const TRAITS: { key: TraitKey; label: string; emoji: string; desc: string }[] = [
-  { key: 'trait_strength',     label: 'Strength',     emoji: '💪', desc: 'Physical power & endurance' },
-  { key: 'trait_intelligence', label: 'Intelligence',  emoji: '🧠', desc: 'Focus, memory & learning' },
-  { key: 'trait_agility',      label: 'Agility',       emoji: '⚡', desc: 'Speed & reflexes' },
-  { key: 'trait_speed',        label: 'Speed',         emoji: '🌪️', desc: 'Efficiency & momentum' },
+const TRAITS: { key: TraitKey; label: string; Icon: React.ElementType; desc: string; color: string }[] = [
+  { key: 'trait_strength',     label: 'Strength',     Icon: Dumbbell, desc: 'Physical power & endurance', color: '#FF4D4D' },
+  { key: 'trait_intelligence', label: 'Intelligence',  Icon: Brain,    desc: 'Focus, memory & learning',   color: '#3D8EFF' },
+  { key: 'trait_agility',      label: 'Agility',       Icon: Zap,      desc: 'Speed & reflexes',           color: '#FF4D4D' },
+  { key: 'trait_speed',        label: 'Speed',         Icon: Wind,     desc: 'Efficiency & momentum',      color: '#3D8EFF' },
 ];
+import type React from 'react';
 
 const MAX_TRAIT = 50;
 
@@ -64,7 +66,7 @@ export default function TraitAllocator({ onClose }: Props) {
 
         {/* Header */}
         <div className="flex items-center justify-between mb-1">
-          <h2 className="font-playfair italic text-white text-2xl" style={{ letterSpacing: '-0.04em' }}>Train your pet</h2>
+          <h2 className="text-white text-xl font-semibold" style={{ letterSpacing: '-0.02em' }}>Train your pet</h2>
           <div className="liquid-glass px-3 py-1 rounded-full">
             <span className="text-white text-sm font-semibold">{pointsLeft}</span>
             <span className="text-white/40 text-xs ml-1">pts left</span>
@@ -74,17 +76,16 @@ export default function TraitAllocator({ onClose }: Props) {
 
         {/* Trait rows */}
         <div className="space-y-3 mb-6">
-          {TRAITS.map(({ key, label, emoji, desc }) => {
+          {TRAITS.map(({ key, label, Icon, desc, color }) => {
             const current = pet[key];
             const added = pending[key];
             const total = current + added;
             const pct = (total / MAX_TRAIT) * 100;
-            const color = traitColor(key);
             return (
               <div key={key}>
                 <div className="flex items-center justify-between mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-base">{emoji}</span>
+                    <Icon size={15} strokeWidth={1.5} style={{ color }} />
                     <div>
                       <span className="text-white/80 text-sm font-medium">{label}</span>
                       <span className="text-white/25 text-xs ml-2">{desc}</span>
@@ -124,7 +125,7 @@ export default function TraitAllocator({ onClose }: Props) {
           onClick={confirm}
           disabled={saving}
           className="w-full py-3.5 rounded-2xl text-white font-semibold text-sm transition-all active:scale-[0.98] disabled:opacity-50"
-          style={{ background: totalPending > 0 ? 'rgba(232,112,42,0.9)' : 'rgba(255,255,255,0.1)' }}
+          style={{ background: totalPending > 0 ? '#FF4D4D' : '#1e1e1e' }}
         >
           {saving ? 'Saving…' : totalPending > 0 ? `Confirm — ${totalPending} point${totalPending > 1 ? 's' : ''} allocated` : 'Skip for now'}
         </button>
@@ -133,11 +134,3 @@ export default function TraitAllocator({ onClose }: Props) {
   );
 }
 
-function traitColor(key: TraitKey) {
-  return {
-    trait_strength:     '#f87171',
-    trait_intelligence: '#60a5fa',
-    trait_agility:      '#facc15',
-    trait_speed:        '#34d399',
-  }[key];
-}

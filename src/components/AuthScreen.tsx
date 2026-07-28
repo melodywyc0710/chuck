@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Mail, Leaf } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
@@ -46,7 +47,7 @@ export default function AuthScreen() {
     return (
       <section className="min-h-screen bg-black flex items-center justify-center px-4">
         <div className="flex flex-col items-center gap-4 text-center max-w-sm">
-          <div className="text-5xl">📬</div>
+          <div className="w-14 h-14 flex items-center justify-center rounded-2xl" style={{ background: '#141414', border: '1px solid #2a2a2a' }}><Mail size={24} strokeWidth={1.5} className="text-white/60" /></div>
           <h2 className="text-white text-xl font-semibold">Check your email</h2>
           <p className="text-white/50 text-sm leading-relaxed">
             We sent a confirmation link to <span className="text-white/80">{email}</span>. Click it, then come back to sign in.
@@ -68,7 +69,7 @@ export default function AuthScreen() {
           <div className="relative w-16 h-16 flex items-center justify-center rounded-2xl" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
             {/* Dot grid behind logo */}
             <div className="absolute inset-0 rounded-2xl overflow-hidden opacity-40" style={{ backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)', backgroundSize: '8px 8px' }} />
-            <span className="relative text-2xl">🌿</span>
+            <Leaf size={22} strokeWidth={1.5} className="relative text-white/80" />
           </div>
           <div className="flex flex-col gap-1.5">
             <h1 className="text-white text-2xl font-semibold tracking-tight">
@@ -162,7 +163,7 @@ export default function AuthScreen() {
               type="button"
               onClick={handleForgot}
               className="text-sm font-medium transition-colors"
-              style={{ color: '#60a5fa' }}
+              style={{ color: '#3D8EFF' }}
             >
               {forgotSent ? 'Sent!' : 'Forgot password'}
             </button>
@@ -205,7 +206,7 @@ export default function AuthScreen() {
           <button
             onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError(''); }}
             className="text-sm font-medium transition-colors"
-            style={{ color: '#60a5fa' }}
+            style={{ color: '#3D8EFF' }}
           >
             {mode === 'login' ? 'Sign up' : 'Log in'}
           </button>

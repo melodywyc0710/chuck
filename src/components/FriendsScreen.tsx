@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { UserPlus, Check, X, Eye, ChevronLeft, Laugh, Smile, Meh, Frown, Egg } from 'lucide-react';
+import { UserPlus, Check, X, Eye, ChevronLeft, Laugh, Smile, Meh, Frown, Egg, Flame } from 'lucide-react';
 import type React from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
@@ -172,11 +172,11 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
           </button>
           <div>
             <p className="text-white/40 text-xs">your circle</p>
-            <h1 className="font-playfair italic text-white text-2xl leading-tight" style={{ letterSpacing: '-0.03em' }}>Friends</h1>
+            <h1 className="text-white text-xl font-semibold" style={{ letterSpacing: '-0.02em' }}>Friends</h1>
           </div>
           <div className="ml-auto">
             {witnessReqs.length > 0 && (
-              <span className="bg-orange-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+              <span className="text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
                 {witnessReqs.length}
               </span>
             )}
@@ -232,7 +232,7 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
                   {searchResult.id !== user?.id && (
                     <button
                       onClick={() => sendRequest(searchResult.id)}
-                      className="px-4 py-1.5 bg-orange-500/80 hover:bg-orange-500 text-white rounded-full text-xs font-medium transition-colors"
+                      className="px-4 py-1.5 bg-orange-500/80 hover:text-white rounded-full text-xs font-medium transition-colors"
                     >
                       Add
                     </button>
@@ -250,7 +250,7 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
                     <div key={entry.friendship.id} className="liquid-glass rounded-2xl p-4 flex items-center justify-between">
                       <p className="text-white text-sm font-medium">{entry.profile.username}</p>
                       <div className="flex gap-2">
-                        <button onClick={() => respondToRequest(entry.friendship.id, true)} className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 hover:bg-green-500/30 transition-colors">
+                        <button onClick={() => respondToRequest(entry.friendship.id, true)} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors">
                           <Check size={14} />
                         </button>
                         <button onClick={() => respondToRequest(entry.friendship.id, false)} className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center text-red-400/70 hover:bg-red-500/20 transition-colors">
@@ -300,7 +300,7 @@ export default function FriendsScreen({ onBack }: { onBack: () => void }) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => respondToWitness(req.id, true)}
-                    className="flex-1 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-full text-xs font-semibold transition-colors"
+                    className="flex-1 py-2 bg-[#3D8EFF] hover:opacity-90 text-white rounded-full text-xs font-semibold transition-colors"
                   >
                     ✓ Confirm
                   </button>
@@ -361,7 +361,7 @@ function FriendCard({ entry }: { entry: FriendEntry }) {
       {/* Streak badge */}
       {pet && pet.streak > 0 && (
         <div className="flex items-center gap-1 liquid-glass px-2 py-1 rounded-full">
-          <span className="text-xs">🔥</span>
+          <Flame size={11} strokeWidth={1.5} className="text-white/50" />
           <span className="text-white/70 text-xs font-medium">{pet.streak}</span>
         </div>
       )}

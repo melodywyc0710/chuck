@@ -32,7 +32,7 @@ const METRIC_CONFIG: Record<Metric, {
     goalLabel: 'Daily calorie goal', goalDesc: 'e.g. 2000 kcal/day',
   },
   steps: {
-    label: 'Steps',     unit: 'steps', Icon: Footprints, color: '#34d399',
+    label: 'Steps',     unit: 'steps', Icon: Footprints, color: '#ffffff',
     placeholder: 'e.g. 3000', defaultGoal: 10000, agg: 'sum',
     goalLabel: 'Daily step goal', goalDesc: 'e.g. 10000 steps/day',
   },
@@ -487,7 +487,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
               {goal > 0 && avg7 !== null && cfg.agg === 'sum' && (
                 <div className="flex-1 text-center py-2 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
                   <p className="text-white/30 text-[10px] mb-0.5">avg vs goal</p>
-                  <p className="font-semibold text-sm" style={{ color: avg7 >= goal ? '#34d399' : cfg.color }}>
+                  <p className="font-semibold text-sm" style={{ color: avg7 >= goal ? '#ffffff' : cfg.color }}>
                     {avg7 >= goal ? '✓ on track' : `${Math.round((avg7 / goal) * 100)}%`}
                   </p>
                 </div>
@@ -534,7 +534,7 @@ export default function FitnessTracker({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="mb-8 fade-up" style={{ animationDelay: '0.1s' }}>
-          <h1 className="font-playfair italic text-white text-3xl leading-tight" style={{ letterSpacing: '-0.04em' }}>
+          <h1 className="text-white text-3xl font-semibold leading-tight" style={{ letterSpacing: '-0.04em' }}>
             Track your body
           </h1>
           <p className="text-white/40 text-sm mt-1">Log any time — entries stack through the day</p>

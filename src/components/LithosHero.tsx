@@ -107,7 +107,7 @@ export default function LithosHero() {
           <svg width="26" height="26" viewBox="0 0 256 256" fill="#ffffff">
             <path d="M 256 256 L 128 256 L 0 128 L 128 128 Z M 256 128 L 128 128 L 0 0 L 128 0 Z" />
           </svg>
-          <span className="text-white text-2xl font-playfair italic">Lithos</span>
+          <span className="text-white text-2xl font-semibold">Lithos</span>
         </div>
 
         {/* Center pill */}
@@ -146,7 +146,7 @@ export default function LithosHero() {
         <div className="absolute top-[14%] left-0 right-0 flex flex-col items-center text-center px-5 pointer-events-none z-50">
           <h1 className="text-white leading-[0.95]">
             <span
-              className="block font-playfair italic font-normal text-5xl sm:text-7xl md:text-8xl hero-anim hero-reveal"
+              className="block font-semibold text-5xl sm:text-7xl md:text-8xl hero-anim hero-reveal"
               style={{ letterSpacing: '-0.05em', animationDelay: '0.25s' }}
             >
               Layers hold

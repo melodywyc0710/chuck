@@ -55,7 +55,7 @@ function PromiseRow({ promise, onComplete }: { promise: Promise_; onComplete: ()
     <div className="relative">
       {levelUp && (
         <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-50 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-bounce whitespace-nowrap">
-          ⬆️ Level up!
+          Level up!
         </div>
       )}
       <div className="liquid-glass rounded-2xl px-4 py-3.5" style={{ opacity: done ? 0.6 : 1 }}>
@@ -204,7 +204,7 @@ export default function CategoryHub({ category, onClose }: Props) {
         <div className="flex items-center justify-between w-full mb-8 fade-up" style={{ animationDelay: '0.05s' }}>
           <div className="flex items-center gap-2">
             <cfg.Icon size={16} strokeWidth={1.5} style={{ color: cfg.color }} />
-            <h1 className="font-playfair italic text-white text-xl" style={{ letterSpacing: '-0.03em' }}>{cfg.label}</h1>
+            <h1 className="text-white text-xl font-semibold" style={{ letterSpacing: '-0.03em' }}>{cfg.label}</h1>
             {promises.length > 0 && (
               <span className="text-white/30 text-sm">{doneCount}/{promises.length}</span>
             )}

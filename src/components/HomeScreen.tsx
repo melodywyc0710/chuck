@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type React from 'react';
-import { LogOut, Flame, Users, Gift, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles } from 'lucide-react';
+import { LogOut, Flame, Users, Gift, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles, Star } from 'lucide-react';
 import TraitAllocator from './TraitAllocator';
 import UpgradeModal from './UpgradeModal';
 import SpeciesSelector from './SpeciesSelector';
@@ -8,7 +8,7 @@ import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
 import { applyDecayIfNeeded } from '../lib/petEngine';
-import { isPlus, isPro, SPECIES_LIST } from '../lib/species';
+import { isPlus, isPro } from '../lib/species';
 
 function petColor(hue: number) {
   return `hsl(${hue}, 50%, 65%)`;
@@ -71,8 +71,6 @@ export default function HomeScreen({
   if (!pet) return null;
 
   const color = petColor(pet.color_seed);
-  const speciesData = SPECIES_LIST.find(s => s.id === pet.species) ?? SPECIES_LIST[0];
-  const petEmoji = speciesData.emoji;
   const xpPct = pet.xp / pet.xp_to_next;
   const today = new Date().toISOString().slice(0, 10);
   const todayDoneIds = new Set(history.filter(h => h.date_key === today).map(h => h.promise_id));
@@ -92,7 +90,7 @@ export default function HomeScreen({
         {/* Nav */}
         <div className="flex items-center justify-between mb-8 fade-up" style={{ animationDelay: '0.05s' }}>
           <div className="flex items-center gap-1.5 text-white/50 text-xs">
-            <Flame size={12} className="text-orange-400" strokeWidth={1.5} />
+            <Flame size={12} className="text-white/50" strokeWidth={1.5} />
             <span className="text-white/70 font-medium">{pet.streak}</span>
             <span>day streak</span>
           </div>
@@ -100,7 +98,7 @@ export default function HomeScreen({
             <span className="text-white/30 text-xs mr-1">{profile?.username}</span>
             <button onClick={onEgg} className="relative w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
               <Gift size={15} strokeWidth={1.5} />
-              {eggAvailable && <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-yellow-400 rounded-full" />}
+              {eggAvailable && <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-white rounded-full" />}
             </button>
             <button onClick={onFriends} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
               <Users size={15} strokeWidth={1.5} />
@@ -116,15 +114,15 @@ export default function HomeScreen({
           <button onClick={() => setShowSpecies(true)} className="relative shrink-0">
             <div className="absolute inset-0 rounded-full blur-2xl opacity-30 scale-150" style={{ backgroundColor: color }} />
             <div className="relative w-16 h-16 rounded-full flex items-center justify-center text-3xl" style={{ background: color + '18', border: `1px solid ${color}33` }}>
-              {petEmoji}
-              <span className="absolute -bottom-0.5 -right-0.5 text-white/60"><MoodIcon h={pet.happiness} size={12} /></span>
+              <Star size={26} strokeWidth={1.5} color="white" />
+              <span className="absolute -bottom-0.5 -right-0.5 text-white/50"><MoodIcon h={pet.happiness} size={12} /></span>
             </div>
           </button>
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2 mb-2">
-              <h1 className="font-playfair italic text-white text-xl" style={{ letterSpacing: '-0.03em' }}>{pet.name}</h1>
+              <h1 className="text-white text-xl font-semibold" style={{ letterSpacing: '-0.03em' }}>{pet.name}</h1>
               {pet.trait_points_available > 0 && (
-                <button onClick={() => setShowTraits(true)} className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0" style={{ background: '#e8702a33', color: '#e8702a' }}>
+                <button onClick={() => setShowTraits(true)} className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0" style={{ background: '#FF4D4D22', color: '#FF4D4D' }}>
                   {pet.trait_points_available} pts
                 </button>
               )}
@@ -138,7 +136,7 @@ export default function HomeScreen({
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-1 bg-white/8 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full bg-orange-400/60 transition-all duration-700" style={{ width: `${xpPct * 100}%` }} />
+                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${xpPct * 100}%`, background: '#3D8EFF' }} />
                 </div>
                 <span className="text-white/25 text-[10px] tabular-nums w-10 text-right">Lv {pet.level}</span>
               </div>
@@ -206,7 +204,7 @@ export default function HomeScreen({
           >
             <Sparkles size={14} className="text-white/25 shrink-0" strokeWidth={1.5} />
             <p className="text-white/25 text-xs flex-1 text-left">Upgrade to Pro for daily AI check-ins</p>
-            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0" style={{ background: '#e8702a18', color: '#e8702a88' }}>Pro</span>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0 text-white/30" style={{ background: '#1e1e1e' }}>Pro</span>
           </button>
         )}
       </div>

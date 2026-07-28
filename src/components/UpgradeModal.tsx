@@ -15,7 +15,7 @@ const PLANS = [
     name: 'Nagi Plus',
     price: '$4.99',
     period: '/mo',
-    color: '#7c6af7',
+    color: '#3D8EFF',
     features: [
       '✦ Unlimited goals',
       '✦ Full history — forever',
@@ -28,7 +28,7 @@ const PLANS = [
     name: 'Nagi Pro',
     price: '$9.99',
     period: '/mo',
-    color: '#e8702a',
+    color: '#FF4D4D',
     features: [
       '✦ Everything in Plus',
       '✦ AI daily check-in from your pet',
@@ -68,7 +68,7 @@ export default function UpgradeModal({ reason, onClose }: Props) {
 
         <div className="flex items-start justify-between mb-2">
           <div>
-            <h2 className="font-playfair italic text-white text-2xl" style={{ letterSpacing: '-0.04em' }}>Upgrade Nagi</h2>
+            <h2 className="text-white text-2xl font-semibold" style={{ letterSpacing: '-0.04em' }}>Upgrade Nagi</h2>
             {reason && <p className="text-white/40 text-xs mt-1">{reason}</p>}
           </div>
           <button onClick={onClose} className="liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors mt-1">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Zap, Heart, Snowflake, Star, Gift, Egg } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
@@ -9,33 +9,35 @@ interface Reward {
   type: 'xp' | 'streak_freeze' | 'happiness' | 'costume';
   rarity: Rarity;
   label: string;
-  emoji: string;
+  Icon: React.ElementType;
   value?: number | string;
 }
 
+import type React from 'react';
+
 const REWARD_POOL: Reward[] = [
-  { type: 'xp',           rarity: 'common', label: '+30 XP boost',       emoji: '⚡', value: 30 },
-  { type: 'xp',           rarity: 'common', label: '+50 XP boost',       emoji: '⚡', value: 50 },
-  { type: 'happiness',    rarity: 'common', label: '+15 happiness',       emoji: '💛', value: 15 },
-  { type: 'happiness',    rarity: 'rare',   label: '+30 happiness',       emoji: '💛', value: 30 },
-  { type: 'streak_freeze',rarity: 'rare',   label: 'Streak freeze',       emoji: '🧊', value: 1  },
-  { type: 'streak_freeze',rarity: 'epic',   label: '3× streak freeze',    emoji: '🧊', value: 3  },
-  { type: 'costume',      rarity: 'rare',   label: 'Sunny hat 🎩',        emoji: '🎩', value: 'hat_sunny' },
-  { type: 'costume',      rarity: 'epic',   label: 'Rainbow cape 🌈',     emoji: '🌈', value: 'cape_rainbow' },
-  { type: 'costume',      rarity: 'epic',   label: 'Star crown ⭐',       emoji: '⭐', value: 'crown_star' },
+  { type: 'xp',           rarity: 'common', label: '+30 XP boost',    Icon: Zap,       value: 30 },
+  { type: 'xp',           rarity: 'common', label: '+50 XP boost',    Icon: Zap,       value: 50 },
+  { type: 'happiness',    rarity: 'common', label: '+15 happiness',    Icon: Heart,     value: 15 },
+  { type: 'happiness',    rarity: 'rare',   label: '+30 happiness',    Icon: Heart,     value: 30 },
+  { type: 'streak_freeze',rarity: 'rare',   label: 'Streak freeze',    Icon: Snowflake, value: 1  },
+  { type: 'streak_freeze',rarity: 'epic',   label: '3× streak freeze', Icon: Snowflake, value: 3  },
+  { type: 'costume',      rarity: 'rare',   label: 'Sunny hat',        Icon: Star,      value: 'hat_sunny' },
+  { type: 'costume',      rarity: 'epic',   label: 'Rainbow cape',     Icon: Gift,      value: 'cape_rainbow' },
+  { type: 'costume',      rarity: 'epic',   label: 'Star crown',       Icon: Star,      value: 'crown_star' },
 ];
 
 const RARITY_WEIGHTS = { common: 60, rare: 30, epic: 10 };
 
 const RARITY_COLOR: Record<Rarity, string> = {
-  common: 'rgba(180,180,200,0.25)',
-  rare:   'rgba(80,140,255,0.30)',
-  epic:   'rgba(200,80,255,0.35)',
+  common: '#1e1e1e',
+  rare:   '#3D8EFF22',
+  epic:   '#FF4D4D22',
 };
 const RARITY_GLOW: Record<Rarity, string> = {
-  common: 'rgba(200,200,220,0.3)',
-  rare:   'rgba(80,140,255,0.5)',
-  epic:   'rgba(200,80,255,0.6)',
+  common: 'rgba(255,255,255,0.15)',
+  rare:   'rgba(61,142,255,0.4)',
+  epic:   'rgba(255,77,77,0.4)',
 };
 const RARITY_LABEL: Record<Rarity, string> = {
   common: 'Common', rare: 'Rare', epic: 'Epic',
@@ -163,7 +165,7 @@ export default function DailyEgg({ onClose }: Props) {
         {/* Nav row */}
         <div className="flex items-center justify-between w-full mb-10 fade-up" style={{ animationDelay: '0.05s' }}>
           <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
-            <span className="text-xs">🥚</span>
+            <Egg size={14} strokeWidth={1.5} className="text-white/50" />
             <span className="text-white/90 text-xs font-medium">Daily Egg</span>
           </div>
           <button
@@ -176,7 +178,7 @@ export default function DailyEgg({ onClose }: Props) {
 
         {/* Header */}
         <div className="mb-10 fade-up" style={{ animationDelay: '0.1s' }}>
-          <h1 className="font-playfair italic text-white text-3xl leading-tight" style={{ letterSpacing: '-0.04em' }}>
+          <h1 className="text-white text-3xl font-semibold leading-tight" style={{ letterSpacing: '-0.04em' }}>
             {alreadyOpened && phase !== 'reveal'
               ? "Come back\ntomorrow"
               : phase === 'reveal'
@@ -206,7 +208,7 @@ export default function DailyEgg({ onClose }: Props) {
                 style={{ background: 'radial-gradient(ellipse at center, rgba(220,200,80,0.4) 0%, transparent 70%)' }}
               />
               {phase === 'cracking' ? (
-                <span className="relative text-9xl select-none" style={{ display: 'block' }}>🪺</span>
+                <Egg size={80} strokeWidth={1} className="text-white/20" />
               ) : EGG_IMAGES[pet?.species ?? ''] ? (
                 <img
                   src={EGG_IMAGES[pet?.species ?? '']}
@@ -214,7 +216,7 @@ export default function DailyEgg({ onClose }: Props) {
                   className="relative w-48 h-48 object-contain select-none drop-shadow-2xl"
                 />
               ) : (
-                <span className="relative text-9xl select-none" style={{ display: 'block' }}>🥚</span>
+                <Egg size={80} strokeWidth={1} className="text-white/60" />
               )}
             </button>
           ) : reward ? (
@@ -231,7 +233,7 @@ export default function DailyEgg({ onClose }: Props) {
                   className="absolute inset-0 rounded-full blur-2xl opacity-60 scale-150"
                   style={{ background: RARITY_GLOW[reward.rarity] }}
                 />
-                <span className="relative text-6xl">{reward.emoji}</span>
+                <reward.Icon size={56} strokeWidth={1} className="text-white/80" />
               </div>
 
               {/* Rarity badge */}
@@ -244,7 +246,7 @@ export default function DailyEgg({ onClose }: Props) {
                 </span>
               </div>
 
-              <h2 className="font-playfair italic text-white text-2xl mb-1" style={{ letterSpacing: '-0.03em' }}>
+              <h2 className="text-white text-2xl font-semibold mb-1" style={{ letterSpacing: '-0.03em' }}>
                 {reward.label}
               </h2>
               <p className="text-white/40 text-sm">

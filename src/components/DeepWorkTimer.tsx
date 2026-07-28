@@ -63,7 +63,7 @@ function CircleTimer({ pct, secs, color }: { pct: number; secs: number; color: s
           style={{ transition: 'stroke-dashoffset 1s linear' }}
         />
       </svg>
-      <span className="font-playfair italic text-white text-4xl" style={{ letterSpacing: '-0.04em' }}>
+      <span className="text-white text-4xl font-semibold" style={{ letterSpacing: '-0.04em' }}>
         {formatTime(secs)}
       </span>
     </div>
@@ -192,7 +192,7 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
   useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
 
   const pct = totalSecs > 0 ? 1 - secsLeft / totalSecs : 0;
-  const color = '#60a5fa';
+  const color = '#3D8EFF';
 
   const todaySessions = sessions.filter(s => s.date_key === todayKey());
   const todayMins = todaySessions.filter(s => s.completed).reduce((sum, s) => sum + (s.actual_mins ?? s.duration_mins), 0);

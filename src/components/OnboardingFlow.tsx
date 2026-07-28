@@ -119,7 +119,7 @@ export default function OnboardingFlow() {
 
           <div className="mb-8 fade-up" style={{ animationDelay: '0.2s' }}>
             <p className="text-white/40 text-sm mb-1">Step 1 of 3</p>
-            <h2 className="font-playfair italic text-white text-3xl leading-tight" style={{ letterSpacing: '-0.04em' }}>
+            <h2 className="text-white text-3xl font-semibold leading-tight" style={{ letterSpacing: '-0.04em' }}>
               Choose your<br />companion
             </h2>
             <p className="text-white/40 text-xs mt-2">Free users start with Melmel — unlock more species later</p>
@@ -211,7 +211,7 @@ export default function OnboardingFlow() {
 
           <div className="mb-8 fade-up" style={{ animationDelay: '0.3s' }}>
             <p className="text-white/40 text-sm mb-1">Step 2 of 3</p>
-            <h2 className="font-playfair italic text-white text-3xl leading-tight" style={{ letterSpacing: '-0.04em' }}>
+            <h2 className="text-white text-3xl font-semibold leading-tight" style={{ letterSpacing: '-0.04em' }}>
               You found a<br />{speciesData.name} egg!
             </h2>
             <p className="text-white/40 text-sm mt-2">{speciesData.description}</p>
@@ -267,7 +267,7 @@ export default function OnboardingFlow() {
 
           <div className="mb-6 fade-up" style={{ animationDelay: '0.25s' }}>
             <p className="text-white/40 text-sm mb-1">Step 3 of 3</p>
-            <h2 className="font-playfair italic text-white text-3xl leading-tight" style={{ letterSpacing: '-0.04em' }}>
+            <h2 className="text-white text-3xl font-semibold leading-tight" style={{ letterSpacing: '-0.04em' }}>
               What best describes<br />{petName || 'your companion'}?
             </h2>
           </div>
@@ -333,7 +333,7 @@ export default function OnboardingFlow() {
       <div className="scene-overlay" />
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-6 text-center">
         <div className="text-8xl mb-6 fade-up" style={{ animationDelay: '0s' }}>{speciesData.emoji}</div>
-        <h2 className="font-playfair italic text-white text-4xl mb-3 fade-up" style={{ animationDelay: '0.15s', letterSpacing: '-0.04em' }}>
+        <h2 className="text-white text-4xl font-semibold mb-3 fade-up" style={{ animationDelay: '0.15s', letterSpacing: '-0.04em' }}>
           {petName || 'Mochi'} hatched!
         </h2>
         <p className="text-white/40 text-sm max-w-xs leading-relaxed fade-up" style={{ animationDelay: '0.3s' }}>

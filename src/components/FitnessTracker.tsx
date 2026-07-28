@@ -32,7 +32,7 @@ const METRIC_CONFIG: Record<Metric, {
     goalLabel: 'Daily calorie goal', goalDesc: 'e.g. 2000 kcal/day',
   },
   steps: {
-    label: 'Steps',     unit: 'steps', Icon: Footprints, color: '#ffffff',
+    label: 'Steps',     unit: 'steps', Icon: Footprints, color: '#3D8EFF',
     placeholder: 'e.g. 3000', defaultGoal: 10000, agg: 'sum',
     goalLabel: 'Daily step goal', goalDesc: 'e.g. 10000 steps/day',
   },
@@ -487,7 +487,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
               {goal > 0 && avg7 !== null && cfg.agg === 'sum' && (
                 <div className="flex-1 text-center py-2 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
                   <p className="text-white/30 text-[10px] mb-0.5">avg vs goal</p>
-                  <p className="font-semibold text-sm" style={{ color: avg7 >= goal ? '#ffffff' : cfg.color }}>
+                  <p className="font-semibold text-sm" style={{ color: avg7 >= goal ? 'white' : cfg.color }}>
                     {avg7 >= goal ? '✓ on track' : `${Math.round((avg7 / goal) * 100)}%`}
                   </p>
                 </div>

@@ -44,7 +44,7 @@ export default function AuthScreen() {
 
   if (done) {
     return (
-      <section className="min-h-screen bg-[#111] flex items-center justify-center px-4">
+      <section className="min-h-screen bg-black flex items-center justify-center px-4">
         <div className="flex flex-col items-center gap-4 text-center max-w-sm">
           <div className="text-5xl">📬</div>
           <h2 className="text-white text-xl font-semibold">Check your email</h2>
@@ -60,7 +60,7 @@ export default function AuthScreen() {
   }
 
   return (
-    <section className="min-h-screen bg-[#111] flex items-center justify-center px-4 py-12">
+    <section className="min-h-screen bg-black flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm flex flex-col gap-8">
 
         {/* Logo + heading */}

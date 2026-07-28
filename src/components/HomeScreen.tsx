@@ -22,26 +22,10 @@ function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
 }
 
 const CATEGORY_CONFIG: Record<GoalCategory, { label: string; Icon: React.ElementType; color: string; tagline: string }> = {
-  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#f87171', tagline: 'No goals yet' },
-  focus:   { label: 'Focus',   Icon: Brain,    color: '#60a5fa', tagline: 'No goals yet' },
+  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#FF4D4D', tagline: 'No goals yet' },
+  focus:   { label: 'Focus',   Icon: Brain,    color: '#3D8EFF', tagline: 'No goals yet' },
 };
 
-function ProgressRing({ pct, color, size = 56 }: { pct: number; color: string; size?: number }) {
-  const r = (size - 6) / 2;
-  const circ = 2 * Math.PI * r;
-  return (
-    <svg width={size} height={size} className="-rotate-90">
-      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={3} />
-      <circle
-        cx={size/2} cy={size/2} r={r} fill="none"
-        stroke={color} strokeWidth={3} strokeLinecap="round"
-        strokeDasharray={circ}
-        strokeDashoffset={circ * (1 - pct)}
-        style={{ transition: 'stroke-dashoffset 0.6s ease' }}
-      />
-    </svg>
-  );
-}
 
 export default function HomeScreen({
   onFriends, onEgg, onCategory,
@@ -165,31 +149,44 @@ export default function HomeScreen({
         {/* Date */}
         <p className="text-white/25 text-xs mb-5 fade-up" style={{ animationDelay: '0.15s' }}>{todayLabel}</p>
 
-        {/* Category cards */}
-        <div className="space-y-3 fade-up" style={{ animationDelay: '0.2s' }}>
+        {/* Category cards — Uiverse two-section style */}
+        <div className="grid grid-cols-2 gap-3 fade-up" style={{ animationDelay: '0.2s' }}>
           {(Object.entries(CATEGORY_CONFIG) as [GoalCategory, typeof CATEGORY_CONFIG[GoalCategory]][]).map(([cat, cfg]) => {
             const catPromises = promises.filter(p => p.category === cat);
             const doneToday = catPromises.filter(p => todayDoneIds.has(p.id)).length;
-            const pct = catPromises.length > 0 ? doneToday / catPromises.length : 0;
             const allDone = catPromises.length > 0 && doneToday === catPromises.length;
             return (
               <button
                 key={cat}
                 onClick={() => onCategory(cat)}
-                className="w-full rounded-2xl px-5 py-4 flex items-center gap-4 transition-all active:scale-[0.98] text-left"
-                style={{ background: 'rgba(255,255,255,0.05)', border: `1px solid ${allDone ? cfg.color + '55' : 'rgba(255,255,255,0.08)'}` }}
+                className="cat-card"
+                style={{ '--cat-clr': cfg.color } as React.CSSProperties}
               >
-                <ProgressRing pct={pct} color={cfg.color} />
-                <div className="flex-1">
-                  <p className="text-white font-medium text-base">{cfg.label}</p>
-                  <p className="text-white/35 text-sm mt-0.5">
-                    {catPromises.length === 0 ? cfg.tagline : `${doneToday} of ${catPromises.length} done`}
+                {/* Colored top section */}
+                <div className="cat-card-top">
+                  <cfg.Icon size={36} strokeWidth={1.5} color="white" />
+                </div>
+                {/* Dark body */}
+                <div className="cat-card-body">
+                  <div className="cat-card-header">
+                    <span className="cat-card-title">{cfg.label}</span>
+                    <div className="cat-card-menu">
+                      <div className="cat-card-dot" />
+                      <div className="cat-card-dot" />
+                      <div className="cat-card-dot" />
+                    </div>
+                  </div>
+                  <p className="cat-card-value">
+                    {catPromises.length === 0 ? '—' : `${doneToday}/${catPromises.length}`}
+                  </p>
+                  <p className="cat-card-sub">
+                    {catPromises.length === 0
+                      ? cfg.tagline
+                      : allDone
+                        ? '✓ All done today'
+                        : `${catPromises.length - doneToday} remaining`}
                   </p>
                 </div>
-                {allDone
-                  ? <cfg.Icon size={16} style={{ color: cfg.color }} strokeWidth={1.5} />
-                  : <cfg.Icon size={16} className="text-white/20" strokeWidth={1.5} />
-                }
               </button>
             );
           })}

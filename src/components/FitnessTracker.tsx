@@ -27,7 +27,7 @@ const METRIC_CONFIG: Record<Metric, {
   goalLabel: string; goalDesc: string;
 }> = {
   calories: {
-    label: 'Calories',  unit: 'kcal', Icon: Flame,      color: '#f87171',
+    label: 'Calories',  unit: 'kcal', Icon: Flame,      color: '#FF4D4D',
     placeholder: 'e.g. 350', defaultGoal: 2000, agg: 'sum',
     goalLabel: 'Daily calorie goal', goalDesc: 'e.g. 2000 kcal/day',
   },
@@ -37,7 +37,7 @@ const METRIC_CONFIG: Record<Metric, {
     goalLabel: 'Daily step goal', goalDesc: 'e.g. 10000 steps/day',
   },
   weight: {
-    label: 'Weight',    unit: 'kg',    Icon: Scale,      color: '#60a5fa',
+    label: 'Weight',    unit: 'kg',    Icon: Scale,      color: '#3D8EFF',
     placeholder: 'e.g. 65.5', defaultGoal: 0, agg: 'latest',
     goalLabel: 'Target weight', goalDesc: 'e.g. 60 kg',
   },
@@ -138,7 +138,7 @@ function GoalEditor({ metric, goal, onSave, onClose }: { metric: Metric; goal: n
         <button
           onClick={() => { onSave(parseFloat(val) || 0); onClose(); }}
           className="px-4 py-2 rounded-xl text-sm font-medium text-white"
-          style={{ background: cfg.color + 'bb' }}
+          style={{ background: cfg.color }}
         >
           Save
         </button>
@@ -330,7 +330,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
             <button
               onClick={() => setShowAddForm(true)}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm transition-colors"
-              style={{ background: cfg.color + '22', color: cfg.color }}
+              style={{ background: cfg.color, color: 'white' }}
             >
               <Plus size={14} />
               Log {cfg.label.toLowerCase()}
@@ -417,7 +417,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
                   onClick={addEntry}
                   disabled={saving}
                   className="px-4 py-2.5 rounded-2xl text-sm font-medium text-white"
-                  style={{ background: cfg.color + 'cc' }}
+                  style={{ background: cfg.color }}
                 >
                   Add
                 </button>

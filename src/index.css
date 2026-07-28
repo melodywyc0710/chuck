@@ -381,7 +381,7 @@
 }
 
 * { box-sizing: border-box; }
-html, body { margin: 0; font-family: 'Inter', sans-serif; background: #111111; color: white; }
+html, body { margin: 0; font-family: 'Inter', sans-serif; background: #000000; color: white; }
 
 @keyframes eggShake { 0%,100%{transform:rotate(-8deg) scale(1.05)} 50%{transform:rotate(8deg) scale(1.05)} }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
@@ -390,19 +390,84 @@ html, body { margin: 0; font-family: 'Inter', sans-serif; background: #111111; c
 
 /* Surface styles */
 .liquid-glass {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: #141414;
+  border: 1px solid #2a2a2a;
 }
 .liquid-glass-selected {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.18);
+  background: #1e1e1e;
+  border: 1px solid #3a3a3a;
 }
+
+/* ── Uiverse category card ──────────────────────────── */
+.cat-card {
+  --cat-clr: #fff;
+  width: 100%;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  display: grid;
+  grid-template-rows: 80px 1fr;
+  transition: transform 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  text-align: left;
+}
+.cat-card:active { transform: scale(0.97); }
+.cat-card-top {
+  background: var(--cat-clr);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.cat-card:hover .cat-card-top { transform: translateY(4px); }
+.cat-card-body {
+  background: #141414;
+  padding: 14px 16px 16px;
+  position: relative;
+  top: -8px;
+  border-radius: 14px;
+  display: grid;
+  gap: 6px;
+}
+.cat-card-header {
+  display: flex;
+  align-items: center;
+}
+.cat-card-title {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.cat-card-menu {
+  display: flex;
+  gap: 3px;
+}
+.cat-card-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+}
+.cat-card-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.cat-card-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  line-height: 1.2;
+}
+/* ─────────────────────────────────────────────────── */
 
 /* Solid monotone background */
 .scene-bg {
   position: fixed;
   inset: 0;
-  background: #111111;
+  background: #000000;
   z-index: 0;
   pointer-events: none;
 }

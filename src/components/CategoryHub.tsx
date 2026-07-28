@@ -15,8 +15,8 @@ interface Props {
 }
 
 const CATEGORY_CONFIG: Record<GoalCategory, { label: string; Icon: React.ElementType; color: string; tagline: string }> = {
-  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#f87171', tagline: 'Move your body, track your progress' },
-  focus:   { label: 'Focus',   Icon: Brain,    color: '#60a5fa', tagline: 'Build your mind, own your time' },
+  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#FF4D4D', tagline: 'Move your body, track your progress' },
+  focus:   { label: 'Focus',   Icon: Brain,    color: '#3D8EFF', tagline: 'Build your mind, own your time' },
 };
 
 function todayKey() { return new Date().toISOString().slice(0, 10); }
@@ -227,7 +227,7 @@ export default function CategoryHub({ category, onClose }: Props) {
                 autoFocus
                 className="app-input flex-1"
               />
-              <button onClick={addPromise} className="px-4 py-2 rounded-xl text-sm font-medium text-white shrink-0" style={{ background: cfg.color + 'dd' }}>
+              <button onClick={addPromise} className="px-4 py-2 rounded-xl text-sm font-medium text-white shrink-0" style={{ background: cfg.color }}>
                 Add
               </button>
             </div>

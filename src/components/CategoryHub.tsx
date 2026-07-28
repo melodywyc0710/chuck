@@ -197,44 +197,26 @@ export default function CategoryHub({ category, onClose }: Props) {
     <>
       <div className="scene-bg" />
       <div className="scene-overlay" />
-      <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-6 pt-14 pb-10" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+      <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-5 pt-12 pb-10">
 
         {/* Nav */}
-        <div className="flex items-center justify-between w-full mb-10 fade-up" style={{ animationDelay: '0.05s' }}>
-          <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
-            <span className="text-xs">{cfg.emoji}</span>
-            <span className="text-white/90 text-xs font-medium">{cfg.label}</span>
+        <div className="flex items-center justify-between w-full mb-8 fade-up" style={{ animationDelay: '0.05s' }}>
+          <div className="flex items-center gap-2">
+            <span>{cfg.emoji}</span>
+            <h1 className="font-playfair italic text-white text-xl" style={{ letterSpacing: '-0.03em' }}>{cfg.label}</h1>
+            {promises.length > 0 && (
+              <span className="text-white/30 text-sm">{doneCount}/{promises.length}</span>
+            )}
           </div>
-          <button onClick={onClose} className="liquid-glass w-9 h-9 flex items-center justify-center rounded-full text-white/50 hover:text-white/80 transition-colors">
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
             <X size={15} />
           </button>
         </div>
 
-        {/* Header */}
-        <div className="mb-8 fade-up" style={{ animationDelay: '0.1s' }}>
-          <h1 className="font-playfair italic text-white text-3xl leading-tight" style={{ letterSpacing: '-0.04em' }}>
-            {cfg.label}
-          </h1>
-          <p className="text-white/40 text-sm mt-1">{cfg.tagline}</p>
-          {promises.length > 0 && (
-            <p className="text-white/30 text-xs mt-2">{doneCount}/{promises.length} done today</p>
-          )}
-        </div>
-
-        {/* Promises */}
-        <div className="fade-up" style={{ animationDelay: '0.2s' }}>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-white/40 text-xs uppercase tracking-widest">Goals</p>
-            <button
-              onClick={() => setShowAdd(v => !v)}
-              className="liquid-glass w-7 h-7 flex items-center justify-center rounded-full text-white/60 hover:text-white/90 transition-colors"
-            >
-              <Plus size={13} />
-            </button>
-          </div>
-
+        {/* Goals */}
+        <div className="fade-up" style={{ animationDelay: '0.1s' }}>
           {showAdd && (
-            <div className="flex gap-2 mb-3 fade-up" style={{ animationDelay: '0s' }}>
+            <div className="flex gap-2 mb-3">
               <input
                 type="text"
                 placeholder={`e.g. ${category === 'fitness' ? 'run 30 min' : 'read 20 pages'}`}
@@ -244,65 +226,71 @@ export default function CategoryHub({ category, onClose }: Props) {
                 autoFocus
                 className="app-input flex-1"
               />
-              <button onClick={addPromise} className="px-4 py-2.5 rounded-2xl text-sm font-medium text-white" style={{ background: cfg.color + 'cc' }}>
+              <button onClick={addPromise} className="px-4 py-2 rounded-xl text-sm font-medium text-white shrink-0" style={{ background: cfg.color + 'dd' }}>
                 Add
               </button>
             </div>
           )}
 
-          {promises.length === 0 && !showAdd && (
-            <div className="text-center py-8">
-              <p className="text-white/20 text-sm">No {cfg.label.toLowerCase()} goals yet.</p>
-              <p className="text-white/20 text-sm mt-0.5">Tap + to add one.</p>
+          {promises.length === 0 && !showAdd ? (
+            <button onClick={() => setShowAdd(true)} className="w-full py-10 flex flex-col items-center gap-2 rounded-2xl transition-colors" style={{ background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.1)' }}>
+              <Plus size={20} className="text-white/20" />
+              <p className="text-white/25 text-sm">Add your first {cfg.label.toLowerCase()} goal</p>
+            </button>
+          ) : (
+            <div className="space-y-2">
+              {promises.map(p => (
+                <div key={p.id} className="group relative">
+                  <PromiseRow promise={p} onComplete={() => { setCompletionTick(t => t + 1); loadHistory(); }} />
+                  <button
+                    onClick={() => deletePromise(p.id)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400/60 transition-all text-xs px-1"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              <button onClick={() => setShowAdd(v => !v)} className="flex items-center gap-2 px-3 py-2 text-white/25 text-xs hover:text-white/50 transition-colors">
+                <Plus size={12} /> Add goal
+              </button>
             </div>
           )}
-
-          <div className="space-y-2 mb-6">
-            {promises.map(p => (
-              <div key={p.id} className="group relative">
-                <PromiseRow promise={p} onComplete={() => { setCompletionTick(t => t + 1); loadHistory(); }} />
-                <button
-                  onClick={() => deletePromise(p.id)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400/60 transition-all text-xs px-1"
-                >
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
         </div>
 
-        {/* Fitness tracking panels */}
+        {/* Divider */}
+        <div className="my-6 border-t border-white/5" />
+
+        {/* Fitness tracking */}
         {category === 'fitness' && (
-          <div className="fade-up" style={{ animationDelay: '0.35s' }}>
-            <p className="text-white/40 text-xs uppercase tracking-widest mb-3">Tracking</p>
+          <div className="fade-up" style={{ animationDelay: '0.2s' }}>
+            <p className="text-white/30 text-xs uppercase tracking-widest mb-3">Tracking</p>
             <MetricPanels userId={user.id} />
           </div>
         )}
 
-        {/* Focus: deep work timer */}
+        {/* Focus timer */}
         {category === 'focus' && (
-          <div className="fade-up" style={{ animationDelay: '0.35s' }}>
-            <p className="text-white/40 text-xs uppercase tracking-widest mb-3">Deep Work</p>
+          <div className="fade-up" style={{ animationDelay: '0.2s' }}>
+            <p className="text-white/30 text-xs uppercase tracking-widest mb-3">Deep Work</p>
             <DeepWorkTimer userId={user.id} />
           </div>
         )}
 
         {/* History */}
         {history.length > 0 && (
-          <div className="mt-6 fade-up" style={{ animationDelay: '0.5s' }}>
-            <div className="flex items-center justify-between w-full mb-3">
-              <p className="text-white/40 text-xs uppercase tracking-widest">History</p>
+          <div className="mt-6 fade-up" style={{ animationDelay: '0.4s' }}>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-white/30 text-xs uppercase tracking-widest">History</p>
               <Toggle checked={showHistory} onChange={setShowHistory} color={cfg.color} />
             </div>
             {showHistory && (
-              <div className="space-y-1.5">
+              <div className="space-y-1">
                 {history.slice(0, 20).map(h => {
                   const p = promises.find(x => x.id === h.promise_id);
                   return (
-                    <div key={h.id} className="flex items-center justify-between px-3 py-2 rounded-xl text-xs" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                      <span className="text-white/50">{p?.title ?? 'Goal'}</span>
-                      <span className="text-white/25">{h.date_key}</span>
+                    <div key={h.id} className="flex items-center justify-between px-3 py-2 rounded-lg text-xs">
+                      <span className="text-white/40">{p?.title ?? 'Goal'}</span>
+                      <span className="text-white/20">{h.date_key}</span>
                     </div>
                   );
                 })}

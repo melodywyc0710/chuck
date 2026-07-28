@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import { LogOut, Flame, Users, Gift, ChevronRight } from 'lucide-react';
-import HistoryChart from './HistoryChart';
+import { LogOut, Flame, Users, Gift } from 'lucide-react';
 import TraitAllocator from './TraitAllocator';
 import UpgradeModal from './UpgradeModal';
 import SpeciesSelector from './SpeciesSelector';
-import AiCheckin from './AiCheckin';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
@@ -15,24 +13,34 @@ function petColor(hue: number) {
   return `hsl(${hue}, 50%, 65%)`;
 }
 
-const MOOD_EMOJI: Record<string, string> = {
-  excited: '🤩', happy: '😊', neutral: '😐', sad: '😢',
-};
-const MOOD_LABEL: Record<string, string> = {
-  excited: 'Feeling amazing!', happy: 'Doing well~', neutral: 'Needs attention', sad: 'Please help me',
-};
-
 function moodFromHappiness(h: number) {
-  if (h >= 80) return 'excited';
-  if (h >= 60) return 'happy';
-  if (h >= 40) return 'neutral';
-  return 'sad';
+  if (h >= 80) return '🤩';
+  if (h >= 60) return '😊';
+  if (h >= 40) return '😐';
+  return '😢';
 }
 
-const CATEGORY_CONFIG: Record<GoalCategory, { label: string; emoji: string; color: string; tagline: string; gradient: string }> = {
-  fitness: { label: 'Fitness', emoji: '💪', color: '#f87171', tagline: 'Move your body', gradient: 'linear-gradient(180deg, #f87171, #fb923c)' },
-  focus:   { label: 'Focus',   emoji: '🧠', color: '#60a5fa', tagline: 'Build your mind', gradient: 'linear-gradient(180deg, #60a5fa, #a78bfa)' },
+const CATEGORY_CONFIG: Record<GoalCategory, { label: string; emoji: string; color: string; tagline: string }> = {
+  fitness: { label: 'Fitness', emoji: '💪', color: '#f87171', tagline: 'No goals yet' },
+  focus:   { label: 'Focus',   emoji: '🧠', color: '#60a5fa', tagline: 'No goals yet' },
 };
+
+function ProgressRing({ pct, color, size = 56 }: { pct: number; color: string; size?: number }) {
+  const r = (size - 6) / 2;
+  const circ = 2 * Math.PI * r;
+  return (
+    <svg width={size} height={size} className="-rotate-90">
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={3} />
+      <circle
+        cx={size/2} cy={size/2} r={r} fill="none"
+        stroke={color} strokeWidth={3} strokeLinecap="round"
+        strokeDasharray={circ}
+        strokeDashoffset={circ * (1 - pct)}
+        style={{ transition: 'stroke-dashoffset 0.6s ease' }}
+      />
+    </svg>
+  );
+}
 
 export default function HomeScreen({
   onFriends, onEgg, onCategory,
@@ -48,56 +56,43 @@ export default function HomeScreen({
 
   const [promises, setPromises] = useState<Promise_[]>([]);
   const [history, setHistory] = useState<Completion[]>([]);
-  const [showHistory, setShowHistory] = useState(false);
-  const eggAvailable = !localStorage.getItem(`nagi_egg_${pet?.user_id}_${new Date().toISOString().slice(0,10)}`);
   const [showTraits, setShowTraits] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [upgradeReason, setUpgradeReason] = useState('');
   const [showSpecies, setShowSpecies] = useState(false);
 
+  const eggAvailable = !localStorage.getItem(`nagi_egg_${pet?.user_id}_${new Date().toISOString().slice(0,10)}`);
   const tier = profile?.subscription_tier ?? 'free';
   const plus = isPlus(tier);
   const pro = isPro(tier);
 
   useEffect(() => {
-    loadPromises();
-    loadHistory();
-    if (pet) {
-      applyDecayIfNeeded(pet, pet.user_id).then(updated => {
-        if (updated) updatePetState(updated);
-      });
-    }
+    loadData();
+    if (pet) applyDecayIfNeeded(pet, pet.user_id).then(u => { if (u) updatePetState(u); });
   }, []);
 
-  async function loadPromises() {
-    if (!pet) return;
-    const { data } = await supabase.from('promises').select('*').eq('user_id', pet.user_id).eq('active', true).order('created_at', { ascending: true });
-    if (data) setPromises(data);
-  }
-
-  async function loadHistory() {
+  async function loadData() {
     if (!pet) return;
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - (plus ? 365 : 30));
-    const { data } = await supabase
-      .from('completions')
-      .select('*')
-      .eq('user_id', pet.user_id)
-      .gte('date_key', cutoff.toISOString().slice(0, 10))
-      .order('completed_at', { ascending: false });
-    if (data) setHistory(data);
+    const [{ data: p }, { data: h }] = await Promise.all([
+      supabase.from('promises').select('*').eq('user_id', pet.user_id).eq('active', true).order('created_at', { ascending: true }),
+      supabase.from('completions').select('*').eq('user_id', pet.user_id).gte('date_key', cutoff.toISOString().slice(0, 10)),
+    ]);
+    if (p) setPromises(p);
+    if (h) setHistory(h);
   }
 
   if (!pet) return null;
 
-  const mood = moodFromHappiness(pet.happiness);
-  const xpPct = Math.round((pet.xp / pet.xp_to_next) * 100);
   const color = petColor(pet.color_seed);
   const speciesData = SPECIES_LIST.find(s => s.id === pet.species) ?? SPECIES_LIST[0];
   const petEmoji = speciesData.emoji;
-
+  const xpPct = pet.xp / pet.xp_to_next;
   const today = new Date().toISOString().slice(0, 10);
   const todayDoneIds = new Set(history.filter(h => h.date_key === today).map(h => h.promise_id));
+
+  const todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   return (
     <>
@@ -106,171 +101,113 @@ export default function HomeScreen({
       {showTraits && <TraitAllocator onClose={() => setShowTraits(false)} />}
       {showUpgrade && <UpgradeModal reason={upgradeReason} onClose={() => setShowUpgrade(false)} />}
       {showSpecies && <SpeciesSelector onClose={() => setShowSpecies(false)} />}
-      <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-6 pt-14 pb-6" style={{ fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif" }}>
+
+      <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-5 pt-12 pb-8">
 
         {/* Nav */}
-        <div className="flex items-center justify-between mb-10 fade-up" style={{ animationDelay: '0.05s' }}>
-          <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
+        <div className="flex items-center justify-between mb-8 fade-up" style={{ animationDelay: '0.05s' }}>
+          <div className="flex items-center gap-1.5 text-white/50 text-xs">
             <Flame size={12} className="text-orange-400" />
-            <span className="text-white/90 text-xs font-medium">Day {pet.streak} streak</span>
+            <span className="text-white/70 font-medium">{pet.streak}</span>
+            <span>day streak</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-white/40 text-sm">{profile?.username}</span>
-            <button
-              onClick={onEgg}
-              className="relative liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/60 hover:text-white/90 transition-colors"
-            >
-              <Gift size={13} />
-              {eggAvailable && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-yellow-400 rounded-full" />}
+          <div className="flex items-center gap-1.5">
+            <span className="text-white/30 text-xs mr-1">{profile?.username}</span>
+            <button onClick={onEgg} className="relative w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
+              <Gift size={15} />
+              {eggAvailable && <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-yellow-400 rounded-full" />}
             </button>
-            <button onClick={onFriends} className="liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/60 hover:text-white/90 transition-colors">
-              <Users size={13} />
+            <button onClick={onFriends} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
+              <Users size={15} />
             </button>
-            <button onClick={signOut} className="liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors">
-              <LogOut size={13} />
+            <button onClick={signOut} className="w-8 h-8 flex items-center justify-center rounded-full text-white/25 hover:text-white/60 transition-colors">
+              <LogOut size={15} />
             </button>
           </div>
         </div>
 
-        {/* Pet */}
-        <div className="flex flex-col items-center mb-10 fade-up" style={{ animationDelay: '0.1s' }}>
-          <div className="relative mb-4">
-            <div className="absolute inset-0 rounded-full blur-3xl opacity-40 scale-150" style={{ backgroundColor: color }} />
-            <button
-              onClick={() => setShowSpecies(true)}
-              className="relative w-32 h-32 rounded-full flex items-center justify-center text-5xl liquid-glass hover:bg-white/10 transition-colors"
-              style={{ background: color + '22' }}
-            >
+        {/* Pet — compact */}
+        <div className="flex items-center gap-4 mb-8 fade-up" style={{ animationDelay: '0.1s' }}>
+          <button onClick={() => setShowSpecies(true)} className="relative shrink-0">
+            <div className="absolute inset-0 rounded-full blur-2xl opacity-30 scale-150" style={{ backgroundColor: color }} />
+            <div className="relative w-16 h-16 rounded-full flex items-center justify-center text-3xl" style={{ background: color + '18', border: `1px solid ${color}33` }}>
               {petEmoji}
-              <span className="absolute bottom-1 right-1 text-base">{MOOD_EMOJI[mood]}</span>
-            </button>
-          </div>
-          <h1 className="font-playfair italic text-white text-3xl mb-1" style={{ letterSpacing: '-0.04em' }}>{pet.name}</h1>
-          <p className="text-white/40 text-xs">{MOOD_LABEL[mood]}</p>
-
-          {/* Bars */}
-          <div className="w-full mt-6 space-y-3">
-            <div>
-              <div className="flex justify-between text-xs text-white/30 mb-1.5">
-                <span>happiness</span><span>{pet.happiness}/100</span>
-              </div>
-              <div className="h-1 bg-white/8 rounded-full overflow-hidden">
-                <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pet.happiness}%`, backgroundColor: color }} />
-              </div>
+              <span className="absolute -bottom-0.5 -right-0.5 text-xs">{moodFromHappiness(pet.happiness)}</span>
             </div>
-            <div>
-              <div className="flex justify-between text-xs text-white/30 mb-1.5">
-                <span>level {pet.level}</span><span>{pet.xp}/{pet.xp_to_next} xp</span>
-              </div>
-              <div className="h-1 bg-white/8 rounded-full overflow-hidden">
-                <div className="h-full rounded-full bg-orange-400/70 transition-all duration-700" style={{ width: `${xpPct}%` }} />
-              </div>
-            </div>
-          </div>
-
-          {/* Traits */}
-          <button
-            onClick={() => setShowTraits(true)}
-            className="w-full mt-4 liquid-glass rounded-2xl px-4 py-3 text-left hover:bg-white/10 transition-colors"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-white/40 text-xs">traits</span>
+          </button>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-baseline gap-2 mb-2">
+              <h1 className="font-playfair italic text-white text-xl" style={{ letterSpacing: '-0.03em' }}>{pet.name}</h1>
               {pet.trait_points_available > 0 && (
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full" style={{ background: '#e8702a33', color: '#e8702a' }}>
-                  {pet.trait_points_available} pts to spend
-                </span>
+                <button onClick={() => setShowTraits(true)} className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0" style={{ background: '#e8702a33', color: '#e8702a' }}>
+                  {pet.trait_points_available} pts
+                </button>
               )}
             </div>
-            <div className="grid grid-cols-4 gap-2">
-              {([
-                { key: 'trait_strength' as const,     emoji: '💪', color: '#f87171' },
-                { key: 'trait_intelligence' as const, emoji: '🧠', color: '#60a5fa' },
-                { key: 'trait_agility' as const,      emoji: '⚡', color: '#facc15' },
-                { key: 'trait_speed' as const,        emoji: '🌪️', color: '#34d399' },
-              ]).map(({ key, emoji, color: c }) => (
-                <div key={key} className="flex flex-col items-center gap-1">
-                  <span className="text-sm">{emoji}</span>
-                  <div className="w-full h-1 bg-white/8 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${(pet[key] / 50) * 100}%`, backgroundColor: c }} />
-                  </div>
-                  <span className="text-white/30 text-[10px] tabular-nums">{pet[key]}</span>
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-1 bg-white/8 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pet.happiness}%`, backgroundColor: color }} />
                 </div>
-              ))}
+                <span className="text-white/25 text-[10px] tabular-nums w-10 text-right">{pet.happiness}/100</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-1 bg-white/8 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full bg-orange-400/60 transition-all duration-700" style={{ width: `${xpPct * 100}%` }} />
+                </div>
+                <span className="text-white/25 text-[10px] tabular-nums w-10 text-right">Lv {pet.level}</span>
+              </div>
             </div>
-          </button>
-        </div>
-
-        {/* AI check-in */}
-        <div className="my-2 mb-8 fade-up" style={{ animationDelay: '0.25s' }}>
-          {pro
-            ? <AiCheckin petEmoji={petEmoji} color={color} />
-            : (
-              <button
-                onClick={() => { setUpgradeReason('AI daily check-ins are a Pro feature'); setShowUpgrade(true); }}
-                className="w-full liquid-glass rounded-2xl px-4 py-3.5 flex items-center gap-3 hover:bg-white/10 transition-colors"
-              >
-                <span className="text-xl">{petEmoji}</span>
-                <div className="flex-1 text-left">
-                  <p className="text-white/50 text-xs">morning check-in</p>
-                  <p className="text-white/25 text-xs mt-0.5">Upgrade to Pro — your pet talks to you daily</p>
-                </div>
-                <span className="text-[10px] px-2 py-1 rounded-full font-semibold" style={{ background: '#e8702a22', color: '#e8702a' }}>Pro</span>
-              </button>
-            )
-          }
-        </div>
-
-        {/* Category cards */}
-        <div className="fade-up" style={{ animationDelay: '0.35s' }}>
-          <p className="text-white/40 text-xs uppercase tracking-widest mb-3">Your goals</p>
-          <div className="space-y-3">
-            {(Object.entries(CATEGORY_CONFIG) as [GoalCategory, typeof CATEGORY_CONFIG[GoalCategory]][]).map(([cat, cfg], i) => {
-              const catPromises = promises.filter(p => p.category === cat);
-              const doneToday = catPromises.filter(p => todayDoneIds.has(p.id)).length;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => onCategory(cat)}
-                  className="glow-card w-full rounded-[28px] fade-up transition-all active:scale-[0.98]"
-                  style={{
-                    animationDelay: `${0.35 + i * 0.08}s`,
-                    '--glow-gradient': cfg.gradient,
-                    '--glow-inner-bg': 'rgba(10,12,20,0.92)',
-                  } as React.CSSProperties}
-                >
-                  <div className="glow-card-content px-5 py-4 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0" style={{ background: cfg.color + '22' }}>
-                      {cfg.emoji}
-                    </div>
-                    <div className="flex-1 text-left">
-                      <p className="text-white font-medium text-base" style={{ letterSpacing: '-0.02em' }}>{cfg.label}</p>
-                      <p className="text-white/40 text-xs mt-0.5">
-                        {catPromises.length === 0
-                          ? cfg.tagline
-                          : `${doneToday}/${catPromises.length} done today`}
-                      </p>
-                    </div>
-                    <ChevronRight size={16} className="text-white/25" />
-                  </div>
-                </button>
-              );
-            })}
           </div>
         </div>
 
-        {/* History chart */}
-        <div className="mt-8 fade-up" style={{ animationDelay: '0.55s' }}>
-          <button onClick={() => setShowHistory(v => !v)} className="flex items-center justify-between w-full mb-3">
-            <div>
-              <p className="text-white/40 text-xs mb-0.5">your progress</p>
-              <div className="flex items-center gap-2">
-                <h2 className="text-white text-lg font-medium leading-tight" style={{ letterSpacing: '-0.03em' }}>History</h2>
-                {!plus && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium" style={{ background: 'rgba(124,106,247,0.2)', color: '#7c6af7' }}>30 days</span>}
-              </div>
-            </div>
-          </button>
-          {showHistory && <HistoryChart history={history as any} promises={promises} color={color} />}
+        {/* Date */}
+        <p className="text-white/25 text-xs mb-5 fade-up" style={{ animationDelay: '0.15s' }}>{todayLabel}</p>
+
+        {/* Category cards */}
+        <div className="space-y-3 fade-up" style={{ animationDelay: '0.2s' }}>
+          {(Object.entries(CATEGORY_CONFIG) as [GoalCategory, typeof CATEGORY_CONFIG[GoalCategory]][]).map(([cat, cfg]) => {
+            const catPromises = promises.filter(p => p.category === cat);
+            const doneToday = catPromises.filter(p => todayDoneIds.has(p.id)).length;
+            const pct = catPromises.length > 0 ? doneToday / catPromises.length : 0;
+            const allDone = catPromises.length > 0 && doneToday === catPromises.length;
+            return (
+              <button
+                key={cat}
+                onClick={() => onCategory(cat)}
+                className="w-full rounded-2xl px-5 py-4 flex items-center gap-4 transition-all active:scale-[0.98] text-left"
+                style={{ background: 'rgba(255,255,255,0.05)', border: `1px solid ${allDone ? cfg.color + '55' : 'rgba(255,255,255,0.08)'}` }}
+              >
+                <ProgressRing pct={pct} color={cfg.color} />
+                <div className="flex-1">
+                  <p className="text-white font-medium text-base">{cfg.label}</p>
+                  <p className="text-white/35 text-sm mt-0.5">
+                    {catPromises.length === 0 ? cfg.tagline : `${doneToday} of ${catPromises.length} done`}
+                  </p>
+                </div>
+                {allDone && <span className="text-lg">✓</span>}
+              </button>
+            );
+          })}
         </div>
+
+        {/* Pro AI check-in — subtle, at the bottom */}
+        {pro && (
+          <div className="mt-6 fade-up" style={{ animationDelay: '0.3s' }}>
+            {/* AiCheckin rendered inline if needed */}
+          </div>
+        )}
+        {!pro && (
+          <button
+            onClick={() => { setUpgradeReason('AI daily check-ins are a Pro feature'); setShowUpgrade(true); }}
+            className="mt-6 w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors fade-up"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', animationDelay: '0.3s' }}
+          >
+            <span className="text-lg">{petEmoji}</span>
+            <p className="text-white/25 text-xs flex-1 text-left">Upgrade to Pro for daily AI check-ins</p>
+            <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0" style={{ background: '#e8702a18', color: '#e8702a88' }}>Pro</span>
+          </button>
+        )}
       </div>
     </>
   );

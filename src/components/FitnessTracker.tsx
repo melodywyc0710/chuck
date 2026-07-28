@@ -32,12 +32,12 @@ const METRIC_CONFIG: Record<Metric, {
     goalLabel: 'Daily calorie goal', goalDesc: 'e.g. 2000 kcal/day',
   },
   steps: {
-    label: 'Steps',     unit: 'steps', Icon: Footprints, color: '#3D8EFF',
+    label: 'Steps',     unit: 'steps', Icon: Footprints, color: '#FF4D4D',
     placeholder: 'e.g. 3000', defaultGoal: 10000, agg: 'sum',
     goalLabel: 'Daily step goal', goalDesc: 'e.g. 10000 steps/day',
   },
   weight: {
-    label: 'Weight',    unit: 'kg',    Icon: Scale,      color: '#3D8EFF',
+    label: 'Weight',    unit: 'kg',    Icon: Scale,      color: '#FF4D4D',
     placeholder: 'e.g. 65.5', defaultGoal: 0, agg: 'latest',
     goalLabel: 'Target weight', goalDesc: 'e.g. 60 kg',
   },

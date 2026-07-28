@@ -134,17 +134,18 @@ export default function AuthScreen() {
         </div>
 
         {/* Tab toggle */}
-        <div className="liquid-glass rounded-full p-1 flex w-full max-w-xs mb-6 fade-up" style={{ animationDelay: '0.32s' }}>
+        <div className="cir-tabs mb-6 fade-up" style={{ animationDelay: '0.32s' }}>
           {(['signin', 'signup'] as const).map(m => (
-            <button
-              key={m}
-              onClick={() => { setMode(m); setError(''); }}
-              className={`flex-1 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                mode === m ? 'bg-white text-gray-900 shadow-sm' : 'text-white/50 hover:text-white/80'
-              }`}
-            >
-              {m === 'signin' ? 'Sign in' : 'Sign up'}
-            </button>
+            <label key={m}>
+              <input
+                type="radio"
+                name="auth-mode"
+                className="cir-tabs__r"
+                checked={mode === m}
+                onChange={() => { setMode(m); setError(''); }}
+              />
+              <span className="cir-tabs__t">{m === 'signin' ? 'Sign in' : 'Sign up'}</span>
+            </label>
           ))}
         </div>
 

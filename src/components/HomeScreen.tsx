@@ -29,9 +29,9 @@ function moodFromHappiness(h: number) {
   return 'sad';
 }
 
-const CATEGORY_CONFIG: Record<GoalCategory, { label: string; emoji: string; color: string; tagline: string }> = {
-  fitness: { label: 'Fitness', emoji: '💪', color: '#f87171', tagline: 'Move your body' },
-  focus:   { label: 'Focus',   emoji: '🧠', color: '#60a5fa', tagline: 'Build your mind' },
+const CATEGORY_CONFIG: Record<GoalCategory, { label: string; emoji: string; color: string; tagline: string; gradient: string }> = {
+  fitness: { label: 'Fitness', emoji: '💪', color: '#f87171', tagline: 'Move your body', gradient: 'linear-gradient(180deg, #f87171, #fb923c)' },
+  focus:   { label: 'Focus',   emoji: '🧠', color: '#60a5fa', tagline: 'Build your mind', gradient: 'linear-gradient(180deg, #60a5fa, #a78bfa)' },
 };
 
 export default function HomeScreen({
@@ -231,21 +231,27 @@ export default function HomeScreen({
                 <button
                   key={cat}
                   onClick={() => onCategory(cat)}
-                  className="w-full liquid-glass rounded-[28px] px-5 py-4 flex items-center gap-4 hover:bg-white/10 transition-all active:scale-[0.98] fade-up"
-                  style={{ animationDelay: `${0.35 + i * 0.08}s` }}
+                  className="glow-card w-full rounded-[28px] fade-up transition-all active:scale-[0.98]"
+                  style={{
+                    animationDelay: `${0.35 + i * 0.08}s`,
+                    '--glow-gradient': cfg.gradient,
+                    '--glow-inner-bg': 'rgba(10,12,20,0.92)',
+                  } as React.CSSProperties}
                 >
-                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0" style={{ background: cfg.color + '22' }}>
-                    {cfg.emoji}
+                  <div className="glow-card-content px-5 py-4 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0" style={{ background: cfg.color + '22' }}>
+                      {cfg.emoji}
+                    </div>
+                    <div className="flex-1 text-left">
+                      <p className="text-white font-medium text-base" style={{ letterSpacing: '-0.02em' }}>{cfg.label}</p>
+                      <p className="text-white/40 text-xs mt-0.5">
+                        {catPromises.length === 0
+                          ? cfg.tagline
+                          : `${doneToday}/${catPromises.length} done today`}
+                      </p>
+                    </div>
+                    <ChevronRight size={16} className="text-white/25" />
                   </div>
-                  <div className="flex-1 text-left">
-                    <p className="text-white font-medium text-base" style={{ letterSpacing: '-0.02em' }}>{cfg.label}</p>
-                    <p className="text-white/40 text-xs mt-0.5">
-                      {catPromises.length === 0
-                        ? cfg.tagline
-                        : `${doneToday}/${catPromises.length} done today`}
-                    </p>
-                  </div>
-                  <ChevronRight size={16} className="text-white/25" />
                 </button>
               );
             })}

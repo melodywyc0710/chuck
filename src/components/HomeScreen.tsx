@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import type React from 'react';
-import { LogOut, Flame, Users, Gift, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles, Star } from 'lucide-react';
+import { LogOut, Flame, Users, CreditCard, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles, Star } from 'lucide-react';
 import TraitAllocator from './TraitAllocator';
-import UpgradeModal from './UpgradeModal';
 import SpeciesSelector from './SpeciesSelector';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
@@ -28,10 +27,10 @@ const CATEGORY_CONFIG: Record<GoalCategory, { label: string; Icon: React.Element
 
 
 export default function HomeScreen({
-  onFriends, onEgg, onCategory,
+  onFriends, onPayment, onCategory,
 }: {
   onFriends: () => void;
-  onEgg: () => void;
+  onPayment: () => void;
   onCategory: (c: GoalCategory) => void;
 }) {
   const pet = useAuthStore(s => s.pet);
@@ -42,11 +41,8 @@ export default function HomeScreen({
   const [promises, setPromises] = useState<Promise_[]>([]);
   const [history, setHistory] = useState<Completion[]>([]);
   const [showTraits, setShowTraits] = useState(false);
-  const [showUpgrade, setShowUpgrade] = useState(false);
-  const [upgradeReason, setUpgradeReason] = useState('');
   const [showSpecies, setShowSpecies] = useState(false);
 
-  const eggAvailable = !localStorage.getItem(`nagi_egg_${pet?.user_id}_${new Date().toISOString().slice(0,10)}`);
   const tier = profile?.subscription_tier ?? 'free';
   const plus = isPlus(tier);
   const pro = isPro(tier);
@@ -82,7 +78,6 @@ export default function HomeScreen({
       <div className="scene-bg" />
       <div className="scene-overlay" />
       {showTraits && <TraitAllocator onClose={() => setShowTraits(false)} />}
-      {showUpgrade && <UpgradeModal reason={upgradeReason} onClose={() => setShowUpgrade(false)} />}
       {showSpecies && <SpeciesSelector onClose={() => setShowSpecies(false)} />}
 
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-5 pt-12 pb-8">
@@ -96,9 +91,8 @@ export default function HomeScreen({
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-white/30 text-xs mr-1">{profile?.username}</span>
-            <button onClick={onEgg} className="relative w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
-              <Gift size={15} strokeWidth={1.5} />
-              {eggAvailable && <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-white rounded-full" />}
+            <button onClick={onPayment} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
+              <CreditCard size={15} strokeWidth={1.5} />
             </button>
             <button onClick={onFriends} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
               <Users size={15} strokeWidth={1.5} />
@@ -198,7 +192,7 @@ export default function HomeScreen({
         )}
         {!pro && (
           <button
-            onClick={() => { setUpgradeReason('AI daily check-ins are a Pro feature'); setShowUpgrade(true); }}
+            onClick={onPayment}
             className="mt-6 w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors fade-up"
             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', animationDelay: '0.3s' }}
           >

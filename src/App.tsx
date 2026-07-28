@@ -6,10 +6,10 @@ import AuthScreen from './components/AuthScreen';
 import OnboardingFlow from './components/OnboardingFlow';
 import HomeScreen from './components/HomeScreen';
 import FriendsScreen from './components/FriendsScreen';
-import DailyEgg from './components/DailyEgg';
+import PaymentScreen from './components/PaymentScreen';
 import CategoryHub from './components/CategoryHub';
 
-type Screen = 'home' | 'friends' | 'egg' | { category: GoalCategory };
+type Screen = 'home' | 'friends' | 'payment' | { category: GoalCategory };
 
 export default function App() {
   const init = useAuthStore(s => s.init);
@@ -38,14 +38,14 @@ export default function App() {
   if (!user) return <AuthScreen />;
   if (!pet) return <OnboardingFlow />;
   if (screen === 'friends') return <FriendsScreen onBack={() => setScreen('home')} />;
-  if (screen === 'egg') return <DailyEgg onClose={() => setScreen('home')} />;
+  if (screen === 'payment') return <PaymentScreen onBack={() => setScreen('home')} />;
   if (typeof screen === 'object' && 'category' in screen) {
     return <CategoryHub category={screen.category} onClose={() => setScreen('home')} />;
   }
   return (
     <HomeScreen
       onFriends={() => setScreen('friends')}
-      onEgg={() => setScreen('egg')}
+      onPayment={() => setScreen('payment')}
       onCategory={(c) => setScreen({ category: c })}
     />
   );

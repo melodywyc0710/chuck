@@ -204,31 +204,33 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
 
         {/* Preset selector */}
         {timerState === 'idle' && (
-          <div className="flex gap-2 mb-6 w-full">
+          <div className="radio-tile-group mb-6 w-full justify-center" style={{ '--tile-color': color } as React.CSSProperties}>
             {PRESETS.map(p => (
-              <button
-                key={p.mins}
-                onClick={() => pickPreset(p.mins)}
-                className="flex-1 py-2 rounded-2xl text-xs font-medium transition-all"
-                style={{
-                  background: selectedMins === p.mins ? color + '33' : 'rgba(255,255,255,0.06)',
-                  color: selectedMins === p.mins ? color : 'rgba(255,255,255,0.4)',
-                  boxShadow: selectedMins === p.mins ? `0 0 0 1px ${color}55` : 'none',
-                }}
-              >
-                {p.label}
-              </button>
+              <label key={p.mins}>
+                <input
+                  type="radio"
+                  name="preset"
+                  className="radio-tile-input"
+                  checked={selectedMins === p.mins && !showCustom}
+                  onChange={() => { pickPreset(p.mins); setShowCustom(false); }}
+                />
+                <div className="radio-tile">
+                  <span className="radio-tile-label">{p.label}</span>
+                </div>
+              </label>
             ))}
-            <button
-              onClick={() => setShowCustom(v => !v)}
-              className="flex-1 py-2 rounded-2xl text-xs font-medium transition-all"
-              style={{
-                background: showCustom ? color + '22' : 'rgba(255,255,255,0.06)',
-                color: 'rgba(255,255,255,0.4)',
-              }}
-            >
-              Custom
-            </button>
+            <label>
+              <input
+                type="radio"
+                name="preset"
+                className="radio-tile-input"
+                checked={showCustom}
+                onChange={() => setShowCustom(true)}
+              />
+              <div className="radio-tile">
+                <span className="radio-tile-label">Custom</span>
+              </div>
+            </label>
           </div>
         )}
 

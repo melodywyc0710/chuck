@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { X, ChevronDown, ChevronUp, Plus, Target, Trash2, Search } from 'lucide-react';
+import { getLocalTimeZone, today as getToday, type DateValue } from '@internationalized/date';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { searchFoods, type FoodItem } from '../lib/foodDatabase';
+import { DatePicker } from './DatePicker';
 
 type Metric = 'calories' | 'steps' | 'weight';
 type AggMode = 'sum' | 'latest'; // how to aggregate multiple entries per day
@@ -154,6 +156,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
+  const [logDate, setLogDate] = useState<DateValue>(getToday(getLocalTimeZone()));
   // Food search (calories only)
   const [foodQuery, setFoodQuery] = useState('');
   const [foodResults, setFoodResults] = useState<FoodItem[]>([]);
@@ -194,6 +197,8 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
     setSaving(true);
     setDbError(null);
 
+    const dateKey = `${logDate.year}-${String(logDate.month).padStart(2, '0')}-${String(logDate.day).padStart(2, '0')}`;
+
     // Optimistic update — show immediately in UI
     const tempEntry: LogEntry = {
       id: `temp-${Date.now()}`,
@@ -201,7 +206,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
       metric,
       value: num,
       note: inputNote.trim() || null,
-      date_key: today,
+      date_key: dateKey,
       logged_at: new Date().toISOString(),
     };
     setLogs(prev => [...prev, tempEntry]);
@@ -216,7 +221,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
     // Persist to DB
     const { data, error } = await supabase
       .from('fitness_logs')
-      .insert({ user_id: userId, metric, value: num, note: tempEntry.note, date_key: today })
+      .insert({ user_id: userId, metric, value: num, note: tempEntry.note, date_key: dateKey })
       .select()
       .single();
     if (error) {
@@ -383,6 +388,16 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
                   )}
                 </div>
               )}
+
+              {/* Date picker for logging past dates */}
+              <div className="flex items-center gap-2">
+                <span className="text-white/35 text-xs">Date</span>
+                <DatePicker
+                  value={logDate}
+                  onChange={v => v && setLogDate(v)}
+                  maxValue={getToday(getLocalTimeZone())}
+                />
+              </div>
 
               {/* Manual value input */}
               <div className="flex gap-2">

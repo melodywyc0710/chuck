@@ -47,6 +47,7 @@ function PromiseRow({ promise, onComplete }: { promise: Promise_; onComplete: ()
   }
 
   const cfg = CATEGORY_CONFIG[promise.category as GoalCategory] ?? CATEGORY_CONFIG.fitness;
+  const id = `promise-${promise.id}`;
 
   return (
     <div className="relative">
@@ -55,23 +56,70 @@ function PromiseRow({ promise, onComplete }: { promise: Promise_; onComplete: ()
           ⬆️ Level up!
         </div>
       )}
-      <button
-        onClick={complete}
-        className="w-full liquid-glass rounded-2xl px-4 py-3.5 flex items-center gap-3 transition-all active:scale-[0.98]"
-        style={{ opacity: done ? 0.5 : 1 }}
-      >
-        <div
-          className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all"
-          style={{ borderColor: done ? cfg.color : 'rgba(255,255,255,0.2)', background: done ? cfg.color : 'transparent' }}
-        >
-          {done && <span className="text-white text-[10px] font-bold">✓</span>}
-        </div>
-        <div className="flex-1 text-left">
-          <p className={`text-white text-sm font-medium ${done ? 'line-through opacity-60' : ''}`}>{promise.title}</p>
-          {done && <p className="text-white/30 text-xs">completed today</p>}
-          {!done && <p className="text-white/30 text-xs">tap to complete</p>}
-        </div>
-      </button>
+      <div className="liquid-glass rounded-2xl px-4 py-3.5" style={{ opacity: done ? 0.6 : 1 }}>
+        <input
+          type="checkbox"
+          id={id}
+          checked={done}
+          onChange={complete}
+          className="hidden"
+        />
+        <label htmlFor={id} className="flex items-center gap-3 cursor-pointer select-none" style={{ WebkitUserSelect: 'none' }}>
+          {/* Checkbox box */}
+          <div className="relative shrink-0" style={{ width: 22, height: 22 }}>
+            {/* Border/background */}
+            <div
+              className="absolute inset-0 rounded-md border-2 transition-all duration-300"
+              style={{
+                borderColor: done ? cfg.color : 'rgba(255,255,255,0.25)',
+                background: done ? cfg.color : 'transparent',
+                boxShadow: done ? `0 4px 12px ${cfg.color}55, 0 0 0 2px ${cfg.color}33` : undefined,
+              }}
+            />
+            {/* Checkmark */}
+            <svg
+              viewBox="0 0 14 14"
+              className="absolute inset-0 m-auto w-3.5 h-3.5 transition-all duration-500"
+              style={{
+                opacity: done ? 1 : 0,
+                transform: done ? 'scale(1) rotate(0deg)' : 'scale(0.3) rotate(20deg)',
+                filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))',
+              }}
+            >
+              <path d="M2 7l4 4 6-6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </svg>
+            {/* Ripple */}
+            {done && (
+              <div
+                className="absolute rounded-full pointer-events-none"
+                style={{
+                  top: '50%', left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  background: cfg.color + '66',
+                  animation: 'promise-ripple 0.6s ease-out forwards',
+                }}
+              />
+            )}
+          </div>
+          {/* Text */}
+          <div className="flex-1">
+            <p
+              className="text-white text-sm font-medium transition-all duration-300"
+              style={{ color: done ? 'rgba(255,255,255,0.4)' : 'white', textDecoration: done ? 'line-through' : 'none' }}
+            >
+              {promise.title}
+            </p>
+            <p className="text-white/30 text-xs mt-0.5">{done ? 'completed today' : 'tap to complete'}</p>
+          </div>
+        </label>
+      </div>
+      <style>{`
+        @keyframes promise-ripple {
+          0%   { width: 0; height: 0; opacity: 0.6; }
+          70%  { width: 50px; height: 50px; opacity: 0.3; }
+          100% { width: 60px; height: 60px; opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }

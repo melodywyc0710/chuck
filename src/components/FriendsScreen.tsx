@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { UserPlus, Check, X, Eye, ChevronLeft } from 'lucide-react';
+import { UserPlus, Check, X, Eye, ChevronLeft, Laugh, Smile, Meh, Frown, Egg } from 'lucide-react';
+import type React from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
 import type { Friendship, Pet, Profile } from '../lib/supabase';
@@ -8,8 +9,8 @@ function petColor(hue: number) {
   return `hsl(${hue}, 50%, 65%)`;
 }
 
-const MOOD_EMOJI: Record<string, string> = {
-  excited: '🤩', happy: '😊', neutral: '😐', sad: '😢',
+const MOOD_ICON: Record<string, React.ElementType> = {
+  excited: Laugh, happy: Smile, neutral: Meh, sad: Frown,
 };
 
 function mood(h: number) {
@@ -323,6 +324,7 @@ function FriendCard({ entry }: { entry: FriendEntry }) {
   const { profile, pet } = entry;
   const color = pet ? petColor(pet.color_seed) : '#888';
   const petMood = pet ? mood(pet.happiness) : 'neutral';
+  const PetMoodIcon = MOOD_ICON[petMood];
 
   return (
     <div className="liquid-glass rounded-[28px] p-4 flex items-center gap-4">
@@ -333,7 +335,10 @@ function FriendCard({ entry }: { entry: FriendEntry }) {
           className="relative w-14 h-14 rounded-full flex items-center justify-center text-2xl liquid-glass"
           style={{ background: color + '22' }}
         >
-          {pet ? MOOD_EMOJI[petMood] : '🥚'}
+          {pet
+            ? <PetMoodIcon size={22} strokeWidth={1.5} style={{ color }} />
+            : <Egg size={22} strokeWidth={1.5} className="text-white/30" />
+          }
         </div>
       </div>
 

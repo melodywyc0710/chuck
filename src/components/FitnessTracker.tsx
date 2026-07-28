@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, ChevronDown, ChevronUp, Plus, Target, Trash2, Search } from 'lucide-react';
+import { X, ChevronDown, ChevronUp, Plus, Target, Trash2, Search, Flame, Footprints, Scale } from 'lucide-react';
 import { getLocalTimeZone, today as getToday, type DateValue } from '@internationalized/date';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { searchFoods, type FoodItem } from '../lib/foodDatabase';
 import { DatePicker } from './DatePicker';
+
+import type React from 'react';
 
 type Metric = 'calories' | 'steps' | 'weight';
 type AggMode = 'sum' | 'latest'; // how to aggregate multiple entries per day
@@ -20,22 +22,22 @@ interface LogEntry {
 }
 
 const METRIC_CONFIG: Record<Metric, {
-  label: string; unit: string; emoji: string; color: string;
+  label: string; unit: string; Icon: React.ElementType; color: string;
   placeholder: string; defaultGoal: number; agg: AggMode;
   goalLabel: string; goalDesc: string;
 }> = {
   calories: {
-    label: 'Calories',  unit: 'kcal', emoji: '🔥', color: '#f87171',
+    label: 'Calories',  unit: 'kcal', Icon: Flame,      color: '#f87171',
     placeholder: 'e.g. 350', defaultGoal: 2000, agg: 'sum',
     goalLabel: 'Daily calorie goal', goalDesc: 'e.g. 2000 kcal/day',
   },
   steps: {
-    label: 'Steps',     unit: 'steps', emoji: '👟', color: '#34d399',
+    label: 'Steps',     unit: 'steps', Icon: Footprints, color: '#34d399',
     placeholder: 'e.g. 3000', defaultGoal: 10000, agg: 'sum',
     goalLabel: 'Daily step goal', goalDesc: 'e.g. 10000 steps/day',
   },
   weight: {
-    label: 'Weight',    unit: 'kg',    emoji: '⚖️', color: '#60a5fa',
+    label: 'Weight',    unit: 'kg',    Icon: Scale,      color: '#60a5fa',
     placeholder: 'e.g. 65.5', defaultGoal: 0, agg: 'latest',
     goalLabel: 'Target weight', goalDesc: 'e.g. 60 kg',
   },
@@ -267,7 +269,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
       {/* Header row */}
       <button className="w-full flex items-center justify-between" onClick={() => setExpanded(v => !v)}>
         <div className="flex items-center gap-3">
-          <span className="text-2xl">{cfg.emoji}</span>
+          <cfg.Icon size={20} strokeWidth={1.5} style={{ color: cfg.color }} />
           <div className="text-left">
             <p className="text-white/40 text-xs">{cfg.unit}</p>
             <p className="text-white font-medium text-base leading-tight" style={{ letterSpacing: '-0.02em' }}>{cfg.label}</p>

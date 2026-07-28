@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { LogOut, Flame, Users, Gift } from 'lucide-react';
+import type React from 'react';
+import { LogOut, Flame, Users, Gift, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles } from 'lucide-react';
 import TraitAllocator from './TraitAllocator';
 import UpgradeModal from './UpgradeModal';
 import SpeciesSelector from './SpeciesSelector';
@@ -13,16 +14,16 @@ function petColor(hue: number) {
   return `hsl(${hue}, 50%, 65%)`;
 }
 
-function moodFromHappiness(h: number) {
-  if (h >= 80) return '🤩';
-  if (h >= 60) return '😊';
-  if (h >= 40) return '😐';
-  return '😢';
+function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
+  if (h >= 80) return <Laugh size={size} />;
+  if (h >= 60) return <Smile size={size} />;
+  if (h >= 40) return <Meh size={size} />;
+  return <Frown size={size} />;
 }
 
-const CATEGORY_CONFIG: Record<GoalCategory, { label: string; emoji: string; color: string; tagline: string }> = {
-  fitness: { label: 'Fitness', emoji: '💪', color: '#f87171', tagline: 'No goals yet' },
-  focus:   { label: 'Focus',   emoji: '🧠', color: '#60a5fa', tagline: 'No goals yet' },
+const CATEGORY_CONFIG: Record<GoalCategory, { label: string; Icon: React.ElementType; color: string; tagline: string }> = {
+  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#f87171', tagline: 'No goals yet' },
+  focus:   { label: 'Focus',   Icon: Brain,    color: '#60a5fa', tagline: 'No goals yet' },
 };
 
 function ProgressRing({ pct, color, size = 56 }: { pct: number; color: string; size?: number }) {
@@ -107,21 +108,21 @@ export default function HomeScreen({
         {/* Nav */}
         <div className="flex items-center justify-between mb-8 fade-up" style={{ animationDelay: '0.05s' }}>
           <div className="flex items-center gap-1.5 text-white/50 text-xs">
-            <Flame size={12} className="text-orange-400" />
+            <Flame size={12} className="text-orange-400" strokeWidth={1.5} />
             <span className="text-white/70 font-medium">{pet.streak}</span>
             <span>day streak</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-white/30 text-xs mr-1">{profile?.username}</span>
             <button onClick={onEgg} className="relative w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
-              <Gift size={15} />
+              <Gift size={15} strokeWidth={1.5} />
               {eggAvailable && <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-yellow-400 rounded-full" />}
             </button>
             <button onClick={onFriends} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
-              <Users size={15} />
+              <Users size={15} strokeWidth={1.5} />
             </button>
             <button onClick={signOut} className="w-8 h-8 flex items-center justify-center rounded-full text-white/25 hover:text-white/60 transition-colors">
-              <LogOut size={15} />
+              <LogOut size={15} strokeWidth={1.5} />
             </button>
           </div>
         </div>
@@ -132,7 +133,7 @@ export default function HomeScreen({
             <div className="absolute inset-0 rounded-full blur-2xl opacity-30 scale-150" style={{ backgroundColor: color }} />
             <div className="relative w-16 h-16 rounded-full flex items-center justify-center text-3xl" style={{ background: color + '18', border: `1px solid ${color}33` }}>
               {petEmoji}
-              <span className="absolute -bottom-0.5 -right-0.5 text-xs">{moodFromHappiness(pet.happiness)}</span>
+              <span className="absolute -bottom-0.5 -right-0.5 text-white/60"><MoodIcon h={pet.happiness} size={12} /></span>
             </div>
           </button>
           <div className="flex-1 min-w-0">
@@ -185,7 +186,10 @@ export default function HomeScreen({
                     {catPromises.length === 0 ? cfg.tagline : `${doneToday} of ${catPromises.length} done`}
                   </p>
                 </div>
-                {allDone && <span className="text-lg">✓</span>}
+                {allDone
+                  ? <cfg.Icon size={16} style={{ color: cfg.color }} strokeWidth={1.5} />
+                  : <cfg.Icon size={16} className="text-white/20" strokeWidth={1.5} />
+                }
               </button>
             );
           })}
@@ -203,7 +207,7 @@ export default function HomeScreen({
             className="mt-6 w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors fade-up"
             style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', animationDelay: '0.3s' }}
           >
-            <span className="text-lg">{petEmoji}</span>
+            <Sparkles size={14} className="text-white/25 shrink-0" strokeWidth={1.5} />
             <p className="text-white/25 text-xs flex-1 text-left">Upgrade to Pro for daily AI check-ins</p>
             <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0" style={{ background: '#e8702a18', color: '#e8702a88' }}>Pro</span>
           </button>

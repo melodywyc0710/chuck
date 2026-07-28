@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { X, Plus } from 'lucide-react';
+import type React from 'react';
+import { X, Plus, Dumbbell, Brain } from 'lucide-react';
 import Toggle from './Toggle';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
@@ -13,9 +14,9 @@ interface Props {
   onClose: () => void;
 }
 
-const CATEGORY_CONFIG: Record<GoalCategory, { label: string; emoji: string; color: string; tagline: string }> = {
-  fitness: { label: 'Fitness',  emoji: '💪', color: '#f87171', tagline: 'Move your body, track your progress' },
-  focus:   { label: 'Focus',    emoji: '🧠', color: '#60a5fa', tagline: 'Build your mind, own your time' },
+const CATEGORY_CONFIG: Record<GoalCategory, { label: string; Icon: React.ElementType; color: string; tagline: string }> = {
+  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#f87171', tagline: 'Move your body, track your progress' },
+  focus:   { label: 'Focus',   Icon: Brain,    color: '#60a5fa', tagline: 'Build your mind, own your time' },
 };
 
 function todayKey() { return new Date().toISOString().slice(0, 10); }
@@ -202,7 +203,7 @@ export default function CategoryHub({ category, onClose }: Props) {
         {/* Nav */}
         <div className="flex items-center justify-between w-full mb-8 fade-up" style={{ animationDelay: '0.05s' }}>
           <div className="flex items-center gap-2">
-            <span>{cfg.emoji}</span>
+            <cfg.Icon size={16} strokeWidth={1.5} style={{ color: cfg.color }} />
             <h1 className="font-playfair italic text-white text-xl" style={{ letterSpacing: '-0.03em' }}>{cfg.label}</h1>
             {promises.length > 0 && (
               <span className="text-white/30 text-sm">{doneCount}/{promises.length}</span>

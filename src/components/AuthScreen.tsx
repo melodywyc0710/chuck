@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Timer, ArrowRight, ChevronRight } from 'lucide-react';
+import { Timer, ArrowRight, ChevronRight, User, Mail, Lock } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 function SlideToConfirm({ onConfirm, label }: { onConfirm: () => void; label: string }) {
@@ -149,32 +149,21 @@ export default function AuthScreen() {
         </div>
 
         {/* Inputs */}
-        <div className="w-full max-w-xs space-y-2.5 mb-6 fade-up" style={{ animationDelay: '0.4s' }}>
+        <div className="w-full max-w-xs space-y-3 mb-6 fade-up" style={{ animationDelay: '0.4s' }}>
           {mode === 'signup' && (
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              className="app-input"
-            />
+            <div className="auth-input-wrap">
+              <User size={16} className="auth-input-icon" />
+              <input type="text" placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} className="auth-input" />
+            </div>
           )}
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all liquid-glass focus:bg-white/10"
-            style={{ background: 'rgba(255,255,255,0.07)' }}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full px-4 py-3.5 rounded-2xl text-white placeholder-white/30 text-sm outline-none transition-all liquid-glass focus:bg-white/10"
-            style={{ background: 'rgba(255,255,255,0.07)' }}
-          />
+          <div className="auth-input-wrap">
+            <Mail size={16} className="auth-input-icon" />
+            <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} className="auth-input" />
+          </div>
+          <div className="auth-input-wrap">
+            <Lock size={16} className="auth-input-icon" />
+            <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} className="auth-input" />
+          </div>
           {error && <p className="text-red-400/80 text-xs text-center pt-1">{error}</p>}
         </div>
 

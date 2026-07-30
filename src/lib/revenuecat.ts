@@ -11,7 +11,8 @@ export async function initRevenueCat(userId: string): Promise<void> {
 export async function getOfferings(): Promise<Offering | null> {
   if (!_purchases) return null;
   const offerings = await _purchases.getOfferings();
-  return offerings.current;
+  console.log('[RC] offerings:', JSON.stringify(offerings, null, 2));
+  return offerings.current ?? offerings.all?.['default'] ?? Object.values(offerings.all ?? {})[0] ?? null;
 }
 
 export async function purchasePackage(rcPackage: import('@revenuecat/purchases-js').Package): Promise<boolean> {

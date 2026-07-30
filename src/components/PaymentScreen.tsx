@@ -1,31 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, Check } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
-import { supabase } from '../lib/supabase';
+import { initRevenueCat, getOfferings, purchasePackage, getCustomerInfo, getActiveTier } from '../lib/revenuecat';
+import type { Package } from '@revenuecat/purchases-js';
 import type { SubscriptionTier } from '../lib/species';
 
 interface Props {
   onBack: () => void;
 }
 
-const PLANS = [
-  {
-    tier: 'free' as SubscriptionTier,
-    name: 'Free',
-    price: '$0',
-    period: '',
-    features: [
-      'Up to 5 goals total',
-      '30-day history',
-      '1 species (Melmel)',
-      'Friends & witness',
-    ],
-  },
-  {
-    tier: 'plus' as SubscriptionTier,
+const PLAN_META: Record<string, {
+  tier: SubscriptionTier;
+  name: string;
+  price: string;
+  features: string[];
+}> = {
+  iam_plus: {
+    tier: 'plus',
     name: 'Plus',
-    price: '$4.99',
-    period: '/mo',
+    price: '$1.99/mo',
     features: [
       'Unlimited goals',
       'Full history — forever',
@@ -33,11 +26,10 @@ const PLANS = [
       'Exclusive seasonal costumes',
     ],
   },
-  {
-    tier: 'pro' as SubscriptionTier,
+  iam_pro: {
+    tier: 'pro',
     name: 'Pro',
-    price: '$9.99',
-    period: '/mo',
+    price: '$4.99/mo',
     features: [
       'Everything in Plus',
       'AI daily check-in from your pet',
@@ -46,6 +38,13 @@ const PLANS = [
       'Unlock all species',
     ],
   },
+};
+
+const FREE_FEATURES = [
+  'Up to 5 goals total',
+  '30-day history',
+  '1 species (Melmel)',
+  'Friends & witness',
 ];
 
 export default function PaymentScreen({ onBack }: Props) {
@@ -53,34 +52,65 @@ export default function PaymentScreen({ onBack }: Props) {
   const user = useAuthStore(s => s.user);
   const setProfile = useAuthStore(s => s.setProfileLocal);
 
-  const currentTier = profile?.subscription_tier ?? 'free';
-  const [selected, setSelected] = useState<SubscriptionTier>(
-    currentTier === 'free' ? 'plus' : currentTier
+  const currentTier = (profile?.subscription_tier ?? 'free') as SubscriptionTier;
+  const [selected, setSelected] = useState<'free' | 'iam_plus' | 'iam_pro'>(
+    currentTier === 'pro' ? 'iam_pro' : currentTier === 'plus' ? 'iam_plus' : 'iam_plus'
   );
+  const [packages, setPackages] = useState<{ plus: Package | null; pro: Package | null }>({ plus: null, pro: null });
   const [loading, setLoading] = useState(false);
+  const [rcReady, setRcReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    if (!user) return;
+    initRevenueCat(user.id).then(async () => {
+      setRcReady(true);
+      // load both offerings
+      const [plusOffering, proOffering] = await Promise.all([
+        getOfferings(),
+        getOfferings(),
+      ]);
+      // RevenueCat's current offering — we'll pick packages by identifier
+      const plus = plusOffering?.availablePackages.find(p =>
+        p.webBillingProduct?.identifier?.includes('plus') ||
+        p.identifier?.toLowerCase().includes('plus')
+      ) ?? plusOffering?.availablePackages[0] ?? null;
+      const pro = proOffering?.availablePackages.find(p =>
+        p.webBillingProduct?.identifier?.includes('pro') ||
+        p.identifier?.toLowerCase().includes('pro')
+      ) ?? null;
+      setPackages({ plus, pro });
+    }).catch(() => setRcReady(false));
+  }, [user]);
+
   async function subscribe() {
-    if (!user || selected === currentTier) return;
+    if (!user || selected === 'free') return;
+    const pkg = selected === 'iam_plus' ? packages.plus : packages.pro;
+    if (!pkg) { setError('Package not available — please try again.'); return; }
     setLoading(true);
-    // TODO: replace with Stripe/RevenueCat payment flow
-    const { data } = await supabase
-      .from('profiles')
-      .update({ subscription_tier: selected })
-      .eq('id', user.id)
-      .select()
-      .single();
-    if (data) {
-      setProfile(data);
-      setSuccess(true);
-      setTimeout(() => { setSuccess(false); onBack(); }, 1500);
+    setError(null);
+    try {
+      const ok = await purchasePackage(pkg);
+      if (ok) {
+        // sync entitlement back to our profile
+        const info = await getCustomerInfo();
+        const newTier = getActiveTier(info);
+        setProfile({ ...profile!, subscription_tier: newTier });
+        setSuccess(true);
+        setTimeout(() => { setSuccess(false); onBack(); }, 1500);
+      }
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Purchase failed';
+      if (!msg.includes('cancel')) setError(msg);
     }
     setLoading(false);
   }
 
-  const plan = PLANS.find(p => p.tier === selected)!;
-  const isCurrentPlan = selected === currentTier;
-  const isDowngrade = PLANS.findIndex(p => p.tier === selected) < PLANS.findIndex(p => p.tier === currentTier);
+  const tierOrder: SubscriptionTier[] = ['free', 'plus', 'pro'];
+  const selectedTier = selected === 'free' ? 'free' : PLAN_META[selected].tier;
+  const isCurrentPlan = selectedTier === currentTier;
+  const isDowngrade = tierOrder.indexOf(selectedTier) < tierOrder.indexOf(currentTier);
 
   return (
     <>
@@ -102,48 +132,64 @@ export default function PaymentScreen({ onBack }: Props) {
           </div>
           {currentTier !== 'free' && (
             <div className="ml-auto">
-              <span
-                className="text-xs font-semibold px-3 py-1 rounded-full"
-                style={{
-                  background: currentTier === 'pro' ? '#FF4D4D22' : '#3D8EFF22',
-                  color: currentTier === 'pro' ? '#FF4D4D' : '#3D8EFF',
-                }}
-              >
+              <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: '#C9181822', color: '#C91818' }}>
                 {currentTier === 'pro' ? 'Pro' : 'Plus'} active
               </span>
             </div>
           )}
         </div>
 
-        {/* Plan selector */}
+        {/* Free plan */}
         <div className="space-y-3 fade-up" style={{ animationDelay: '0.1s' }}>
-          {PLANS.map(p => {
-            const active = selected === p.tier;
-            const isCurrent = p.tier === currentTier;
+          <button
+            onClick={() => setSelected('free')}
+            className="w-full text-left rounded-[24px] p-5 transition-all"
+            style={{
+              background: selected === 'free' ? '#141414' : '#0a0a0a',
+              border: selected === 'free' ? '1.5px solid #C91818' : '1.5px solid #1e1e1e',
+            }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-white font-semibold text-base" style={{ letterSpacing: '-0.02em' }}>Free</span>
+                {currentTier === 'free' && <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50">current</span>}
+              </div>
+              <span className="text-white font-semibold text-lg" style={{ letterSpacing: '-0.03em' }}>$0</span>
+            </div>
+            <div className="space-y-1.5">
+              {FREE_FEATURES.map(f => (
+                <div key={f} className="flex items-center gap-2">
+                  <Check size={11} strokeWidth={2.5} className={selected === 'free' ? 'text-white/70' : 'text-white/20'} />
+                  <span className={`text-xs ${selected === 'free' ? 'text-white/60' : 'text-white/25'}`}>{f}</span>
+                </div>
+              ))}
+            </div>
+          </button>
+
+          {/* Paid plans */}
+          {(['iam_plus', 'iam_pro'] as const).map(key => {
+            const meta = PLAN_META[key];
+            const active = selected === key;
+            const isCurrent = meta.tier === currentTier;
             return (
               <button
-                key={p.tier}
-                onClick={() => setSelected(p.tier)}
+                key={key}
+                onClick={() => setSelected(key)}
                 className="w-full text-left rounded-[24px] p-5 transition-all"
                 style={{
                   background: active ? '#141414' : '#0a0a0a',
-                  border: active ? '1.5px solid #FF4D4D' : '1.5px solid #1e1e1e',
+                  border: active ? '1.5px solid #C91818' : '1.5px solid #1e1e1e',
                 }}
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-white font-semibold text-base" style={{ letterSpacing: '-0.02em' }}>{p.name}</span>
-                    {isCurrent && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50">current</span>
-                    )}
+                    <span className="text-white font-semibold text-base" style={{ letterSpacing: '-0.02em' }}>{meta.name}</span>
+                    {isCurrent && <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-white/50">current</span>}
                   </div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-white font-semibold text-lg" style={{ letterSpacing: '-0.03em' }}>{p.price}</span>
-                    {p.period && <span className="text-white/30 text-xs">{p.period}</span>}
-                  </div>
+                  <span className="text-white font-semibold" style={{ letterSpacing: '-0.03em', fontSize: 15 }}>{meta.price}</span>
                 </div>
                 <div className="space-y-1.5">
-                  {p.features.map(f => (
+                  {meta.features.map(f => (
                     <div key={f} className="flex items-center gap-2">
                       <Check size={11} strokeWidth={2.5} className={active ? 'text-white/70' : 'text-white/20'} />
                       <span className={`text-xs ${active ? 'text-white/60' : 'text-white/25'}`}>{f}</span>
@@ -155,11 +201,13 @@ export default function PaymentScreen({ onBack }: Props) {
           })}
         </div>
 
+        {/* Error */}
+        {error && <p className="mt-4 text-red-400/80 text-xs text-center">{error}</p>}
+
         {/* CTA */}
         <div className="mt-8 fade-up" style={{ animationDelay: '0.25s' }}>
           {selected === 'free' ? (
             <button
-              onClick={isCurrentPlan ? undefined : subscribe}
               disabled={isCurrentPlan || loading}
               className="w-full py-4 rounded-2xl text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-40"
               style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.4)' }}
@@ -169,19 +217,21 @@ export default function PaymentScreen({ onBack }: Props) {
           ) : (
             <button
               onClick={subscribe}
-              disabled={isCurrentPlan || loading || success}
+              disabled={isCurrentPlan || loading || success || !rcReady}
               className="w-full py-4 rounded-2xl text-white text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-50"
-              style={{ background: '#FF4D4D' }}
+              style={{ background: '#C91818' }}
             >
               {success
                 ? '✓ Plan updated'
                 : loading
                 ? 'Processing…'
+                : !rcReady
+                ? 'Loading…'
                 : isCurrentPlan
-                ? `${plan.name} is your current plan`
+                ? `${PLAN_META[selected].name} is your current plan`
                 : isDowngrade
-                ? `Switch to ${plan.name}`
-                : `Upgrade to ${plan.name} — ${plan.price}/mo`}
+                ? `Switch to ${PLAN_META[selected].name}`
+                : `Upgrade to ${PLAN_META[selected].name} — ${PLAN_META[selected].price}`}
             </button>
           )}
           <p className="text-white/20 text-[10px] text-center mt-3">Cancel anytime · No commitment</p>

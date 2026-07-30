@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './index.css';
 import { useAuthStore } from './store/authStore';
 import type { GoalCategory } from './lib/supabase';
+import { initRevenueCat } from './lib/revenuecat';
 import AuthScreen from './components/AuthScreen';
 import OnboardingFlow from './components/OnboardingFlow';
 import HomeScreen from './components/HomeScreen';
@@ -19,6 +20,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>('home');
 
   useEffect(() => { init(); }, []);
+  useEffect(() => { if (user) initRevenueCat(user.id); }, [user?.id]);
 
   if (loading) {
     return (

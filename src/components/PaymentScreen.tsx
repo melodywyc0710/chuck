@@ -66,18 +66,16 @@ export default function PaymentScreen({ onBack }: Props) {
     if (!user) return;
     initRevenueCat(user.id).then(async () => {
       setRcReady(true);
-      // load both offerings
-      const [plusOffering, proOffering] = await Promise.all([
-        getOfferings(),
-        getOfferings(),
-      ]);
-      // RevenueCat's current offering — we'll pick packages by identifier
-      const plus = plusOffering?.availablePackages.find((p: Package) =>
-        p.webBillingProduct?.identifier?.includes('plus') ||
+      const offering = await getOfferings();
+      const pkgs = offering?.availablePackages ?? [];
+      const plus = pkgs.find((p: Package) =>
+        p.identifier === '$rc_monthly' ||
+        p.webBillingProduct?.identifier?.toLowerCase().includes('plus') ||
         p.identifier?.toLowerCase().includes('plus')
-      ) ?? plusOffering?.availablePackages[0] ?? null;
-      const pro = proOffering?.availablePackages.find((p: Package) =>
-        p.webBillingProduct?.identifier?.includes('pro') ||
+      ) ?? pkgs[0] ?? null;
+      const pro = pkgs.find((p: Package) =>
+        p.identifier === 'iam_pro' ||
+        p.webBillingProduct?.identifier?.toLowerCase().includes('pro') ||
         p.identifier?.toLowerCase().includes('pro')
       ) ?? null;
       setPackages({ plus, pro });

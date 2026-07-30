@@ -77,15 +77,23 @@ export interface Pet {
 export type TraitKey = 'trait_strength' | 'trait_intelligence' | 'trait_agility' | 'trait_speed';
 export type GoalCategory = 'fitness' | 'focus';
 
+export type Recurrence = 'none' | 'daily' | 'weekdays' | 'weekends' | 'weekly' | 'monthly' | `interval:${number}`;
+
 export interface Promise_ {
   id: string;
   user_id: string;
   title: string;
+  notes: string | null;
   category: GoalCategory;
   frequency: 'daily' | 'weekly';
   verify_method: 'timer' | 'photo' | 'location' | 'friend';
   timer_duration_mins: number | null;
   active: boolean;
+  priority: number;        // 1=urgent 2=high 3=medium 4=none
+  due_date: string | null; // YYYY-MM-DD, null = recurring / someday
+  recurrence: Recurrence;
+  pinned: boolean;
+  sort_order: number;
   created_at: string;
 }
 

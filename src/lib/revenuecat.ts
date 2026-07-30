@@ -1,4 +1,4 @@
-import { Purchases, type PurchasesOffering } from '@revenuecat/purchases-js';
+import { Purchases, type Offering } from '@revenuecat/purchases-js';
 
 const RC_API_KEY = import.meta.env.VITE_REVENUECAT_API_KEY ?? 'test_QobIQdvwgRHLYcIfwVtLsGzctsj';
 
@@ -8,7 +8,7 @@ export async function initRevenueCat(userId: string): Promise<void> {
   _purchases = Purchases.configure(RC_API_KEY, userId);
 }
 
-export async function getOfferings(): Promise<PurchasesOffering | null> {
+export async function getOfferings(): Promise<Offering | null> {
   if (!_purchases) return null;
   const offerings = await _purchases.getOfferings();
   return offerings.current;

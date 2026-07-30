@@ -72,11 +72,11 @@ export default function PaymentScreen({ onBack }: Props) {
         getOfferings(),
       ]);
       // RevenueCat's current offering — we'll pick packages by identifier
-      const plus = plusOffering?.availablePackages.find(p =>
+      const plus = plusOffering?.availablePackages.find((p: Package) =>
         p.webBillingProduct?.identifier?.includes('plus') ||
         p.identifier?.toLowerCase().includes('plus')
       ) ?? plusOffering?.availablePackages[0] ?? null;
-      const pro = proOffering?.availablePackages.find(p =>
+      const pro = proOffering?.availablePackages.find((p: Package) =>
         p.webBillingProduct?.identifier?.includes('pro') ||
         p.identifier?.toLowerCase().includes('pro')
       ) ?? null;

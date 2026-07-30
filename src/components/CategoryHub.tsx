@@ -1,304 +1,686 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type React from 'react';
-import { X, Plus, Dumbbell, Brain } from 'lucide-react';
-import Toggle from './Toggle';
+import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
-import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
+import type { Promise_, Completion, GoalCategory, Recurrence } from '../lib/supabase';
 import { recordCompletion } from '../lib/petEngine';
 import MetricPanels from './MetricPanels';
 import DeepWorkTimer from './DeepWorkTimer';
 
-interface Props {
-  category: GoalCategory;
-  onClose: () => void;
-}
+// ─── Config ──────────────────────────────────────────────────────────────────
 
-const CATEGORY_CONFIG: Record<GoalCategory, { label: string; Icon: React.ElementType; color: string; tagline: string }> = {
-  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#FF4D4D', tagline: 'Move your body, track your progress' },
-  focus:   { label: 'Focus',   Icon: Brain,    color: '#3D8EFF', tagline: 'Build your mind, own your time' },
+interface Props { category: GoalCategory; onClose: () => void; }
+
+const CAT: Record<GoalCategory, { label: string; Icon: React.ElementType; color: string }> = {
+  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#FF4D4D' },
+  focus:   { label: 'Focus',   Icon: Brain,    color: '#3D8EFF' },
 };
+
+const PRIORITY_COLOR = ['', '#C91818', '#E8690A', '#3D8EFF', 'rgba(255,255,255,0.2)'];
+// Priority labels for tooltip/aria use
+
+const RECURRENCE_OPTIONS: { value: Recurrence; label: string }[] = [
+  { value: 'none',     label: 'Once' },
+  { value: 'daily',    label: 'Daily' },
+  { value: 'weekdays', label: 'Weekdays' },
+  { value: 'weekends', label: 'Weekends' },
+  { value: 'weekly',   label: 'Weekly' },
+  { value: 'monthly',  label: 'Monthly' },
+];
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function todayKey() { return new Date().toISOString().slice(0, 10); }
 
-function PromiseRow({ promise, onComplete }: { promise: Promise_; onComplete: () => void }) {
-  const today = todayKey();
-  const [done, setDone] = useState(false);
-  const [levelUp, setLevelUp] = useState(false);
-  const user = useAuthStore(s => s.user);
-  const pet = useAuthStore(s => s.pet);
-  const setPet = useAuthStore(s => s.setPetLocal);
+function formatDate(d: string) {
+  const date = new Date(d + 'T00:00:00');
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const diff = Math.round((date.getTime() - today.getTime()) / 86400000);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  if (diff === -1) return 'Yesterday';
+  if (diff < -1) return `${Math.abs(diff)}d overdue`;
+  if (diff < 7) return date.toLocaleDateString('en-US', { weekday: 'short' });
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
 
-  useEffect(() => {
-    if (!user) return;
-    supabase.from('completions').select('id').eq('promise_id', promise.id).eq('date_key', today).single()
-      .then(({ data }) => { if (data) setDone(true); });
-  }, [promise.id]);
-
-  async function complete() {
-    if (done || !user || !pet) return;
-    const prevLevel = pet.level;
-    await supabase.from('completions').insert({ user_id: user.id, promise_id: promise.id, date_key: today, proof_type: 'self' });
-    const updated = await recordCompletion(pet, user.id);
-    if (updated) {
-      setPet(updated);
-      if (updated.level > prevLevel) { setLevelUp(true); setTimeout(() => setLevelUp(false), 2500); }
+function appliesToday(task: Promise_, today: string, lastCompletedDate: string | null): boolean {
+  if (task.recurrence === 'none') return task.due_date === today;
+  const d = new Date(today + 'T00:00:00');
+  const dow = d.getDay(); // 0=Sun,1=Mon,...,6=Sat
+  const dom = d.getDate();
+  switch (task.recurrence) {
+    case 'daily':    return true;
+    case 'weekdays': return dow >= 1 && dow <= 5;
+    case 'weekends': return dow === 0 || dow === 6;
+    case 'weekly': {
+      const created = new Date(task.created_at);
+      return created.getDay() === dow;
     }
-    setDone(true);
+    case 'monthly': {
+      const created = new Date(task.created_at);
+      return created.getDate() === dom;
+    }
+    default: {
+      // interval:N
+      const match = task.recurrence.match(/^interval:(\d+)$/);
+      if (!match) return false;
+      const n = parseInt(match[1]);
+      if (!lastCompletedDate) return true;
+      const last = new Date(lastCompletedDate + 'T00:00:00');
+      const now  = new Date(today + 'T00:00:00');
+      return Math.round((now.getTime() - last.getTime()) / 86400000) >= n;
+    }
+  }
+}
+
+function isOverdue(task: Promise_, today: string): boolean {
+  return task.recurrence === 'none' && !!task.due_date && task.due_date < today;
+}
+
+// ─── Task Row ─────────────────────────────────────────────────────────────────
+
+function TaskRow({
+  task, completedToday, onComplete, onDelete, onPin, onMoveUp, onMoveDown, reorderMode,
+}: {
+  task: Promise_;
+  completedToday: boolean;
+  onComplete: () => void;
+  onDelete: () => void;
+  onPin: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  reorderMode: boolean;
+}) {
+  const [ripple, setRipple] = useState(false);
+  const [longPressMenu, setLongPressMenu] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pColor = PRIORITY_COLOR[task.priority] ?? PRIORITY_COLOR[4];
+  const today = todayKey();
+  const overdue = isOverdue(task, today);
+
+  function handleTap() {
+    if (completedToday || longPressMenu) return;
+    setRipple(true);
+    setTimeout(() => setRipple(false), 700);
     onComplete();
   }
 
-  const cfg = CATEGORY_CONFIG[promise.category as GoalCategory] ?? CATEGORY_CONFIG.fitness;
-  const id = `promise-${promise.id}`;
+  function handlePressStart() {
+    timerRef.current = setTimeout(() => setLongPressMenu(true), 500);
+  }
+  function handlePressEnd() {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  }
 
   return (
     <div className="relative">
-      {levelUp && (
-        <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-50 bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-bounce whitespace-nowrap">
-          Level up!
+      {/* Long-press menu */}
+      {longPressMenu && (
+        <div className="absolute right-0 top-0 z-20 flex gap-1 p-1 rounded-2xl fade-up" style={{ background: '#1a1a1a', border: '1px solid #2a2a2a' }}>
+          <button onClick={() => { onPin(); setLongPressMenu(false); }} className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors">
+            <Pin size={11} /> {task.pinned ? 'Unpin' : 'Pin'}
+          </button>
+          <button onClick={() => { onDelete(); setLongPressMenu(false); }} className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-colors">
+            <X size={11} /> Delete
+          </button>
+          <button onClick={() => setLongPressMenu(false)} className="px-2 py-1.5 rounded-xl text-white/30 hover:text-white/60 text-xs transition-colors">✕</button>
         </div>
       )}
-      <div className="liquid-glass rounded-2xl px-4 py-3.5" style={{ opacity: done ? 0.6 : 1 }}>
-        <input
-          type="checkbox"
-          id={id}
-          checked={done}
-          onChange={complete}
-          className="hidden"
-        />
-        <label htmlFor={id} className="flex items-center gap-3 cursor-pointer select-none" style={{ WebkitUserSelect: 'none' }}>
-          {/* Checkbox box */}
-          <div className="relative shrink-0" style={{ width: 22, height: 22 }}>
-            {/* Border/background */}
-            <div
-              className="absolute inset-0 rounded-md border-2 transition-all duration-300"
-              style={{
-                borderColor: done ? cfg.color : 'rgba(255,255,255,0.25)',
-                background: done ? cfg.color : 'transparent',
-                boxShadow: done ? `0 4px 12px ${cfg.color}55, 0 0 0 2px ${cfg.color}33` : undefined,
-              }}
-            />
-            {/* Checkmark */}
-            <svg
-              viewBox="0 0 14 14"
-              className="absolute inset-0 m-auto w-3.5 h-3.5 transition-all duration-500"
-              style={{
-                opacity: done ? 1 : 0,
-                transform: done ? 'scale(1) rotate(0deg)' : 'scale(0.3) rotate(20deg)',
-                filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))',
-              }}
-            >
-              <path d="M2 7l4 4 6-6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+
+      <div
+        className="flex items-center gap-3 px-3 py-3 rounded-2xl transition-all"
+        style={{ background: completedToday ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)', opacity: completedToday ? 0.5 : 1 }}
+        onMouseDown={handlePressStart} onMouseUp={handlePressEnd}
+        onTouchStart={handlePressStart} onTouchEnd={handlePressEnd}
+      >
+        {/* Drag handle */}
+        {reorderMode && (
+          <div className="flex flex-col gap-0.5 shrink-0 cursor-grab active:cursor-grabbing">
+            <GripVertical size={14} className="text-white/20" />
+          </div>
+        )}
+
+        {/* Checkbox circle */}
+        <button
+          onClick={handleTap}
+          className="relative shrink-0 w-5 h-5 rounded-full transition-all duration-300 flex items-center justify-center"
+          style={{
+            border: `1.5px solid ${completedToday ? pColor : pColor}`,
+            background: completedToday ? pColor : 'transparent',
+            boxShadow: completedToday ? `0 0 8px ${pColor}66` : 'none',
+          }}
+        >
+          {completedToday && (
+            <svg viewBox="0 0 10 10" className="w-2.5 h-2.5">
+              <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
             </svg>
-            {/* Ripple */}
-            {done && (
-              <div
-                className="absolute rounded-full pointer-events-none"
-                style={{
-                  top: '50%', left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  background: cfg.color + '66',
-                  animation: 'promise-ripple 0.6s ease-out forwards',
-                }}
-              />
+          )}
+          {ripple && (
+            <div className="absolute rounded-full pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: pColor + '55', animation: 'task-ripple 0.6s ease-out forwards' }} />
+          )}
+        </button>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm leading-snug transition-all duration-300 truncate"
+            style={{ color: completedToday ? 'rgba(255,255,255,0.3)' : overdue ? '#ff6b6b' : 'white', textDecoration: completedToday ? 'line-through' : 'none' }}>
+            {task.title}
+          </p>
+          <div className="flex items-center gap-2 mt-0.5">
+            {task.recurrence !== 'none' && (
+              <span className="flex items-center gap-0.5 text-[10px] text-white/25">
+                <RotateCcw size={8} /> {RECURRENCE_OPTIONS.find(r => r.value === task.recurrence)?.label}
+              </span>
+            )}
+            {task.due_date && task.recurrence === 'none' && (
+              <span className="flex items-center gap-0.5 text-[10px]" style={{ color: overdue ? '#ff6b6b' : 'rgba(255,255,255,0.25)' }}>
+                <Calendar size={8} /> {formatDate(task.due_date)}
+              </span>
             )}
           </div>
-          {/* Text */}
-          <div className="flex-1">
-            <p
-              className="text-white text-sm font-medium transition-all duration-300"
-              style={{ color: done ? 'rgba(255,255,255,0.4)' : 'white', textDecoration: done ? 'line-through' : 'none' }}
-            >
-              {promise.title}
-            </p>
-            <p className="text-white/30 text-xs mt-0.5">{done ? 'completed today' : 'tap to complete'}</p>
-          </div>
-        </label>
+        </div>
+
+        {/* Right badges */}
+        <div className="flex items-center gap-1.5 shrink-0">
+          {task.pinned && <Pin size={10} className="text-white/25" style={{ transform: 'rotate(45deg)' }} />}
+          {task.priority < 4 && (
+            <div className="w-1.5 h-1.5 rounded-full" style={{ background: pColor }} />
+          )}
+          {/* Reorder up/down in reorder mode */}
+          {reorderMode && (
+            <div className="flex flex-col">
+              <button onClick={onMoveUp} className="text-white/30 hover:text-white/70 p-0.5"><ChevronUp size={12} /></button>
+              <button onClick={onMoveDown} className="text-white/30 hover:text-white/70 p-0.5"><ChevronDown size={12} /></button>
+            </div>
+          )}
+        </div>
       </div>
+
       <style>{`
-        @keyframes promise-ripple {
-          0%   { width: 0; height: 0; opacity: 0.6; }
-          70%  { width: 50px; height: 50px; opacity: 0.3; }
-          100% { width: 60px; height: 60px; opacity: 0; }
+        @keyframes task-ripple {
+          0%   { width: 0; height: 0; opacity: 0.7; }
+          100% { width: 44px; height: 44px; opacity: 0; }
         }
       `}</style>
     </div>
   );
 }
 
+// ─── Add Task Sheet ────────────────────────────────────────────────────────────
+
+function AddTaskSheet({ category, color, onAdd, onClose }: {
+  category: GoalCategory;
+  color: string;
+  onAdd: (task: Partial<Promise_>) => void;
+  onClose: () => void;
+}) {
+  const [title, setTitle]           = useState('');
+  const [priority, setPriority]     = useState(4);
+  const [recurrence, setRecurrence] = useState<Recurrence>('daily');
+  const [dueDate, setDueDate]       = useState('');
+  const [pinned, setPinned]         = useState(false);
+  const [notes, setNotes]           = useState('');
+  const [showNotes, setShowNotes]   = useState(false);
+  const [customInterval, setCustomInterval] = useState('2');
+  const [showCustom, setShowCustom] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const today = todayKey();
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowKey = tomorrow.toISOString().slice(0, 10);
+
+  useEffect(() => { setTimeout(() => inputRef.current?.focus(), 100); }, []);
+
+  function submit() {
+    if (!title.trim()) return;
+    const rec: Recurrence = showCustom ? `interval:${parseInt(customInterval) || 2}` : recurrence;
+    onAdd({
+      title: title.trim(),
+      notes: notes.trim() || null,
+      category,
+      priority,
+      recurrence: rec,
+      due_date: rec === 'none' && dueDate ? dueDate : null,
+      pinned,
+      frequency: 'daily',
+      verify_method: 'timer',
+      active: true,
+    });
+    onClose();
+  }
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Sheet */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto rounded-t-[32px] px-5 pt-5 pb-8 fade-up" style={{ background: '#111111', border: '1px solid #1e1e1e', animationDelay: '0s' }}>
+
+        {/* Drag pill */}
+        <div className="w-8 h-1 rounded-full bg-white/15 mx-auto mb-5" />
+
+        {/* Title */}
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Task name…"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && submit()}
+          className="w-full text-white text-base font-medium bg-transparent outline-none placeholder-white/20 mb-4"
+        />
+
+        {/* Priority */}
+        <div className="flex items-center gap-2 mb-4">
+          <Flag size={12} className="text-white/30 shrink-0" />
+          <div className="flex gap-1.5">
+            {[1, 2, 3, 4].map(p => (
+              <button
+                key={p}
+                onClick={() => setPriority(p)}
+                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all"
+                style={{
+                  background: priority === p ? PRIORITY_COLOR[p] + '33' : 'rgba(255,255,255,0.06)',
+                  color: priority === p ? PRIORITY_COLOR[p] : 'rgba(255,255,255,0.35)',
+                  border: priority === p ? `1px solid ${PRIORITY_COLOR[p]}55` : '1px solid transparent',
+                }}
+              >
+                P{p}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Recurrence */}
+        <div className="flex items-center gap-2 mb-4">
+          <RotateCcw size={12} className="text-white/30 shrink-0" />
+          <div className="flex gap-1.5 flex-wrap">
+            {RECURRENCE_OPTIONS.map(r => (
+              <button
+                key={r.value}
+                onClick={() => { setRecurrence(r.value); setShowCustom(false); }}
+                className="px-2.5 py-1 rounded-lg text-[11px] transition-all"
+                style={{
+                  background: recurrence === r.value && !showCustom ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)',
+                  color: recurrence === r.value && !showCustom ? 'white' : 'rgba(255,255,255,0.35)',
+                }}
+              >
+                {r.label}
+              </button>
+            ))}
+            <button
+              onClick={() => { setShowCustom(true); setRecurrence('none'); }}
+              className="px-2.5 py-1 rounded-lg text-[11px] transition-all"
+              style={{
+                background: showCustom ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)',
+                color: showCustom ? 'white' : 'rgba(255,255,255,0.35)',
+              }}
+            >
+              Custom
+            </button>
+          </div>
+        </div>
+
+        {/* Custom interval */}
+        {showCustom && (
+          <div className="flex items-center gap-2 mb-4 pl-5">
+            <span className="text-white/40 text-xs">Every</span>
+            <input
+              type="number"
+              min="1"
+              value={customInterval}
+              onChange={e => setCustomInterval(e.target.value)}
+              className="w-14 text-center text-white text-sm font-medium rounded-xl px-2 py-1.5 outline-none"
+              style={{ background: 'rgba(255,255,255,0.08)' }}
+            />
+            <span className="text-white/40 text-xs">days</span>
+          </div>
+        )}
+
+        {/* Due date (one-off only) */}
+        {(recurrence === 'none' && !showCustom) && (
+          <div className="flex items-center gap-2 mb-4">
+            <Calendar size={12} className="text-white/30 shrink-0" />
+            <div className="flex gap-1.5">
+              {[{ label: 'Today', val: today }, { label: 'Tomorrow', val: tomorrowKey }].map(d => (
+                <button
+                  key={d.val}
+                  onClick={() => setDueDate(dueDate === d.val ? '' : d.val)}
+                  className="px-2.5 py-1 rounded-lg text-[11px] transition-all"
+                  style={{
+                    background: dueDate === d.val ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)',
+                    color: dueDate === d.val ? 'white' : 'rgba(255,255,255,0.35)',
+                  }}
+                >
+                  {d.label}
+                </button>
+              ))}
+              <input
+                type="date"
+                value={dueDate}
+                min={today}
+                onChange={e => setDueDate(e.target.value)}
+                className="px-2.5 py-1 rounded-lg text-[11px] bg-white/6 text-white/35 outline-none"
+                style={{ background: 'rgba(255,255,255,0.06)', colorScheme: 'dark' }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Notes */}
+        {showNotes ? (
+          <textarea
+            placeholder="Notes…"
+            value={notes}
+            onChange={e => setNotes(e.target.value)}
+            rows={2}
+            className="w-full text-white/60 text-xs bg-transparent outline-none placeholder-white/20 resize-none mb-4 pl-5"
+          />
+        ) : (
+          <button onClick={() => setShowNotes(true)} className="text-white/20 text-xs mb-4 pl-5 hover:text-white/40 transition-colors">+ Add note</button>
+        )}
+
+        {/* Footer row */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setPinned(v => !v)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all"
+            style={{
+              background: pinned ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.04)',
+              color: pinned ? 'white' : 'rgba(255,255,255,0.3)',
+            }}
+          >
+            <Pin size={11} style={{ transform: 'rotate(45deg)' }} />
+            {pinned ? 'Pinned' : 'Pin to top'}
+          </button>
+          <div className="flex gap-2">
+            <button onClick={onClose} className="px-4 py-2 rounded-xl text-sm text-white/30 hover:text-white/60 transition-colors">Cancel</button>
+            <button
+              onClick={submit}
+              disabled={!title.trim()}
+              className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-30"
+              style={{ background: color }}
+            >
+              Add
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── Section Header ───────────────────────────────────────────────────────────
+
+function SectionHeader({ label, count, collapsed, onToggle }: { label: string; count: number; collapsed: boolean; onToggle: () => void }) {
+  return (
+    <button onClick={onToggle} className="flex items-center gap-2 w-full mb-2 mt-5 first:mt-0 group">
+      <span className="text-white/30 text-[10px] font-semibold uppercase tracking-widest">{label}</span>
+      <span className="text-white/20 text-[10px]">{count}</span>
+      <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.05)' }} />
+      {collapsed ? <ChevronDown size={11} className="text-white/20 group-hover:text-white/40 transition-colors" /> : <ChevronUp size={11} className="text-white/20 group-hover:text-white/40 transition-colors" />}
+    </button>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
 export default function CategoryHub({ category, onClose }: Props) {
   const user = useAuthStore(s => s.user);
-  const pet = useAuthStore(s => s.pet);
+  const pet  = useAuthStore(s => s.pet);
+  const setPet = useAuthStore(s => s.setPetLocal);
   const profile = useAuthStore(s => s.profile);
-  const cfg = CATEGORY_CONFIG[category];
+  const cfg = CAT[category];
 
-  const [promises, setPromises] = useState<Promise_[]>([]);
-  const [showAdd, setShowAdd] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [showHistory, setShowHistory] = useState(false);
-  const [history, setHistory] = useState<Completion[]>([]);
-  const [, setCompletionTick] = useState(0);
+  const [tasks, setTasks]         = useState<Promise_[]>([]);
+  const [history, setHistory]     = useState<Completion[]>([]);
+  const [showAdd, setShowAdd]     = useState(false);
+  const [reorderMode, setReorderMode] = useState(false);
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({ completed: true });
 
   const plus = profile?.subscription_tier === 'plus' || profile?.subscription_tier === 'pro';
   const FREE_LIMIT = 5;
+  const today = todayKey();
 
-  useEffect(() => { loadPromises(); loadHistory(); }, []);
+  useEffect(() => { load(); }, []);
 
-  async function loadPromises() {
+  async function load() {
     if (!pet) return;
-    const { data } = await supabase
-      .from('promises')
-      .select('*')
-      .eq('user_id', pet.user_id)
-      .eq('category', category)
-      .eq('active', true)
-      .order('created_at', { ascending: true });
-    if (data) setPromises(data);
+    const [{ data: t }, { data: h }] = await Promise.all([
+      supabase.from('promises').select('*').eq('user_id', pet.user_id).eq('category', category).eq('active', true).order('sort_order').order('created_at'),
+      supabase.from('completions').select('*').eq('user_id', pet.user_id).order('completed_at', { ascending: false }).limit(200),
+    ]);
+    if (t) setTasks(t.map(x => ({
+      ...x,
+      priority:    x.priority    ?? 4,
+      recurrence:  x.recurrence  ?? 'daily',
+      pinned:      x.pinned      ?? false,
+      sort_order:  x.sort_order  ?? 0,
+      due_date:    x.due_date    ?? null,
+      notes:       x.notes       ?? null,
+    })));
+    if (h) setHistory(h);
   }
 
-  async function loadHistory() {
-    if (!pet) return;
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - (plus ? 365 : 30));
-    const { data } = await supabase
-      .from('completions')
-      .select('*')
-      .eq('user_id', pet.user_id)
-      .gte('date_key', cutoff.toISOString().slice(0, 10))
-      .order('completed_at', { ascending: false });
-    if (data) setHistory(data);
+  const completedTodayIds = new Set(history.filter(h => h.date_key === today).map(h => h.promise_id));
+
+  function lastCompletedDate(taskId: string): string | null {
+    const rec = history.find(h => h.promise_id === taskId);
+    return rec?.date_key ?? null;
   }
 
-  async function addPromise() {
-    if (!newTitle.trim() || !pet) return;
-    // Count all active promises across all categories for free limit
-    const { count } = await supabase.from('promises').select('*', { count: 'exact', head: true }).eq('user_id', pet.user_id).eq('active', true);
-    if (!plus && (count ?? 0) >= FREE_LIMIT) {
-      alert(`Free plan allows up to ${FREE_LIMIT} goals total. Upgrade to Plus for unlimited.`);
-      return;
+  async function complete(task: Promise_) {
+    if (!user || !pet || completedTodayIds.has(task.id)) return;
+    const prevLevel = pet.level;
+    await supabase.from('completions').insert({ user_id: user.id, promise_id: task.id, date_key: today, proof_type: 'self' });
+    const updated = await recordCompletion(pet, user.id);
+    if (updated) {
+      setPet(updated);
+      if (updated.level > prevLevel) {
+        // brief level-up flash could go here
+      }
     }
-    const { data } = await supabase.from('promises').insert({
-      user_id: pet.user_id, title: newTitle.trim(), category, frequency: 'daily', verify_method: 'timer',
-    }).select().single();
-    if (data) { setPromises(p => [...p, data]); setNewTitle(''); setShowAdd(false); }
+    setHistory(prev => [{ id: crypto.randomUUID(), user_id: user.id, promise_id: task.id, date_key: today, proof_type: 'self', proof_url: null, verified_by: null, completed_at: new Date().toISOString() }, ...prev]);
   }
 
-  async function deletePromise(id: string) {
+  async function addTask(partial: Partial<Promise_>) {
+    if (!pet) return;
+    const { count } = await supabase.from('promises').select('*', { count: 'exact', head: true }).eq('user_id', pet.user_id).eq('active', true);
+    if (!plus && (count ?? 0) >= FREE_LIMIT) { alert(`Free plan: up to ${FREE_LIMIT} tasks. Upgrade for unlimited.`); return; }
+    const maxOrder = tasks.length > 0 ? Math.max(...tasks.map(t => t.sort_order ?? 0)) : 0;
+    const { data } = await supabase.from('promises').insert({ user_id: pet.user_id, ...partial, sort_order: maxOrder + 1, timer_duration_mins: null }).select().single();
+    if (data) setTasks(prev => [...prev, { ...data, priority: data.priority ?? 4, recurrence: data.recurrence ?? 'daily', pinned: data.pinned ?? false, sort_order: data.sort_order ?? 0, due_date: data.due_date ?? null, notes: data.notes ?? null }]);
+  }
+
+  async function deleteTask(id: string) {
     await supabase.from('promises').update({ active: false }).eq('id', id);
-    setPromises(p => p.filter(x => x.id !== id));
+    setTasks(prev => prev.filter(t => t.id !== id));
+  }
+
+  async function togglePin(task: Promise_) {
+    const pinned = !task.pinned;
+    await supabase.from('promises').update({ pinned }).eq('id', task.id);
+    setTasks(prev => prev.map(t => t.id === task.id ? { ...t, pinned } : t));
+  }
+
+  async function moveTask(id: string, dir: 1 | -1) {
+    const idx = tasks.findIndex(t => t.id === id);
+    if (idx < 0) return;
+    const swapIdx = idx + dir;
+    if (swapIdx < 0 || swapIdx >= tasks.length) return;
+    const next = [...tasks];
+    [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
+    const updates = next.map((t, i) => ({ ...t, sort_order: i }));
+    setTasks(updates);
+    await Promise.all([
+      supabase.from('promises').update({ sort_order: idx }).eq('id', next[swapIdx].id),
+      supabase.from('promises').update({ sort_order: swapIdx }).eq('id', next[idx].id),
+    ]);
+  }
+
+  function toggleCollapse(key: string) {
+    setCollapsed(prev => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  // ── Bucket tasks into sections ─────────────────────────────────────────────
+  const pinned    = tasks.filter(t => t.pinned);
+  const notPinned = tasks.filter(t => !t.pinned);
+
+  const overdue   = notPinned.filter(t => isOverdue(t, today) && !completedTodayIds.has(t.id));
+  const todayList = notPinned.filter(t => !isOverdue(t, today) && appliesToday(t, today, lastCompletedDate(t.id)) && !completedTodayIds.has(t.id));
+  const upcoming  = notPinned.filter(t => t.recurrence === 'none' && t.due_date && t.due_date > today);
+  const someday   = notPinned.filter(t => t.recurrence === 'none' && !t.due_date && !isOverdue(t, today));
+  const completed = tasks.filter(t => completedTodayIds.has(t.id));
+
+  function renderTask(task: Promise_) {
+    return (
+      <TaskRow
+        key={task.id}
+        task={task}
+        completedToday={completedTodayIds.has(task.id)}
+        onComplete={() => complete(task)}
+        onDelete={() => deleteTask(task.id)}
+        onPin={() => togglePin(task)}
+        onMoveUp={() => moveTask(task.id, -1)}
+        onMoveDown={() => moveTask(task.id, 1)}
+        reorderMode={reorderMode}
+      />
+    );
   }
 
   if (!user || !pet) return null;
-
-  const today = todayKey();
-  const todayCompletedIds = new Set(history.filter(h => h.date_key === today).map(h => h.promise_id));
-  const doneCount = promises.filter(p => todayCompletedIds.has(p.id)).length;
 
   return (
     <>
       <div className="scene-bg" />
       <div className="scene-overlay" />
-      <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-5 pt-12 pb-10">
+
+      {showAdd && (
+        <AddTaskSheet category={category} color={cfg.color} onAdd={addTask} onClose={() => setShowAdd(false)} />
+      )}
+
+      <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-5 pt-12 pb-28">
 
         {/* Nav */}
-        <div className="flex items-center justify-between w-full mb-8 fade-up" style={{ animationDelay: '0.05s' }}>
+        <div className="flex items-center justify-between mb-8 fade-up" style={{ animationDelay: '0.05s' }}>
           <div className="flex items-center gap-2">
             <cfg.Icon size={16} strokeWidth={1.5} style={{ color: cfg.color }} />
             <h1 className="text-white text-xl font-semibold" style={{ letterSpacing: '-0.03em' }}>{cfg.label}</h1>
-            {promises.length > 0 && (
-              <span className="text-white/30 text-sm">{doneCount}/{promises.length}</span>
-            )}
+            <span className="text-white/25 text-sm">{completed.length}/{tasks.length}</span>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
-            <X size={15} />
-          </button>
-        </div>
-
-        {/* Goals */}
-        <div className="fade-up" style={{ animationDelay: '0.1s' }}>
-          {showAdd && (
-            <div className="flex gap-2 mb-3">
-              <input
-                type="text"
-                placeholder={`e.g. ${category === 'fitness' ? 'run 30 min' : 'read 20 pages'}`}
-                value={newTitle}
-                onChange={e => setNewTitle(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addPromise()}
-                autoFocus
-                className="app-input flex-1"
-              />
-              <button onClick={addPromise} className="px-4 py-2 rounded-xl text-sm font-medium text-white shrink-0" style={{ background: cfg.color }}>
-                Add
-              </button>
-            </div>
-          )}
-
-          {promises.length === 0 && !showAdd ? (
-            <button onClick={() => setShowAdd(true)} className="w-full py-10 flex flex-col items-center gap-2 rounded-2xl transition-colors" style={{ background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.1)' }}>
-              <Plus size={20} className="text-white/20" />
-              <p className="text-white/25 text-sm">Add your first {cfg.label.toLowerCase()} goal</p>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setReorderMode(v => !v)}
+              className="w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+              style={{ background: reorderMode ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)', color: reorderMode ? 'white' : 'rgba(255,255,255,0.4)' }}
+            >
+              <GripVertical size={14} />
             </button>
-          ) : (
-            <div className="space-y-2">
-              {promises.map(p => (
-                <div key={p.id} className="group relative">
-                  <PromiseRow promise={p} onComplete={() => { setCompletionTick(t => t + 1); loadHistory(); }} />
-                  <button
-                    onClick={() => deletePromise(p.id)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 text-white/20 hover:text-red-400/60 transition-all text-xs px-1"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-              <button onClick={() => setShowAdd(v => !v)} className="flex items-center gap-2 px-3 py-2 text-white/25 text-xs hover:text-white/50 transition-colors">
-                <Plus size={12} /> Add goal
-              </button>
-            </div>
-          )}
+            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
+              <X size={15} />
+            </button>
+          </div>
         </div>
 
-        {/* Divider */}
-        <div className="my-6 border-t border-white/5" />
+        {/* Empty state */}
+        {tasks.length === 0 && (
+          <button
+            onClick={() => setShowAdd(true)}
+            className="w-full py-14 flex flex-col items-center gap-3 rounded-3xl transition-colors mb-4"
+            style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.08)' }}
+          >
+            <Plus size={22} className="text-white/15" />
+            <p className="text-white/20 text-sm">Add your first task</p>
+          </button>
+        )}
 
-        {/* Fitness tracking */}
-        {category === 'fitness' && (
-          <div className="fade-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-white/30 text-xs uppercase tracking-widest mb-3">Tracking</p>
-            <MetricPanels userId={user.id} />
+        {/* Pinned */}
+        {pinned.length > 0 && (
+          <div className="fade-up" style={{ animationDelay: '0.08s' }}>
+            <SectionHeader label="Pinned" count={pinned.length} collapsed={!!collapsed.pinned} onToggle={() => toggleCollapse('pinned')} />
+            {!collapsed.pinned && <div className="space-y-1.5">{pinned.map(renderTask)}</div>}
           </div>
         )}
 
-        {/* Focus timer */}
-        {category === 'focus' && (
-          <div className="fade-up" style={{ animationDelay: '0.2s' }}>
-            <p className="text-white/30 text-xs uppercase tracking-widest mb-3">Deep Work</p>
-            <DeepWorkTimer userId={user.id} />
+        {/* Overdue */}
+        {overdue.length > 0 && (
+          <div className="fade-up" style={{ animationDelay: '0.1s' }}>
+            <SectionHeader label="Overdue" count={overdue.length} collapsed={!!collapsed.overdue} onToggle={() => toggleCollapse('overdue')} />
+            {!collapsed.overdue && <div className="space-y-1.5">{overdue.map(renderTask)}</div>}
           </div>
         )}
 
-        {/* History */}
-        {history.length > 0 && (
-          <div className="mt-6 fade-up" style={{ animationDelay: '0.4s' }}>
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-white/30 text-xs uppercase tracking-widest">History</p>
-              <Toggle checked={showHistory} onChange={setShowHistory} color={cfg.color} />
-            </div>
-            {showHistory && (
-              <div className="space-y-1">
-                {history.slice(0, 20).map(h => {
-                  const p = promises.find(x => x.id === h.promise_id);
-                  return (
-                    <div key={h.id} className="flex items-center justify-between px-3 py-2 rounded-lg text-xs">
-                      <span className="text-white/40">{p?.title ?? 'Goal'}</span>
-                      <span className="text-white/20">{h.date_key}</span>
-                    </div>
-                  );
-                })}
+        {/* Today */}
+        {(todayList.length > 0 || tasks.length > 0) && (
+          <div className="fade-up" style={{ animationDelay: '0.12s' }}>
+            <SectionHeader label="Today" count={todayList.length} collapsed={!!collapsed.today} onToggle={() => toggleCollapse('today')} />
+            {!collapsed.today && (
+              <div className="space-y-1.5">
+                {todayList.map(renderTask)}
+                {todayList.length === 0 && <p className="text-white/15 text-xs px-3 py-2">All done for today 🎉</p>}
               </div>
             )}
           </div>
         )}
+
+        {/* Upcoming */}
+        {upcoming.length > 0 && (
+          <div className="fade-up" style={{ animationDelay: '0.14s' }}>
+            <SectionHeader label="Upcoming" count={upcoming.length} collapsed={!!collapsed.upcoming} onToggle={() => toggleCollapse('upcoming')} />
+            {!collapsed.upcoming && <div className="space-y-1.5">{upcoming.map(renderTask)}</div>}
+          </div>
+        )}
+
+        {/* Someday */}
+        {someday.length > 0 && (
+          <div className="fade-up" style={{ animationDelay: '0.16s' }}>
+            <SectionHeader label="Someday" count={someday.length} collapsed={!!collapsed.someday} onToggle={() => toggleCollapse('someday')} />
+            {!collapsed.someday && <div className="space-y-1.5">{someday.map(renderTask)}</div>}
+          </div>
+        )}
+
+        {/* Completed today */}
+        {completed.length > 0 && (
+          <div className="fade-up" style={{ animationDelay: '0.18s' }}>
+            <SectionHeader label="Completed" count={completed.length} collapsed={!!collapsed.completed} onToggle={() => toggleCollapse('completed')} />
+            {!collapsed.completed && <div className="space-y-1.5">{completed.map(renderTask)}</div>}
+          </div>
+        )}
+
+        {/* Category-specific panels */}
+        {tasks.length > 0 && (
+          <>
+            <div className="my-6 border-t border-white/5" />
+            {category === 'fitness' && (
+              <div className="fade-up" style={{ animationDelay: '0.2s' }}>
+                <p className="text-white/30 text-[10px] uppercase tracking-widest mb-3">Tracking</p>
+                <MetricPanels userId={user.id} />
+              </div>
+            )}
+            {category === 'focus' && (
+              <div className="fade-up" style={{ animationDelay: '0.2s' }}>
+                <p className="text-white/30 text-[10px] uppercase tracking-widest mb-3">Deep Work</p>
+                <DeepWorkTimer userId={user.id} />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Floating add button */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-30 max-w-md w-full px-5 pointer-events-none">
+        <div className="flex justify-end pointer-events-auto">
+          <button
+            onClick={() => setShowAdd(true)}
+            className="flex items-center gap-2 px-5 py-3 rounded-full text-white text-sm font-semibold shadow-2xl transition-all active:scale-95"
+            style={{ background: cfg.color }}
+          >
+            <Plus size={16} strokeWidth={2.5} />
+            Add task
+          </button>
+        </div>
       </div>
     </>
   );

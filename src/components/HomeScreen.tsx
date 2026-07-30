@@ -3,15 +3,14 @@ import type React from 'react';
 import { LogOut, Flame, Users, CreditCard, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles, Star } from 'lucide-react';
 import TraitAllocator from './TraitAllocator';
 import SpeciesSelector from './SpeciesSelector';
+import AiCheckin from './AiCheckin';
+import { SPECIES_LIST } from '../lib/species';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
 import { applyDecayIfNeeded } from '../lib/petEngine';
 import { isPlus, isPro } from '../lib/species';
 
-function petColor(hue: number) {
-  return `hsl(${hue}, 50%, 65%)`;
-}
 
 function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
   if (h >= 80) return <Laugh size={size} />;
@@ -66,7 +65,6 @@ export default function HomeScreen({
 
   if (!pet) return null;
 
-  const color = petColor(pet.color_seed);
   const xpPct = pet.xp / pet.xp_to_next;
   const today = new Date().toISOString().slice(0, 10);
   const todayDoneIds = new Set(history.filter(h => h.date_key === today).map(h => h.promise_id));
@@ -123,13 +121,13 @@ export default function HomeScreen({
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pet.happiness}%`, background: 'rgba(255,255,255,0.65)' }} />
+                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pet.happiness}%`, backgroundColor: '#A8A8A8' }} />
                 </div>
                 <span className="text-white/25 text-[10px] tabular-nums w-10 text-right">{pet.happiness}/100</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${xpPct * 100}%`, background: 'rgba(255,255,255,0.35)' }} />
+                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${xpPct * 100}%`, backgroundColor: '#505050' }} />
                 </div>
                 <span className="text-white/25 text-[10px] tabular-nums w-10 text-right">Lv {pet.level}</span>
               </div>
@@ -183,10 +181,10 @@ export default function HomeScreen({
           })}
         </div>
 
-        {/* Pro AI check-in — subtle, at the bottom */}
+        {/* Pro AI check-in */}
         {pro && (
           <div className="mt-6 fade-up" style={{ animationDelay: '0.3s' }}>
-            {/* AiCheckin rendered inline if needed */}
+            <AiCheckin petEmoji={SPECIES_LIST.find(s => s.id === pet.species)?.emoji ?? '⭐'} color="#ffffff" />
           </div>
         )}
         {!pro && (

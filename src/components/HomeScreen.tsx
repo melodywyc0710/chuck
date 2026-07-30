@@ -106,31 +106,30 @@ export default function HomeScreen({
         {/* Pet — compact */}
         <div className="flex items-center gap-4 mb-8 fade-up" style={{ animationDelay: '0.1s' }}>
           <button onClick={() => setShowSpecies(true)} className="relative shrink-0">
-            <div className="absolute inset-0 rounded-full blur-2xl opacity-30 scale-150" style={{ backgroundColor: color }} />
-            <div className="relative w-16 h-16 rounded-full flex items-center justify-center text-3xl" style={{ background: color + '18', border: `1px solid ${color}33` }}>
-              <Star size={26} strokeWidth={1.5} color="white" />
-              <span className="absolute -bottom-0.5 -right-0.5 text-white/50"><MoodIcon h={pet.happiness} size={12} /></span>
+            <div className="relative w-16 h-16 rounded-full flex items-center justify-center" style={{ background: '#141414', border: '1px solid #1E1E1E' }}>
+              <Star size={26} strokeWidth={1.5} color="white" opacity={0.7} />
+              <span className="absolute -bottom-0.5 -right-0.5 text-white/30"><MoodIcon h={pet.happiness} size={12} /></span>
             </div>
           </button>
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2 mb-2">
               <h1 className="text-white text-xl font-semibold" style={{ letterSpacing: '-0.03em' }}>{pet.name}</h1>
               {pet.trait_points_available > 0 && (
-                <button onClick={() => setShowTraits(true)} className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0" style={{ background: '#FF4D4D22', color: '#FF4D4D' }}>
+                <button onClick={() => setShowTraits(true)} className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0" style={{ background: '#C91818', color: '#F2EEE8' }}>
                   {pet.trait_points_available} pts
                 </button>
               )}
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
-                <div className="flex-1 h-1 bg-white/8 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pet.happiness}%`, backgroundColor: color }} />
+                <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pet.happiness}%`, background: 'rgba(255,255,255,0.65)' }} />
                 </div>
                 <span className="text-white/25 text-[10px] tabular-nums w-10 text-right">{pet.happiness}/100</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="flex-1 h-1 bg-white/8 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${xpPct * 100}%`, background: '#3D8EFF' }} />
+                <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${xpPct * 100}%`, background: 'rgba(255,255,255,0.35)' }} />
                 </div>
                 <span className="text-white/25 text-[10px] tabular-nums w-10 text-right">Lv {pet.level}</span>
               </div>

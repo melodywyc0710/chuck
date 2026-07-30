@@ -38,7 +38,7 @@ export default function SpeciesSelector({ onClose }: Props) {
     onClose();
   }
 
-  if (showUpgrade) return <UpgradeModal reason="Unlock more species with Nagi Plus" onClose={() => setShowUpgrade(false)} />;
+  if (showUpgrade) return <UpgradeModal reason="Unlock more species with IAM Plus" onClose={() => setShowUpgrade(false)} />;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center px-4 pb-8" style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(10px)' }}>

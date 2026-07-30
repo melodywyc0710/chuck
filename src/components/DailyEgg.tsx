@@ -73,6 +73,15 @@ const EGG_IMAGES: Record<string, string> = {
   kiki:   '/eggs/egg-kiki.png',
 };
 
+// Hue-rotate filters to differentiate eggs that share the same source image
+const EGG_FILTER: Record<string, string> = {
+  melmel: 'none',
+  lolo:   'hue-rotate(30deg) saturate(1.2)',
+  didi:   'hue-rotate(120deg) saturate(1.3)',
+  chacha: 'hue-rotate(260deg) saturate(1.1)',
+  kiki:   'hue-rotate(200deg) saturate(1.4)',
+};
+
 export default function DailyEgg({ onClose }: Props) {
   const pet = useAuthStore(s => s.pet);
   const user = useAuthStore(s => s.user);
@@ -85,7 +94,7 @@ export default function DailyEgg({ onClose }: Props) {
 
   useEffect(() => {
     // Check localStorage for today's egg
-    const key = `nagi_egg_${user?.id}_${todayKey()}`;
+    const key = `iam_egg_${user?.id}_${todayKey()}`;
     if (localStorage.getItem(key)) setAlreadyOpened(true);
   }, []);
 
@@ -99,7 +108,7 @@ export default function DailyEgg({ onClose }: Props) {
     setReward(r);
     setPhase('reveal');
     // Mark as opened
-    const key = `nagi_egg_${user?.id}_${todayKey()}`;
+    const key = `iam_egg_${user?.id}_${todayKey()}`;
     localStorage.setItem(key, '1');
     setAlreadyOpened(true);
     // Apply reward
@@ -214,6 +223,7 @@ export default function DailyEgg({ onClose }: Props) {
                   src={EGG_IMAGES[pet?.species ?? '']}
                   alt="Daily egg"
                   className="relative w-48 h-48 object-contain select-none drop-shadow-2xl"
+                  style={{ filter: EGG_FILTER[pet?.species ?? ''] ?? 'none' }}
                 />
               ) : (
                 <Egg size={80} strokeWidth={1} className="text-white/60" />

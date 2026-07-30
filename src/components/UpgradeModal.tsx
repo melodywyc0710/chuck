@@ -12,7 +12,7 @@ interface Props {
 const PLANS = [
   {
     tier: 'plus' as SubscriptionTier,
-    name: 'Nagi Plus',
+    name: 'IAM Plus',
     price: '$4.99',
     period: '/mo',
     color: '#3D8EFF',
@@ -25,7 +25,7 @@ const PLANS = [
   },
   {
     tier: 'pro' as SubscriptionTier,
-    name: 'Nagi Pro',
+    name: 'IAM Pro',
     price: '$9.99',
     period: '/mo',
     color: '#FF4D4D',
@@ -68,7 +68,7 @@ export default function UpgradeModal({ reason, onClose }: Props) {
 
         <div className="flex items-start justify-between mb-2">
           <div>
-            <h2 className="text-white text-2xl font-semibold" style={{ letterSpacing: '-0.04em' }}>Upgrade Nagi</h2>
+            <h2 className="text-white text-2xl font-semibold" style={{ letterSpacing: '-0.04em' }}>Upgrade to IAM</h2>
             {reason && <p className="text-white/40 text-xs mt-1">{reason}</p>}
           </div>
           <button onClick={onClose} className="liquid-glass w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors mt-1">

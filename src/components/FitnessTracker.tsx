@@ -167,7 +167,7 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
   const today = todayKey();
 
   // Goal stored in localStorage per metric
-  const goalKey = `nagi_fitness_goal_${metric}`;
+  const goalKey = `iam_fitness_goal_${metric}`;
   const [goal, setGoal] = useState<number>(() => {
     const stored = localStorage.getItem(goalKey);
     return stored ? parseFloat(stored) : cfg.defaultGoal;

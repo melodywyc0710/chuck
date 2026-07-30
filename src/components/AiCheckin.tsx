@@ -38,7 +38,7 @@ interface Props {
 export default function AiCheckin({ petEmoji, color }: Props) {
   const pet = useAuthStore(s => s.pet);
   const [message, setMessage] = useState<string | null>(null);
-  const cacheKey = `nagi_checkin_${pet?.user_id}_${todayKey()}`;
+  const cacheKey = `iam_checkin_${pet?.user_id}_${todayKey()}`;
 
   useEffect(() => {
     if (!pet) return;

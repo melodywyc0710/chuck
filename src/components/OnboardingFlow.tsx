@@ -19,6 +19,14 @@ const EGG_IMAGES: Record<string, string> = {
   kiki:   '/eggs/egg-kiki.png',
 };
 
+const EGG_FILTER: Record<string, string> = {
+  melmel: 'none',
+  lolo:   'hue-rotate(30deg) saturate(1.2)',
+  didi:   'hue-rotate(120deg) saturate(1.3)',
+  chacha: 'hue-rotate(260deg) saturate(1.1)',
+  kiki:   'hue-rotate(200deg) saturate(1.4)',
+};
+
 const TIER_LABEL: Record<string, string> = {
   plus: 'Plus',
   pro: 'Pro',
@@ -113,7 +121,7 @@ export default function OnboardingFlow() {
           <div className="fade-up mb-8" style={{ animationDelay: '0.1s' }}>
             <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
               <Sparkles size={12} className="text-white/80" />
-              <span className="text-white/90 text-xs font-medium">Nagi</span>
+              <span className="text-white/90 text-xs font-medium">IAM</span>
             </div>
           </div>
 
@@ -146,6 +154,7 @@ export default function OnboardingFlow() {
                       src={EGG_IMAGES[s.id]}
                       alt={s.name}
                       className="w-full h-full object-contain drop-shadow-lg"
+                      style={{ filter: EGG_FILTER[s.id] ?? 'none' }}
                     />
                     {locked && (
                       <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
@@ -201,12 +210,12 @@ export default function OnboardingFlow() {
           <div className="fade-up mb-8" style={{ animationDelay: '0.1s' }}>
             <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
               <Sparkles size={12} className="text-white/80" />
-              <span className="text-white/90 text-xs font-medium">Nagi</span>
+              <span className="text-white/90 text-xs font-medium">IAM</span>
             </div>
           </div>
 
           <div className="flex justify-center mb-6 fade-up" style={{ animationDelay: '0.2s' }}>
-            <img src={EGG_IMAGES[selectedSpecies]} alt={speciesData.name} className="w-36 h-36 object-contain drop-shadow-2xl" />
+            <img src={EGG_IMAGES[selectedSpecies]} alt={speciesData.name} className="w-36 h-36 object-contain drop-shadow-2xl" style={{ filter: EGG_FILTER[selectedSpecies] ?? 'none' }} />
           </div>
 
           <div className="mb-8 fade-up" style={{ animationDelay: '0.3s' }}>
@@ -261,7 +270,7 @@ export default function OnboardingFlow() {
           <div className="fade-up mb-8" style={{ animationDelay: '0.1s' }}>
             <div className="liquid-glass inline-flex items-center gap-2 px-3 py-2.5 rounded-full">
               <Sparkles size={12} className="text-white/80" />
-              <span className="text-white/90 text-xs font-medium">Nagi</span>
+              <span className="text-white/90 text-xs font-medium">IAM</span>
             </div>
           </div>
 
@@ -315,7 +324,7 @@ export default function OnboardingFlow() {
               src={EGG_IMAGES[selectedSpecies]}
               alt="hatching"
               className="w-44 h-44 object-contain drop-shadow-2xl"
-              style={{ animation: 'eggShake 0.25s ease-in-out infinite' }}
+              style={{ animation: 'eggShake 0.25s ease-in-out infinite', filter: EGG_FILTER[selectedSpecies] ?? 'none' }}
             />
             <div className="absolute inset-0 rounded-full blur-3xl scale-150 animate-pulse" style={{ background: 'rgba(220,200,80,0.2)' }} />
           </div>

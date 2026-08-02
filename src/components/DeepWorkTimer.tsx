@@ -82,11 +82,32 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
   const [showHistory, setShowHistory] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [sessionStartedAt, setSessionStartedAt] = useState<Date | null>(null);
+  const [tabSwitches, setTabSwitches] = useState(0);
+  const [showTabWarning, setShowTabWarning] = useState(false);
   const endTimeRef = useRef<number | null>(null);
   const pausedSecsRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerStateRef = useRef<TimerState>('idle');
+
+  // keep ref in sync so visibilitychange handler sees current state
+  useEffect(() => { timerStateRef.current = timerState; }, [timerState]);
 
   useEffect(() => { loadSessions(); }, []);
+
+  useEffect(() => {
+    function onVisibilityChange() {
+      if (document.hidden && timerStateRef.current === 'running') {
+        // auto-pause when tab hidden
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        pausedSecsRef.current = Math.round((endTimeRef.current! - Date.now()) / 1000);
+        setTimerState('paused');
+        setTabSwitches(n => n + 1);
+        setShowTabWarning(true);
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange);
+  }, []);
 
   async function loadSessions() {
     const cutoff = new Date();
@@ -121,7 +142,8 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
     setSecsLeft(secs);
 
     if (timerState === 'idle') {
-      // Create DB session
+      setTabSwitches(0);
+      setShowTabWarning(false);
       const now = new Date();
       setSessionStartedAt(now);
       supabase.from('focus_sessions').insert({
@@ -144,7 +166,7 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
         clearInterval(intervalRef.current!);
         setSecsLeft(0);
         setTimerState('done');
-        finishSession(true, selectedMins);
+        finishSession(true, selectedMins, tabSwitches);
       } else {
         setSecsLeft(remaining);
       }
@@ -176,17 +198,19 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
     pausedSecsRef.current = 0;
   }
 
-  async function finishSession(completed: boolean, actualMins: number) {
+  async function finishSession(completed: boolean, actualMins: number, switches?: number) {
     const endedAt = new Date().toISOString();
+    const cheated = (switches ?? tabSwitches) > 2;
     if (currentSessionId) {
       const { data } = await supabase
         .from('focus_sessions')
-        .update({ completed, actual_mins: actualMins, ended_at: endedAt })
+        .update({ completed: completed && !cheated, actual_mins: actualMins, ended_at: endedAt })
         .eq('id', currentSessionId)
         .select()
         .single();
       if (data) setSessions(prev => prev.map(s => s.id === data.id ? data : s));
     }
+    return cheated;
   }
 
   useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
@@ -250,6 +274,19 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
           </div>
         )}
 
+        {/* Tab switch warning */}
+        {showTabWarning && timerState !== 'idle' && (
+          <div className="w-full mb-4 px-4 py-3 rounded-2xl flex items-center justify-between fade-up" style={{ background: 'rgba(201,24,24,0.15)', border: '1px solid rgba(201,24,24,0.3)' }}>
+            <div>
+              <p className="text-red-400 text-xs font-medium">Timer paused — tab was hidden</p>
+              <p className="text-white/30 text-[10px] mt-0.5">
+                {tabSwitches} switch{tabSwitches !== 1 ? 'es' : ''} · {tabSwitches > 2 ? 'Session won\'t count ✗' : `${3 - tabSwitches} left before session is void`}
+              </p>
+            </div>
+            <button onClick={() => setShowTabWarning(false)} className="text-white/30 text-xs ml-3">✕</button>
+          </div>
+        )}
+
         {/* Circle timer */}
         <CircleTimer pct={pct} secs={secsLeft} color={color} />
 
@@ -258,7 +295,7 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
           {timerState === 'idle'     && `${formatDuration(selectedMins)} deep work session`}
           {timerState === 'running'  && 'Stay focused — you got this'}
           {timerState === 'paused'   && 'Paused — resume when ready'}
-          {timerState === 'done'     && `✓ ${formatDuration(selectedMins)} completed!`}
+          {timerState === 'done'     && (tabSwitches > 2 ? `✗ Session void — too many tab switches` : `✓ ${formatDuration(selectedMins)} completed!`)}
           {timerState === 'abandoned'&& 'Session ended early'}
         </p>
 

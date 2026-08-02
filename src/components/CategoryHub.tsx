@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type React from 'react';
-import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, GripVertical } from 'lucide-react';
+import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, GripVertical, Eye } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_, Completion, GoalCategory, Recurrence } from '../lib/supabase';
@@ -412,6 +412,83 @@ function AddTaskSheet({ category, color, onAdd, onClose }: {
   );
 }
 
+// ─── Witness Sheet ────────────────────────────────────────────────────────────
+
+interface Friend { id: string; username: string; }
+
+function WitnessSheet({ completionId, onClose }: { completionId: string; onClose: () => void }) {
+  const user = useAuthStore(s => s.user);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [sent, setSent] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { data: rows } = await supabase
+        .from('friendships')
+        .select('requester_id, addressee_id')
+        .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
+        .eq('status', 'accepted');
+      if (!rows) { setLoading(false); return; }
+      const ids = rows.map(r => r.requester_id === user.id ? r.addressee_id : r.requester_id);
+      if (ids.length === 0) { setLoading(false); return; }
+      const { data: profiles } = await supabase.from('profiles').select('id, username').in('id', ids);
+      setFriends(profiles ?? []);
+      setLoading(false);
+    })();
+  }, [user]);
+
+  async function sendRequest(witnessId: string) {
+    if (!user) return;
+    await supabase.from('witness_requests').insert({ completion_id: completionId, requester_id: user.id, witness_id: witnessId, status: 'pending' });
+    setSent(witnessId);
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={onClose}>
+      <div className="w-full max-w-md rounded-t-[32px] p-6 pb-10" style={{ background: '#141414' }} onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <Eye size={15} className="text-white/50" />
+            <h2 className="text-white font-semibold" style={{ letterSpacing: '-0.02em' }}>Ask a witness</h2>
+          </div>
+          <button onClick={onClose} className="text-white/30 hover:text-white/60"><X size={16} /></button>
+        </div>
+        {loading && <p className="text-white/30 text-sm text-center py-6">Loading friends…</p>}
+        {!loading && friends.length === 0 && (
+          <div className="text-center py-6">
+            <p className="text-white/30 text-sm">No friends yet.</p>
+            <p className="text-white/20 text-xs mt-1">Add friends first to use witness verification.</p>
+          </div>
+        )}
+        <div className="space-y-2">
+          {friends.map(f => (
+            <div key={f.id} className="flex items-center justify-between px-4 py-3 rounded-2xl" style={{ background: 'rgba(255,255,255,0.05)' }}>
+              <span className="text-white text-sm">{f.username}</span>
+              {sent === f.id ? (
+                <span className="text-xs text-white/40">Sent ✓</span>
+              ) : (
+                <button
+                  onClick={() => sendRequest(f.id)}
+                  disabled={!!sent}
+                  className="text-xs px-3 py-1.5 rounded-full font-medium transition-all disabled:opacity-40"
+                  style={{ background: '#3D8EFF22', color: '#3D8EFF' }}
+                >
+                  Ask
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+        {sent && (
+          <p className="text-white/30 text-xs text-center mt-4">Witness request sent — your friend will be notified.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Section Header ───────────────────────────────────────────────────────────
 
 function SectionHeader({ label, count, collapsed, onToggle }: { label: string; count: number; collapsed: boolean; onToggle: () => void }) {
@@ -439,6 +516,7 @@ export default function CategoryHub({ category, onClose }: Props) {
   const [showAdd, setShowAdd]     = useState(false);
   const [reorderMode, setReorderMode] = useState(false);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({ completed: true });
+  const [witnessCompletionId, setWitnessCompletionId] = useState<string | null>(null);
 
   const plus = profile?.subscription_tier === 'plus' || profile?.subscription_tier === 'pro';
   const FREE_LIMIT = 5;
@@ -474,15 +552,18 @@ export default function CategoryHub({ category, onClose }: Props) {
   async function complete(task: Promise_) {
     if (!user || !pet || completedTodayIds.has(task.id)) return;
     const prevLevel = pet.level;
-    await supabase.from('completions').insert({ user_id: user.id, promise_id: task.id, date_key: today, proof_type: 'self' });
+    const proofType = task.verify_method === 'friend' ? 'friend' : 'self';
+    const { data: comp } = await supabase.from('completions').insert({ user_id: user.id, promise_id: task.id, date_key: today, proof_type: proofType }).select().single();
     const updated = await recordCompletion(pet, user.id);
     if (updated) {
       setPet(updated);
-      if (updated.level > prevLevel) {
-        // brief level-up flash could go here
-      }
+      if (updated.level > prevLevel) { /* level-up flash */ }
     }
-    setHistory(prev => [{ id: crypto.randomUUID(), user_id: user.id, promise_id: task.id, date_key: today, proof_type: 'self', proof_url: null, verified_by: null, completed_at: new Date().toISOString() }, ...prev]);
+    const newComp = { id: comp?.id ?? crypto.randomUUID(), user_id: user.id, promise_id: task.id, date_key: today, proof_type: proofType, proof_url: null, verified_by: null, completed_at: new Date().toISOString() };
+    setHistory(prev => [newComp, ...prev]);
+    if (task.verify_method === 'friend' && comp?.id) {
+      setWitnessCompletionId(comp.id);
+    }
   }
 
   async function addTask(partial: Partial<Promise_>) {
@@ -556,6 +637,10 @@ export default function CategoryHub({ category, onClose }: Props) {
     <>
       <div className="scene-bg" />
       <div className="scene-overlay" />
+
+      {witnessCompletionId && (
+        <WitnessSheet completionId={witnessCompletionId} onClose={() => setWitnessCompletionId(null)} />
+      )}
 
       {showAdd && (
         <AddTaskSheet category={category} color={cfg.color} onAdd={addTask} onClose={() => setShowAdd(false)} />

@@ -2585,4 +2585,546 @@ export const homeworkSheets: Record<string, HomeworkSheet> = {
       },
     ],
   },
+
+  // ─────────────────────────────────────────────────────────────
+  // Y6 ENGLISH
+  // ─────────────────────────────────────────────────────────────
+
+  'y6-eng-01': {
+    sessionId: 'y6-eng-01',
+    title: 'Narrative: Point of View',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELT355',
+    sections: [
+      {
+        heading: 'Section 1 – Understanding Point of View',
+        instructions: 'Answer the following questions about narrative point of view.',
+        questions: [
+          { number: 1, text: 'Name the three main narrative points of view: __________, __________, __________', lines: 1 },
+          { number: 2, text: 'What pronouns does a first person narrator use? Give two examples from a story you know.', lines: 1 },
+          { number: 3, text: 'Explain the difference between third person LIMITED and third person OMNISCIENT narration.', lines: 2 },
+          { number: 4, text: 'What is an "unreliable narrator"? Give one reason why a character might be unreliable.', lines: 2 },
+          { number: 5, text: 'Identify the point of view: "She had no idea what waited at the end of the corridor. Above her, the ceiling groaned." Circle one: First person / Third limited / Third omniscient. Explain your choice.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Analysing the Effect of Point of View',
+        instructions: 'Read each extract and answer the questions.',
+        questions: [
+          { number: 6, text: 'EXTRACT A (first person): "I pressed my back against the rock face, heart hammering. I had no idea if the others had made it to the ridge."\n\nEXTRACT B (third omniscient): "She pressed against the rock, heart hammering. Above her, on the ridge, Tom had already spotted the coming storm — but there was no way to warn her."\n\nWhat information does Extract B reveal that Extract A cannot? Why does this create dramatic irony?', lines: 3 },
+          { number: 7, text: 'Which extract — A or B — creates stronger tension for the reader? Use evidence from the text to justify your answer.', lines: 3 },
+          { number: 8, text: 'Rewrite Extract A in third person omniscient. Add a detail about what another character is thinking or doing at the same moment.', lines: 3 },
+          { number: 9, text: 'A horror story, a coming-of-age story and an epic adventure each suit a different point of view. For each genre, name the most effective POV and explain why in one sentence.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write a scene from two different points of view, then reflect on the differences.',
+        questions: [
+          { number: 10, text: 'Write the same tense scene TWICE — once in first person (5–7 sentences) and once in third person omniscient (5–7 sentences). Scene: a student receives an unexpected result on an important test. After both versions, write 2–3 sentences reflecting on what changed between them and which you prefer for this scene.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-02': {
+    sessionId: 'y6-eng-02',
+    title: 'Persuasive: Constructing Arguments',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELY355',
+    sections: [
+      {
+        heading: 'Section 1 – Argument Structure Knowledge',
+        instructions: 'Answer the following questions about persuasive writing structure.',
+        questions: [
+          { number: 1, text: 'Write out what PEEL stands for: P = __________, E = __________, E = __________, L = __________', lines: 1 },
+          { number: 2, text: 'What is a "contention" in a persuasive essay? How is it different from the hook?', lines: 2 },
+          { number: 3, text: 'What is a "counter-argument"? Why does acknowledging one make your argument STRONGER, not weaker?', lines: 2 },
+          { number: 4, text: 'What is a "rebuttal"? Write the sentence frame used to structure one (e.g. "While some argue that..., evidence shows...").', lines: 2 },
+          { number: 5, text: 'What should a strong persuasive conclusion include? List three elements.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Analysing a Persuasive Paragraph',
+        instructions: 'Read the paragraph below and answer the questions.',
+        questions: [
+          { number: 6, text: 'PARAGRAPH: "Australia must invest in renewable energy immediately. According to the Clean Energy Council (2023), renewables already supply 35% of Australia\'s electricity — a figure that could reach 100% by 2035 with government commitment. Without action, climate-related disasters will cost taxpayers an estimated $39 billion annually by 2050. While critics argue the transition will cost jobs in fossil fuel industries, the International Renewable Energy Agency found that renewables employ 12 million people worldwide. Australia cannot afford to wait."\n\nLabel each sentence: (P), (E), (E), or (L).', lines: 2 },
+          { number: 7, text: 'Identify the counter-argument and rebuttal in the paragraph. Quote the relevant phrases.', lines: 2 },
+          { number: 8, text: 'Identify TWO types of evidence used in this paragraph. Quote the relevant phrase for each.', lines: 2 },
+          { number: 9, text: 'Rate this paragraph\'s persuasiveness out of 5. Justify your rating with specific reference to the paragraph\'s techniques.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write a complete PEEL paragraph on an Australian issue, including a counter-argument and rebuttal.',
+        questions: [
+          { number: 10, text: 'Choose an Australian issue you care about (e.g. school canteen food, screen time limits, koala conservation, renewable energy, ocean plastics). Write a full PEEL paragraph (4–6 sentences) and add a counter-argument + rebuttal. Label all parts: (P), (E), (E), (L), (Counter), (Rebuttal).', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-03': {
+    sessionId: 'y6-eng-03',
+    title: 'Vocabulary: Word Study and Etymology',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELA340',
+    sections: [
+      {
+        heading: 'Section 1 – Roots, Prefixes and Suffixes',
+        instructions: 'Use your knowledge of word parts to answer the following questions.',
+        questions: [
+          { number: 1, text: 'Write the meaning of each root: bio = __________, geo = __________, chron = __________, dict = __________', lines: 1 },
+          { number: 2, text: 'Break "transportation" into three parts and explain each:\nprefix ________ (meaning: ________), root ________ (meaning: ________), suffix ________ (meaning: ________). What does the whole word mean?', lines: 2 },
+          { number: 3, text: 'Use the suffix "-tion" to turn these verbs into nouns: construct → __________, communicate → __________, predict → __________', lines: 1 },
+          { number: 4, text: 'The prefix "mis-" means "wrongly". Write a definition for each word: misinterpret → __________, misconduct → __________', lines: 1 },
+          { number: 5, text: 'Using the root "graph" (write/record), explain the meaning of: autograph → __________, biography → __________, paragraph → __________', lines: 1 },
+          { number: 6, text: 'A new scientific word is "geobiography". Using your knowledge of roots, what do you think this word means? Explain your reasoning.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Context Clues and Connotation',
+        instructions: 'Use context clue strategies and connotation knowledge to complete these tasks.',
+        questions: [
+          { number: 7, text: 'Identify the context clue type and work out the meaning:\n"Unlike her loquacious brother, Maya barely spoke during the entire dinner."\nClue type: __________. Meaning of loquacious: __________', lines: 1 },
+          { number: 8, text: '"The creek was turbid and murky after three days of heavy rain."\nClue type: __________. Meaning of turbid: __________', lines: 1 },
+          { number: 9, text: 'Arrange these words on a spectrum from most positive to most negative: confident, arrogant, self-assured, assertive. Explain your ranking.', lines: 2 },
+          { number: 10, text: 'A journalist describes a politician as "tenacious". A critic describes the same person as "stubborn". Both mean they don\'t give up. What is the difference in connotation? What does each word suggest about the writer\'s attitude?', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Complete the word study investigation and writing task.',
+        questions: [
+          { number: 11, text: 'Choose ONE root from this list: port, vis, aqu, bio, scrib/script. Write the root and its meaning, then list 6 words using it with a brief definition of each. Then write a paragraph about an Australian topic that uses at least four of your listed words naturally. Underline each root word you include.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-04': {
+    sessionId: 'y6-eng-04',
+    title: 'Persuasive: Arguments and Evidence',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELY303',
+    sections: [
+      {
+        heading: 'Section 1 – Evidence Types',
+        instructions: 'Answer the following questions about evidence in persuasive writing.',
+        questions: [
+          { number: 1, text: 'Name the four main types of evidence used in persuasive writing: __________, __________, __________, __________', lines: 1 },
+          { number: 2, text: 'Explain why "Many scientists agree that..." is WEAK evidence. What would make it stronger?', lines: 2 },
+          { number: 3, text: 'What is "cherry-picking" evidence? Why is it a problem in persuasive writing?', lines: 2 },
+          { number: 4, text: 'Rank the four evidence types from strongest to weakest for a formal persuasive essay. Justify the position of your top and bottom choices.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Evaluating and Upgrading Evidence',
+        instructions: 'Read each weak claim and complete the tasks.',
+        questions: [
+          { number: 5, text: 'WEAK: "Everyone knows screen time is bad for kids."\nIdentify TWO specific problems with this as evidence.', lines: 2 },
+          { number: 6, text: 'WEAK: "My cousin stopped eating junk food and felt better."\nWhat type of evidence is this? What is its main limitation in a formal argument?', lines: 2 },
+          { number: 7, text: 'STRONG: "According to the Australian Institute of Health and Welfare (2023), one in four Australian children is overweight — a figure that has doubled since 2002."\nList at least THREE features that make this evidence strong.', lines: 2 },
+          { number: 8, text: 'Upgrade this weak claim using a specific statistic format (make the statistic plausible and the source realistic): WEAK: "Lots of Australians don\'t recycle properly."', lines: 2 },
+          { number: 9, text: 'Write ONE strong expert opinion sentence about the importance of reading, using a realistic name and institution.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write an evidence-rich persuasive paragraph on an Australian issue.',
+        questions: [
+          { number: 10, text: 'Choose a position on an Australian issue. Write a PEEL paragraph (5–7 sentences) that uses at least THREE different evidence types. After the paragraph, label each piece of evidence in brackets: [statistic], [expert opinion], [example], or [anecdote]. Then write 2 sentences explaining why you chose these particular evidence types.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-05': {
+    sessionId: 'y6-eng-05',
+    title: 'Literature: Characters and Themes in Novels',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELT301',
+    sections: [
+      {
+        heading: 'Section 1 – Characters and Themes Knowledge',
+        instructions: 'Answer the following questions about literary analysis.',
+        questions: [
+          { number: 1, text: 'What is the difference between a dynamic character and a static character? Give an example of each type.', lines: 2 },
+          { number: 2, text: 'A student writes: "The theme of the novel is a girl who plays sport." Explain what is wrong with this as a theme statement and rewrite it correctly.', lines: 3 },
+          { number: 3, text: 'List THREE methods for identifying the theme of a novel.', lines: 2 },
+          { number: 4, text: 'What does TEE stand for in literary analysis? Write out each component and explain its purpose.', lines: 2 },
+          { number: 5, text: 'What does "universal" mean when describing a theme? Give TWO examples of universal themes.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Literary Analysis Practice',
+        instructions: 'Read the passage and answer the analytical questions below.',
+        questions: [
+          { number: 6, text: 'PASSAGE: "Kai had collected every trophy in the display case. He had the fastest time, the highest score, the most medals. Standing alone in the gym after the presentation, he lined them up in a row — then pushed them all off the shelf, one by one. They clattered across the floor. In the silence that followed, he thought: no-one was ever actually there. The trophies didn\'t care, and neither, it seemed, did anyone else."\n\nIdentify a theme this passage develops. Write a complete theme STATEMENT (not a plot summary).', lines: 2 },
+          { number: 7, text: 'Write a TEE paragraph for the passage above. Label each part: (T) theme statement, (E) evidence, (E) explanation.', lines: 4 },
+          { number: 8, text: 'Is Kai more likely to be a dynamic or static character in a longer story? Explain what change you would expect him to undergo and why.', lines: 3 },
+          { number: 9, text: 'Connect the theme of this passage to a real-world experience or issue in Australian society. Write 2–3 sentences.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write a theme analysis of a novel or story you know.',
+        questions: [
+          { number: 10, text: 'Choose a novel or story you have read. Write a full theme analysis paragraph using the TEE structure. Your response must: (1) name the novel and author, (2) state the theme clearly, (3) provide specific evidence (a quote or scene), (4) explain how the evidence develops the theme, (5) connect the theme to the real world or your own experience. Aim for at least 100 words.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-06': {
+    sessionId: 'y6-eng-06',
+    title: 'Grammar: Complex Sentences and Subordinate Clauses',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELA312',
+    sections: [
+      {
+        heading: 'Section 1 – Clause Knowledge',
+        instructions: 'Answer the following questions about sentences and clauses.',
+        questions: [
+          { number: 1, text: 'What is the difference between a main clause and a subordinate clause? Give one example of each.', lines: 2 },
+          { number: 2, text: 'Underline the subordinate clause in each sentence:\na) Although the rain had stopped, the oval was still flooded.\nb) We left before the bell rang.\nc) Because she had studied all week, Priya felt confident.', lines: 2 },
+          { number: 3, text: 'Circle the subordinating conjunction in each sentence above. Write all three here: __________, __________, __________', lines: 1 },
+          { number: 4, text: 'Rewrite this simple sentence as a complex sentence by adding a subordinate clause. Simple sentence: "The dog barked."', lines: 1 },
+          { number: 5, text: 'Explain the punctuation rule: when does a subordinate clause at the START of a sentence require a comma?', lines: 2 },
+          { number: 6, text: 'Combine these two simple sentences into one complex sentence using a subordinating conjunction: "The sky turned dark. We packed up the picnic."', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Constructing and Evaluating Complex Sentences',
+        instructions: 'Analyse and improve these sentences.',
+        questions: [
+          { number: 7, text: 'Which sentence is more effective? Explain why.\nA: "The storm came. The boats went to shore. The fishermen were safe."\nB: "Because the storm arrived without warning, the fishermen steered their boats to shore before the swell became dangerous."', lines: 3 },
+          { number: 8, text: 'Expand this sentence by adding TWO subordinate clauses — one before and one after the main clause: "The explorer crossed the desert."', lines: 2 },
+          { number: 9, text: 'Write THREE complex sentences about life in outback Australia. Each sentence must use a different subordinating conjunction. Underline the subordinating conjunction in each.', lines: 3 },
+          { number: 10, text: 'Find a complex sentence in a book or article you have read recently. Copy it out, identify the main clause and the subordinate clause, and explain what the subordinate clause adds to the sentence\'s meaning.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write a descriptive paragraph using a variety of sentence structures.',
+        questions: [
+          { number: 11, text: 'Write a descriptive paragraph (at least 8 sentences) about a weather event or natural setting in Australia — for example, a storm rolling in over the outback, a bushfire on a summer evening, or a cyclone approaching the coast. You must include at least four complex sentences. After your paragraph, underline every subordinate clause you have used.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-07': {
+    sessionId: 'y6-eng-07',
+    title: 'Reading: Inferencing and Evaluating',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELY306',
+    sections: [
+      {
+        heading: 'Section 1 – Reading Strategies',
+        instructions: 'Answer the following questions about reading for deeper meaning.',
+        questions: [
+          { number: 1, text: 'What is an inference? How is it different from finding information that is directly stated in the text?', lines: 2 },
+          { number: 2, text: 'What does "reading between the lines" mean? Give a brief example from any text you know.', lines: 2 },
+          { number: 3, text: 'What is the author\'s "purpose" in a text? List three possible purposes a writer might have.', lines: 2 },
+          { number: 4, text: 'What questions should you ask when evaluating a persuasive article? List at least three.', lines: 2 },
+          { number: 5, text: 'Explain the difference between a fact and an opinion. Give one example of each.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Inference and Evaluation Practice',
+        instructions: 'Read the passage carefully and answer the questions.',
+        questions: [
+          { number: 6, text: 'PASSAGE: "The last old-growth forest in the valley had stood for 400 years. The development application was approved on a Tuesday, just before Christmas, when the council chamber was half empty. By April, only the stumps remained. The developer was quoted in the local paper: \'We have met every legal requirement.\' The council spokesperson did not return calls."\n\nWhat can you INFER about the council\'s handling of this decision? Use evidence from the text to support your inference.', lines: 3 },
+          { number: 7, text: 'The developer says: "We have met every legal requirement." What is NOT said here? What might this statement be hiding? Explain your thinking.', lines: 3 },
+          { number: 8, text: 'What is the author\'s attitude toward this event? Identify at least TWO specific language choices that reveal the author\'s viewpoint.', lines: 3 },
+          { number: 9, text: 'Evaluate the passage: Is this reporting balanced or one-sided? Justify your answer. What information is missing that would give a more complete picture?', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write a critical response to a text using inference and evaluation skills.',
+        questions: [
+          { number: 10, text: 'Find a short news article or opinion piece from an Australian news source (e.g. ABC News, The Guardian Australia). Read it carefully. Then write a response of at least 120 words that: (1) identifies the author\'s purpose, (2) evaluates the evidence used, (3) notes at least one inference you made, and (4) identifies any bias or missing perspectives. Briefly describe the article at the top of your response.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-08': {
+    sessionId: 'y6-eng-08',
+    title: 'Poetry: Figurative Language, Rhyme and Rhythm',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELT298',
+    sections: [
+      {
+        heading: 'Section 1 – Poetic Techniques',
+        instructions: 'Identify and explain the following poetic devices.',
+        questions: [
+          { number: 1, text: 'Define each technique and give your own example:\nSimile: __________\nMetaphor: __________\nPersonification: __________', lines: 3 },
+          { number: 2, text: 'Identify the technique used in each phrase:\na) "The wind whispered secrets through the gum trees." → __________\nb) "Her anger was a bushfire, spreading through everything she touched." → __________\nc) "The cicadas sang louder than a school bell." → __________', lines: 1 },
+          { number: 3, text: 'What is alliteration? Write one alliterative phrase about the Australian bush.', lines: 2 },
+          { number: 4, text: 'What is onomatopoeia? Give two examples from nature sounds you might hear in Australia.', lines: 2 },
+          { number: 5, text: 'What is the difference between rhyme and rhythm in poetry? Can a poem have rhythm without rhyme? Explain.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Analysing a Poem',
+        instructions: 'Read the poem and answer the analysis questions.',
+        questions: [
+          { number: 6, text: 'POEM:\nThe red dirt road stretches on and on,\nA red-brown river with the water gone.\nThe ironbarks stand like silent guards\nOver cracked and sunburned cattle yards.\nThe heat hangs heavy, a golden weight —\nAustralia waits, and the sky grows late.\n\nIdentify ONE example each of: simile, personification and metaphor. Quote the phrase and name the technique.', lines: 3 },
+          { number: 7, text: 'What is the mood of this poem? Choose two words to describe it and explain each with evidence from the poem.', lines: 3 },
+          { number: 8, text: 'The poem uses the phrase "Australia waits". What effect does this personification create? What might Australia be "waiting" for?', lines: 2 },
+          { number: 9, text: 'Find the rhyme scheme of this poem (use letters A, B, C). Does the rhyme scheme contribute to the mood? Explain.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write your own poem using specific poetic techniques.',
+        questions: [
+          { number: 10, text: 'Write a poem (at least 10 lines) about an Australian place, animal or season. You must include: at least one simile, one metaphor, one example of personification, and one use of alliteration or onomatopoeia. After your poem, write a brief note (2–3 sentences) explaining one technique you are most proud of and the effect you were trying to create.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-09': {
+    sessionId: 'y6-eng-09',
+    title: 'Spelling: Prefixes, Suffixes and Word Origins',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELA313',
+    sections: [
+      {
+        heading: 'Section 1 – Spelling Rules and Word Origins',
+        instructions: 'Apply spelling rules to complete the following tasks.',
+        questions: [
+          { number: 1, text: 'Add the prefix "un-" or "dis-" to make the opposite of each word:\n__________ (honest), __________ (appear), __________ (reliable), __________ (connect)', lines: 1 },
+          { number: 2, text: 'Add the suffix "-tion" or "-sion" to each verb. Be careful of spelling changes:\nact → __________, discuss → __________, create → __________, confuse → __________', lines: 1 },
+          { number: 3, text: 'The rule: drop the final "e" before a vowel suffix. Apply it:\nwrite → writing, complete → __________, desire → __________, hope → __________', lines: 1 },
+          { number: 4, text: 'These words have Greek or Latin origins. Match each word to its origin root:\npedestrian, manuscript, aquatic, democracy\nRoots to match: manu (hand), demos (people), ped (foot), aqua (water)', lines: 2 },
+          { number: 5, text: 'Correct the misspelled words in this sentence and explain the spelling rule for two of your corrections:\n"The arguement was totaly unnecesary and caused alot of embarasment."', lines: 2 },
+          { number: 6, text: 'Write THREE words that use the Latin root "dict" (to say/speak). For each word, explain how the root meaning is visible in the word\'s current meaning.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Applying Spelling in Context',
+        instructions: 'Read and complete the spelling tasks.',
+        questions: [
+          { number: 7, text: 'Choose the correct spelling from each pair and explain why:\na) receive / recieve: __________\nb) necessary / neccessary: __________\nc) environment / enviroment: __________', lines: 2 },
+          { number: 8, text: 'Homophones sound the same but are spelled differently. Write a sentence using each word correctly:\naffect / effect: __________\ntheir / there / they\'re: __________', lines: 2 },
+          { number: 9, text: 'Add the correct suffix — "-able" or "-ible" — to each word:\nposs____, agree____, read____, convert____', lines: 1 },
+          { number: 10, text: 'Find the WORD WITHIN THE WORD strategy: underline the smaller word hidden inside each word, then explain how knowing the smaller word helps you spell it:\nenvelope, parliament, separate, conscience', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Apply your spelling knowledge in a written task.',
+        questions: [
+          { number: 11, text: 'Choose FIVE spelling rules or patterns from this lesson (e.g. dropping the final "e", adding -tion/-sion, prefix rules, homophones). For each rule: (1) state the rule clearly, (2) give two example words, (3) write a sentence using each example correctly. Then write a short paragraph (50–70 words) about Australian wildlife that demonstrates at least three of these rules. Underline the words that show your rules.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-10': {
+    sessionId: 'y6-eng-10',
+    title: 'Multimodal Texts: Analysing Images and Layout',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELT302',
+    sections: [
+      {
+        heading: 'Section 1 – Multimodal Text Knowledge',
+        instructions: 'Answer the following questions about multimodal texts.',
+        questions: [
+          { number: 1, text: 'What is a multimodal text? Give three examples of multimodal texts you encounter in daily life.', lines: 2 },
+          { number: 2, text: 'What do the following design choices communicate?\na) Bold, large font at the top of a page: __________\nb) An image of a child looking directly at the viewer: __________', lines: 2 },
+          { number: 3, text: 'What is the "salience" of an image? How do designers control which element the viewer notices first?', lines: 2 },
+          { number: 4, text: 'Explain how COLOUR is used as a persuasive tool in advertising. Give one specific example.', lines: 2 },
+          { number: 5, text: 'What is the difference between the DENOTATION and CONNOTATION of an image? Apply this to: a photograph of a lone tree in a dry paddock.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Analysing a Multimodal Text',
+        instructions: 'Read the poster description and answer the analysis questions.',
+        questions: [
+          { number: 6, text: 'POSTER DESCRIPTION: A large photograph of a bleached coral reef fills most of the page. In the bottom right corner, a small silhouette of a child looks up at it. Bold white text across the top reads: "WHAT WILL YOU TELL THEM?" Below, in smaller text: "Act on climate. australiangreats.org.au"\n\nWhat is the visual hierarchy of this poster? Which element draws your eye first, second and third? Why?', lines: 3 },
+          { number: 7, text: 'Why has the designer made the child small and placed it in the corner? What feeling does this create for the viewer?', lines: 2 },
+          { number: 8, text: 'Analyse the language: "WHAT WILL YOU TELL THEM?" is a rhetorical question. What assumptions does it make about the viewer? How does it create a sense of responsibility?', lines: 3 },
+          { number: 9, text: 'How do the visual and verbal elements work TOGETHER to convey the poster\'s message? What would be lost if the image were replaced with a graph showing CO2 levels?', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Design and analyse your own multimodal text.',
+        questions: [
+          { number: 10, text: 'Design a campaign poster for an Australian environmental or social issue of your choice. Describe or sketch your poster and explain: (1) what image you would use and why, (2) your choice of colours and what they communicate, (3) your headline and how it positions the viewer, (4) how visual and verbal elements work together. Conclude with a sentence explaining what you want the viewer to feel and do after seeing your poster.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-11': {
+    sessionId: 'y6-eng-11',
+    title: 'Punctuation: Colons and Semicolons',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELA339',
+    sections: [
+      {
+        heading: 'Section 1 – Colon and Semicolon Rules',
+        instructions: 'Answer the questions and complete the punctuation tasks.',
+        questions: [
+          { number: 1, text: 'Write the TWO main uses of a colon (:) and give one example of each use.', lines: 2 },
+          { number: 2, text: 'Write the TWO main uses of a semicolon (;) and give one example of each use.', lines: 2 },
+          { number: 3, text: 'Add the correct punctuation (colon or semicolon) to each sentence:\na) She packed everything she needed___ a torch, a compass, a first-aid kit and a sleeping bag.\nb) The Great Barrier Reef is the world\'s largest living structure___ it can be seen from space.\nc) Ben had trained for months___ he was ready for the race.', lines: 1 },
+          { number: 4, text: 'Explain the difference: why does sentence (b) above use a semicolon instead of a comma or a full stop?', lines: 2 },
+          { number: 5, text: 'Rewrite this over-punctuated sentence using one colon and one semicolon:\n"There were three problems. The first was funding. The second was time. And the third was that nobody agreed on anything."', lines: 2 },
+          { number: 6, text: 'Write your own sentence for each:\na) A colon introducing a list: __________\nb) A colon introducing an explanation: __________\nc) A semicolon joining two related clauses: __________', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Editing for Colons and Semicolons',
+        instructions: 'Edit the passages below by adding or correcting colon and semicolon punctuation.',
+        questions: [
+          { number: 7, text: 'EDIT THIS PASSAGE — add colons and semicolons where appropriate, then rewrite the corrected version:\n"The rainforest has three distinct layers the canopy, the understorey and the forest floor. The canopy receives the most sunlight the forest floor is almost completely dark. Scientists study each layer separately however, the layers are deeply interconnected."', lines: 4 },
+          { number: 8, text: 'This sentence uses a colon INCORRECTLY. Identify the error and rewrite it correctly:\n"She was: excited, nervous and completely unprepared."', lines: 2 },
+          { number: 9, text: 'Read these two sentences. Explain which version is stronger and why:\nA) "The old man sat alone. He stared out the window. The street was empty."\nB) "The old man sat alone; he stared out the window at the empty street."', lines: 2 },
+          { number: 10, text: 'Write a fact about an Australian animal using a colon to introduce an explanation, and a second sentence connected to the first using a semicolon.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write a paragraph demonstrating confident use of colons and semicolons.',
+        questions: [
+          { number: 11, text: 'Write a paragraph (8–10 sentences) about an Australian topic of your choice — for example, life in a remote community, a sporting event, or the Great Barrier Reef. Your paragraph must include: at least ONE colon introducing a list, at least ONE colon introducing an explanation, and at least TWO semicolons joining related clauses. After your paragraph, circle every colon and underline every semicolon, and write a brief note confirming each use is correct.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-12': {
+    sessionId: 'y6-eng-12',
+    title: 'Grammar: Active and Passive Voice',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELA336',
+    sections: [
+      {
+        heading: 'Section 1 – Active and Passive Voice Knowledge',
+        instructions: 'Answer the questions about active and passive voice.',
+        questions: [
+          { number: 1, text: 'Explain the difference between active and passive voice. In your explanation, identify who is the subject in each.', lines: 2 },
+          { number: 2, text: 'Identify each sentence as active (A) or passive (P):\na) The committee approved the new policy. ___\nb) The new policy was approved by the committee. ___\nc) Scientists discovered a new species in Queensland. ___\nd) A new species was discovered in Queensland. ___', lines: 1 },
+          { number: 3, text: 'Convert these active sentences to passive voice:\na) The dog chased the rabbit. → __________\nb) Rangers filmed the whale shark near Ningaloo Reef. → __________', lines: 2 },
+          { number: 4, text: 'Convert these passive sentences to active voice:\na) The homework was forgotten by every student. → __________\nb) The record was broken by Cathy Freeman at the 2000 Olympics. → __________', lines: 2 },
+          { number: 5, text: 'Passive voice can be used to avoid naming who did something. Rewrite: "Mistakes were made during the planning process." in active voice. Then explain: why might the original writer have used passive voice here?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Editing for Voice',
+        instructions: 'Edit the passages below to improve their use of active and passive voice.',
+        questions: [
+          { number: 6, text: 'EDIT THIS PASSAGE — rewrite it in ACTIVE voice wherever possible:\n"The annual report was written by the committee. The findings were presented by the CEO. A new strategy was announced. The decision was criticised by many staff members."\n\nRewritten version:', lines: 4 },
+          { number: 7, text: 'Sometimes PASSIVE voice is the better choice. Decide: active or passive? Explain your reasoning.\na) A science report describing what happened to a substance during an experiment.\nb) A news story about who organised a fundraiser for flood victims.', lines: 3 },
+          { number: 8, text: 'This passage uses passive voice throughout, making it sound flat. Rewrite it with varied voice for greater impact:\n"The trophy was won by the team. The coach was congratulated by the players. A celebration was held at the school hall."', lines: 3 },
+          { number: 9, text: 'Write two versions of the same sentence about a fire in the bush — one active, one passive. Explain which would suit a news report and which would suit a scientific account.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write a piece that shows deliberate control of active and passive voice.',
+        questions: [
+          { number: 10, text: 'Write a 3-paragraph account of a sporting event, science discovery or historical event in Australia. In paragraph 1, use only ACTIVE voice to create energy and directness. In paragraph 2, use PASSIVE voice for at least half the sentences (appropriate when describing what was observed or discovered). In paragraph 3, mix both voices deliberately. After each paragraph, write a brief note explaining your choice of voice. Underline every passive verb construction.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-13': {
+    sessionId: 'y6-eng-13',
+    title: 'Grammar: Adverbs, Prepositions and Conjunctions',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELA313',
+    sections: [
+      {
+        heading: 'Section 1 – Parts of Speech Knowledge',
+        instructions: 'Identify and use adverbs, prepositions and conjunctions.',
+        questions: [
+          { number: 1, text: 'Define each part of speech and give two examples of each:\nAdverb: __________\nPreposition: __________\nConjunction: __________', lines: 3 },
+          { number: 2, text: 'Underline the adverb and circle the preposition in each sentence:\na) She walked quickly through the crowded marketplace.\nb) He nervously glanced over his shoulder.\nc) The platypus dived silently beneath the surface.', lines: 1 },
+          { number: 3, text: 'List the FANBOYS coordinating conjunctions: F___, A___, N___, B___, O___, Y___, S___', lines: 1 },
+          { number: 4, text: 'Write four subordinating conjunctions. For each, write a sentence using it to show cause and effect.', lines: 3 },
+          { number: 5, text: 'What is a conjunctive adverb? Give three examples (e.g. however, therefore) and explain how they differ from subordinating conjunctions.', lines: 2 },
+          { number: 6, text: 'Identify and label the function of the bolded word in each sentence (adverb, preposition, or conjunction):\na) We waited **until** the storm passed. ___\nb) The koala clung **tightly** to the branch. ___\nc) She found the letter **beneath** a pile of books. ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Editing for Precision',
+        instructions: 'Edit and improve the following sentences for precision and clarity.',
+        questions: [
+          { number: 7, text: 'UPGRADE these adverbs. Replace each underlined adverb with a more precise and vivid one:\na) He ran quickly along the beach. → __________\nb) She spoke quietly to the frightened child. → __________\nc) The rain fell heavily on the iron roof. → __________', lines: 2 },
+          { number: 8, text: 'These sentences use weak or vague conjunctions. Rewrite each using a more precise conjunction to show the exact relationship:\na) "She was tired and she kept walking." → (use a contrast conjunction) __________\nb) "He studied hard and he passed the exam." → (use a cause-effect conjunction) __________', lines: 2 },
+          { number: 9, text: 'Combine these sentences using an appropriate conjunction or conjunctive adverb:\na) "The campfire burned low. The temperature dropped sharply." → __________\nb) "Zara had practised every day for six months. She did not make the team." → __________', lines: 2 },
+          { number: 10, text: 'Rewrite this flat passage by adding precise adverbs, varied conjunctions and appropriate prepositions:\n"The man walked. He got to the river. He stopped. He looked at it. He sat down."', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write a descriptive piece demonstrating deliberate use of adverbs, prepositions and conjunctions.',
+        questions: [
+          { number: 11, text: 'Write a descriptive paragraph (8–10 sentences) about a person arriving at an unfamiliar place in Australia — for example, a new student at a remote school, a traveller reaching an outback town, or a city child visiting a farm. You must use: at least THREE precise and varied adverbs, at least THREE prepositions that create a strong sense of place, and at least TWO different types of conjunction. After your paragraph, list the adverbs, prepositions and conjunctions you used.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y6-eng-14': {
+    sessionId: 'y6-eng-14',
+    title: 'Grammar: Cohesion Across Sentences and Paragraphs',
+    subject: 'English',
+    yearLevel: 6,
+    victorianCode: 'VCELA343',
+    sections: [
+      {
+        heading: 'Section 1 – Cohesive Devices Knowledge',
+        instructions: 'Answer the following questions about cohesion in writing.',
+        questions: [
+          { number: 1, text: 'What is cohesion in writing? Explain in your own words why it matters.', lines: 2 },
+          { number: 2, text: 'Name and define FOUR types of cohesive devices. Give one example of each.', lines: 3 },
+          { number: 3, text: 'Identify the cohesive device in each sentence:\na) "The tiger stalked through the grass. The magnificent creature did not make a sound." → __________\nb) "She studied hard. As a result, she earned the highest mark in the class." → __________\nc) "We explored the reef on Monday. On Tuesday, we hiked through the rainforest." → __________', lines: 1 },
+          { number: 4, text: 'Pronoun reference is a key cohesive device. Identify the pronouns and what each refers to:\n"Mia handed the parcel to her brother. He stared at it for a moment, then tore it open. \'It\'s perfect,\' he said."', lines: 2 },
+          { number: 5, text: 'List six sentence connectors (conjunctive adverbs) and explain what relationship each signals (e.g. contrast, result, addition, time).', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Identifying and Improving Cohesion',
+        instructions: 'Analyse and improve the cohesion of the following passages.',
+        questions: [
+          { number: 6, text: 'READ and identify ALL the cohesive devices in this passage:\n"Sea turtles have lived on Earth for over 100 million years. These ancient reptiles are now endangered. Despite their remarkable survival record, they face threats from plastic pollution, fishing nets and habitat loss. However, conservation efforts in Australia are showing results. Since Queensland introduced turtle-safe fishing nets, bycatch has dropped by 60%."\n\nList each cohesive device and its type:', lines: 4 },
+          { number: 7, text: 'This passage has poor cohesion — it sounds choppy and disconnected. Rewrite it by adding cohesive devices (do not change the basic information):\n"Trees are important. Trees clean the air. Trees provide homes for animals. Deforestation is a problem. Deforestation happens every day. We should plant more trees."', lines: 4 },
+          { number: 8, text: 'In your rewritten passage above, label each cohesive device you added. State the type: pronoun reference, sentence connector, lexical chain, or time/sequence word.', lines: 2 },
+          { number: 9, text: 'Explain what a "lexical chain" is and identify one in the sea turtle passage (Question 6). Why do lexical chains help maintain topic focus?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Extended Writing',
+        instructions: 'Write a cohesive multi-paragraph response demonstrating a range of cohesive devices.',
+        questions: [
+          { number: 10, text: 'Write a three-paragraph response to this statement: "Australians have a responsibility to protect their natural environment." Argue a clear position and ensure your writing is cohesive throughout. After you finish, highlight or underline: (1) two pronoun references, (2) two sentence connectors, (3) one lexical chain running through your writing, and (4) two time or sequence words. Label each highlighted device in the margin or below your response.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
 };

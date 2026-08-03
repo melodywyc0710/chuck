@@ -1310,6 +1310,672 @@ export const homeworkSheets: Record<string, HomeworkSheet> = {
     ],
   },
 
+  // ─────────────────────────────────────────────────────────────
+  // Y5 MATHS
+  // ─────────────────────────────────────────────────────────────
+
+  'y5-mat-01': {
+    sessionId: 'y5-mat-01',
+    title: 'Large Numbers & Place Value',
+    subject: 'Maths',
+    yearLevel: 5,
+    victorianCode: 'VCMNA192',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Answer these place value questions about large numbers.',
+        questions: [
+          { number: 1, text: 'Write 473 205 in words: _______________', lines: 1 },
+          { number: 2, text: 'Write in digits: "five hundred and nine thousand, three hundred and forty-two" _______________', lines: 1 },
+          { number: 3, text: 'In the number 826 047, what is the value of the digit 8? _______________', lines: 1 },
+          { number: 4, text: 'Write 304 750 in expanded form: ___ + ___ + ___ + ___ + ___', lines: 1 },
+          { number: 5, text: 'Round 647 382 to the nearest ten thousand: _______________', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Read each problem carefully. Show your working and write a sentence answer.',
+        questions: [
+          { number: 6, text: 'The population of Brisbane is 2 528 317 and the population of Adelaide is 1 402 393. Write both populations in words and state which city has more people.', lines: 3 },
+          { number: 7, text: 'A news report rounds the AFL Grand Final crowd of 97 458 to the nearest ten thousand. What rounded number should they report? Show your working.', lines: 2 },
+          { number: 8, text: 'The area of Western Australia is 2 642 753 km². Round this to the nearest hundred thousand km². Explain how you decided which way to round.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully and show all working.',
+        questions: [
+          { number: 9, text: 'I am a six-digit number. My hundred-thousands digit is 4. My ten-thousands digit is double my ones digit of 3. My thousands digit is 0. My hundreds digit is 7. My tens digit is 1. Write me in digits and in expanded form.', lines: 2 },
+          { number: 10, text: 'The distances between Australian cities are: 1 747 km, 2 176 km, 2 782 km and 1 479 km. Order them from largest to smallest and explain how you compared them.', lines: 3 },
+          { number: 11, text: 'Create a place value puzzle using a five or six-digit number. Write three clues about the digits so a partner can find your number. Then solve it yourself.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y5-mat-02': {
+    sessionId: 'y5-mat-02',
+    title: 'Multiplication Strategies',
+    subject: 'Maths',
+    yearLevel: 5,
+    victorianCode: 'VCMNA193',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Use the standard algorithm or area model to calculate. Estimate first.',
+        questions: [
+          { number: 1, text: 'Estimate, then calculate: 47 × 38. Estimate: ___ × ___ ≈ ___. Exact answer: ___', lines: 1 },
+          { number: 2, text: 'Estimate, then calculate: 62 × 54. Estimate: ___ × ___ ≈ ___. Exact answer: ___', lines: 1 },
+          { number: 3, text: 'Calculate using the standard algorithm: 134 × 27 = ___. Show all working:', lines: 2 },
+          { number: 4, text: 'Use the area model to solve 45 × 32. Draw the grid and label all four partial products.', hasBox: true, lines: 0 },
+          { number: 5, text: 'Use doubling and halving to solve 18 × 25 = ___ (Hint: halve 18, double 25)', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer for each.',
+        questions: [
+          { number: 6, text: 'The Gabba cricket ground has 36 rows of reserved seating, each with 48 seats. How many reserved seats are there? Show working:', lines: 3 },
+          { number: 7, text: 'A school canteen sells 125 meat pies each day. How many pies does it sell in 28 school days? Show working:', lines: 3 },
+          { number: 8, text: 'A farmer plants 48 rows of sunflowers with 37 plants in each row. How many sunflower plants are there in total? Show working:', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 9, text: 'Estimate 483 × 19 by rounding each number to the nearest ten, then calculate the exact answer. How close was your estimate? Show working:', lines: 3 },
+          { number: 10, text: 'Mia says 99 × 8 = 800 − 8 = 792. Explain the strategy she used. Is she correct? Use the same strategy to solve 99 × 7.', lines: 3 },
+          { number: 11, text: 'Write your own real-world multiplication word problem that requires 2-digit × 2-digit. Solve it using two different methods and check both give the same answer.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y5-mat-03': {
+    sessionId: 'y5-mat-03',
+    title: 'Fractions & Equivalence',
+    subject: 'Maths',
+    yearLevel: 5,
+    victorianCode: 'VCMNA194',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Answer these fraction questions. Show your working.',
+        questions: [
+          { number: 1, text: 'Find three fractions equivalent to 3/5: ___, ___, ___', lines: 1 },
+          { number: 2, text: 'Simplify 18/24 to lowest terms. Show the HCF: ___. Answer: ___', lines: 1 },
+          { number: 3, text: 'Simplify 20/28. HCF: ___. Answer: ___', lines: 1 },
+          { number: 4, text: 'Convert 17/5 to a mixed number: ___. Convert 3 2/5 to an improper fraction: ___', lines: 1 },
+          { number: 5, text: 'Calculate 2/5 + 1/3. (Find the LCD first.) LCD = ___. Answer: ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 6, text: 'A Vegemite jar is 5/8 full. After breakfast, 2/8 is used. What fraction remains? Is this more or less than half a jar? Show working:', lines: 3 },
+          { number: 7, text: 'Three friends share a large pizza. Zara eats 3/8, Ben eats 1/4 and Priya eats 1/8. What fraction is left? Write your answer in simplest form. Show working:', lines: 3 },
+          { number: 8, text: 'A recipe needs 2/3 cup of sugar. You have already measured 1/4 cup. How much more do you need? Show working:', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 9, text: 'Which is larger: 4/5 or 7/9? Convert both to the same denominator and explain your answer clearly.', lines: 3 },
+          { number: 10, text: 'Order these fractions from smallest to largest: 3/4, 2/3, 5/6, 7/12. Find a common denominator and show your full working.', lines: 3 },
+          { number: 11, text: 'A student says 1/2 + 1/3 = 2/5. Explain the error they made and show the correct answer with full working.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y5-mat-04': {
+    sessionId: 'y5-mat-04',
+    title: 'Decimals',
+    subject: 'Maths',
+    yearLevel: 5,
+    victorianCode: 'VCMNA195',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Answer these decimal questions. Show all working.',
+        questions: [
+          { number: 1, text: 'What is the value of the digit 7 in 5.078? _______________', lines: 1 },
+          { number: 2, text: 'Order from smallest to largest: 2.3, 2.03, 2.303, 2.033\n_______________', lines: 1 },
+          { number: 3, text: 'Calculate: 5.80 + 3.47 = ___. Show decimal-aligned working:', lines: 2 },
+          { number: 4, text: 'Calculate: 9.04 − 3.70 = ___. Show decimal-aligned working:', lines: 2 },
+          { number: 5, text: 'Calculate: 3.24 × 7 = ___ (Hint: ignore decimal, multiply, then replace.)', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 6, text: 'Four swimmers\' times in the 100 m freestyle: Ana 58.73 s, Ben 59.04 s, Cleo 58.9 s, Dario 57.88 s. Who finished first and who was last? How much faster was the winner than the slowest swimmer? Show working:', lines: 3 },
+          { number: 7, text: 'Petrol costs $2.139 per litre. A car uses 45 litres of petrol. To the nearest cent, how much does the petrol cost? (Hint: round to $2.14 first.) Show working:', lines: 3 },
+          { number: 8, text: 'A runner\'s personal best is 58.32 seconds. Their new time is 57.9 seconds. By how much did they improve? Show working:', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working.',
+        questions: [
+          { number: 9, text: 'Round each number to the nearest tenth: 3.847 / 12.652 / 0.095 / 7.350. Explain the rule you used for 7.350.', lines: 3 },
+          { number: 10, text: 'A student says 0.30 is greater than 0.3 because 30 is greater than 3. Are they correct? Explain using a place value chart or diagram.', lines: 3 },
+          { number: 11, text: 'Find three prices at a supermarket. Add them together to find the total. Then round each price to the nearest dollar and estimate the total. How close is your estimate? Show all working.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y5-mat-05': {
+    sessionId: 'y5-mat-05',
+    title: 'Measurement: Perimeter & Area',
+    subject: 'Maths',
+    yearLevel: 5,
+    victorianCode: 'VCMMG196',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Use the correct formula to calculate perimeter and area.',
+        questions: [
+          { number: 1, text: 'A rectangle is 14 m long and 9 m wide. Perimeter = ___. Area = ___', lines: 1 },
+          { number: 2, text: 'A square has a perimeter of 36 cm. What is the length of one side? ___ What is its area? ___', lines: 1 },
+          { number: 3, text: 'Find the area of a triangle with base 12 cm and perpendicular height 7 cm. Show working: ___', lines: 1 },
+          { number: 4, text: 'A composite shape is made of two rectangles: 8 m × 5 m and 3 m × 4 m. Total area = ___', lines: 1 },
+          { number: 5, text: 'A rectangle is 9 cm long and 6 cm wide. Calculate its perimeter and area, and write the correct units for each.', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 6, text: 'A school garden is 12 m long and 7 m wide. The school needs fencing around the entire garden and lawn turf for the ground. How much fencing (perimeter) and how much turf (area) is needed? Show working:', lines: 3 },
+          { number: 7, text: 'An AFL training ground is 135 m long and 85 m wide. What is the area of the playing surface in m²? If groundskeepers need to mow it 3 times per week, how many m² do they mow in total each week? Show working:', lines: 3 },
+          { number: 8, text: 'A rectangular room is 9 m × 7 m. A square cupboard (2 m × 2 m) is built into one corner. What is the remaining floor area? Show working:', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 9, text: 'Two rectangles have the same perimeter of 40 cm but different areas. Give two possible sets of dimensions and calculate the area for each. Which rectangle has the greater area?', lines: 3 },
+          { number: 10, text: 'An L-shaped room has outer dimensions 10 m × 8 m. A 3 m × 4 m section is removed from one corner. Calculate the floor area and explain your method.', lines: 3 },
+          { number: 11, text: 'Design a composite shape floor plan with at least two rectangular sections. Label all measurements, calculate the total area, and find the perimeter of the outer edge.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y5-mat-06': {
+    sessionId: 'y5-mat-06',
+    title: 'Data & Statistics',
+    subject: 'Maths',
+    yearLevel: 5,
+    victorianCode: 'VCMSP197',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Calculate mean, median, mode and range for the data sets below.',
+        questions: [
+          { number: 1, text: 'Data: 6, 9, 4, 7, 9. Mean = ___. Median = ___. Mode = ___. Range = ___', lines: 1 },
+          { number: 2, text: 'Data: 12, 8, 15, 8, 10, 14, 8, 11. Show working for the mean:  Sum = ___, Count = ___, Mean = ___. Median = ___. Mode = ___. Range = ___', lines: 2 },
+          { number: 3, text: 'A data set has 6 values. After ordering, the 3rd value is 14 and the 4th is 18. What is the median? ___. Explain:', lines: 1 },
+          { number: 4, text: 'Data: 3, 7, 5, 7, 2, 9, 7, 4. Mean = ___. Median = ___. Mode = ___. Range = ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Answer each question with full working and a sentence.',
+        questions: [
+          { number: 5, text: 'A Year 5 cricket team scored these runs in 8 matches: 18, 35, 22, 35, 41, 8, 35, 29. Calculate the mean, median, mode and range. Show all working:', lines: 3 },
+          { number: 6, text: 'House prices in a suburb are: $450 000, $480 000, $510 000, $490 000 and $1 200 000. Calculate the mean and median. Which is more useful to describe the typical house price? Explain why.', lines: 3 },
+          { number: 7, text: 'A shoe shop sells these sizes in one day: 7, 8, 8, 9, 7, 8, 10, 6, 8, 9. Which measure (mean, median or mode) is most useful for ordering stock? Explain your choice.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show working and explain your reasoning.',
+        questions: [
+          { number: 8, text: 'A data set is: 5, 5, 5, 5, 100. Calculate the mean and median. Explain why the mean gives a misleading picture of this data set.', lines: 3 },
+          { number: 9, text: 'Two cricket teams both have a mean score of 30. Team A has a range of 5 and Team B has a range of 45. What does this tell you about each team\'s consistency? Which team would you rather be on? Explain.', lines: 3 },
+          { number: 10, text: 'Collect your own data set of at least 8 values (e.g. daily temperatures, sport scores). Calculate all four measures and write 2–3 sentences interpreting what the statistics tell you.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y5-mat-07': {
+    sessionId: 'y5-mat-07',
+    title: 'Measurement: Perimeter, Area & Volume',
+    subject: 'Maths',
+    yearLevel: 5,
+    victorianCode: 'VCMMG198',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Use the correct formula. Write the correct units in your answer.',
+        questions: [
+          { number: 1, text: 'A classroom is 9 m long and 7 m wide. Perimeter = ___. Area = ___', lines: 1 },
+          { number: 2, text: 'A box is 5 cm long, 4 cm wide and 3 cm tall. Volume = ___', lines: 1 },
+          { number: 3, text: 'A square playground has a perimeter of 48 m. What is one side length? ___. What is the area? ___', lines: 1 },
+          { number: 4, text: 'A fish tank is 50 cm × 25 cm × 30 cm. Volume = ___ cm³. How many litres does it hold? (1 000 cm³ = 1 L) ___', lines: 1 },
+          { number: 5, text: 'Convert 2.4 m² to cm². (Hint: 1 m² = 10 000 cm²) _______________', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 6, text: 'A backyard pool is 8 m long, 4 m wide and 1.5 m deep. How many cubic metres of water does it hold? If 1 m³ = 1 000 litres, how many litres is that? Show working:', lines: 3 },
+          { number: 7, text: 'A concrete slab for a garden shed is 4 m long, 3 m wide and 0.1 m thick. How many cubic metres of concrete are needed? Show working:', lines: 2 },
+          { number: 8, text: 'A rectangular tank has volume 360 cm³. It is 12 cm long and 5 cm wide. Find the height. Show working:', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 9, text: 'Two rectangular prisms have the same volume of 120 cm³. Give two different sets of dimensions (l × w × h) that both equal 120 cm³. Which would make a better box for packing? Explain.', lines: 3 },
+          { number: 10, text: 'A garden bed is 3 m × 2 m × 0.2 m. You can buy potting mix in 0.1 m³ bags. How many bags do you need? What would it cost if each bag is $12.50? Show working:', lines: 3 },
+          { number: 11, text: 'Design a rectangular storage box with volume between 200 and 300 cm³. Label the length, width and height. Calculate the exact volume and find what the dimensions would be in millimetres.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y5-mat-08': {
+    sessionId: 'y5-mat-08',
+    title: 'Geometry: Shapes, Angles & Symmetry',
+    subject: 'Maths',
+    yearLevel: 5,
+    victorianCode: 'VCMMG200',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Answer these geometry questions.',
+        questions: [
+          { number: 1, text: 'Classify each angle: 45° = ___. 90° = ___. 135° = ___. 180° = ___. 210° = ___', lines: 1 },
+          { number: 2, text: 'A triangle has angles 50° and 70°. Find the third angle: ___. What type of triangle is it (acute, right or obtuse)?', lines: 1 },
+          { number: 3, text: 'How many lines of symmetry does each shape have? Square: ___. Rectangle: ___. Equilateral triangle: ___. Scalene triangle: ___', lines: 1 },
+          { number: 4, text: 'A quadrilateral has angles 110°, 85°, 75° and x°. Find x. Show working: _______________', lines: 1 },
+          { number: 5, text: 'Name two shapes that have exactly 2 lines of symmetry: 1.___ 2.___. Name one shape with no lines of symmetry: ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 6, text: 'An isosceles triangle has one angle of 40°. If the two base angles are equal, find the value of each base angle. Show working and draw a labelled diagram:', lines: 3 },
+          { number: 7, text: 'A shape is translated 5 units to the right and 3 units down, then reflected over a vertical line. Describe what happens to its size and shape at each step. Does the final position match the original?', lines: 3 },
+          { number: 8, text: 'The Australian flag contains a pentagon (the Federation Star has more sides, but imagine a regular pentagon). If a regular pentagon has interior angles of 108° each, do all the angles add to 540°? Show working to verify.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working.',
+        questions: [
+          { number: 9, text: 'A triangle has angles in the ratio 1 : 2 : 3. Find each angle and name the type of triangle. Show working:', lines: 3 },
+          { number: 10, text: 'Describe THREE real-life examples in Australia where you can find lines of symmetry (e.g. in architecture, nature or sport). Draw and label each one.', hasBox: true, lines: 0 },
+          { number: 11, text: 'A regular hexagon has 6 lines of symmetry and interior angles of 120° each. Explain why a regular hexagon tiles a floor perfectly without gaps, but a regular pentagon cannot.', lines: 3 },
+        ],
+      },
+    ],
+  },
+
+  'y5-mat-09': {
+    sessionId: 'y5-mat-09',
+    title: 'Statistics: Data Collection & Graphs',
+    subject: 'Maths',
+    yearLevel: 5,
+    victorianCode: 'VCMSP204',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Read the tally chart and answer the questions.',
+        questions: [
+          { number: 1, text: 'A class voted for their favourite Australian animal. Results: Kangaroo 8, Koala 12, Platypus 5, Wombat 9, Quokka 6. What is the total number of votes? ___. Which animal got the most votes? ___', lines: 1 },
+          { number: 2, text: 'Using the data above, what fraction of students chose the Koala? ___. What percentage chose the Kangaroo? Show working: ___', lines: 1 },
+          { number: 3, text: 'What is the difference between the most popular and least popular animal in the survey? ___', lines: 1 },
+          { number: 4, text: 'If you were drawing a bar graph for this data, what scale would you use on the vertical axis? Explain your choice: _______________', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Use the data to answer each question.',
+        questions: [
+          { number: 5, text: 'Daily maximum temperatures (°C) in Melbourne for one week: Mon 22, Tue 18, Wed 25, Thu 29, Fri 31, Sat 17, Sun 24. Calculate the mean temperature and the range. What type of graph would best display this data? Explain.', lines: 3 },
+          { number: 6, text: 'A Year 5 class counted cars passing the school in 30 minutes by colour: Red 14, Blue 22, White 18, Silver 11, Other 5. Draw a bar graph for this data. Label the axes and give the graph a title.', hasBox: true, lines: 0 },
+          { number: 7, text: 'Using the car colour data above, what conclusion could you make about car colours in your area? Write 2–3 sentences interpreting the data.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show working and explain your reasoning.',
+        questions: [
+          { number: 8, text: 'Sam says that a pie chart would be better than a bar graph for the car colour data. Do you agree? Explain the advantages and disadvantages of each graph type for this data.', lines: 3 },
+          { number: 9, text: 'Design your own data collection survey about something in your school or local area. Write your question, collect at least 15 responses, display the data in a graph and write a summary of your findings.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y5-mat-10': {
+    sessionId: 'y5-mat-10',
+    title: 'Financial Maths: Percentages & Budgeting',
+    subject: 'Maths',
+    yearLevel: 5,
+    victorianCode: 'VCMNA178',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Calculate each percentage. Show your working.',
+        questions: [
+          { number: 1, text: 'Find 10% of $350 = ___. Find 25% of $350 = ___. Find 15% of $350 = ___', lines: 1 },
+          { number: 2, text: 'Find 20% of $85: ___. Show working using the 10% method:', lines: 1 },
+          { number: 3, text: 'A $120 jacket is on sale for 25% off. How much is saved? ___. What is the sale price? ___', lines: 1 },
+          { number: 4, text: 'GST in Australia is 10%. A book costs $45 before GST. What is the total price with GST? ___', lines: 1 },
+          { number: 5, text: '28 out of 40 students bring lunch from home. What percentage is that? Show working: ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 6, text: 'Ava receives $50 pocket money each month. She saves 40%, spends 30% on entertainment and uses 30% for food. How much does she save? How much does she spend on each category? Show working:', lines: 3 },
+          { number: 7, text: 'A pair of shoes normally costs $120. The shop has a "30% off" sale. What is the sale price? If you also need to pay 10% GST on the sale price, what is the final amount you pay? Show working:', lines: 3 },
+          { number: 8, text: 'A Year 5 student scored 32 out of 40 on a maths test and 27 out of 30 on a spelling test. Convert each score to a percentage and compare them. Which test did they do better in? Show working:', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 9, text: 'Ben has $200 to spend on a school camp. Accommodation costs $85, meals cost $45 and activities cost $55. How much does he have left over? What percentage of his total budget did he spend? Show working:', lines: 3 },
+          { number: 10, text: 'A price increased by 20% then decreased by 20%. Is the final price the same as the original? Use $100 as your starting price to prove your answer.', lines: 3 },
+          { number: 11, text: 'Create a monthly budget for a Year 5 student who receives $60 per month. Decide how much to save, spend and donate. Use percentages and dollar amounts. Justify your choices.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  // Y6 MATHS (sessions 04–10)
+  // ─────────────────────────────────────────────────────────────
+
+  'y6-mat-04': {
+    sessionId: 'y6-mat-04',
+    title: 'Fractions: Comparing, Ordering & Equivalent Fractions',
+    subject: 'Maths',
+    yearLevel: 6,
+    victorianCode: 'VCMNA168',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Answer these fraction questions. Show all working.',
+        questions: [
+          { number: 1, text: 'Write three fractions equivalent to 2/5: ___, ___, ___', lines: 1 },
+          { number: 2, text: 'Simplify 24/36 to lowest terms. HCF = ___. Answer: ___', lines: 1 },
+          { number: 3, text: 'Simplify 15/40. HCF = ___. Answer: ___', lines: 1 },
+          { number: 4, text: 'Find the LCD of 4 and 6: ___. Then calculate ¼ + ⅓ = ___', lines: 1 },
+          { number: 5, text: 'Order from smallest to largest: ½, ⅓, ¾, ¼ (convert to the same denominator first). Working: ___. Order: ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 6, text: 'Three friends share two pizzas. Ava eats 3/8, Ben eats ½ and Cleo eats 1/4. How much pizza did they eat altogether? How much is left? Write your answer in simplest form. Show working:', lines: 3 },
+          { number: 7, text: 'A garden is divided into sections: roses take ⅓, vegetables take ¼ and herbs take ⅙. What fraction is left for lawn? Show working using a common denominator:', lines: 3 },
+          { number: 8, text: 'Which is greater: 4/7 or 5/9? Find the LCD and convert both fractions to compare them. Show full working:', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 9, text: 'Order these fractions from smallest to largest: 2/3, 5/8, 3/4, 7/12. Find a common denominator for all four and show your full working.', lines: 3 },
+          { number: 10, text: 'A recipe calls for 3/4 cup of butter. You only have 1/3 cup. How much more do you need? Write the answer in two ways: as a fraction and as a decimal.', lines: 3 },
+          { number: 11, text: 'A student claims that 3/5 > 5/8 because 3+5 = 8 and 5+8 = 13, and 8/13 shows 3/5 is bigger. Explain clearly why this reasoning is wrong and show the correct comparison method.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y6-mat-05': {
+    sessionId: 'y6-mat-05',
+    title: 'Decimals: Multiplying and Dividing by 10, 100, 1000',
+    subject: 'Maths',
+    yearLevel: 6,
+    victorianCode: 'VCMNA171',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Calculate each answer and convert the measurements as shown.',
+        questions: [
+          { number: 1, text: '0.056 × 100 = ___. 7300 ÷ 1000 = ___. 4.7 × 1000 = ___', lines: 1 },
+          { number: 2, text: 'Convert: 4.85 km to metres: ___. 2500 g to kilograms: ___', lines: 1 },
+          { number: 3, text: '6.3 × 9 = ___ (ignore decimal, multiply, then replace). Show working: _______________', lines: 1 },
+          { number: 4, text: '15.6 ÷ 4 = ___. Show working: _______________', lines: 1 },
+          { number: 5, text: 'Calculate: (a) 0.43 × 1000 = ___  (b) 8200 ÷ 100 = ___  (c) 7.65 × 10 = ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 6, text: 'A road is 4.85 km long. A cyclist rides it 3 times. How many metres does the cyclist travel in total? Show working:', lines: 3 },
+          { number: 7, text: 'Four friends split a restaurant bill of $92.40 equally. How much does each person pay? Show working:', lines: 2 },
+          { number: 8, text: 'A plank of timber is 7.2 m long and is cut into 8 equal pieces. How long is each piece in metres? In centimetres? Show working:', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 9, text: 'Which is larger: 4.5 × 100 or 3.8 × 1000? Calculate both and explain why multiplying by a bigger power of 10 does not always give the biggest result.', lines: 3 },
+          { number: 10, text: 'A car travels 0.4 km every minute on a freeway. How far does it travel in: (a) 10 minutes (b) 100 minutes? Give answers in both km and metres. Show all working:', lines: 3 },
+          { number: 11, text: 'A scientist measures a cell as 0.0035 mm wide. Convert this to micrometres (× 1000) and to nanometres (× 1 000 000). Show all working and explain the pattern you notice when multiplying by powers of 10.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y6-mat-06': {
+    sessionId: 'y6-mat-06',
+    title: 'Percentages: Finding Percentages of Quantities',
+    subject: 'Maths',
+    yearLevel: 6,
+    victorianCode: 'VCMNA171',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Calculate each percentage. Show your method.',
+        questions: [
+          { number: 1, text: 'Find 20% of $65: ___. Find 5% of 180: ___. Find 35% of $240: ___', lines: 1 },
+          { number: 2, text: 'A jacket costs $120. It is 25% off. How much is the discount? ___. Sale price? ___', lines: 1 },
+          { number: 3, text: 'A textbook costs $55 before GST (10%). Total price = ___. Show working:', lines: 1 },
+          { number: 4, text: 'A price tag shows $165 including 10% GST. Pre-GST price = ___ (Hint: divide by 1.1). Show working:', lines: 1 },
+          { number: 5, text: '30 out of 40 students passed a test. What percentage passed? ___. What percentage did not pass? ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 6, text: 'A $280 course increases in price by 15%. What is the new price? (Hint: 15% = 10% + 5%). Show working:', lines: 3 },
+          { number: 7, text: 'A $960 laptop is 25% off. What is the sale price? If you then pay 10% GST on the sale price, what is the final amount you pay? Show working:', lines: 3 },
+          { number: 8, text: 'A school had 400 students last year. This year it has 460 students. What is the percentage increase? Show working:', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 9, text: 'Find these percentages: (a) 30% of 250  (b) 12% of $85  (c) 6% of 1400  (d) 125% of 80. Explain what it means when the percentage is greater than 100%.', lines: 3 },
+          { number: 10, text: 'A restaurant bill is $96. If you tip 15%, what is the total amount you pay? Show working using the 10% method:', lines: 3 },
+          { number: 11, text: 'A shoe store marks up shoes by 40% from the wholesale price, then discounts them 40% in a sale. Are the shoes back at the wholesale price? Use $100 to prove your answer and explain what happens.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y6-mat-07': {
+    sessionId: 'y6-mat-07',
+    title: 'Algebra: Patterns, Rules and Substitution',
+    subject: 'Maths',
+    yearLevel: 6,
+    victorianCode: 'VCMNA179',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Answer these algebra questions. Show all working.',
+        questions: [
+          { number: 1, text: 'Evaluate 6n − 4 when n = 5: ___. Evaluate 2a + 3b when a = 5 and b = 4: ___', lines: 1 },
+          { number: 2, text: 'Pattern: 4, 7, 10, 13, ... Which rule generates this? (a) 4n  (b) 3n + 1  (c) 2n + 2  (d) n + 3. Check: ___', lines: 1 },
+          { number: 3, text: 'Find the rule for the table: n: 1, 2, 3, 4 → Output: 5, 9, 13, 17. Rule: ___. Find the 10th term: ___', lines: 1 },
+          { number: 4, text: 'Solve: 3n + 6 = 21. Show working: n = ___. Check: ___', lines: 1 },
+          { number: 5, text: 'Solve: 5n − 4 = 21. Show working: n = ___. Check: ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Write an equation or formula, then solve. Show all working.',
+        questions: [
+          { number: 6, text: 'A taxi charges $3.50 flag fall plus $2.20 per kilometre. Write the cost formula: C = ___. Find the cost for 7 km. Find the cost for 12 km. Show working:', lines: 3 },
+          { number: 7, text: 'A pool holds 1 800 litres and is drained at 200 litres per hour. Write a formula for litres remaining after h hours: L = ___. How many hours until it is empty? Show working:', lines: 3 },
+          { number: 8, text: 'A phone plan charges $15 per month plus $0.10 per text. Write a formula for monthly cost C with t texts. Find the cost for 45 texts and for 120 texts. Show working:', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 9, text: 'Evaluate these expressions: (a) 5n + 3 when n=4  (b) 8 − 2n when n=3  (c) n² + 1 when n=7. Explain what n² means.', lines: 3 },
+          { number: 10, text: 'If 4n + 3 = 23, find n. Then explain how you could check your answer by substituting back into the equation.', lines: 3 },
+          { number: 11, text: 'Create a real-world scenario that can be modelled by a linear rule (like a taxi fare or a savings plan). Write the formula, create a table of values for n = 1 to 5, and graph it on the grid provided.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y6-mat-08': {
+    sessionId: 'y6-mat-08',
+    title: 'Geometry: 2D Shapes, Angles and Transformations',
+    subject: 'Maths',
+    yearLevel: 6,
+    victorianCode: 'VCMMG200',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Answer these geometry questions. Show working where needed.',
+        questions: [
+          { number: 1, text: 'A triangle has two angles of 55° each. Find the third angle: ___. Name the triangle type: ___', lines: 1 },
+          { number: 2, text: 'A quadrilateral has angles 90°, 85°, 100° and x°. Find x. Show working: x = ___', lines: 1 },
+          { number: 3, text: 'Interior angle of a regular pentagon: (5−2) × 180 ÷ 5 = ___°. Interior angle of a regular hexagon: ___°', lines: 1 },
+          { number: 4, text: 'How many lines of symmetry does each shape have? Equilateral triangle: ___. Square: ___. Rectangle: ___. Kite: ___', lines: 1 },
+          { number: 5, text: 'Name the transformation: "A shape is flipped over a vertical line" = ___. "A shape slides 4 right and 2 up" = ___. "A shape turns 90° clockwise" = ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 6, text: 'Find the missing angle in each shape: (a) Triangle with 74° and 53°: x = ___  (b) Quadrilateral with 110°, 95°, 80°: x = ___  (c) An isosceles triangle with apex angle 40° — find the two equal base angles. Show all working:', lines: 3 },
+          { number: 7, text: 'A shape on a grid is reflected over a vertical mirror line, then translated 3 units right and 2 units up. Does it change size or shape? Describe precisely what happens at each step.', lines: 3 },
+          { number: 8, text: 'A regular octagon has 8 sides. Find each interior angle using the formula (n−2) × 180 ÷ n. Do the 8 angles add to 1080°? Show working to verify.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 9, text: 'A parallelogram has one angle of 75°. What are the other three angles? Explain the properties of a parallelogram you used to find them.', lines: 3 },
+          { number: 10, text: 'Why do regular hexagons tile a floor perfectly but regular pentagons do not? Use the interior angle formula to explain. (Hint: angles meeting at a point must sum to 360°.)', lines: 3 },
+          { number: 11, text: 'Draw a shape on grid paper and apply TWO different transformations. Label each shape (original, after step 1, after step 2). Describe each transformation precisely using correct mathematical language.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y6-mat-09': {
+    sessionId: 'y6-mat-09',
+    title: 'Statistics: Mean, Median, Mode and Range',
+    subject: 'Maths',
+    yearLevel: 6,
+    victorianCode: 'VCMSP215',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Calculate each statistical measure. Show all working.',
+        questions: [
+          { number: 1, text: 'Data: 7, 12, 8, 15, 8, 10, 13, 8, 11, 18. First order the data: ___. Mean = ___. Median = ___. Mode = ___. Range = ___', lines: 2 },
+          { number: 2, text: 'A data set has 6 values. The 3rd is 14 and the 4th is 18 (after ordering). Median = ___. Explain why:', lines: 1 },
+          { number: 3, text: 'Data: 5, 5, 5, 5, 100. Mean = ___. Median = ___. Mode = ___. Range = ___', lines: 1 },
+          { number: 4, text: 'Which measure (mean/median/mode) is most affected by the value 100 in question 3? ___. Explain: _______________', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working. Write a sentence answer.',
+        questions: [
+          { number: 5, text: 'House prices in a street: $450 000, $480 000, $510 000, $490 000 and $1 400 000. Calculate the mean and median. Which is more useful for a buyer wanting to know the "typical" price? Explain.', lines: 3 },
+          { number: 6, text: 'A Year 6 student\'s test scores: 72, 85, 68, 91, 85, 74, 85, 78. Calculate all four measures. The teacher offers to drop the lowest score. Recalculate the mean with the lowest score removed. What is the difference?', lines: 3 },
+          { number: 7, text: 'Two basketball teams both have a mean score of 68 points. Team A has a range of 4; Team B has a range of 42. What does this tell you about each team\'s scoring consistency? Which team is more predictable?', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'Think carefully. Show all working and explain your reasoning.',
+        questions: [
+          { number: 8, text: 'The mean of five numbers is 12. Four of the numbers are 8, 15, 10 and 14. Find the fifth number. Show working:', lines: 3 },
+          { number: 9, text: 'A shoe shop wants to know which size to stock most. The sizes sold last week were: 8, 9, 9, 10, 8, 9, 7, 10, 9, 8, 9, 11, 8, 9, 8. Which measure should they use and why? Calculate it.', lines: 3 },
+          { number: 10, text: 'Design a statistical investigation. Choose a question, collect at least 10 data values, calculate all four measures, display the data in a graph and write a 3–4 sentence interpretation of what the statistics show.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
+  'y6-mat-10': {
+    sessionId: 'y6-mat-10',
+    title: 'Problem Solving: Multi-Step Word Problems',
+    subject: 'Maths',
+    yearLevel: 6,
+    victorianCode: 'VCMNA170',
+    sections: [
+      {
+        heading: 'Section 1 – Fluency',
+        instructions: 'Solve each problem. Show your working clearly.',
+        questions: [
+          { number: 1, text: 'A shop sells 3 types of sandwiches: $5.50, $6.80 and $4.90. If 12 of the first, 8 of the second and 15 of the third are sold, what is the total income? Show working:', lines: 2 },
+          { number: 2, text: 'A car travels at 60 km/h for 2.5 hours, then 80 km/h for 1.5 hours. What is the total distance travelled? Show working:', lines: 2 },
+          { number: 3, text: 'A rectangular pool is 12 m × 8 m × 1.5 m deep. How many litres of water does it hold? (1 m³ = 1 000 L). Show working:', lines: 2 },
+          { number: 4, text: 'A shirt costs $45 before GST. After 10% GST is added, then 20% discount is applied. What is the final price? Show working:', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Problem Solving',
+        instructions: 'Show all working step by step. Write a sentence answer.',
+        questions: [
+          { number: 5, text: 'A school fundraiser sold 240 raffle tickets at $3.50 each. Costs were $85 for printing and $120 for prizes. How much profit did the school make? What percentage of the total income was profit? Show working:', lines: 3 },
+          { number: 6, text: 'Mia and Tom share $84. Tom gets $12 more than Mia. Write an equation and solve it to find how much each person gets. Show working:', lines: 3 },
+          { number: 7, text: 'A recipe for 6 people needs 450 g of flour, 3 eggs and 240 mL of milk. Adjust the recipe for 10 people. Show all working:', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reasoning & Extension',
+        instructions: 'These are multi-step problems. Plan your approach before calculating.',
+        questions: [
+          { number: 8, text: 'Three friends run a 42 km marathon. Each runs a different section: Alex runs 1/3 of the total distance, Ben runs 35% and Cleo runs the rest. How many kilometres does each person run? Show working:', lines: 3 },
+          { number: 9, text: 'A mobile phone plan charges $25 per month plus $0.08 per minute of calls. In one month, a customer made 180 minutes of calls. What was the bill? If the customer has a budget of $40 per month, how many minutes can they talk before exceeding it? Show working:', lines: 3 },
+          { number: 10, text: 'Design your own multi-step problem set in an Australian context (e.g. AFL, shopping, travel). It must use at least 3 different mathematical operations. Write the problem, solve it, and explain each step of your solution.', hasBox: true, lines: 0 },
+        ],
+      },
+    ],
+  },
+
   'y6-mat-03': {
     sessionId: 'y6-mat-03',
     title: 'Algebra & Patterns',

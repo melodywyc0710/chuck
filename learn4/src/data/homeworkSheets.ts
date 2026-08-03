@@ -682,6 +682,514 @@ export const homeworkSheets: Record<string, HomeworkSheet> = {
     ],
   },
 
+  'y4-eng-07': {
+    sessionId: 'y4-eng-07',
+    title: 'Visualising and Predicting',
+    subject: 'English',
+    yearLevel: 4,
+    victorianCode: 'VCELY259',
+    sections: [
+      {
+        heading: 'Section 1 – Visualising',
+        instructions: 'Answer the following questions about the visualising strategy.',
+        questions: [
+          { number: 1, text: 'What is a "mind movie" in reading? Explain in your own words.', lines: 2 },
+          { number: 2, text: 'List the five senses a reader can use when visualising a text: __________, __________, __________, __________, __________', lines: 1 },
+          { number: 3, text: 'Read this sentence: "The kookaburra laughed from a dead scribbly gum while red dust swirled across the dry paddock." What do you SEE, HEAR and SMELL in your mind movie?', lines: 3 },
+          { number: 4, text: 'If you lose your mental image while reading, what should you do? Explain.', lines: 2 },
+          { number: 5, text: 'Why does visualising help you understand and remember what you read?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Predicting',
+        instructions: 'Use clues from the text to make and justify predictions.',
+        questions: [
+          { number: 6, text: 'What is the difference between a prediction and a guess?', lines: 2 },
+          { number: 7, text: 'Read these clues from a book cover: "A girl stands on the edge of a cliff. The title is The Last Jump. A storm gathers behind her." Make a prediction using the sentence starter: "I predict ___ because ___."', lines: 2 },
+          { number: 8, text: 'A chapter begins: "Maya checked her watch — three minutes until the alarm went off. She had to find the code before the whole system crashed." What do you predict will happen? Use two text clues in your answer.', lines: 3 },
+          { number: 9, text: 'You predict a character will escape, but instead they get caught. What should you do next as a reader?', lines: 2 },
+          { number: 10, text: 'Why is it important to use the word "because" when making predictions?', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Reading Response',
+        instructions: 'Use your current home reading book to complete these tasks.',
+        questions: [
+          { number: 11, text: 'Write the title and author of your current reading book: Title: _______________. Author: _______________', lines: 1 },
+          { number: 12, text: 'Choose a descriptive paragraph from your book. Write 2–3 sentences describing the mental image it created. Include at least two senses.', lines: 3 },
+          { number: 13, text: 'Before reading your next chapter, make a prediction using clues from the chapter title and the last page you read: "I predict ___ because ___."', lines: 2 },
+          { number: 14, text: 'After reading the chapter: Was your prediction confirmed or disconfirmed? What clue did you use or miss? Write a full explanation.', lines: 3 },
+        ],
+      },
+    ],
+  },
+
+  'y4-eng-08': {
+    sessionId: 'y4-eng-08',
+    title: 'Nouns, Verbs, Adjectives and Adverbs',
+    subject: 'English',
+    yearLevel: 4,
+    victorianCode: 'VCELA268',
+    sections: [
+      {
+        heading: 'Section 1 – Identifying Word Classes',
+        instructions: 'Label the word class of each underlined word: noun (N), verb (V), adjective (Adj) or adverb (Adv).',
+        questions: [
+          { number: 1, text: '"The ancient ghost gum creaked loudly in the hot wind."\nLabel: ancient ___, ghost gum ___, creaked ___, loudly ___, hot ___, wind ___', lines: 1 },
+          { number: 2, text: '"Three exhausted players limped slowly off the muddy oval."\nLabel: three ___, players ___, limped ___, slowly ___, muddy ___, oval ___', lines: 1 },
+          { number: 3, text: 'Write the test you use to check if a word is a NOUN: _______________. Test: is "wombat" a noun? _______________', lines: 1 },
+          { number: 4, text: 'Write the test you use to check if a word is a VERB: _______________. Test: is "thundered" a verb? _______________', lines: 1 },
+          { number: 5, text: 'What is the difference between an adjective and an adverb? Write one example of each.', lines: 2 },
+          { number: 6, text: 'Give an example of an adverb that does NOT end in "-ly": _______________. Write a sentence using it: _______________', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Upgrading Weak Writing',
+        instructions: 'Improve each weak sentence by replacing vague words with precise nouns, verbs, adjectives and adverbs. Label your changes.',
+        questions: [
+          { number: 7, text: 'Weak: "The bird went to the tree and made a noise." Improve it with a precise noun, strong verb and adverb:', lines: 2 },
+          { number: 8, text: 'Weak: "The dog ran fast across the place." Improve it with a precise noun and strong verb:', lines: 2 },
+          { number: 9, text: 'Weak: "She said something and then walked away." Improve it with a precise reporting verb and a descriptive adverb:', lines: 2 },
+          { number: 10, text: 'Weak: "There was a big animal near the water." Improve it using a precise Australian animal and strong adjectives:', lines: 2 },
+          { number: 11, text: 'Explain: why is "scrambled" a better verb than "went quickly" in the sentence "The possum went quickly up the tree"?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Write Your Own',
+        instructions: 'Use your knowledge of word classes to write vivid sentences about Australian animals.',
+        questions: [
+          { number: 12, text: 'Write a sentence about a kookaburra that includes: a precise noun, a strong action verb, one adjective and one adverb. Then label each word class in brackets.', lines: 3 },
+          { number: 13, text: 'Write a sentence about a surf beach using at least two adjectives and one adverb. Underline the adjectives and circle the adverb.', lines: 2 },
+          { number: 14, text: 'Take this weak paragraph and rewrite it with precise word choices. "A big animal was near the water. It made a noise. A small thing ran away." Aim for two vivid sentences.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y4-eng-09': {
+    sessionId: 'y4-eng-09',
+    title: 'Editing and Proofreading Strategies',
+    subject: 'English',
+    yearLevel: 4,
+    victorianCode: 'VCELY263',
+    sections: [
+      {
+        heading: 'Section 1 – Understanding the Process',
+        instructions: 'Answer these questions about editing and proofreading.',
+        questions: [
+          { number: 1, text: 'What is the difference between editing and proofreading? Give one example of each.', lines: 2 },
+          { number: 2, text: 'Why should you always EDIT before you PROOFREAD? Explain.', lines: 2 },
+          { number: 3, text: 'Why does reading your writing ALOUD help the editing process?', lines: 2 },
+          { number: 4, text: 'What is the "proofreading backwards" trick and why does it work?', lines: 2 },
+          { number: 5, text: 'Label each task as EDITING (E) or PROOFREADING (P):\na) Fix a misspelling ___\nb) Replace a weak verb with a stronger one ___\nc) Add more detail to a paragraph ___\nd) Fix a missing full stop ___\ne) Remove a repeated idea ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Edit This Passage',
+        instructions: 'Read the passage below, then answer the editing and proofreading questions.',
+        questions: [
+          { number: 6, text: 'PASSAGE TO EDIT:\n"The boy was scared. He ran. He hid behind a tree. The tree was big. he waited. He heard a noise. Something was coming. It was his dog biscuit the dog had found him"\n\nIdentify TWO editing improvements (content/structure) this passage needs:', lines: 2 },
+          { number: 7, text: 'Identify TWO proofreading errors (spelling, punctuation, capitals) in the passage:', lines: 2 },
+          { number: 8, text: 'Rewrite the passage with your editing and proofreading changes applied. Aim for 3–4 much stronger sentences.', lines: 4 },
+          { number: 9, text: 'The passage uses the weak verb "ran" twice. Write TWO more precise replacement verbs that could be used instead: _______________ and _______________', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Edit Your Own Writing',
+        instructions: 'Apply the editing and proofreading process to your own recent writing.',
+        questions: [
+          { number: 10, text: 'Choose a piece of your own writing from this term. Write the title or topic here: _______________. List THREE content improvements you could make (editing):',  lines: 3 },
+          { number: 11, text: 'List TWO surface errors you found when proofreading your writing (e.g. spelling, punctuation, capitals). Write the error and the correction.', lines: 2 },
+          { number: 12, text: 'Give your writing to someone at home for "2 Stars and a Wish" feedback. Write what they said here. Do you agree with their wish? Why or why not?', lines: 3 },
+          { number: 13, text: 'Rewrite your BEST paragraph from that piece, incorporating all your editing and proofreading improvements.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y4-eng-10': {
+    sessionId: 'y4-eng-10',
+    title: 'Presentations and Discussion',
+    subject: 'English',
+    yearLevel: 4,
+    victorianCode: 'VCELY265',
+    sections: [
+      {
+        heading: 'Section 1 – Presentation Skills',
+        instructions: 'Answer questions about planning and delivering an oral presentation.',
+        questions: [
+          { number: 1, text: 'Label the three parts of a well-structured presentation in order: __________, __________, __________', lines: 1 },
+          { number: 2, text: 'Why should you use cue cards instead of reading from a full script? Give TWO reasons.', lines: 2 },
+          { number: 3, text: 'List THREE "voice" skills that make a presentation clear and confident: _______________, _______________, _______________', lines: 1 },
+          { number: 4, text: 'List TWO body language tips for a confident presentation: _______________, _______________', lines: 1 },
+          { number: 5, text: 'Write a strong HOOK (opening sentence) for a presentation about Australian wildlife. It should surprise or interest the listener immediately.', lines: 2 },
+          { number: 6, text: 'Write a memorable CONCLUSION sentence for the same presentation.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Active Listening and Discussion',
+        instructions: 'Answer questions about active listening and taking part in class discussion.',
+        questions: [
+          { number: 7, text: 'Describe active listening in your own words. What does it look like?', lines: 2 },
+          { number: 8, text: 'What is the difference between a discussion and an argument?', lines: 2 },
+          { number: 9, text: 'Write a sentence starter for AGREEING with a classmate\'s idea: _______________', lines: 1 },
+          { number: 10, text: 'Write a sentence starter for RESPECTFULLY DISAGREEING with a classmate\'s idea: _______________', lines: 1 },
+          { number: 11, text: 'Write a sentence starter for BUILDING ON what a classmate said: _______________', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Plan Your Presentation',
+        instructions: 'Plan a 2-minute presentation on an Australian topic of your choice.',
+        questions: [
+          { number: 12, text: 'My presentation topic: _______________', lines: 1 },
+          { number: 13, text: 'HOOK (surprising fact or bold question to open with):',  lines: 2 },
+          { number: 14, text: 'MAIN POINT 1 — write 3–4 cue words only (not full sentences): _______________', lines: 1 },
+          { number: 15, text: 'MAIN POINT 2 — write 3–4 cue words only: _______________', lines: 1 },
+          { number: 16, text: 'CONCLUSION — write your memorable closing sentence:', lines: 2 },
+          { number: 17, text: 'Practise at home and ask someone for "2 Stars and a Wish". Write their feedback here and note ONE thing you will improve.', lines: 3 },
+        ],
+      },
+    ],
+  },
+
+  'y4-eng-11': {
+    sessionId: 'y4-eng-11',
+    title: 'Punctuation: Full Stops, Capitals and More',
+    subject: 'English',
+    yearLevel: 4,
+    victorianCode: 'VCELA312',
+    sections: [
+      {
+        heading: 'Section 1 – Add the Punctuation',
+        instructions: 'Rewrite each sentence or passage with correct capital letters and end punctuation (full stop, question mark or exclamation mark).',
+        questions: [
+          { number: 1, text: 'Add capitals and end punctuation: "the platypus lives in rivers and lakes across eastern australia"', lines: 1 },
+          { number: 2, text: 'Add capitals and end punctuation: "have you ever seen a quokka at rottnest island"', lines: 1 },
+          { number: 3, text: 'Add capitals and end punctuation: "a great white shark swam right beneath our boat"', lines: 1 },
+          { number: 4, text: 'Add all capitals and end punctuation to this passage: "on monday, tom and i went to the gold coast. we saw a rainbow lorikeet in the garden. did you know they eat fruit"', lines: 2 },
+          { number: 5, text: 'Circle the words that need capitals in this sentence and explain why:\n"last friday, liam visited his grandpa in ballarat and watched the collingwood game."', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Identify the Sentence Type and Fix Errors',
+        instructions: 'Label each sentence as Statement (St), Question (Q), Exclamation (Ex) or Command (C). Then correct any punctuation errors.',
+        questions: [
+          { number: 6, text: 'Label and fix: "koalas sleep up to 22 hours a day" Type: ___ Fixed sentence: _______________', lines: 1 },
+          { number: 7, text: 'Label and fix: "what time does the school bus leave" Type: ___ Fixed sentence: _______________', lines: 1 },
+          { number: 8, text: 'Label and fix: "a snake is under the bench" Type: ___ Fixed sentence: _______________', lines: 1 },
+          { number: 9, text: 'Label and fix: "sit in the shade and drink plenty of water" Type: ___ Fixed sentence: _______________', lines: 1 },
+          { number: 10, text: 'A student wrote: "I love footy!!!! It is the best!!!! Our team won!!!!" What punctuation problem does this show? How should it be written?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Write Your Own',
+        instructions: 'Write correctly punctuated sentences about Australian animals or sport.',
+        questions: [
+          { number: 11, text: 'Write one STATEMENT about an Australian animal with correct punctuation:', lines: 1 },
+          { number: 12, text: 'Write one QUESTION using "How", "Why" or "Have you ever..." with correct punctuation:', lines: 1 },
+          { number: 13, text: 'Write one EXCLAMATION that expresses genuine surprise or excitement with correct punctuation:', lines: 1 },
+          { number: 14, text: 'Write one COMMAND telling someone what to do in the bush or at the beach:', lines: 1 },
+          { number: 15, text: 'Write a short paragraph (4–5 sentences, mixed sentence types) about your favourite Australian animal or sport. Every sentence must have correct capital letters and end punctuation.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y4-eng-12': {
+    sessionId: 'y4-eng-12',
+    title: 'Punctuation: Commas',
+    subject: 'English',
+    yearLevel: 4,
+    victorianCode: 'VCELA312',
+    sections: [
+      {
+        heading: 'Section 1 – Commas in Lists',
+        instructions: 'Add commas to the lists in each sentence, or explain why no commas are needed. Remember: no comma before the final "and" in Australian English.',
+        questions: [
+          { number: 1, text: 'Add commas: "In her bag Mia had a water bottle a hat sunscreen and a snack."', lines: 1 },
+          { number: 2, text: 'Add commas: "The campsite had a fire pit a picnic table a tap and a flying fox."', lines: 1 },
+          { number: 3, text: 'Does this sentence need commas? Explain: "Tom and Anika played cricket after school."', lines: 1 },
+          { number: 4, text: 'Add commas to the list of VERBS: "The kookaburra swooped dived grabbed the lizard and flew back to its branch."', lines: 1 },
+          { number: 5, text: 'Find and fix the comma error: "She bought mangoes, and rockmelon, at the market." Write the correct sentence: _______________', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Commas After Introductory Phrases and Between Clauses',
+        instructions: 'Add the missing comma and explain which "job" it is doing (joining clauses OR introductory phrase).',
+        questions: [
+          { number: 6, text: 'Add comma and label the job: "After the long footy match the players were exhausted." Comma after: ___ Job: ___', lines: 1 },
+          { number: 7, text: 'Add comma and label the job: "We wanted to go surfing but the waves were too rough." Comma after: ___ Job: ___', lines: 1 },
+          { number: 8, text: 'Add comma and label the job: "Because it had rained the creek was running fast." Comma after: ___ Job: ___', lines: 1 },
+          { number: 9, text: 'Add comma and label the job: "The team trained hard so they were ready for the final." Comma after: ___ Job: ___', lines: 1 },
+          { number: 10, text: 'Explain the "Cover It" test for introductory phrases. Apply it to this sentence: "On Saturday morning the magpies were swooping."', lines: 2 },
+          { number: 11, text: 'Which sentence has a WRONG comma? Fix it.\na) "I was late, because the tram was delayed."\nb) "Because the tram was delayed, I was late."', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Write Using All Three Comma Jobs',
+        instructions: 'Write your own sentences demonstrating each comma job, then write a paragraph using all three.',
+        questions: [
+          { number: 12, text: 'Job 1 — Write a sentence with a list of FOUR items about a camping trip or the beach:', lines: 1 },
+          { number: 13, text: 'Job 2 — Write a sentence joining TWO complete ideas with "but", "so" or "or" (comma before the joining word):', lines: 1 },
+          { number: 14, text: 'Job 3 — Write a sentence starting with a time or place phrase (comma after the opening phrase):', lines: 1 },
+          { number: 15, text: 'Write a paragraph (5–6 sentences) about a day at the beach or a bush walk. Include all three comma jobs — label each comma with its job number (1, 2 or 3).', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y4-eng-13': {
+    sessionId: 'y4-eng-13',
+    title: 'Grammar: Nouns, Verbs and Adjectives',
+    subject: 'English',
+    yearLevel: 4,
+    victorianCode: 'VCELA313',
+    sections: [
+      {
+        heading: 'Section 1 – Identify and Classify',
+        instructions: 'Identify and label nouns (N), verbs (V) and adjectives (Adj) in each sentence.',
+        questions: [
+          { number: 1, text: '"A curious possum climbed the old wooden fence." Label: curious ___, possum ___, climbed ___, old ___, wooden ___, fence ___', lines: 1 },
+          { number: 2, text: '"The massive wave crashed onto the white sand near Bondi Beach." Identify: one proper noun ___, two adjectives ___ and ___, the verb ___', lines: 1 },
+          { number: 3, text: 'What is a PROPER NOUN? Write TWO Australian examples: _______________', lines: 1 },
+          { number: 4, text: 'What is a COLLECTIVE NOUN? Give one Australian animal example: _______________', lines: 1 },
+          { number: 5, text: 'What is a BEING VERB (linking verb)? Write a sentence that uses one: _______________', lines: 1 },
+          { number: 6, text: 'How many nouns are in this sentence: "Lola kicked the ball over the rusty fence into the neighbour\'s garden"? List them: _______________', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Upgrade Weak Sentences',
+        instructions: 'Rewrite each weak sentence using precise nouns, strong verbs and vivid adjectives.',
+        questions: [
+          { number: 7, text: 'Weak: "A bird went over the place and made a noise."\nUpgraded version (use a specific Australian bird, precise verb and one adjective):', lines: 2 },
+          { number: 8, text: 'Weak: "A big animal ate some food near the water."\nUpgraded version (use a precise animal, strong verb and two adjectives):', lines: 2 },
+          { number: 9, text: 'Weak: "My dog is very nice and good and it is fun to play with."\nUpgraded version (replace "nice", "good" and "fun" with vivid, specific adjectives):', lines: 2 },
+          { number: 10, text: 'Replace the weak verb: "The injured player walked slowly off the field." Replace "walked slowly" with ONE precise verb that shows he was in pain: _______________', lines: 1 },
+          { number: 11, text: 'Explain: why is a precise noun like "thorny devil" better than "animal" in a description?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Write Your Own',
+        instructions: 'Write vivid sentences and a paragraph using precise nouns, strong verbs and well-chosen adjectives.',
+        questions: [
+          { number: 12, text: 'Write a sentence with TWO nouns, ONE verb and TWO adjectives about an Australian landscape. Label each word class in brackets.', lines: 2 },
+          { number: 13, text: 'Write a sentence about your school oval or local park that uses a precise noun, a strong verb and one adjective. The sentence must create a clear mental image.', lines: 2 },
+          { number: 14, text: 'Write a 4–5 sentence description of an Australian animal. Use precise nouns, strong verbs and vivid adjectives. Underline nouns in blue, circle verbs and box adjectives.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y4-eng-14': {
+    sessionId: 'y4-eng-14',
+    title: 'Grammar: Sentence Types',
+    subject: 'English',
+    yearLevel: 4,
+    victorianCode: 'VCELA313',
+    sections: [
+      {
+        heading: 'Section 1 – Identify and Label Sentence Types',
+        instructions: 'Label each sentence as Statement (St), Question (Q), Command (C) or Exclamation (Ex). Then write the correct end punctuation.',
+        questions: [
+          { number: 1, text: '"The Murray–Darling is Australia\'s longest river system___" Type: ___', lines: 1 },
+          { number: 2, text: '"Have you ever seen a cassowary in the wild___" Type: ___', lines: 1 },
+          { number: 3, text: '"Pack your hat and drink bottle before you leave___" Type: ___', lines: 1 },
+          { number: 4, text: '"What a spectacular catch that was___" Type: ___', lines: 1 },
+          { number: 5, text: '"Don\'t feed the wild birds at the picnic area___" Type: ___', lines: 1 },
+          { number: 6, text: 'How can you tell a command from a statement? Write a rule and give one example of each: _______________', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Convert and Create',
+        instructions: 'Transform sentences between types and write your own examples.',
+        questions: [
+          { number: 7, text: 'Turn this STATEMENT into a QUESTION: "The AFL grand final is held at the MCG every year."', lines: 1 },
+          { number: 8, text: 'Turn this STATEMENT into a COMMAND: "Students should arrive at school on time."', lines: 1 },
+          { number: 9, text: 'Turn this STATEMENT into an EXCLAMATION: "That goal was impressive."', lines: 1 },
+          { number: 10, text: 'What is a RHETORICAL QUESTION? Write one about Australian wildlife.', lines: 2 },
+          { number: 11, text: 'A writer uses ONLY statements throughout their story. What effect does this create? How could they improve it?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Write Using All Four Sentence Types',
+        instructions: 'Demonstrate your understanding by writing a passage that uses all four sentence types purposefully.',
+        questions: [
+          { number: 12, text: 'Write one of EACH sentence type about Australian animals or sport (4 sentences total). Label each one in brackets: [Statement], [Question], [Command], [Exclamation].', lines: 4 },
+          { number: 13, text: 'Write a short persuasive passage (5–7 sentences) arguing that your class should go on a particular excursion. Use ALL FOUR sentence types — label each one.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y4-mat-07': {
+    sessionId: 'y4-mat-07',
+    title: 'Patterns and Algebra',
+    subject: 'Maths',
+    yearLevel: 4,
+    victorianCode: 'VCMNA145',
+    sections: [
+      {
+        heading: 'Section 1 – Pattern Rules and Sequences',
+        instructions: 'Find the rule for each pattern and extend it by writing the next three terms.',
+        questions: [
+          { number: 1, text: '4, 9, 14, 19, ___, ___, ___. Rule: _______________', lines: 1 },
+          { number: 2, text: '256, 128, 64, 32, ___, ___, ___. Rule: _______________', lines: 1 },
+          { number: 3, text: '3, 6, 12, 24, ___, ___, ___. Rule: _______________', lines: 1 },
+          { number: 4, text: '100, 93, 86, 79, ___, ___, ___. Rule: _______________', lines: 1 },
+          { number: 5, text: 'Which number does NOT belong in this pattern: 6, 12, 18, 25, 30? Circle it and explain why: _______________', lines: 1 },
+          { number: 6, text: 'A pattern starts at 5 and adds 7 each time. List the first 6 terms: ___, ___, ___, ___, ___, ___. What is the 10th term? ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Tables of Values and Variables',
+        instructions: 'Use tables and inverse operations to find missing values and unknown numbers.',
+        questions: [
+          { number: 7, text: 'Complete the table:\nTerm number: 1 | 2 | 3 | 4 | 5\nValue: 7 | 14 | 21 | __ | __\nRule: _______________', lines: 2 },
+          { number: 8, text: 'Find □: □ + 13 = 30. □ = ___. Working: _______________', lines: 1 },
+          { number: 9, text: 'Find □: 6 × □ = 54. □ = ___. Working: _______________', lines: 1 },
+          { number: 10, text: 'Find □: □ − 17 = 28. □ = ___. Working: _______________', lines: 1 },
+          { number: 11, text: 'Find □: □ ÷ 9 = 7. □ = ___. Working: _______________', lines: 1 },
+          { number: 12, text: 'Explain how to use the INVERSE OPERATION to solve □ + 15 = 40. What is the inverse of addition?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Patterns in Real Life',
+        instructions: 'Apply patterns and algebra to real-world problems. Show all working and write a sentence answer.',
+        questions: [
+          { number: 13, text: 'An AFL team scores 6 points for every goal. Complete the table:\nGoals: 1 | 2 | 3 | 4 | 5\nPoints: 6 | __ | __ | __ | __\nIf they score 9 goals, how many points do they earn? Show working:', lines: 3 },
+          { number: 14, text: 'A plant grows 5 cm every week. It is 10 cm tall now. How tall will it be after 6 more weeks? Show working using a table or a rule:', lines: 3 },
+          { number: 15, text: 'A bakery makes 15 muffins in the first hour and 12 more each hour after that. How many muffins does it have after hour 4? Show your working:', lines: 3 },
+          { number: 16, text: 'Create your own number pattern (at least 6 terms). Write the rule clearly. Then write a word problem set in Australia that uses your pattern.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y4-mat-08': {
+    sessionId: 'y4-mat-08',
+    title: 'Geometry: 2D Shapes',
+    subject: 'Maths',
+    yearLevel: 4,
+    victorianCode: 'VCMMG160',
+    sections: [
+      {
+        heading: 'Section 1 – Classify Shapes',
+        instructions: 'Classify triangles and quadrilaterals by their properties.',
+        questions: [
+          { number: 1, text: 'A triangle has sides of 6 cm, 6 cm and 9 cm. What type is it? _______________. How do you know?', lines: 1 },
+          { number: 2, text: 'A triangle has all three sides of different lengths. What type is it? _______________', lines: 1 },
+          { number: 3, text: 'Name a quadrilateral that has: 4 equal sides AND 4 right angles: _______________. 4 equal sides but NO right angles: _______________', lines: 1 },
+          { number: 4, text: 'True or false: "A square is always a rectangle." ___ Explain why: _______________', lines: 1 },
+          { number: 5, text: 'How many lines of symmetry does each shape have?\nSquare: ___ Rectangle: ___ Equilateral triangle: ___ Isosceles triangle: ___', lines: 1 },
+          { number: 6, text: 'Describe TWO differences between a rhombus and a square:', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Angles in Shapes',
+        instructions: 'Use the angle sum rules for triangles (180°) and quadrilaterals (360°) to find missing angles.',
+        questions: [
+          { number: 7, text: 'Two angles of a triangle are 55° and 75°. Find the third angle. Show working:', lines: 2 },
+          { number: 8, text: 'A triangle has one angle of 90° and one of 35°. Find the third angle. What type of angle is 55°? (Acute/Obtuse/Right)', lines: 2 },
+          { number: 9, text: 'Three angles of a quadrilateral are 95°, 80° and 110°. Find the fourth angle. Show working:', lines: 2 },
+          { number: 10, text: 'Classify each angle as Acute, Right, Obtuse or Reflex:\n45°: ___ 90°: ___ 135°: ___ 200°: ___', lines: 1 },
+          { number: 11, text: 'Explain how you know that quadrilateral angles always sum to 360° (Hint: think about splitting into triangles):', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Shapes in the Real World',
+        instructions: 'Apply your knowledge of 2D shapes to real-world contexts.',
+        questions: [
+          { number: 12, text: 'Name THREE objects in your home or school that are quadrilaterals. For each, write the type of quadrilateral and ONE property that makes it that type.', lines: 3 },
+          { number: 13, text: 'A triangular road sign has one angle of 60°. If the triangle is equilateral, what are the other two angles? ___. How many lines of symmetry does it have? ___', lines: 1 },
+          { number: 14, text: 'Look at the tiles, windows or floors around you. Sketch or describe TWO different 2D shapes you can find. Write one property of each.', lines: 3 },
+          { number: 15, text: 'Explain in your own words: why is a square a special type of rectangle AND a special type of rhombus?', lines: 2 },
+        ],
+      },
+    ],
+  },
+
+  'y4-mat-09': {
+    sessionId: 'y4-mat-09',
+    title: 'Time and Data',
+    subject: 'Maths',
+    yearLevel: 4,
+    victorianCode: 'VCMMG163',
+    sections: [
+      {
+        heading: 'Section 1 – 12-Hour and 24-Hour Time',
+        instructions: 'Convert between 12-hour and 24-hour time.',
+        questions: [
+          { number: 1, text: 'Convert to 24-hour time:\na) 3:15 PM → ___  b) 9:00 AM → ___  c) 11:45 PM → ___  d) 12:00 PM → ___', lines: 1 },
+          { number: 2, text: 'Convert to 12-hour time:\na) 0745 → ___  b) 1330 → ___  c) 2210 → ___  d) 1605 → ___', lines: 1 },
+          { number: 3, text: 'Which times are in the MORNING (AM)? Circle them: 0835 / 1420 / 0015 / 2355 / 1145', lines: 1 },
+          { number: 4, text: 'Write the rule for converting PM times to 24-hour time: _______________. Why is 12:00 PM = 1200 a special case?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Elapsed Time and Timetables',
+        instructions: 'Calculate elapsed time and read timetables.',
+        questions: [
+          { number: 5, text: 'How long is it from 9:45 AM to 12:20 PM? Use the count-forward method:\n9:45 → 10:00 = ___ min\n10:00 → 12:00 = ___ hours\n12:00 → 12:20 = ___ min\nTotal: ___', lines: 2 },
+          { number: 6, text: 'A movie starts at 2:15 PM and ends at 4:40 PM. How long is the movie? Show your working:', lines: 2 },
+          { number: 7, text: 'Use this train timetable:\nCity: 0830 | 0910 | 1015\nSouth Station: 0915 | 0955 | 1100\nBay Terminal: 0940 | 1020 | 1125\n\nIf you catch the 0910 from the City, when do you arrive at Bay Terminal? ___\nHow long is the journey? ___', lines: 2 },
+          { number: 8, text: 'You need to arrive at school by 8:45 AM. The walk takes 20 minutes and breakfast takes 15 minutes. What time must you wake up? Show working:', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Collecting and Reading Data',
+        instructions: 'Read data displays and answer questions.',
+        questions: [
+          { number: 9, text: 'A bar graph shows students\' favourite Australian animals:\nKoala: 8  Kangaroo: 6  Platypus: 3  Wombat: 5  Echidna: 3\n\nWhat was the most popular animal? ___ Least popular? ___\nHow many more students chose Koala than Platypus? ___\nHow many students were surveyed in total? ___', lines: 2 },
+          { number: 10, text: 'In a picture graph, each 🐨 symbol represents 4 students. A column shows 3.5 symbols. How many students does this represent? Show working:', lines: 1 },
+          { number: 11, text: 'Survey 8–10 people in your home about their favourite sport. Create a tally table and draw a bar graph here. Label both axes. What does your data show?', lines: 0, hasBox: true },
+          { number: 12, text: 'Write TWO conclusions from the data you collected in Question 11:', lines: 2 },
+        ],
+      },
+    ],
+  },
+
+  'y4-mat-10': {
+    sessionId: 'y4-mat-10',
+    title: 'Probability',
+    subject: 'Maths',
+    yearLevel: 4,
+    victorianCode: 'VCMSP165',
+    sections: [
+      {
+        heading: 'Section 1 – Language of Chance and the Probability Scale',
+        instructions: 'Use probability language and place events on the scale from 0 (impossible) to 1 (certain).',
+        questions: [
+          { number: 1, text: 'Place these events on the probability scale by writing a word: impossible / unlikely / even chance / likely / certain\na) Rolling a 7 on a standard die: ___\nb) Flipping heads on a fair coin: ___\nc) The sun rising tomorrow in Australia: ___\nd) Drawing a red card from a standard deck: ___', lines: 2 },
+          { number: 2, text: 'Write your own example of an UNLIKELY event that could happen in Australia: _______________', lines: 1 },
+          { number: 3, text: 'Write your own example of an IMPOSSIBLE event: _______________', lines: 1 },
+          { number: 4, text: 'A spinner has 8 equal sections: 3 red, 3 blue, 2 yellow. Where on the probability scale does "spinning red" sit? Is it closer to impossible, even chance or certain? Explain.', lines: 2 },
+          { number: 5, text: 'What does it mean for an event to have an "even chance"? Give one real-life example: _______________', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Calculating Probability',
+        instructions: 'Use the formula P(event) = favourable outcomes ÷ total outcomes to calculate probability as a fraction.',
+        questions: [
+          { number: 6, text: 'A bag has 4 red, 3 blue and 3 green counters (10 total).\nP(red) = ___ P(blue) = ___ P(green) = ___\nDo all probabilities add to 1? Check: ___ + ___ + ___ = ___', lines: 2 },
+          { number: 7, text: 'A spinner has 4 equal sections: red, blue, green and yellow.\nP(blue) = ___ P(NOT blue) = ___\nHow do you calculate P(NOT blue)? _______________', lines: 2 },
+          { number: 8, text: 'A bag has 2 red and 8 blue counters. What is P(red)? ___ Where would you place this on the probability scale: impossible, unlikely, even chance, likely or certain? ___', lines: 1 },
+          { number: 9, text: 'A 6-sided die is rolled. Calculate:\nP(rolling a 6): ___ P(rolling an even number): ___ P(rolling a number less than 5): ___', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Probability Experiments and Word Problems',
+        instructions: 'Apply probability to experiments and real-life problems.',
+        questions: [
+          { number: 10, text: 'A coin is flipped 40 times. How many heads does theoretical probability predict? Show working:', lines: 2 },
+          { number: 11, text: 'You roll a die 60 times. How many times do you expect to roll a 4? Show working:', lines: 2 },
+          { number: 12, text: 'Flip a coin 20 times at home. Record your results using tally marks:\nHeads: ___ (tally) Total: ___  Tails: ___ (tally) Total: ___\nYour experimental P(heads) = ___/20. How does this compare to the theoretical prediction of 1/2?', lines: 3 },
+          { number: 13, text: 'Explain in your own words: why does doing MORE trials in a probability experiment usually give results that are closer to the theoretical probability?', lines: 2 },
+          { number: 14, text: 'A class game gives a prize if you roll a 6 on a die. Is this fair? What is the probability of winning? How would you change the rules to make it more likely to win?', lines: 3 },
+        ],
+      },
+    ],
+  },
+
   // ─────────────────────────────────────────────────────────────
   // Y6 MATHS
   // ─────────────────────────────────────────────────────────────
@@ -853,6 +1361,560 @@ export const homeworkSheets: Record<string, HomeworkSheet> = {
           { number: 20, text: 'A rectangle has a perimeter of 48 cm. Its length is 14 cm. Write an equation and find the width. Show working:', lines: 3 },
           { number: 21, text: 'Mia and Tom share $72. Tom gets $12 more than Mia. How much does each person get? Write equations and solve:', lines: 4 },
           { number: 22, text: 'A pattern of tables and chairs: 1 table needs 4 chairs, 2 tables need 6 chairs, 3 tables need 8 chairs. Write a formula for the number of chairs (c) given the number of tables (t). How many chairs for 10 tables?', lines: 4 },
+        ],
+      },
+    ],
+  },
+
+  // ─────────────────────────────────────────────────────────────
+  // Y5 ENGLISH
+  // ─────────────────────────────────────────────────────────────
+
+  'y5-eng-01': {
+    sessionId: 'y5-eng-01',
+    title: 'Narrative: Point of View',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELY321',
+    sections: [
+      {
+        heading: 'Section 1 – Understanding Point of View',
+        instructions: 'Answer the following questions about narrative point of view.',
+        questions: [
+          { number: 1, text: 'What pronouns tell you a story uses first person narration? Give two examples.', lines: 1 },
+          { number: 2, text: 'What is the difference between third person limited and third person omniscient narration?', lines: 2 },
+          { number: 3, text: 'Read: "I gripped the torch and crept towards the sound." What point of view is this? How do you know?', lines: 2 },
+          { number: 4, text: 'Read: "Maya didn\'t know it yet, but the stranger had been watching her all morning." What point of view is this? How do you know?', lines: 2 },
+          { number: 5, text: 'What is "head-hopping" in fiction writing? Why should writers avoid it?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Analysing Point of View',
+        instructions: 'Read the two passages below, then answer the questions that follow.',
+        questions: [
+          { number: 6, text: 'PASSAGE A: "I pressed myself against the cold rock and held my breath. My heart was hammering so loud I was sure they could hear it."\nPASSAGE B: "Zara pressed herself against the cold rock. Outside, Torres paused — he had heard something. Her panicked breathing was about to give her away."\n\nWhich passage creates dramatic irony? Explain why.', lines: 3 },
+          { number: 7, text: 'In Passage A, what does the reader NOT know that creates tension?', lines: 2 },
+          { number: 8, text: 'In Passage B, what does the reader know that Zara does NOT know? How does this affect the tension?', lines: 2 },
+          { number: 9, text: 'If you were writing a mystery where the reader should be kept in the dark, which point of view would you choose? Explain your reasoning.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Choose a tense moment and write it twice. Use the space provided.',
+        questions: [
+          { number: 10, text: 'Describe your chosen moment and setting in one sentence (e.g. a bushfire approaching, a penalty shootout, being lost in the bush).', lines: 1 },
+          { number: 11, text: 'Write your moment in FIRST PERSON (4–5 sentences). Use "I" and let the reader share your fear or excitement.', lines: 4 },
+          { number: 12, text: 'Now write the SAME moment in THIRD PERSON OMNISCIENT (4–5 sentences). Reveal something the character does not know.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-02': {
+    sessionId: 'y5-eng-02',
+    title: 'Persuasive Texts',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELY322',
+    sections: [
+      {
+        heading: 'Section 1 – Persuasive Techniques',
+        instructions: 'Answer the following questions about persuasive writing.',
+        questions: [
+          { number: 1, text: 'What is the purpose of a persuasive text? How is it different from a balanced discussion?', lines: 2 },
+          { number: 2, text: 'What is a rhetorical question? Write one example about a topic of your choice.', lines: 2 },
+          { number: 3, text: 'Underline the emotive language in this sentence and explain its effect: "The heartbreaking destruction of our ancient forests must be stopped before it is too late."', lines: 2 },
+          { number: 4, text: 'What does the OREO structure stand for? Write out each letter with its meaning.', lines: 2 },
+          { number: 5, text: 'What does it mean to "concede and refute" in persuasive writing? Why does this make your argument stronger?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Analysing a Persuasive Text',
+        instructions: 'Read this short opinion piece, then answer the questions below.\n\n"Every day, millions of Australian students sit inside during lunch when they could be learning in nature. Research proves that just 20 minutes of outdoor time improves focus by 35%. Will we ignore the science while our children\'s wellbeing suffers? Schools must act now."',
+        questions: [
+          { number: 6, text: 'What is the writer\'s position? Write it as a clear statement.', lines: 1 },
+          { number: 7, text: 'Identify one example of emotive language and explain its effect on the reader.', lines: 2 },
+          { number: 8, text: 'Find the rhetorical question. What is it designed to make the reader feel?', lines: 2 },
+          { number: 9, text: 'What evidence does the writer use? Is it convincing? Give a reason for your answer.', lines: 2 },
+          { number: 10, text: 'Write a counter-argument someone might raise against this opinion piece.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Plan and write a persuasive paragraph on a topic you feel strongly about.',
+        questions: [
+          { number: 11, text: 'My topic and clear position statement:', lines: 1 },
+          { number: 12, text: 'Write ONE OREO body paragraph defending your position. Include emotive language, a piece of evidence and link back to your position.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-03': {
+    sessionId: 'y5-eng-03',
+    title: 'Figurative Language',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELY323',
+    sections: [
+      {
+        heading: 'Section 1 – Identifying Figurative Devices',
+        instructions: 'Identify the figurative device in each sentence (simile, metaphor or personification) and explain what is being compared or given human qualities.',
+        questions: [
+          { number: 1, text: '"The harbour shimmered like crumpled silver foil." Device: ___. What is being compared?', lines: 1 },
+          { number: 2, text: '"The storm was a demolition crew sent to flatten everything." Device: ___. What is being compared?', lines: 1 },
+          { number: 3, text: '"The gum trees leaned in to listen as she told her secret." Device: ___. What human quality is given?', lines: 1 },
+          { number: 4, text: '"The outback was a furnace that broiled everything it touched." Device: ___. What effect does this create?', lines: 2 },
+          { number: 5, text: '"The creek moved like old, tired blood." Device: ___. What impression does this create?', lines: 2 },
+          { number: 6, text: 'What is the key difference between a simile and a metaphor? Give one example of each.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Analysing Figurative Language',
+        instructions: 'Use the analysis formula — "This [device] creates the impression of [quality] because [explanation]" — to answer the following.',
+        questions: [
+          { number: 7, text: 'Analyse: "The highway swallowed car after car, never satisfied." Identify the device and explain its effect on the reader.', lines: 3 },
+          { number: 8, text: 'Explain why "as cold as ice" is considered a weak simile at Year 5 level.', lines: 2 },
+          { number: 9, text: 'Write TWO personification sentences about the same subject — one that makes it feel welcoming and one that makes it feel threatening.', lines: 3 },
+          { number: 10, text: 'What is an extended metaphor? Write one example across two sentences about an Australian storm.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Choose an Australian place or event and write a descriptive paragraph using figurative language.',
+        questions: [
+          { number: 11, text: 'My chosen subject (e.g. the MCG during a final, a Queensland storm, the Great Barrier Reef):', lines: 1 },
+          { number: 12, text: 'Write a descriptive paragraph (5–7 sentences) about your subject. You must include at least ONE simile, ONE metaphor and ONE personification. Underline each device and label it in the margin.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-04': {
+    sessionId: 'y5-eng-04',
+    title: 'News Reports',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELY324',
+    sections: [
+      {
+        heading: 'Section 1 – News Report Features',
+        instructions: 'Answer the following questions about the features and language of news reports.',
+        questions: [
+          { number: 1, text: 'What are the 5Ws? Write each one out in full.', lines: 1 },
+          { number: 2, text: 'What does the "inverted pyramid" structure mean in news report writing?', lines: 2 },
+          { number: 3, text: 'What is the difference between a headline, a byline and a lead paragraph?', lines: 2 },
+          { number: 4, text: 'Rewrite this headline using correct news style (present tense, active voice, no unnecessary articles): "Yesterday some students from a local school in Melbourne went and won a big science competition."', lines: 1 },
+          { number: 5, text: 'Which sentence uses objective language? Circle your answer and explain.\nA: "The shocking and outrageous decision devastated the community."\nB: "The council voted 7–4 on Tuesday to close the library from January."', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Analysing a Lead Paragraph',
+        instructions: 'Read the lead paragraph below, then answer the questions.\n\n"Students from Parkview Primary School planted 1,000 native trees at Yarra Bend Park on Friday as part of a Victorian Government restoration initiative to combat habitat loss."',
+        questions: [
+          { number: 6, text: 'Identify each of the 5Ws in this lead. Write WHO, WHAT, WHEN, WHERE and WHY with your answers.', lines: 3 },
+          { number: 7, text: 'Is anything missing from this lead? What extra detail would improve it?', lines: 2 },
+          { number: 8, text: 'Why should a quote in a news report always be attributed to a named person?', lines: 2 },
+          { number: 9, text: 'Write a quote (1–2 sentences) that a student from the tree-planting event might say. Set it out correctly with speech marks and attribution.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Write a short news report about a real or invented event at your school.',
+        questions: [
+          { number: 10, text: 'My headline (short, present tense, active voice):', lines: 1 },
+          { number: 11, text: 'Write your full news report — headline, lead paragraph (all 5Ws), one body paragraph, and one quote. Use objective language throughout.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-05': {
+    sessionId: 'y5-eng-05',
+    title: 'Vocabulary in Context',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELY325',
+    sections: [
+      {
+        heading: 'Section 1 – Context Clues',
+        instructions: 'Use context clues to work out the meaning of each underlined word. State which type of clue you used (definition, example, contrast or inference).',
+        questions: [
+          { number: 1, text: '"The wombat is nocturnal, meaning it is active at night." Meaning of nocturnal: ___. Clue type: ___', lines: 1 },
+          { number: 2, text: '"Unlike her gregarious brother who loved parties, Priya was solitary by nature." Meaning of gregarious: ___. Clue type: ___', lines: 1 },
+          { number: 3, text: '"The politician\'s obfuscation made it impossible for journalists to get a straight answer." Meaning of obfuscation: ___. Clue type: ___', lines: 2 },
+          { number: 4, text: '"Marsupials, such as kangaroos, wombats and possums, carry their young in pouches." Meaning of marsupials: ___. Clue type: ___', lines: 1 },
+          { number: 5, text: 'Using the REAP strategy (Read, Examine, Ask, Predict), work out the meaning of "resilient" in: "The ecosystem was remarkably resilient despite the bushfire."', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Connotations and Word Choice',
+        instructions: 'Answer these questions about connotations and precise vocabulary.',
+        questions: [
+          { number: 6, text: 'Place these synonyms for "thin" on a spectrum from most negative to most positive: scrawny, slender, slim, bony, thin. Explain the difference between the most negative and most positive.', lines: 3 },
+          { number: 7, text: 'A journalist wants to write a neutral report. Which verb is most appropriate: "claimed", "stated" or "admitted"? Explain why the other two are not neutral.', lines: 2 },
+          { number: 8, text: 'Rewrite this vague sentence using precise vocabulary: "The rain made the river bigger and it flowed faster."', lines: 2 },
+          { number: 9, text: 'If you know the root "chronos" means time, decode these words: chronology, synchronise, chronic.', lines: 2 },
+          { number: 10, text: 'What is the difference between a word\'s denotation and its connotation? Give an example using "frugal" and "miserly".', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Apply your vocabulary skills in a short piece of writing.',
+        questions: [
+          { number: 11, text: 'Choose ONE of the following topics and write 4–5 sentences about it. You must: (a) use at least three precise/ambitious vocabulary choices, (b) avoid vague words like "nice", "big" or "bad", and (c) circle your three best word choices.\nTOPICS: a storm rolling in over the coast / a busy school canteen at lunchtime / the feeling of crossing the finish line.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-06': {
+    sessionId: 'y5-eng-06',
+    title: 'Editing and Revising',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELY326',
+    sections: [
+      {
+        heading: 'Section 1 – Revising and Editing Knowledge',
+        instructions: 'Answer the following questions about the revision and editing process.',
+        questions: [
+          { number: 1, text: 'What is the difference between revising and editing? Give one example of each.', lines: 2 },
+          { number: 2, text: 'What is "sentence variety" and why does it improve a piece of writing?', lines: 2 },
+          { number: 3, text: 'What are cohesive devices? Name two examples.', lines: 2 },
+          { number: 4, text: 'Read this paragraph: "The dog ran. The dog barked. The dog jumped. The dog was excited." Identify the problem and suggest two specific improvements.', lines: 3 },
+          { number: 5, text: 'Name TWO things you should check when editing for surface errors.', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Revise and Edit a Paragraph',
+        instructions: 'Read the paragraph below carefully, then answer the questions.\n\n"Last saturday our class went to the museum. It was good. We saw dinosaur bones. They was very big. I liked the ones with the long necks best. We also saw rocks and stuff. Then we went home."',
+        questions: [
+          { number: 6, text: 'Find and correct THREE surface errors (spelling, punctuation or grammar) in the paragraph. Write each correction.', lines: 3 },
+          { number: 7, text: 'The paragraph has poor sentence variety. Rewrite the first three sentences as ONE well-constructed complex sentence.', lines: 2 },
+          { number: 8, text: 'Replace the vague words "good", "big" and "stuff" with more precise vocabulary.', lines: 2 },
+          { number: 9, text: 'Add a cohesive device to link this sentence to the previous one: "___ we also saw an exhibition about ancient Egypt."', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Write and then self-edit a short paragraph.',
+        questions: [
+          { number: 10, text: 'Write a paragraph (5–6 sentences) about an experience that mattered to you. Focus on varied sentence length and precise vocabulary.', lines: 0, hasBox: true },
+          { number: 11, text: 'Self-edit checklist — tick each item once you have checked your paragraph above:\n☐ Sentences vary in length (some short, some longer)\n☐ No two sentences in a row start the same way\n☐ At least two precise/ambitious vocabulary choices\n☐ At least one cohesive device (e.g. however, furthermore, as a result)\n☐ Capital letters and punctuation correct', lines: 1 },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-07': {
+    sessionId: 'y5-eng-07',
+    title: 'Poetry: Forms and Features',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELT310',
+    sections: [
+      {
+        heading: 'Section 1 – Poetry Knowledge',
+        instructions: 'Answer the following questions about poetic forms and features.',
+        questions: [
+          { number: 1, text: 'What is the syllable pattern for a haiku? Write it out (e.g. __ / __ / __) and give an example.', lines: 2 },
+          { number: 2, text: 'What is free verse poetry? How is it different from poetry that uses rhyme and regular rhythm?', lines: 2 },
+          { number: 3, text: 'What is alliteration? Write one example from your own imagination about the sea.', lines: 2 },
+          { number: 4, text: 'What is onomatopoeia? Write three onomatopoeic words related to a thunderstorm.', lines: 1 },
+          { number: 5, text: 'How does a line break in poetry differ from a full stop? What effect can a well-placed line break create?', lines: 2 },
+          { number: 6, text: 'What is imagery in poetry? How is it different from the literal meaning of the words?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Analysing a Poem',
+        instructions: 'Read the haiku below, then answer the questions.\n\n"Red dust on the track —\nthe wedge-tail rides the hot air,\nnothing moves below."',
+        questions: [
+          { number: 7, text: 'Count the syllables in each line. Does this haiku follow the 5-7-5 pattern?', lines: 2 },
+          { number: 8, text: 'What image does the poem create? What mood or feeling does it give the reader?', lines: 2 },
+          { number: 9, text: 'Identify ONE example of imagery in the poem. Explain what it makes you picture.', lines: 2 },
+          { number: 10, text: 'What Australian setting does this poem describe? List two specific details as evidence.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Write your own poems using the forms you studied in this lesson.',
+        questions: [
+          { number: 11, text: 'Write a haiku (5-7-5 syllables) about an Australian animal, place or season. Count your syllables carefully and write them beside each line.', lines: 3 },
+          { number: 12, text: 'Now write a free verse poem (6–10 lines) about the same subject. Focus on strong imagery — help the reader see, hear and feel your subject. Use at least one sound device (alliteration or onomatopoeia).', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-08': {
+    sessionId: 'y5-eng-08',
+    title: 'Speaking: Persuasive Speech',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELY323',
+    sections: [
+      {
+        heading: 'Section 1 – Persuasive Speaking Skills',
+        instructions: 'Answer the following questions about delivering a persuasive speech.',
+        questions: [
+          { number: 1, text: 'Name THREE vocal techniques that make a persuasive speech more effective. For each one, explain how it helps the audience.', lines: 3 },
+          { number: 2, text: 'What is the purpose of deliberate pausing in a speech? When would you pause for maximum effect?', lines: 2 },
+          { number: 3, text: 'What is the difference between a written opinion piece and a spoken persuasive speech? Name two differences.', lines: 2 },
+          { number: 4, text: 'What is the rule of three in rhetoric? Write an example sentence that uses it.', lines: 2 },
+          { number: 5, text: 'Why is eye contact important when delivering a speech? What message does it send to the audience?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Analysing a Speech Extract',
+        instructions: 'Read this extract from a student speech, then answer the questions.\n\n"Every day, thousands of animals lose their homes because of deforestation. Every. Single. Day. How many more must suffer before we act? We can change this — we must change this — and we must change it now."',
+        questions: [
+          { number: 6, text: 'Identify TWO rhetorical techniques used in this extract and name them.', lines: 2 },
+          { number: 7, text: 'Why does the speaker repeat "Every. Single. Day." as three separate sentences? What effect does this create?', lines: 2 },
+          { number: 8, text: 'Identify the rhetorical question. What is it designed to make the audience feel?', lines: 2 },
+          { number: 9, text: 'Where would you pause if you were delivering this speech? Mark two spots with a / and explain why you chose those moments.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Plan and write a 2-minute persuasive speech.',
+        questions: [
+          { number: 10, text: 'My topic and position statement (one sentence):',  lines: 1 },
+          { number: 11, text: 'My strongest argument (OREO paragraph — one claim with reason and evidence):', lines: 3 },
+          { number: 12, text: 'Write your speech introduction and conclusion. Include: a strong hook, a clear position, a rhetorical question or the rule of three, and a call to action.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-09': {
+    sessionId: 'y5-eng-09',
+    title: 'Grammar: Complex Sentences',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELA319',
+    sections: [
+      {
+        heading: 'Section 1 – Subordinate Clauses and Conjunctions',
+        instructions: 'Answer these questions about complex sentences.',
+        questions: [
+          { number: 1, text: 'What is a subordinate clause? How is it different from a main clause?', lines: 2 },
+          { number: 2, text: 'Name four subordinating conjunctions and write a sentence using each one.', lines: 3 },
+          { number: 3, text: 'Combine these two simple sentences into one complex sentence using a subordinating conjunction:\n"It was raining heavily. We decided to stay inside."', lines: 2 },
+          { number: 4, text: 'Combine these two simple sentences into one complex sentence:\n"She studied hard every night. She passed the test."', lines: 2 },
+          { number: 5, text: 'When a subordinate clause comes at the START of a sentence, what punctuation do you need? Write an example.', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Identifying and Using Complex Sentences',
+        instructions: 'Read each sentence and answer the questions.',
+        questions: [
+          { number: 6, text: 'Underline the main clause and circle the subordinate clause:\n"Although the team was exhausted, they kept running until the final whistle."', lines: 1 },
+          { number: 7, text: 'Underline the main clause and circle the subordinate clause:\n"Before she could answer, the teacher called on someone else."', lines: 1 },
+          { number: 8, text: 'Explain what relationship the subordinating conjunction "although" expresses between two ideas (e.g. cause, time, contrast, condition).', lines: 1 },
+          { number: 9, text: 'Explain what relationship the subordinating conjunction "because" expresses. Write a sentence using it to show a cause-and-effect relationship.', lines: 2 },
+          { number: 10, text: 'Rewrite this paragraph to replace at least TWO simple sentences with complex sentences:\n"The storm came. We ran inside. The rain was loud. We waited."', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Use complex sentences in your own writing.',
+        questions: [
+          { number: 11, text: 'Write 5–6 sentences describing what happens before and after school. Each sentence must be a complex sentence — use a different subordinating conjunction each time. Label the subordinating conjunction in each sentence.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-10': {
+    sessionId: 'y5-eng-10',
+    title: 'Reading: Inference and Interpretation',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELT305',
+    sections: [
+      {
+        heading: 'Section 1 – Literal vs Inferential Reading',
+        instructions: 'Answer these questions about reading comprehension strategies.',
+        questions: [
+          { number: 1, text: 'What is the difference between a literal question and an inferential question? Give an example of each.', lines: 2 },
+          { number: 2, text: 'What does it mean to "read between the lines"? Why can\'t you always find the answer by looking directly at the text?', lines: 2 },
+          { number: 3, text: 'What is "author intent"? Why is it useful to think about why an author included a particular detail?', lines: 2 },
+          { number: 4, text: 'When justifying an inference with evidence, what does the phrase "The text says… which suggests…" help you do?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Close Reading Practice',
+        instructions: 'Read the passage carefully, then answer all questions. Use evidence from the text.\n\n"Sam hadn\'t eaten since morning. He sat outside the bakery and watched people carrying warm bags past him, not looking down. He counted the coins in his pocket — three times. Then he stood up and walked in the opposite direction."',
+        questions: [
+          { number: 5, text: 'What do we know for certain from the text? List two literal facts.', lines: 2 },
+          { number: 6, text: 'Why does Sam count his coins three times? What does this suggest about his situation? Use evidence.', lines: 2 },
+          { number: 7, text: 'The text says people carried bags "not looking down". What does this suggest about how Sam felt?', lines: 2 },
+          { number: 8, text: 'Why does Sam walk "in the opposite direction"? Explain two possible inferences and decide which is more likely. Justify your choice.', lines: 3 },
+          { number: 9, text: 'What mood does this passage create? Identify TWO words or phrases that create this mood and explain each one.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Use your inference skills in your own writing.',
+        questions: [
+          { number: 10, text: 'Write a short passage (5–8 sentences) about a character in a difficult situation. DO NOT state the character\'s emotions directly — show them through actions, details and the environment. Your reader should be able to INFER how the character feels.', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-11': {
+    sessionId: 'y5-eng-11',
+    title: 'Apostrophes: Possession and Contractions',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELA413',
+    sections: [
+      {
+        heading: 'Section 1 – Apostrophe Rules',
+        instructions: 'Answer these questions about how apostrophes work.',
+        questions: [
+          { number: 1, text: 'What are the TWO jobs of an apostrophe? Give one example of each.', lines: 2 },
+          { number: 2, text: 'How do you form the possessive of a SINGULAR noun? Write the rule and give two examples.', lines: 2 },
+          { number: 3, text: 'How do you form the possessive of a PLURAL noun that already ends in -s? Give two examples.', lines: 2 },
+          { number: 4, text: 'Explain the difference between "its" and "it\'s". Write one sentence using each correctly.', lines: 2 },
+          { number: 5, text: 'Write the contractions for: do not, could not, I am, they are, we have.', lines: 1 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Fix the Sentences',
+        instructions: 'Each sentence below contains one or more apostrophe errors. Rewrite the sentence correctly and explain the error.',
+        questions: [
+          { number: 6, text: 'Error: "The dog wagged it\'s tail at the childrens\' teacher."\nCorrection:', lines: 2 },
+          { number: 7, text: 'Error: "Dont forget to pack the boy\'s lunches — all three of them have theres in the fridge."\nCorrection:', lines: 2 },
+          { number: 8, text: 'Error: "The teams jerseys were to small for the players\'." \nCorrection:', lines: 2 },
+          { number: 9, text: 'Error: "Its going to rain, so bring the Smiths\' umbrella\'s."\nCorrection:', lines: 2 },
+          { number: 10, text: 'Error: "The womens restroom is next to the manager\'s office\'s."\nCorrection:', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Practise using apostrophes correctly in your own writing.',
+        questions: [
+          { number: 11, text: 'Write a short paragraph (5–6 sentences) about a school excursion. You MUST correctly include: two possessive apostrophes (one singular, one plural), two contractions, and one use of "its" (no apostrophe).', lines: 0, hasBox: true },
+          { number: 12, text: 'Circle every apostrophe in your paragraph above and write beside each one whether it is POSSESSION (P) or CONTRACTION (C).', lines: 1 },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-12': {
+    sessionId: 'y5-eng-12',
+    title: 'Conjunctions and Complex Sentences',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELA414',
+    sections: [
+      {
+        heading: 'Section 1 – Types of Conjunctions',
+        instructions: 'Answer these questions about coordinating and subordinating conjunctions.',
+        questions: [
+          { number: 1, text: 'What does FANBOYS stand for? Write out all seven coordinating conjunctions.', lines: 1 },
+          { number: 2, text: 'What is the difference between a coordinating conjunction and a subordinating conjunction?', lines: 2 },
+          { number: 3, text: 'Write a sentence using "but" (coordinating) that shows a contrast between two ideas.', lines: 1 },
+          { number: 4, text: 'Write a sentence using "although" (subordinating) that shows a contrast between two ideas.', lines: 1 },
+          { number: 5, text: 'Give three examples of subordinating conjunctions that show TIME relationships (e.g. when, while…). Write a sentence using one of them.', lines: 2 },
+          { number: 6, text: 'Why is varying between short simple sentences and longer complex sentences important in writing?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Fix and Improve Sentences',
+        instructions: 'Use conjunctions to combine, fix or improve the following.',
+        questions: [
+          { number: 7, text: 'Combine using a coordinating conjunction: "We wanted to go to the beach. It was too windy."', lines: 1 },
+          { number: 8, text: 'Combine using a subordinating conjunction: "She finished her homework. She went outside to play."', lines: 1 },
+          { number: 9, text: 'Identify the conjunction and state whether it is coordinating or subordinating:\n"The footy match was cancelled because the oval was flooded."\nConjunction: ___. Type: ___', lines: 1 },
+          { number: 10, text: 'Rewrite this passage so it has better sentence variety — use at least TWO conjunctions and vary the sentence beginnings:\n"Tom was nervous. He walked in. He sat down. He picked up his pencil. He started writing."', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Show your conjunction skills in a piece of writing.',
+        questions: [
+          { number: 11, text: 'Write a paragraph (6–8 sentences) describing a challenge you have faced or a time you felt proud. You must use: at least two coordinating conjunctions (FANBOYS) and at least two subordinating conjunctions. Underline each conjunction and label it CO (coordinating) or SUB (subordinating).', lines: 0, hasBox: true },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-13': {
+    sessionId: 'y5-eng-13',
+    title: 'Subject, Predicate and Tense Consistency',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELA415',
+    sections: [
+      {
+        heading: 'Section 1 – Subject, Predicate and Agreement',
+        instructions: 'Answer these questions about sentence structure and subject-verb agreement.',
+        questions: [
+          { number: 1, text: 'Underline the SUBJECT and circle the PREDICATE in each sentence:\na) The golden retriever barked at the postie.\nb) Three students from our class won the science competition.\nc) Running along the beach every morning keeps Maya fit.', lines: 2 },
+          { number: 2, text: 'Choose the correct verb form. Circle your answer and explain why:\n"The group of students (was / were) waiting outside." — which is correct?', lines: 2 },
+          { number: 3, text: 'Fix the subject-verb agreement error in each sentence:\na) "The news are very upsetting today."\nb) "Everyone have to bring their own lunch."\nc) "Neither of the boys were listening."', lines: 2 },
+          { number: 4, text: 'What is tense consistency? Why is it important in storytelling and report writing?', lines: 2 },
+          { number: 5, text: 'How do you decide whether to write a story in past tense or present tense? What effect does present tense have on the reader?', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Fix the Tense Errors',
+        instructions: 'Each passage below contains tense consistency errors. Rewrite the passage correctly.',
+        questions: [
+          { number: 6, text: 'Fix the tense errors: "Mia runs to the park and stopped at the gate. She looks around and saw that nobody was there. She sits on the swing and started to cry."\nCorrected version:', lines: 3 },
+          { number: 7, text: 'Fix the tense errors: "The explorer climbed the ridge and looks out across the valley. He can see a river far below. He takes out his notebook and wrote down the coordinates."\nCorrected version:', lines: 3 },
+          { number: 8, text: 'Fix the subject-verb agreement errors:\na) "Each of the players have their own locker."\nb) "The team are playing well today." (hint: in Australian English, collective nouns can take a plural verb — is this error or style?)\nc) "Neither the teacher nor the students was aware of the fire drill."', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Demonstrate your control of tense and subject-verb agreement.',
+        questions: [
+          { number: 9, text: 'Write a paragraph (5–7 sentences) retelling an event from your school year (a sport, excursion, performance or experiment). Use PAST TENSE throughout and ensure every subject and verb agree. After writing, underline every verb to check consistency.', lines: 0, hasBox: true },
+          { number: 10, text: 'Now rewrite your first two sentences in PRESENT TENSE. How does the effect on the reader change?', lines: 2 },
+        ],
+      },
+    ],
+  },
+
+  'y5-eng-14': {
+    sessionId: 'y5-eng-14',
+    title: 'Paragraphs and Topic Sentences',
+    subject: 'English',
+    yearLevel: 5,
+    victorianCode: 'VCELA416',
+    sections: [
+      {
+        heading: 'Section 1 – Paragraph Structure',
+        instructions: 'Answer the following questions about paragraph structure.',
+        questions: [
+          { number: 1, text: 'What are the THREE essential parts of a well-structured paragraph? Describe what each one does.', lines: 3 },
+          { number: 2, text: 'What is a topic sentence? What two things should it always do?', lines: 2 },
+          { number: 3, text: 'Read this topic sentence: "School canteens should only sell healthy food." Write TWO supporting detail sentences that develop this idea.', lines: 2 },
+          { number: 4, text: 'Write a concluding sentence for the school canteen paragraph that links back to the topic sentence without simply repeating it.', lines: 1 },
+          { number: 5, text: 'What is wrong with this paragraph? Identify the problem and explain how to fix it:\n"I enjoy playing basketball. My favourite food is pizza. We practised at school last Tuesday. Our team is called the Rockets."', lines: 2 },
+        ],
+      },
+      {
+        heading: 'Section 2 – Improve a Weak Paragraph',
+        instructions: 'Read the weak paragraph below, then complete all tasks.\n\n"Animals are good. Some animals are pets. Pets help people. Dogs are nice. Cats are also nice. Animals can help sick people feel better."',
+        questions: [
+          { number: 6, text: 'Write a strong topic sentence for this paragraph. Your topic sentence should announce a clear idea that the whole paragraph will develop.', lines: 1 },
+          { number: 7, text: 'Choose the BEST supporting detail from the paragraph and improve it. Add a specific example or piece of evidence to strengthen it.', lines: 2 },
+          { number: 8, text: 'Write a concluding sentence that wraps up the paragraph\'s main idea and links back to the topic sentence.', lines: 1 },
+          { number: 9, text: 'Rewrite the entire paragraph using your topic sentence, improved supporting details, and concluding sentence. Aim for 4–5 sentences.', lines: 3 },
+        ],
+      },
+      {
+        heading: 'Section 3 – Writing Task',
+        instructions: 'Write two well-structured paragraphs on a topic of your choice.',
+        questions: [
+          { number: 10, text: 'Choose a topic (e.g. why your school should have more sport, why space exploration matters, why reading is important). Write TWO separate paragraphs — each with a clear topic sentence, at least two supporting details with evidence or examples, and a concluding sentence. Use a different idea in each paragraph.', lines: 0, hasBox: true },
+          { number: 11, text: 'Self-check: Label the topic sentence (TS), supporting details (SD) and concluding sentence (CS) in each of your paragraphs above.', lines: 1 },
         ],
       },
     ],

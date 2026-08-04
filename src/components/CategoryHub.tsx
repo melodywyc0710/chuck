@@ -168,8 +168,7 @@ function TaskCard({
         const dist = Math.hypot(e.clientX - s.x, e.clientY - s.y);
         if (dist < 8 && !isDragging && !menuOpen && !completedToday) {
           setRipple(true);
-          setTimeout(() => setRipple(false), 500);
-          onComplete();
+          setTimeout(() => { setRipple(false); onComplete(); }, 120);
         }
       }
     }
@@ -178,15 +177,31 @@ function TaskCard({
 
   const wrapperStyle: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
-    transition: isDragging ? transition : undefined,
+    transition: isDragging ? transition : 'scale 0.15s ease',
     gridColumn: size === 'half' ? 'span 1' : 'span 2',
     opacity: isDragging ? 0.35 : 1,
     touchAction: 'none',
     position: 'relative',
+    scale: ripple ? '0.93' : '1',
   };
 
   return (
-    <div ref={setNodeRef} style={wrapperStyle} className="select-none" {...attributes}>
+    // All pointer handlers on the same element as setNodeRef so dnd-kit
+    // receives events on the element it's tracking.
+    <div
+      ref={setNodeRef}
+      style={wrapperStyle}
+      className="select-none"
+      {...attributes}
+      {...listeners}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerLeave={() => {
+        if (holdTimerRef.current) { clearTimeout(holdTimerRef.current); holdTimerRef.current = null; }
+        pointerStartRef.current = null;
+      }}
+    >
 
       {/* Hold menu */}
       {menuOpen && (
@@ -222,20 +237,10 @@ function TaskCard({
           borderLeft: `3px solid ${completedToday ? 'rgba(255,255,255,0.08)' : pColor}`,
           opacity: completedToday ? 0.55 : 1,
           minHeight: size === 'half' ? 80 : undefined,
-          cursor: 'grab',
-        }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={() => {
-          if (holdTimerRef.current) { clearTimeout(holdTimerRef.current); holdTimerRef.current = null; }
-          pointerStartRef.current = null;
+          cursor: isDragging ? 'grabbing' : 'grab',
+          transition: 'background 0.2s',
         }}
       >
-        {/* Ripple */}
-        {ripple && (
-          <div className="absolute inset-0 rounded-[20px] pointer-events-none" style={{ background: pColor + '20', animation: 'card-ripple 0.45s ease-out forwards' }} />
-        )}
 
         <div className="px-4 py-3.5 flex flex-col gap-2">
           {/* Header row */}
@@ -305,12 +310,6 @@ function TaskCard({
         </div>
       </div>
 
-      <style>{`
-        @keyframes card-ripple {
-          0%   { opacity: 0.6; }
-          100% { opacity: 0; }
-        }
-      `}</style>
     </div>
   );
 }

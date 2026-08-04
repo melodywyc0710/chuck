@@ -10,6 +10,7 @@ import { sessionsByYear } from '../data/curriculum/index';
 import type { Session } from '../data/types';
 import { isSessionUnlocked, formatUnlockDate } from '../utils/weeklyUnlock';
 import { supabase } from '../lib/supabase';
+import { homeworkSheets } from '../data/homeworkSheets';
 
 const MASCOT_EMOJI = { owl: '🦉', fox: '🦊', panda: '🐼' };
 
@@ -267,14 +268,16 @@ export default function Home() {
                     Unlocks {formatUnlockDate(s.weekNumber)}
                   </div>
                 )}
-                {/* Homework link */}
-                <button
-                  onClick={() => { setActiveSessionId(s.id); setView('homework'); }}
-                  className="absolute text-[10px] text-gray-400 hover:text-gray-600 font-semibold"
-                  style={{ left: NODE_X[i % NODE_X.length], transform: 'translateX(-50%)', top: 100 }}
-                >
-                  📄 hw
-                </button>
+                {/* Homework link — only shown when a sheet exists */}
+                {homeworkSheets[s.id] && (
+                  <button
+                    onClick={() => { setActiveSessionId(s.id); setView('homework'); }}
+                    className="absolute text-[10px] text-gray-400 hover:text-gray-600 font-semibold"
+                    style={{ left: NODE_X[i % NODE_X.length], transform: 'translateX(-50%)', top: 100 }}
+                  >
+                    📄 hw
+                  </button>
+                )}
               </div>
             );
           })}

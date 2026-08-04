@@ -122,11 +122,12 @@ function TaskCard({
   const overdue = isOverdue(task, today);
   const activeToday = appliesToday(task, today, null);
 
-  // dnd-kit drag started → cancel hold timer & close menu
+  // dnd-kit drag started → cancel hold timer (menu should already be open or not)
   useEffect(() => {
     if (isDragging) {
       if (holdTimerRef.current) { clearTimeout(holdTimerRef.current); holdTimerRef.current = null; }
       setMenuOpen(false);
+      setDragDx(0);
     }
   }, [isDragging]);
 
@@ -630,8 +631,8 @@ export default function CategoryHub({ category, onClose }: Props) {
   const today = todayKey();
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { delay: 300, tolerance: 5 } }),
-    useSensor(TouchSensor,   { activationConstraint: { delay: 300, tolerance: 5 } }),
+    useSensor(PointerSensor, { activationConstraint: { delay: 600, tolerance: 5 } }),
+    useSensor(TouchSensor,   { activationConstraint: { delay: 600, tolerance: 5 } }),
   );
 
   useEffect(() => { load(); }, []);

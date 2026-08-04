@@ -735,22 +735,18 @@ export default function CategoryHub({ category, onClose }: Props) {
         )}
 
         {/* Category-specific panels */}
-        {tasks.length > 0 && (
-          <>
-            <div className="my-6 border-t border-white/5" />
-            {category === 'fitness' && (
-              <div className="fade-up" style={{ animationDelay: '0.2s' }}>
-                <p className="text-white/30 text-[10px] uppercase tracking-widest mb-3">Tracking</p>
-                <MetricPanels userId={user.id} />
-              </div>
-            )}
-            {category === 'focus' && (
-              <div className="fade-up" style={{ animationDelay: '0.2s' }}>
-                <p className="text-white/30 text-[10px] uppercase tracking-widest mb-3">Deep Work</p>
-                <DeepWorkTimer userId={user.id} />
-              </div>
-            )}
-          </>
+        <div className="my-6 border-t border-white/5" />
+        {category === 'fitness' && (
+          <div className="fade-up" style={{ animationDelay: '0.2s' }}>
+            <p className="text-white/30 text-[10px] uppercase tracking-widest mb-3">Tracking</p>
+            <MetricPanels userId={user.id} />
+          </div>
+        )}
+        {category === 'focus' && (
+          <div className="fade-up" style={{ animationDelay: '0.2s' }}>
+            <p className="text-white/30 text-[10px] uppercase tracking-widest mb-3">Deep Work</p>
+            <DeepWorkTimer userId={user.id} />
+          </div>
         )}
       </div>
 

@@ -43,6 +43,8 @@ export default function HomeScreen({
   const [history, setHistory] = useState<Completion[]>([]);
   const [showTraits, setShowTraits] = useState(false);
   const [showSpecies, setShowSpecies] = useState(false);
+  const [wiggling, setWiggling] = useState(false);
+  const [bubble, setBubble] = useState<string | null>(null);
 
   const tier = profile?.subscription_tier ?? 'free';
   const plus = isPlus(tier);
@@ -66,6 +68,29 @@ export default function HomeScreen({
   }
 
   if (!pet) return null;
+
+  const MOOD_MESSAGES: Record<string, string[]> = {
+    happy:   ['Yay! ✨', 'I love you!', 'Let\'s go! 🌟', 'So happy~', 'You\'re the best!'],
+    good:    ['Hi there! 👋', 'Keep it up!', 'Feeling good!', 'You got this~', '*happy wiggle*'],
+    meh:     ['...hi.', 'I\'m okay.', 'Maybe a goal today?', 'Mmmph.', 'Could be better~'],
+    sad:     ['I miss you...', 'Please come back 🥺', 'I\'m lonely...', 'Don\'t forget me~', '*sad eyes*'],
+  };
+
+  function getMoodKey(h: number) {
+    if (h >= 80) return 'happy';
+    if (h >= 60) return 'good';
+    if (h >= 40) return 'meh';
+    return 'sad';
+  }
+
+  function tapPet() {
+    if (wiggling) return;
+    const msgs = MOOD_MESSAGES[getMoodKey(pet!.happiness)];
+    setBubble(msgs[Math.floor(Math.random() * msgs.length)]);
+    setWiggling(true);
+    setTimeout(() => setWiggling(false), 600);
+    setTimeout(() => setBubble(null), 2200);
+  }
 
   const xpPct = pet.xp / pet.xp_to_next;
   const today = new Date().toISOString().slice(0, 10);
@@ -108,17 +133,29 @@ export default function HomeScreen({
 
         {/* Pet — compact */}
         <div className="flex items-center gap-4 mb-8 fade-up" style={{ animationDelay: '0.1s' }}>
-          <button onClick={() => setShowSpecies(true)} className="relative shrink-0">
-            <div className="relative w-16 h-16 rounded-full flex items-center justify-center overflow-hidden" style={{ background: '#141414', border: '1px solid #1E1E1E' }}>
-              {(() => {
-                const stageImg = getStageImage(pet.species, pet.level);
-                return stageImg
-                  ? <img src={stageImg} alt={pet.name} className="w-full h-full object-contain" />
-                  : <Star size={26} strokeWidth={1.5} color="white" opacity={0.7} />;
-              })()}
-              <span className="absolute -bottom-0.5 -right-0.5 text-white/30"><MoodIcon h={pet.happiness} size={12} /></span>
-            </div>
-          </button>
+          <div className="relative shrink-0">
+            {bubble && (
+              <div className="pet-bubble absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1.5 rounded-2xl text-xs font-medium z-20"
+                style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}>
+                {bubble}
+                <span className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-0 h-0" style={{ borderLeft: '6px solid transparent', borderRight: '6px solid transparent', borderTop: '6px solid #1e1e1e' }} />
+              </div>
+            )}
+            <button onClick={tapPet} className="relative block" aria-label="Pet melmel">
+              <div className={`relative w-16 h-16 rounded-full flex items-center justify-center overflow-hidden${wiggling ? ' pet-wiggle' : ''}`} style={{ background: '#141414', border: '1px solid #1E1E1E' }}>
+                {(() => {
+                  const stageImg = getStageImage(pet.species, pet.level);
+                  return stageImg
+                    ? <img src={stageImg} alt={pet.name} className="w-full h-full object-contain" />
+                    : <Star size={26} strokeWidth={1.5} color="white" opacity={0.7} />;
+                })()}
+                <span className="absolute -bottom-0.5 -right-0.5 text-white/30"><MoodIcon h={pet.happiness} size={12} /></span>
+              </div>
+            </button>
+            <button onClick={() => setShowSpecies(true)} className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center z-10" style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)' }} aria-label="Change species">
+              <Star size={9} strokeWidth={2} color="rgba(255,255,255,0.4)" />
+            </button>
+          </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2 mb-2">
               <h1 className="text-white text-xl font-semibold" style={{ letterSpacing: '-0.03em' }}>{pet.name}</h1>

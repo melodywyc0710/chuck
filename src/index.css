@@ -384,6 +384,10 @@
 html, body { margin: 0; font-family: 'Inter', sans-serif; background: #0A0A0A; color: white; }
 
 @keyframes eggShake { 0%,100%{transform:rotate(-8deg) scale(1.05)} 50%{transform:rotate(8deg) scale(1.05)} }
+@keyframes petWiggle { 0%{transform:rotate(0) scale(1)} 20%{transform:rotate(-10deg) scale(1.12)} 40%{transform:rotate(10deg) scale(1.12)} 60%{transform:rotate(-6deg) scale(1.08)} 80%{transform:rotate(4deg) scale(1.04)} 100%{transform:rotate(0) scale(1)} }
+@keyframes bubblePop { 0%{opacity:0;transform:scale(0.7) translateY(4px)} 15%{opacity:1;transform:scale(1.05) translateY(0)} 25%{transform:scale(1)} 80%{opacity:1} 100%{opacity:0;transform:scale(0.95) translateY(-4px)} }
+.pet-wiggle { animation: petWiggle 0.55s cubic-bezier(0.36,0.07,0.19,0.97) forwards; }
+.pet-bubble { animation: bubblePop 2.2s ease forwards; pointer-events:none; }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 .fade-up { opacity:0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards; }

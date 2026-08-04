@@ -160,8 +160,8 @@ export default function HomeScreen({
               <button
                 key={cat}
                 onClick={() => onCategory(cat)}
-                className="relative flex flex-col rounded-[24px] overflow-hidden text-left transition-all duration-200 active:scale-[0.97]"
-                style={{ background: '#111111', border: '1px solid #1e1e1e', minHeight: 160 }}
+                className="relative rounded-[24px] overflow-hidden text-left transition-all duration-200 active:scale-[0.97]"
+                style={{ background: '#111111', border: '1px solid #1e1e1e', minHeight: 160, display: 'flex', flexDirection: 'column', width: '100%' }}
               >
                 {/* Color glow top band */}
                 <div className="relative flex items-center justify-center" style={{ background: cfg.color, height: 88 }}>

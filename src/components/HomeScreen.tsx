@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type React from 'react';
-import { LogOut, Flame, Users, CreditCard, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles, Star } from 'lucide-react';
+import { LogOut, Flame, Users, CreditCard, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles, Star, BarChart2, Check } from 'lucide-react';
 import TraitAllocator from './TraitAllocator';
 import SpeciesSelector from './SpeciesSelector';
 import AiCheckin from './AiCheckin';
@@ -26,10 +26,11 @@ const CATEGORY_CONFIG: Record<GoalCategory, { label: string; Icon: React.Element
 
 
 export default function HomeScreen({
-  onFriends, onPayment, onCategory,
+  onFriends, onPayment, onStats, onCategory,
 }: {
   onFriends: () => void;
   onPayment: () => void;
+  onStats: () => void;
   onCategory: (c: GoalCategory) => void;
 }) {
   const pet = useAuthStore(s => s.pet);
@@ -89,6 +90,9 @@ export default function HomeScreen({
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-white/30 text-xs mr-1">{profile?.username}</span>
+            <button onClick={onStats} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
+              <BarChart2 size={15} strokeWidth={1.5} />
+            </button>
             <button onClick={onPayment} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 transition-colors">
               <CreditCard size={15} strokeWidth={1.5} />
             </button>
@@ -138,43 +142,62 @@ export default function HomeScreen({
         {/* Date */}
         <p className="text-white/25 text-xs mb-5 fade-up" style={{ animationDelay: '0.15s' }}>{todayLabel}</p>
 
-        {/* Category cards — Uiverse two-section style */}
+        {/* Category cards */}
         <div className="grid grid-cols-2 gap-3 fade-up" style={{ animationDelay: '0.2s' }}>
           {(Object.entries(CATEGORY_CONFIG) as [GoalCategory, typeof CATEGORY_CONFIG[GoalCategory]][]).map(([cat, cfg]) => {
             const catPromises = promises.filter(p => p.category === cat);
             const doneToday = catPromises.filter(p => todayDoneIds.has(p.id)).length;
             const allDone = catPromises.length > 0 && doneToday === catPromises.length;
+            const pct = catPromises.length > 0 ? doneToday / catPromises.length : 0;
+            // last 7 days streak dots
+            const last7 = Array.from({ length: 7 }, (_, i) => {
+              const d = new Date(); d.setDate(d.getDate() - (6 - i));
+              const key = d.toISOString().slice(0, 10);
+              return history.some(h => h.date_key === key && catPromises.some(p => p.id === h.promise_id));
+            });
+
             return (
               <button
                 key={cat}
                 onClick={() => onCategory(cat)}
-                className="cat-card"
-                style={{ '--cat-clr': cfg.color } as React.CSSProperties}
+                className="relative flex flex-col rounded-[24px] overflow-hidden text-left transition-all duration-200 active:scale-[0.97]"
+                style={{ background: '#111111', border: '1px solid #1e1e1e', minHeight: 160 }}
               >
-                {/* Colored top section */}
-                <div className="cat-card-top">
-                  <cfg.Icon size={36} strokeWidth={1.5} color="white" />
-                </div>
-                {/* Dark body */}
-                <div className="cat-card-body">
-                  <div className="cat-card-header">
-                    <span className="cat-card-title">{cfg.label}</span>
-                    <div className="cat-card-menu">
-                      <div className="cat-card-dot" />
-                      <div className="cat-card-dot" />
-                      <div className="cat-card-dot" />
+                {/* Color glow top band */}
+                <div className="relative flex items-center justify-center" style={{ background: cfg.color, height: 88 }}>
+                  {/* Subtle gradient overlay */}
+                  <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.15) 100%)' }} />
+                  <cfg.Icon size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.95, position: 'relative' }} />
+                  {allDone && catPromises.length > 0 && (
+                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.3)' }}>
+                      <Check size={12} color="white" strokeWidth={2.5} />
                     </div>
-                  </div>
-                  <p className="cat-card-value">
-                    {catPromises.length === 0 ? '—' : `${doneToday}/${catPromises.length}`}
-                  </p>
-                  <p className="cat-card-sub">
-                    {catPromises.length === 0
-                      ? cfg.tagline
-                      : allDone
-                        ? '✓ All done today'
-                        : `${catPromises.length - doneToday} remaining`}
-                  </p>
+                  )}
+                </div>
+
+                {/* Body */}
+                <div className="flex flex-col flex-1 px-4 pt-3 pb-3 gap-1" style={{ background: '#141414', marginTop: -6, borderRadius: '14px 14px 0 0' }}>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>{cfg.label}</span>
+
+                  {catPromises.length === 0 ? (
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>Tap to add goals</p>
+                  ) : (
+                    <>
+                      <p className="font-semibold text-white leading-none" style={{ fontSize: 22, letterSpacing: '-0.04em' }}>
+                        {doneToday}<span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', letterSpacing: 0 }}>/{catPromises.length}</span>
+                      </p>
+                      {/* Progress bar */}
+                      <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)', marginTop: 2 }}>
+                        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct * 100}%`, background: cfg.color }} />
+                      </div>
+                      {/* 7-day dots */}
+                      <div className="flex gap-1 mt-1.5">
+                        {last7.map((done, i) => (
+                          <div key={i} className="flex-1 h-1 rounded-full transition-all" style={{ background: done ? cfg.color : 'rgba(255,255,255,0.1)' }} />
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               </button>
             );

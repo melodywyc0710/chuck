@@ -82,10 +82,11 @@ function isOverdue(task: Promise_, today: string): boolean {
 // ─── Task Row ─────────────────────────────────────────────────────────────────
 
 function TaskRow({
-  task, completedToday, onComplete, onDelete, onPin, onMoveUp, onMoveDown, reorderMode,
+  task, completedToday, last7Days, onComplete, onDelete, onPin, onMoveUp, onMoveDown, reorderMode,
 }: {
   task: Promise_;
   completedToday: boolean;
+  last7Days: boolean[];
   onComplete: () => void;
   onDelete: () => void;
   onPin: () => void;
@@ -130,72 +131,88 @@ function TaskRow({
       )}
 
       <div
-        className="flex items-center gap-3 px-3 py-3 rounded-2xl transition-all"
-        style={{ background: completedToday ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)', opacity: completedToday ? 0.5 : 1 }}
+        className="flex flex-col px-4 py-3.5 rounded-[20px] transition-all"
+        style={{
+          background: completedToday ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.055)',
+          opacity: completedToday ? 0.55 : 1,
+          borderLeft: `3px solid ${completedToday ? 'rgba(255,255,255,0.08)' : pColor}`,
+        }}
         onMouseDown={handlePressStart} onMouseUp={handlePressEnd}
         onTouchStart={handlePressStart} onTouchEnd={handlePressEnd}
       >
-        {/* Drag handle */}
-        {reorderMode && (
-          <div className="flex flex-col gap-0.5 shrink-0 cursor-grab active:cursor-grabbing">
-            <GripVertical size={14} className="text-white/20" />
-          </div>
-        )}
-
-        {/* Checkbox circle */}
-        <button
-          onClick={handleTap}
-          className="relative shrink-0 w-5 h-5 rounded-full transition-all duration-300 flex items-center justify-center"
-          style={{
-            border: `1.5px solid ${completedToday ? pColor : pColor}`,
-            background: completedToday ? pColor : 'transparent',
-            boxShadow: completedToday ? `0 0 8px ${pColor}66` : 'none',
-          }}
-        >
-          {completedToday && (
-            <svg viewBox="0 0 10 10" className="w-2.5 h-2.5">
-              <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            </svg>
-          )}
-          {ripple && (
-            <div className="absolute rounded-full pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: pColor + '55', animation: 'task-ripple 0.6s ease-out forwards' }} />
-          )}
-        </button>
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm leading-snug transition-all duration-300 truncate"
-            style={{ color: completedToday ? 'rgba(255,255,255,0.3)' : overdue ? '#ff6b6b' : 'white', textDecoration: completedToday ? 'line-through' : 'none' }}>
-            {task.title}
-          </p>
-          <div className="flex items-center gap-2 mt-0.5">
-            {task.recurrence !== 'none' && (
-              <span className="flex items-center gap-0.5 text-[10px] text-white/25">
-                <RotateCcw size={8} /> {RECURRENCE_OPTIONS.find(r => r.value === task.recurrence)?.label}
-              </span>
-            )}
-            {task.due_date && task.recurrence === 'none' && (
-              <span className="flex items-center gap-0.5 text-[10px]" style={{ color: overdue ? '#ff6b6b' : 'rgba(255,255,255,0.25)' }}>
-                <Calendar size={8} /> {formatDate(task.due_date)}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Right badges */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {task.pinned && <Pin size={10} className="text-white/25" style={{ transform: 'rotate(45deg)' }} />}
-          {task.priority < 4 && (
-            <div className="w-1.5 h-1.5 rounded-full" style={{ background: pColor }} />
-          )}
-          {/* Reorder up/down in reorder mode */}
+        <div className="flex items-center gap-3">
+          {/* Drag handle */}
           {reorderMode && (
-            <div className="flex flex-col">
-              <button onClick={onMoveUp} className="text-white/30 hover:text-white/70 p-0.5"><ChevronUp size={12} /></button>
-              <button onClick={onMoveDown} className="text-white/30 hover:text-white/70 p-0.5"><ChevronDown size={12} /></button>
+            <div className="flex flex-col gap-0.5 shrink-0 cursor-grab active:cursor-grabbing">
+              <GripVertical size={14} className="text-white/20" />
             </div>
           )}
+
+          {/* Checkbox circle */}
+          <button
+            onClick={handleTap}
+            className="relative shrink-0 w-6 h-6 rounded-full transition-all duration-300 flex items-center justify-center"
+            style={{
+              border: `1.5px solid ${completedToday ? pColor : pColor + '80'}`,
+              background: completedToday ? pColor : 'transparent',
+              boxShadow: completedToday ? `0 0 10px ${pColor}55` : 'none',
+            }}
+          >
+            {completedToday && (
+              <svg viewBox="0 0 10 10" className="w-3 h-3">
+                <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              </svg>
+            )}
+            {ripple && (
+              <div className="absolute rounded-full pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: pColor + '55', animation: 'task-ripple 0.6s ease-out forwards' }} />
+            )}
+          </button>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium leading-snug transition-all duration-300 truncate"
+              style={{ color: completedToday ? 'rgba(255,255,255,0.3)' : overdue ? '#ff6b6b' : 'rgba(255,255,255,0.92)', textDecoration: completedToday ? 'line-through' : 'none' }}>
+              {task.title}
+            </p>
+            <div className="flex items-center gap-2 mt-0.5">
+              {task.recurrence !== 'none' && (
+                <span className="flex items-center gap-0.5 text-[10px] text-white/25">
+                  <RotateCcw size={8} /> {RECURRENCE_OPTIONS.find(r => r.value === task.recurrence)?.label}
+                </span>
+              )}
+              {task.due_date && task.recurrence === 'none' && (
+                <span className="flex items-center gap-0.5 text-[10px]" style={{ color: overdue ? '#ff6b6b' : 'rgba(255,255,255,0.25)' }}>
+                  <Calendar size={8} /> {formatDate(task.due_date)}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Right badges */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {task.pinned && <Pin size={10} className="text-white/25" style={{ transform: 'rotate(45deg)' }} />}
+            {reorderMode && (
+              <div className="flex flex-col">
+                <button onClick={onMoveUp} className="text-white/30 hover:text-white/70 p-0.5"><ChevronUp size={12} /></button>
+                <button onClick={onMoveDown} className="text-white/30 hover:text-white/70 p-0.5"><ChevronDown size={12} /></button>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* 7-day streak track */}
+        {task.recurrence !== 'none' && (
+          <div className="flex gap-1 mt-2.5 pl-9">
+            {last7Days.map((done, i) => (
+              <div
+                key={i}
+                className="flex-1 h-1.5 rounded-full transition-all"
+                style={{ background: done ? pColor + 'cc' : 'rgba(255,255,255,0.08)' }}
+                title={done ? 'Done' : 'Missed'}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -615,12 +632,21 @@ export default function CategoryHub({ category, onClose }: Props) {
   const someday   = notPinned.filter(t => t.recurrence === 'none' && !t.due_date && !isOverdue(t, today));
   const completed = tasks.filter(t => completedTodayIds.has(t.id));
 
+  function taskLast7Days(taskId: string): boolean[] {
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(); d.setDate(d.getDate() - (6 - i));
+      const key = d.toISOString().slice(0, 10);
+      return history.some(h => h.promise_id === taskId && h.date_key === key);
+    });
+  }
+
   function renderTask(task: Promise_) {
     return (
       <TaskRow
         key={task.id}
         task={task}
         completedToday={completedTodayIds.has(task.id)}
+        last7Days={taskLast7Days(task.id)}
         onComplete={() => complete(task)}
         onDelete={() => deleteTask(task.id)}
         onPin={() => togglePin(task)}

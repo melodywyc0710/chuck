@@ -122,12 +122,13 @@ function TaskCard({
   const overdue = isOverdue(task, today);
   const activeToday = appliesToday(task, today, null);
 
-  // dnd-kit drag started → cancel hold timer (menu should already be open or not)
+  // dnd-kit drag started → cancel hold timer, reset horizontal offset
   useEffect(() => {
     if (isDragging) {
       if (holdTimerRef.current) { clearTimeout(holdTimerRef.current); holdTimerRef.current = null; }
-      setMenuOpen(false);
       setDragDx(0);
+      // Don't close menu here — hold (500ms) fires before dnd-kit (600ms),
+      // so if menu is open the user already lifted their finger.
     }
   }, [isDragging]);
 

@@ -111,12 +111,9 @@ function TaskCard({
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: task.id });
 
-  // Gesture state
-  const gestureRef = useRef<{
-    startX: number; startY: number; startTime: number;
-    mode: 'idle' | 'h' | 'v';
-  } | null>(null);
-  const [swipeX, setSwipeX] = useState(0);
+  const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [ripple, setRipple] = useState(false);
 
   const pColor = PRIORITY_COLOR[task.priority] ?? PRIORITY_COLOR[4];
@@ -124,70 +121,61 @@ function TaskCard({
   const overdue = isOverdue(task, today);
   const activeToday = appliesToday(task, today, null);
 
-  // Swipe action thresholds
-  const DELETE_THRESHOLD = -72;
-  const RESIZE_THRESHOLD =  72;
-  const swipeAction: 'delete' | 'resize' | null =
-    swipeX < DELETE_THRESHOLD ? 'delete' : swipeX > RESIZE_THRESHOLD ? 'resize' : null;
-
-  // dnd-kit takes over → reset swipe
+  // dnd-kit drag started → cancel hold timer & close menu
   useEffect(() => {
-    if (isDragging) { setSwipeX(0); gestureRef.current = null; }
+    if (isDragging) {
+      if (holdTimerRef.current) { clearTimeout(holdTimerRef.current); holdTimerRef.current = null; }
+      setMenuOpen(false);
+    }
   }, [isDragging]);
 
-  // Merge my onPointerDown with dnd-kit's so both fire
+  // Close menu on outside click
+  useEffect(() => {
+    if (!menuOpen) return;
+    function onDown() { setMenuOpen(false); }
+    window.addEventListener('pointerdown', onDown);
+    return () => window.removeEventListener('pointerdown', onDown);
+  }, [menuOpen]);
+
   const dndListeners = listeners ?? {};
 
   function handlePointerDown(e: React.PointerEvent) {
-    // Forward to dnd-kit's handler (for vertical drag-to-reorder)
     (dndListeners.onPointerDown as React.PointerEventHandler | undefined)?.(e);
-    gestureRef.current = { startX: e.clientX, startY: e.clientY, startTime: Date.now(), mode: 'idle' };
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    holdTimerRef.current = setTimeout(() => {
+      holdTimerRef.current = null;
+      setMenuOpen(true);
+    }, 500);
   }
 
   function handlePointerMove(e: React.PointerEvent) {
-    const g = gestureRef.current;
-    if (!g || isDragging) return;
-    const dx = e.clientX - g.startX;
-    const dy = e.clientY - g.startY;
-
-    if (g.mode === 'idle' && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
-      g.mode = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
-    }
-    if (g.mode === 'h') {
-      e.preventDefault();
-      setSwipeX(dx * 0.85); // slight resistance
+    const s = pointerStartRef.current;
+    if (!s) return;
+    const dist = Math.hypot(e.clientX - s.x, e.clientY - s.y);
+    if (dist > 8 && holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
     }
   }
 
   function handlePointerUp(e: React.PointerEvent) {
-    const g = gestureRef.current;
-    if (!g) return;
-    gestureRef.current = null;
-    const dx = e.clientX - g.startX;
-    const dy = e.clientY - g.startY;
-    const dt = Date.now() - g.startTime;
-
-    if (g.mode === 'h') {
-      if (dx < DELETE_THRESHOLD) {
-        // animate off then delete
-        setSwipeX(-320);
-        setTimeout(() => { setSwipeX(0); onDelete(); }, 280);
-      } else if (dx > RESIZE_THRESHOLD) {
-        setSwipeX(320);
-        setTimeout(() => { setSwipeX(0); onResize(size === 'half' ? 'full' : 'half'); }, 280);
-      } else {
-        setSwipeX(0); // snap back
-      }
-    } else if (g.mode === 'idle' && Math.abs(dx) < 8 && Math.abs(dy) < 8 && dt < 350 && !isDragging) {
-      if (!completedToday) {
-        setRipple(true);
-        setTimeout(() => setRipple(false), 500);
-        onComplete();
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+      // it was a tap (short press, no hold menu)
+      const s = pointerStartRef.current;
+      if (s) {
+        const dist = Math.hypot(e.clientX - s.x, e.clientY - s.y);
+        if (dist < 8 && !isDragging && !menuOpen && !completedToday) {
+          setRipple(true);
+          setTimeout(() => setRipple(false), 500);
+          onComplete();
+        }
       }
     }
+    pointerStartRef.current = null;
   }
 
-  // Outer wrapper: dnd-kit positioning
   const wrapperStyle: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition: isDragging ? transition : undefined,
@@ -197,52 +185,40 @@ function TaskCard({
     position: 'relative',
   };
 
-  // Card translate for swipe
-  const cardStyle: React.CSSProperties = {
-    transform: `translateX(${swipeX}px)`,
-    transition: swipeX === 0 ? 'transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94)' : undefined,
-  };
-
   return (
     <div ref={setNodeRef} style={wrapperStyle} className="select-none" {...attributes}>
 
-      {/* Left reveal: resize (swipe right) */}
-      <div
-        className="absolute inset-y-0 left-0 flex items-center pl-4 rounded-[20px] overflow-hidden"
-        style={{
-          background: 'linear-gradient(90deg, #3D8EFF33, #3D8EFF11)',
-          width: `${Math.min(Math.max(swipeX, 0), 120)}px`,
-          opacity: swipeX > 20 ? 1 : 0,
-          transition: swipeX === 0 ? 'opacity 0.3s, width 0.3s' : undefined,
-        }}
-      >
-        {size === 'half'
-          ? <Maximize2 size={18} color="#3D8EFF" />
-          : <Minimize2 size={18} color="#3D8EFF" />}
-      </div>
-
-      {/* Right reveal: delete (swipe left) */}
-      <div
-        className="absolute inset-y-0 right-0 flex items-center justify-end pr-4 rounded-[20px] overflow-hidden"
-        style={{
-          background: 'linear-gradient(270deg, #C9181833, #C9181811)',
-          width: `${Math.min(Math.max(-swipeX, 0), 120)}px`,
-          opacity: swipeX < -20 ? 1 : 0,
-          transition: swipeX === 0 ? 'opacity 0.3s, width 0.3s' : undefined,
-        }}
-      >
-        <Trash2 size={18} color="#C91818" />
-      </div>
+      {/* Hold menu */}
+      {menuOpen && (
+        <div
+          className="absolute bottom-full left-0 mb-2 z-50 flex flex-col gap-1 rounded-2xl p-2 shadow-2xl"
+          style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', minWidth: 160 }}
+          onPointerDown={e => e.stopPropagation()}
+        >
+          <button
+            onClick={() => { setMenuOpen(false); onResize(size === 'half' ? 'full' : 'half'); }}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/80 hover:bg-white/8 transition-colors text-left"
+          >
+            {size === 'half' ? <Maximize2 size={14} className="text-white/40" /> : <Minimize2 size={14} className="text-white/40" />}
+            {size === 'half' ? 'Expand' : 'Compact'}
+          </button>
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '2px 0' }} />
+          <button
+            onClick={() => { setMenuOpen(false); onDelete(); }}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm hover:bg-white/8 transition-colors text-left"
+            style={{ color: '#ff6b6b' }}
+          >
+            <Trash2 size={14} style={{ color: '#ff6b6b' }} />
+            Delete
+          </button>
+        </div>
+      )}
 
       {/* Card */}
       <div
         className="relative flex flex-col rounded-[20px] overflow-hidden"
         style={{
-          ...cardStyle,
-          background: completedToday ? 'rgba(255,255,255,0.025)'
-            : swipeAction === 'delete' ? 'rgba(201,24,24,0.15)'
-            : swipeAction === 'resize' ? 'rgba(61,142,255,0.15)'
-            : 'rgba(255,255,255,0.06)',
+          background: completedToday ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.06)',
           borderLeft: `3px solid ${completedToday ? 'rgba(255,255,255,0.08)' : pColor}`,
           opacity: completedToday ? 0.55 : 1,
           minHeight: size === 'half' ? 80 : undefined,
@@ -251,7 +227,10 @@ function TaskCard({
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
+        onPointerLeave={() => {
+          if (holdTimerRef.current) { clearTimeout(holdTimerRef.current); holdTimerRef.current = null; }
+          pointerStartRef.current = null;
+        }}
       >
         {/* Ripple */}
         {ripple && (
@@ -770,7 +749,7 @@ export default function CategoryHub({ category, onClose }: Props) {
 
         {/* Tip when tasks exist */}
         {tasks.length > 0 && activeTasks.length > 0 && (
-          <p className="text-white/15 text-[10px] text-center mb-3">Tap · Swipe ← delete · Swipe → resize · Hold &amp; drag to reorder</p>
+          <p className="text-white/15 text-[10px] text-center mb-3">Tap to complete · Hold for options · Drag to reorder</p>
         )}
 
         {/* Active task grid — drag and drop */}

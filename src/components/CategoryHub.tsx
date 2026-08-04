@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type React from 'react';
-import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, Eye, Trash2 } from 'lucide-react';
+import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, Eye, Trash2, Pencil } from 'lucide-react';
 import {
   DndContext, closestCenter, PointerSensor, TouchSensor,
   useSensor, useSensors, type DragEndEvent,
@@ -98,7 +98,7 @@ function isOverdue(task: Promise_, today: string): boolean {
 
 function TaskCard({
   task, completedToday, last7Days, size,
-  onComplete, onDelete, onResize,
+  onComplete, onDelete, onResize, onEdit,
 }: {
   task: Promise_;
   completedToday: boolean;
@@ -107,6 +107,7 @@ function TaskCard({
   onComplete: () => void;
   onDelete: () => void;
   onResize: (s: CardSize) => void;
+  onEdit: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: task.id });
@@ -235,6 +236,14 @@ function TaskCard({
           onPointerDown={e => e.stopPropagation()}
         >
           <button
+            onClick={() => { setMenuOpen(false); onEdit(); }}
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/80 hover:bg-white/8 transition-colors text-left"
+          >
+            <Pencil size={14} className="text-white/40" />
+            Edit
+          </button>
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '2px 0' }} />
+          <button
             onClick={() => { setMenuOpen(false); onDelete(); }}
             className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm hover:bg-white/8 transition-colors text-left"
             style={{ color: '#ff6b6b' }}
@@ -330,23 +339,32 @@ function TaskCard({
   );
 }
 
-// ─── Add Task Sheet ────────────────────────────────────────────────────────────
+// ─── Task Sheet (Add or Edit) ─────────────────────────────────────────────────
 
-function AddTaskSheet({ category, color, onAdd, onClose }: {
+function AddTaskSheet({ category, color, onAdd, onClose, editTask, onEdit }: {
   category: GoalCategory;
   color: string;
   onAdd: (task: Partial<Promise_>) => void;
   onClose: () => void;
+  editTask?: Promise_;
+  onEdit?: (id: string, updates: Partial<Promise_>) => void;
 }) {
-  const [title, setTitle]           = useState('');
-  const [priority, setPriority]     = useState(4);
-  const [recurrence, setRecurrence] = useState<Recurrence>('daily');
-  const [dueDate, setDueDate]       = useState('');
-  const [pinned, setPinned]         = useState(false);
-  const [notes, setNotes]           = useState('');
-  const [showNotes, setShowNotes]   = useState(false);
-  const [customInterval, setCustomInterval] = useState('2');
-  const [showCustom, setShowCustom] = useState(false);
+  const isEdit = !!editTask;
+
+  const initRec = editTask?.recurrence ?? 'daily';
+  const isCustomInterval = initRec.startsWith('interval:');
+
+  const [title, setTitle]           = useState(editTask?.title ?? '');
+  const [priority, setPriority]     = useState(editTask?.priority ?? 4);
+  const [recurrence, setRecurrence] = useState<Recurrence>(isCustomInterval ? 'none' : initRec);
+  const [dueDate, setDueDate]       = useState(editTask?.due_date ?? '');
+  const [pinned, setPinned]         = useState(editTask?.pinned ?? false);
+  const [notes, setNotes]           = useState(editTask?.notes ?? '');
+  const [showNotes, setShowNotes]   = useState(!!(editTask?.notes));
+  const [customInterval, setCustomInterval] = useState(
+    isCustomInterval ? initRec.replace('interval:', '') : '2'
+  );
+  const [showCustom, setShowCustom] = useState(isCustomInterval);
   const inputRef = useRef<HTMLInputElement>(null);
   const today = todayKey();
   const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
@@ -357,18 +375,29 @@ function AddTaskSheet({ category, color, onAdd, onClose }: {
   function submit() {
     if (!title.trim()) return;
     const rec: Recurrence = showCustom ? `interval:${parseInt(customInterval) || 2}` : recurrence;
-    onAdd({
-      title: title.trim(),
-      notes: notes.trim() || null,
-      category,
-      priority,
-      recurrence: rec,
-      due_date: rec === 'none' && dueDate ? dueDate : null,
-      pinned,
-      frequency: 'daily',
-      verify_method: 'timer',
-      active: true,
-    });
+    if (isEdit && editTask && onEdit) {
+      onEdit(editTask.id, {
+        title: title.trim(),
+        notes: notes.trim() || null,
+        priority,
+        recurrence: rec,
+        due_date: rec === 'none' && dueDate ? dueDate : null,
+        pinned,
+      });
+    } else {
+      onAdd({
+        title: title.trim(),
+        notes: notes.trim() || null,
+        category,
+        priority,
+        recurrence: rec,
+        due_date: rec === 'none' && dueDate ? dueDate : null,
+        pinned,
+        frequency: 'daily',
+        verify_method: 'timer',
+        active: true,
+      });
+    }
     onClose();
   }
 
@@ -512,7 +541,7 @@ function AddTaskSheet({ category, color, onAdd, onClose }: {
               className="px-5 py-2 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-30"
               style={{ background: color }}
             >
-              Add
+              {isEdit ? 'Save' : 'Add'}
             </button>
           </div>
         </div>
@@ -623,6 +652,7 @@ export default function CategoryHub({ category, onClose }: Props) {
   const [tasks, setTasks]         = useState<Promise_[]>([]);
   const [history, setHistory]     = useState<Completion[]>([]);
   const [showAdd, setShowAdd]     = useState(false);
+  const [editingTask, setEditingTask] = useState<Promise_ | null>(null);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({ completed: true });
   const [witnessCompletionId, setWitnessCompletionId] = useState<string | null>(null);
   const [taskSizes, setTaskSizes] = useState<Record<string, CardSize>>(getSizes);
@@ -705,6 +735,11 @@ export default function CategoryHub({ category, onClose }: Props) {
     if (data) setTasks(prev => [...prev, { ...data, priority: data.priority ?? 4, recurrence: data.recurrence ?? 'daily', pinned: data.pinned ?? false, sort_order: data.sort_order ?? 0, due_date: data.due_date ?? null, notes: data.notes ?? null }]);
   }
 
+  async function saveEditTask(id: string, updates: Partial<Promise_>) {
+    const { data } = await supabase.from('promises').update(updates).eq('id', id).select().single();
+    if (data) setTasks(prev => prev.map(t => t.id === id ? { ...t, ...data } : t));
+  }
+
   async function deleteTask(id: string) {
     await supabase.from('promises').update({ active: false }).eq('id', id);
     setTasks(prev => prev.filter(t => t.id !== id));
@@ -757,6 +792,13 @@ export default function CategoryHub({ category, onClose }: Props) {
       {showAdd && (
         <AddTaskSheet category={category} color={cfg.color} onAdd={addTask} onClose={() => setShowAdd(false)} />
       )}
+      {editingTask && (
+        <AddTaskSheet
+          category={category} color={cfg.color}
+          onAdd={addTask} onClose={() => setEditingTask(null)}
+          editTask={editingTask} onEdit={saveEditTask}
+        />
+      )}
 
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-5 pt-12 pb-28">
 
@@ -806,7 +848,7 @@ export default function CategoryHub({ category, onClose }: Props) {
                     size={taskSizes[task.id] ?? 'full'}
                     onComplete={() => complete(task)}
                     onDelete={() => deleteTask(task.id)}
-
+                    onEdit={() => setEditingTask(task)}
                     onResize={s => resizeTask(task.id, s)}
                   />
                 ))}
@@ -838,6 +880,7 @@ export default function CategoryHub({ category, onClose }: Props) {
                           size="full"
                           onComplete={() => {}}
                           onDelete={() => deleteTask(task.id)}
+                          onEdit={() => setEditingTask(task)}
                           onResize={s => resizeTask(task.id, s)}
                         />
                       </div>

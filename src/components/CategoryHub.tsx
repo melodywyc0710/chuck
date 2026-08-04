@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import type React from 'react';
-import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, GripVertical, Eye } from 'lucide-react';
+import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, Eye, Maximize2, Minimize2, Trash2 } from 'lucide-react';
+import {
+  DndContext, closestCenter, PointerSensor, TouchSensor,
+  useSensor, useSensors, type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext, useSortable, rectSortingStrategy, arrayMove,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_, Completion, GoalCategory, Recurrence } from '../lib/supabase';
@@ -18,7 +26,6 @@ const CAT: Record<GoalCategory, { label: string; Icon: React.ElementType; color:
 };
 
 const PRIORITY_COLOR = ['', '#C91818', '#E8690A', '#3D8EFF', 'rgba(255,255,255,0.2)'];
-// Priority labels for tooltip/aria use
 
 const RECURRENCE_OPTIONS: { value: Recurrence; label: string }[] = [
   { value: 'none',     label: 'Once' },
@@ -28,6 +35,15 @@ const RECURRENCE_OPTIONS: { value: Recurrence; label: string }[] = [
   { value: 'weekly',   label: 'Weekly' },
   { value: 'monthly',  label: 'Monthly' },
 ];
+
+type CardSize = 'full' | 'half';
+
+function getSizes(): Record<string, CardSize> {
+  try { return JSON.parse(localStorage.getItem('task-sizes') ?? '{}'); } catch { return {}; }
+}
+function saveSizes(s: Record<string, CardSize>) {
+  localStorage.setItem('task-sizes', JSON.stringify(s));
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -48,7 +64,7 @@ function formatDate(d: string) {
 function appliesToday(task: Promise_, today: string, lastCompletedDate: string | null): boolean {
   if (task.recurrence === 'none') return task.due_date === today;
   const d = new Date(today + 'T00:00:00');
-  const dow = d.getDay(); // 0=Sun,1=Mon,...,6=Sat
+  const dow = d.getDay();
   const dom = d.getDate();
   switch (task.recurrence) {
     case 'daily':    return true;
@@ -63,7 +79,6 @@ function appliesToday(task: Promise_, today: string, lastCompletedDate: string |
       return created.getDate() === dom;
     }
     default: {
-      // interval:N
       const match = task.recurrence.match(/^interval:(\d+)$/);
       if (!match) return false;
       const n = parseInt(match[1]);
@@ -79,146 +94,224 @@ function isOverdue(task: Promise_, today: string): boolean {
   return task.recurrence === 'none' && !!task.due_date && task.due_date < today;
 }
 
-// ─── Task Row ─────────────────────────────────────────────────────────────────
+// ─── Task Card ────────────────────────────────────────────────────────────────
 
-function TaskRow({
-  task, completedToday, last7Days, onComplete, onDelete, onPin, onMoveUp, onMoveDown, reorderMode,
+function TaskCard({
+  task, completedToday, last7Days, size,
+  onComplete, onDelete, onPin, onResize,
 }: {
   task: Promise_;
   completedToday: boolean;
   last7Days: boolean[];
+  size: CardSize;
   onComplete: () => void;
   onDelete: () => void;
   onPin: () => void;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
-  reorderMode: boolean;
+  onResize: (s: CardSize) => void;
 }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: task.id });
+
+  const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pressStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+  const [showMenu, setShowMenu] = useState(false);
   const [ripple, setRipple] = useState(false);
-  const [longPressMenu, setLongPressMenu] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const pColor = PRIORITY_COLOR[task.priority] ?? PRIORITY_COLOR[4];
   const today = todayKey();
   const overdue = isOverdue(task, today);
+  const activeToday = appliesToday(task, today, null);
 
-  function handleTap() {
-    if (completedToday || longPressMenu) return;
-    setRipple(true);
-    setTimeout(() => setRipple(false), 700);
-    onComplete();
+  // Cancel menu if drag starts
+  useEffect(() => {
+    if (isDragging) {
+      if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
+      setShowMenu(false);
+    }
+  }, [isDragging]);
+
+  const cardStyle: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    gridColumn: size === 'half' ? 'span 1' : 'span 2',
+    opacity: isDragging ? 0.4 : 1,
+    touchAction: 'none',
+  };
+
+  function onPointerDown(e: React.PointerEvent) {
+    if (showMenu) return;
+    pressStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
+    pressTimerRef.current = setTimeout(() => {
+      setShowMenu(true);
+      pressStartRef.current = null;
+    }, 500);
   }
 
-  function handlePressStart() {
-    timerRef.current = setTimeout(() => setLongPressMenu(true), 500);
+  function onPointerUp(e: React.PointerEvent) {
+    if (!pressStartRef.current) return;
+    const { x, y, time } = pressStartRef.current;
+    pressStartRef.current = null;
+    if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
+    const dt = Date.now() - time;
+    const dx = Math.abs(e.clientX - x);
+    const dy = Math.abs(e.clientY - y);
+    if (dt < 350 && dx < 10 && dy < 10 && !showMenu && !isDragging) {
+      if (!completedToday) {
+        setRipple(true);
+        setTimeout(() => setRipple(false), 600);
+        onComplete();
+      }
+    }
   }
-  function handlePressEnd() {
-    if (timerRef.current) clearTimeout(timerRef.current);
+
+  function onPointerMove(e: React.PointerEvent) {
+    if (!pressStartRef.current) return;
+    const dx = Math.abs(e.clientX - pressStartRef.current.x);
+    const dy = Math.abs(e.clientY - pressStartRef.current.y);
+    if (dx > 8 || dy > 8) {
+      if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
+    }
   }
 
   return (
-    <div className="relative">
-      {/* Long-press menu */}
-      {longPressMenu && (
-        <div className="absolute right-0 top-0 z-20 flex gap-1 p-1 rounded-2xl fade-up" style={{ background: '#1a1a1a', border: '1px solid #2a2a2a' }}>
-          <button onClick={() => { onPin(); setLongPressMenu(false); }} className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs text-white/60 hover:text-white hover:bg-white/10 transition-colors">
-            <Pin size={11} /> {task.pinned ? 'Unpin' : 'Pin'}
-          </button>
-          <button onClick={() => { onDelete(); setLongPressMenu(false); }} className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs text-red-400/70 hover:text-red-400 hover:bg-red-400/10 transition-colors">
-            <X size={11} /> Delete
-          </button>
-          <button onClick={() => setLongPressMenu(false)} className="px-2 py-1.5 rounded-xl text-white/30 hover:text-white/60 text-xs transition-colors">✕</button>
-        </div>
+    <div
+      ref={setNodeRef}
+      style={cardStyle}
+      className="relative select-none"
+    >
+      {/* Context menu overlay */}
+      {showMenu && (
+        <>
+          <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
+          <div className="absolute left-0 right-0 top-0 z-40 rounded-[20px] p-2 fade-up" style={{ background: '#1c1c1c', border: '1px solid #2e2e2e', boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
+            <div className="grid grid-cols-2 gap-1.5">
+              <button
+                onClick={() => { onPin(); setShowMenu(false); }}
+                className="flex items-center gap-2 px-3 py-2.5 rounded-2xl text-xs font-medium transition-all"
+                style={{ background: 'rgba(255,255,255,0.06)', color: task.pinned ? 'white' : 'rgba(255,255,255,0.5)' }}
+              >
+                <Pin size={12} style={{ transform: 'rotate(45deg)' }} />
+                {task.pinned ? 'Unpin' : 'Pin to top'}
+              </button>
+              <button
+                onClick={() => { onResize(size === 'half' ? 'full' : 'half'); setShowMenu(false); }}
+                className="flex items-center gap-2 px-3 py-2.5 rounded-2xl text-xs font-medium transition-all"
+                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' }}
+              >
+                {size === 'half' ? <Maximize2 size={12} /> : <Minimize2 size={12} />}
+                {size === 'half' ? 'Full width' : 'Make compact'}
+              </button>
+              <button
+                onClick={() => { onDelete(); setShowMenu(false); }}
+                className="col-span-2 flex items-center justify-center gap-2 px-3 py-2.5 rounded-2xl text-xs font-medium transition-all"
+                style={{ background: 'rgba(201,24,24,0.12)', color: '#C91818' }}
+              >
+                <Trash2 size={12} /> Delete goal
+              </button>
+            </div>
+            <button
+              onClick={() => setShowMenu(false)}
+              className="w-full mt-1.5 py-2 text-xs rounded-xl transition-all"
+              style={{ color: 'rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.03)' }}
+            >
+              Cancel
+            </button>
+          </div>
+        </>
       )}
 
+      {/* Card */}
       <div
-        className="flex flex-col px-4 py-3.5 rounded-[20px] transition-all"
+        className="relative flex flex-col rounded-[20px] overflow-hidden transition-all duration-200 cursor-pointer"
         style={{
-          background: completedToday ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.055)',
-          opacity: completedToday ? 0.55 : 1,
+          background: completedToday ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.06)',
           borderLeft: `3px solid ${completedToday ? 'rgba(255,255,255,0.08)' : pColor}`,
+          opacity: completedToday ? 0.55 : 1,
+          minHeight: size === 'half' ? 80 : undefined,
         }}
-        onMouseDown={handlePressStart} onMouseUp={handlePressEnd}
-        onTouchStart={handlePressStart} onTouchEnd={handlePressEnd}
+        {...attributes}
+        {...listeners}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerMove={onPointerMove}
       >
-        <div className="flex items-center gap-3">
-          {/* Drag handle */}
-          {reorderMode && (
-            <div className="flex flex-col gap-0.5 shrink-0 cursor-grab active:cursor-grabbing">
-              <GripVertical size={14} className="text-white/20" />
+        {/* Ripple */}
+        {ripple && (
+          <div className="absolute inset-0 rounded-[20px] pointer-events-none" style={{ background: pColor + '22', animation: 'card-ripple 0.5s ease-out forwards' }} />
+        )}
+
+        <div className="px-4 py-3.5 flex flex-col gap-2">
+          {/* Header row */}
+          <div className="flex items-start gap-2">
+            {/* Completion ring */}
+            <div
+              className="shrink-0 mt-0.5 w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300"
+              style={{
+                border: `1.5px solid ${completedToday ? pColor : pColor + '70'}`,
+                background: completedToday ? pColor : 'transparent',
+                boxShadow: completedToday ? `0 0 8px ${pColor}55` : 'none',
+              }}
+            >
+              {completedToday && (
+                <svg viewBox="0 0 10 10" className="w-2.5 h-2.5">
+                  <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                </svg>
+              )}
+            </div>
+
+            {/* Title + meta */}
+            <div className="flex-1 min-w-0">
+              <p
+                className="text-sm font-medium leading-snug truncate transition-all duration-300"
+                style={{
+                  color: completedToday ? 'rgba(255,255,255,0.3)' : overdue ? '#ff6b6b' : 'rgba(255,255,255,0.92)',
+                  textDecoration: completedToday ? 'line-through' : 'none',
+                }}
+              >
+                {task.title}
+              </p>
+              <div className="flex items-center flex-wrap gap-x-2 gap-y-0.5 mt-0.5">
+                {task.pinned && (
+                  <span className="text-[10px] text-white/25 flex items-center gap-0.5">
+                    <Pin size={8} style={{ transform: 'rotate(45deg)' }} /> pinned
+                  </span>
+                )}
+                {overdue && (
+                  <span className="text-[10px] font-medium" style={{ color: '#ff6b6b' }}>overdue</span>
+                )}
+                {!overdue && !activeToday && task.due_date && task.recurrence === 'none' && (
+                  <span className="flex items-center gap-0.5 text-[10px] text-white/25">
+                    <Calendar size={8} /> {formatDate(task.due_date)}
+                  </span>
+                )}
+                {task.recurrence !== 'none' && (
+                  <span className="flex items-center gap-0.5 text-[10px] text-white/25">
+                    <RotateCcw size={8} /> {RECURRENCE_OPTIONS.find(r => r.value === task.recurrence)?.label}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* 7-day streak track — only for recurring tasks */}
+          {task.recurrence !== 'none' && (
+            <div className="flex gap-1 pl-7">
+              {last7Days.map((done, i) => (
+                <div
+                  key={i}
+                  className="flex-1 h-1 rounded-full transition-all"
+                  style={{ background: done ? pColor + 'cc' : 'rgba(255,255,255,0.08)' }}
+                />
+              ))}
             </div>
           )}
-
-          {/* Checkbox circle */}
-          <button
-            onClick={handleTap}
-            className="relative shrink-0 w-6 h-6 rounded-full transition-all duration-300 flex items-center justify-center"
-            style={{
-              border: `1.5px solid ${completedToday ? pColor : pColor + '80'}`,
-              background: completedToday ? pColor : 'transparent',
-              boxShadow: completedToday ? `0 0 10px ${pColor}55` : 'none',
-            }}
-          >
-            {completedToday && (
-              <svg viewBox="0 0 10 10" className="w-3 h-3">
-                <path d="M1.5 5l2.5 2.5 4.5-4.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              </svg>
-            )}
-            {ripple && (
-              <div className="absolute rounded-full pointer-events-none" style={{ top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: pColor + '55', animation: 'task-ripple 0.6s ease-out forwards' }} />
-            )}
-          </button>
-
-          {/* Content */}
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium leading-snug transition-all duration-300 truncate"
-              style={{ color: completedToday ? 'rgba(255,255,255,0.3)' : overdue ? '#ff6b6b' : 'rgba(255,255,255,0.92)', textDecoration: completedToday ? 'line-through' : 'none' }}>
-              {task.title}
-            </p>
-            <div className="flex items-center gap-2 mt-0.5">
-              {task.recurrence !== 'none' && (
-                <span className="flex items-center gap-0.5 text-[10px] text-white/25">
-                  <RotateCcw size={8} /> {RECURRENCE_OPTIONS.find(r => r.value === task.recurrence)?.label}
-                </span>
-              )}
-              {task.due_date && task.recurrence === 'none' && (
-                <span className="flex items-center gap-0.5 text-[10px]" style={{ color: overdue ? '#ff6b6b' : 'rgba(255,255,255,0.25)' }}>
-                  <Calendar size={8} /> {formatDate(task.due_date)}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Right badges */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            {task.pinned && <Pin size={10} className="text-white/25" style={{ transform: 'rotate(45deg)' }} />}
-            {reorderMode && (
-              <div className="flex flex-col">
-                <button onClick={onMoveUp} className="text-white/30 hover:text-white/70 p-0.5"><ChevronUp size={12} /></button>
-                <button onClick={onMoveDown} className="text-white/30 hover:text-white/70 p-0.5"><ChevronDown size={12} /></button>
-              </div>
-            )}
-          </div>
         </div>
-
-        {/* 7-day streak track */}
-        {task.recurrence !== 'none' && (
-          <div className="flex gap-1 mt-2.5 pl-9">
-            {last7Days.map((done, i) => (
-              <div
-                key={i}
-                className="flex-1 h-1.5 rounded-full transition-all"
-                style={{ background: done ? pColor + 'cc' : 'rgba(255,255,255,0.08)' }}
-                title={done ? 'Done' : 'Missed'}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
       <style>{`
-        @keyframes task-ripple {
-          0%   { width: 0; height: 0; opacity: 0.7; }
-          100% { width: 44px; height: 44px; opacity: 0; }
+        @keyframes card-ripple {
+          0%   { opacity: 0.6; }
+          100% { opacity: 0; }
         }
       `}</style>
     </div>
@@ -269,20 +362,14 @@ function AddTaskSheet({ category, color, onAdd, onClose }: {
 
   return (
     <>
-      {/* Backdrop */}
       <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-
-      {/* Sheet */}
       <div className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto rounded-t-[32px] px-5 pt-5 pb-8 fade-up" style={{ background: '#111111', border: '1px solid #1e1e1e', animationDelay: '0s' }}>
-
-        {/* Drag pill */}
         <div className="w-8 h-1 rounded-full bg-white/15 mx-auto mb-5" />
 
-        {/* Title */}
         <input
           ref={inputRef}
           type="text"
-          placeholder="Task name…"
+          placeholder="Goal name…"
           value={title}
           onChange={e => setTitle(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && submit()}
@@ -340,13 +427,11 @@ function AddTaskSheet({ category, color, onAdd, onClose }: {
           </div>
         </div>
 
-        {/* Custom interval */}
         {showCustom && (
           <div className="flex items-center gap-2 mb-4 pl-5">
             <span className="text-white/40 text-xs">Every</span>
             <input
-              type="number"
-              min="1"
+              type="number" min="1"
               value={customInterval}
               onChange={e => setCustomInterval(e.target.value)}
               className="w-14 text-center text-white text-sm font-medium rounded-xl px-2 py-1.5 outline-none"
@@ -356,7 +441,6 @@ function AddTaskSheet({ category, color, onAdd, onClose }: {
           </div>
         )}
 
-        {/* Due date (one-off only) */}
         {(recurrence === 'none' && !showCustom) && (
           <div className="flex items-center gap-2 mb-4">
             <Calendar size={12} className="text-white/30 shrink-0" />
@@ -375,18 +459,15 @@ function AddTaskSheet({ category, color, onAdd, onClose }: {
                 </button>
               ))}
               <input
-                type="date"
-                value={dueDate}
-                min={today}
+                type="date" value={dueDate} min={today}
                 onChange={e => setDueDate(e.target.value)}
-                className="px-2.5 py-1 rounded-lg text-[11px] bg-white/6 text-white/35 outline-none"
-                style={{ background: 'rgba(255,255,255,0.06)', colorScheme: 'dark' }}
+                className="px-2.5 py-1 rounded-lg text-[11px] outline-none"
+                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.35)', colorScheme: 'dark' }}
               />
             </div>
           </div>
         )}
 
-        {/* Notes */}
         {showNotes ? (
           <textarea
             placeholder="Notes…"
@@ -399,7 +480,6 @@ function AddTaskSheet({ category, color, onAdd, onClose }: {
           <button onClick={() => setShowNotes(true)} className="text-white/20 text-xs mb-4 pl-5 hover:text-white/40 transition-colors">+ Add note</button>
         )}
 
-        {/* Footer row */}
         <div className="flex items-center justify-between">
           <button
             onClick={() => setPinned(v => !v)}
@@ -498,9 +578,7 @@ function WitnessSheet({ completionId, onClose }: { completionId: string; onClose
             </div>
           ))}
         </div>
-        {sent && (
-          <p className="text-white/30 text-xs text-center mt-4">Witness request sent — your friend will be notified.</p>
-        )}
+        {sent && <p className="text-white/30 text-xs text-center mt-4">Witness request sent.</p>}
       </div>
     </div>
   );
@@ -514,7 +592,9 @@ function SectionHeader({ label, count, collapsed, onToggle }: { label: string; c
       <span className="text-white/30 text-[10px] font-semibold uppercase tracking-widest">{label}</span>
       <span className="text-white/20 text-[10px]">{count}</span>
       <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.05)' }} />
-      {collapsed ? <ChevronDown size={11} className="text-white/20 group-hover:text-white/40 transition-colors" /> : <ChevronUp size={11} className="text-white/20 group-hover:text-white/40 transition-colors" />}
+      {collapsed
+        ? <ChevronDown size={11} className="text-white/20 group-hover:text-white/40 transition-colors" />
+        : <ChevronUp size={11} className="text-white/20 group-hover:text-white/40 transition-colors" />}
     </button>
   );
 }
@@ -531,13 +611,18 @@ export default function CategoryHub({ category, onClose }: Props) {
   const [tasks, setTasks]         = useState<Promise_[]>([]);
   const [history, setHistory]     = useState<Completion[]>([]);
   const [showAdd, setShowAdd]     = useState(false);
-  const [reorderMode, setReorderMode] = useState(false);
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({ completed: true });
   const [witnessCompletionId, setWitnessCompletionId] = useState<string | null>(null);
+  const [taskSizes, setTaskSizes] = useState<Record<string, CardSize>>(getSizes);
 
   const plus = profile?.subscription_tier === 'plus' || profile?.subscription_tier === 'pro';
   const FREE_LIMIT = 5;
   const today = todayKey();
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { delay: 300, tolerance: 5 } }),
+    useSensor(TouchSensor,   { activationConstraint: { delay: 300, tolerance: 5 } }),
+  );
 
   useEffect(() => { load(); }, []);
 
@@ -549,22 +634,18 @@ export default function CategoryHub({ category, onClose }: Props) {
     ]);
     if (t) setTasks(t.map(x => ({
       ...x,
-      priority:    x.priority    ?? 4,
-      recurrence:  x.recurrence  ?? 'daily',
-      pinned:      x.pinned      ?? false,
-      sort_order:  x.sort_order  ?? 0,
-      due_date:    x.due_date    ?? null,
-      notes:       x.notes       ?? null,
+      priority:   x.priority   ?? 4,
+      recurrence: x.recurrence ?? 'daily',
+      pinned:     x.pinned     ?? false,
+      sort_order: x.sort_order ?? 0,
+      due_date:   x.due_date   ?? null,
+      notes:      x.notes      ?? null,
     })));
     if (h) setHistory(h);
   }
 
   const completedTodayIds = new Set(history.filter(h => h.date_key === today).map(h => h.promise_id));
 
-  function lastCompletedDate(taskId: string): string | null {
-    const rec = history.find(h => h.promise_id === taskId);
-    return rec?.date_key ?? null;
-  }
 
   async function complete(task: Promise_) {
     if (!user || !pet || completedTodayIds.has(task.id)) return;
@@ -578,9 +659,7 @@ export default function CategoryHub({ category, onClose }: Props) {
     }
     const newComp = { id: comp?.id ?? crypto.randomUUID(), user_id: user.id, promise_id: task.id, date_key: today, proof_type: proofType, proof_url: null, verified_by: null, completed_at: new Date().toISOString() };
     setHistory(prev => [newComp, ...prev]);
-    if (task.verify_method === 'friend' && comp?.id) {
-      setWitnessCompletionId(comp.id);
-    }
+    if (task.verify_method === 'friend' && comp?.id) setWitnessCompletionId(comp.id);
   }
 
   async function addTask(partial: Partial<Promise_>) {
@@ -603,34 +682,24 @@ export default function CategoryHub({ category, onClose }: Props) {
     setTasks(prev => prev.map(t => t.id === task.id ? { ...t, pinned } : t));
   }
 
-  async function moveTask(id: string, dir: 1 | -1) {
-    const idx = tasks.findIndex(t => t.id === id);
-    if (idx < 0) return;
-    const swapIdx = idx + dir;
-    if (swapIdx < 0 || swapIdx >= tasks.length) return;
-    const next = [...tasks];
-    [next[idx], next[swapIdx]] = [next[swapIdx], next[idx]];
-    const updates = next.map((t, i) => ({ ...t, sort_order: i }));
-    setTasks(updates);
-    await Promise.all([
-      supabase.from('promises').update({ sort_order: idx }).eq('id', next[swapIdx].id),
-      supabase.from('promises').update({ sort_order: swapIdx }).eq('id', next[idx].id),
-    ]);
+  function resizeTask(id: string, size: CardSize) {
+    const next = { ...taskSizes, [id]: size };
+    setTaskSizes(next);
+    saveSizes(next);
   }
 
-  function toggleCollapse(key: string) {
-    setCollapsed(prev => ({ ...prev, [key]: !prev[key] }));
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    setTasks(prev => {
+      const oldIdx = prev.findIndex(t => t.id === active.id);
+      const newIdx = prev.findIndex(t => t.id === over.id);
+      const next = arrayMove(prev, oldIdx, newIdx).map((t, i) => ({ ...t, sort_order: i }));
+      // Persist new order to DB
+      next.forEach(t => supabase.from('promises').update({ sort_order: t.sort_order }).eq('id', t.id));
+      return next;
+    });
   }
-
-  // ── Bucket tasks into sections ─────────────────────────────────────────────
-  const pinned    = tasks.filter(t => t.pinned);
-  const notPinned = tasks.filter(t => !t.pinned);
-
-  const overdue   = notPinned.filter(t => isOverdue(t, today) && !completedTodayIds.has(t.id));
-  const todayList = notPinned.filter(t => !isOverdue(t, today) && appliesToday(t, today, lastCompletedDate(t.id)) && !completedTodayIds.has(t.id));
-  const upcoming  = notPinned.filter(t => t.recurrence === 'none' && t.due_date && t.due_date > today);
-  const someday   = notPinned.filter(t => t.recurrence === 'none' && !t.due_date && !isOverdue(t, today));
-  const completed = tasks.filter(t => completedTodayIds.has(t.id));
 
   function taskLast7Days(taskId: string): boolean[] {
     return Array.from({ length: 7 }, (_, i) => {
@@ -640,22 +709,12 @@ export default function CategoryHub({ category, onClose }: Props) {
     });
   }
 
-  function renderTask(task: Promise_) {
-    return (
-      <TaskRow
-        key={task.id}
-        task={task}
-        completedToday={completedTodayIds.has(task.id)}
-        last7Days={taskLast7Days(task.id)}
-        onComplete={() => complete(task)}
-        onDelete={() => deleteTask(task.id)}
-        onPin={() => togglePin(task)}
-        onMoveUp={() => moveTask(task.id, -1)}
-        onMoveDown={() => moveTask(task.id, 1)}
-        reorderMode={reorderMode}
-      />
-    );
-  }
+  // Active tasks (not completed today) ordered by pinned first
+  const activeTasks = [
+    ...tasks.filter(t => t.pinned && !completedTodayIds.has(t.id)),
+    ...tasks.filter(t => !t.pinned && !completedTodayIds.has(t.id)),
+  ];
+  const completedTasks = tasks.filter(t => completedTodayIds.has(t.id));
 
   if (!user || !pet) return null;
 
@@ -667,7 +726,6 @@ export default function CategoryHub({ category, onClose }: Props) {
       {witnessCompletionId && (
         <WitnessSheet completionId={witnessCompletionId} onClose={() => setWitnessCompletionId(null)} />
       )}
-
       {showAdd && (
         <AddTaskSheet category={category} color={cfg.color} onAdd={addTask} onClose={() => setShowAdd(false)} />
       )}
@@ -679,20 +737,11 @@ export default function CategoryHub({ category, onClose }: Props) {
           <div className="flex items-center gap-2">
             <cfg.Icon size={16} strokeWidth={1.5} style={{ color: cfg.color }} />
             <h1 className="text-white text-xl font-semibold" style={{ letterSpacing: '-0.03em' }}>{cfg.label}</h1>
-            <span className="text-white/25 text-sm">{completed.length}/{tasks.length}</span>
+            <span className="text-white/25 text-sm">{completedTasks.length}/{tasks.length}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setReorderMode(v => !v)}
-              className="w-8 h-8 flex items-center justify-center rounded-full transition-colors"
-              style={{ background: reorderMode ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)', color: reorderMode ? 'white' : 'rgba(255,255,255,0.4)' }}
-            >
-              <GripVertical size={14} />
-            </button>
-            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
-              <X size={15} />
-            </button>
-          </div>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
+            <X size={15} />
+          </button>
         </div>
 
         {/* Empty state */}
@@ -703,60 +752,67 @@ export default function CategoryHub({ category, onClose }: Props) {
             style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.08)' }}
           >
             <Plus size={22} className="text-white/15" />
-            <p className="text-white/20 text-sm">Add your first task</p>
+            <p className="text-white/20 text-sm">Add your first goal</p>
           </button>
         )}
 
-        {/* Pinned */}
-        {pinned.length > 0 && (
-          <div className="fade-up" style={{ animationDelay: '0.08s' }}>
-            <SectionHeader label="Pinned" count={pinned.length} collapsed={!!collapsed.pinned} onToggle={() => toggleCollapse('pinned')} />
-            {!collapsed.pinned && <div className="space-y-1.5">{pinned.map(renderTask)}</div>}
-          </div>
+        {/* Tip when tasks exist */}
+        {tasks.length > 0 && activeTasks.length > 0 && (
+          <p className="text-white/15 text-[10px] text-center mb-3">Tap to complete · Hold to edit · Drag to reorder</p>
         )}
 
-        {/* Overdue */}
-        {overdue.length > 0 && (
-          <div className="fade-up" style={{ animationDelay: '0.1s' }}>
-            <SectionHeader label="Overdue" count={overdue.length} collapsed={!!collapsed.overdue} onToggle={() => toggleCollapse('overdue')} />
-            {!collapsed.overdue && <div className="space-y-1.5">{overdue.map(renderTask)}</div>}
-          </div>
-        )}
-
-        {/* Today */}
-        {(todayList.length > 0 || tasks.length > 0) && (
-          <div className="fade-up" style={{ animationDelay: '0.12s' }}>
-            <SectionHeader label="Today" count={todayList.length} collapsed={!!collapsed.today} onToggle={() => toggleCollapse('today')} />
-            {!collapsed.today && (
-              <div className="space-y-1.5">
-                {todayList.map(renderTask)}
-                {todayList.length === 0 && <p className="text-white/15 text-xs px-3 py-2">All done for today 🎉</p>}
+        {/* Active task grid — drag and drop */}
+        {activeTasks.length > 0 && (
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={activeTasks.map(t => t.id)} strategy={rectSortingStrategy}>
+              <div
+                className="grid gap-2 fade-up"
+                style={{ gridTemplateColumns: '1fr 1fr', animationDelay: '0.1s' }}
+              >
+                {activeTasks.map(task => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    completedToday={false}
+                    last7Days={taskLast7Days(task.id)}
+                    size={taskSizes[task.id] ?? 'full'}
+                    onComplete={() => complete(task)}
+                    onDelete={() => deleteTask(task.id)}
+                    onPin={() => togglePin(task)}
+                    onResize={s => resizeTask(task.id, s)}
+                  />
+                ))}
               </div>
-            )}
-          </div>
-        )}
-
-        {/* Upcoming */}
-        {upcoming.length > 0 && (
-          <div className="fade-up" style={{ animationDelay: '0.14s' }}>
-            <SectionHeader label="Upcoming" count={upcoming.length} collapsed={!!collapsed.upcoming} onToggle={() => toggleCollapse('upcoming')} />
-            {!collapsed.upcoming && <div className="space-y-1.5">{upcoming.map(renderTask)}</div>}
-          </div>
-        )}
-
-        {/* Someday */}
-        {someday.length > 0 && (
-          <div className="fade-up" style={{ animationDelay: '0.16s' }}>
-            <SectionHeader label="Someday" count={someday.length} collapsed={!!collapsed.someday} onToggle={() => toggleCollapse('someday')} />
-            {!collapsed.someday && <div className="space-y-1.5">{someday.map(renderTask)}</div>}
-          </div>
+            </SortableContext>
+          </DndContext>
         )}
 
         {/* Completed today */}
-        {completed.length > 0 && (
-          <div className="fade-up" style={{ animationDelay: '0.18s' }}>
-            <SectionHeader label="Completed" count={completed.length} collapsed={!!collapsed.completed} onToggle={() => toggleCollapse('completed')} />
-            {!collapsed.completed && <div className="space-y-1.5">{completed.map(renderTask)}</div>}
+        {completedTasks.length > 0 && (
+          <div className="mt-4 fade-up" style={{ animationDelay: '0.15s' }}>
+            <SectionHeader
+              label="Completed"
+              count={completedTasks.length}
+              collapsed={!!collapsed.completed}
+              onToggle={() => setCollapsed(p => ({ ...p, completed: !p.completed }))}
+            />
+            {!collapsed.completed && (
+              <div className="grid gap-2" style={{ gridTemplateColumns: '1fr 1fr' }}>
+                {completedTasks.map(task => (
+                  <TaskCard
+                    key={task.id}
+                    task={task}
+                    completedToday={true}
+                    last7Days={taskLast7Days(task.id)}
+                    size={taskSizes[task.id] ?? 'full'}
+                    onComplete={() => {}}
+                    onDelete={() => deleteTask(task.id)}
+                    onPin={() => togglePin(task)}
+                    onResize={s => resizeTask(task.id, s)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -784,8 +840,7 @@ export default function CategoryHub({ category, onClose }: Props) {
             className="flex items-center gap-2 px-5 py-3 rounded-full text-white text-sm font-semibold shadow-2xl transition-all active:scale-95"
             style={{ background: cfg.color }}
           >
-            <Plus size={16} strokeWidth={2.5} />
-            Add task
+            <Plus size={16} strokeWidth={2.5} /> Add goal
           </button>
         </div>
       </div>

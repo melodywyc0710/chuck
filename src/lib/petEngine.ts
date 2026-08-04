@@ -85,6 +85,25 @@ export async function recordCompletion(pet: Pet, userId: string): Promise<Pet | 
 }
 
 /**
+ * Reverses one completion's XP, happiness, and trait point.
+ * Used by undo — only call if the original completion granted XP.
+ */
+export async function reverseCompletion(pet: Pet, userId: string): Promise<Pet | null> {
+  const newXp = Math.max(0, pet.xp - XP_PER_COMPLETION);
+  const newHappiness = Math.max(5, pet.happiness - HAPPINESS_PER_COMPLETION);
+  const newTraitPoints = Math.max(0, pet.trait_points_available - 1);
+
+  const { data } = await supabase
+    .from('pets')
+    .update({ xp: newXp, happiness: newHappiness, trait_points_available: newTraitPoints })
+    .eq('user_id', userId)
+    .select()
+    .single();
+
+  return data ?? null;
+}
+
+/**
  * Applies passive happiness decay based on inactivity.
  * Call this on app load.
  */

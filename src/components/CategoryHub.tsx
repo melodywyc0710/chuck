@@ -12,7 +12,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_, Completion, GoalCategory, Recurrence } from '../lib/supabase';
-import { recordCompletion } from '../lib/petEngine';
+import { recordCompletion, reverseCompletion } from '../lib/petEngine';
 import MetricPanels from './MetricPanels';
 import DeepWorkTimer from './DeepWorkTimer';
 
@@ -657,15 +657,24 @@ export default function CategoryHub({ category, onClose }: Props) {
   const completedTodayIds = new Set(history.filter(h => h.date_key === today).map(h => h.promise_id));
 
 
+  // Only 'friend' or 'photo' verified tasks grant XP
+  function isCertified(verifyMethod: string) {
+    return verifyMethod === 'friend' || verifyMethod === 'photo';
+  }
+
   async function complete(task: Promise_) {
     if (!user || !pet || completedTodayIds.has(task.id)) return;
-    const prevLevel = pet.level;
+    const certified = isCertified(task.verify_method ?? '');
     const proofType = task.verify_method === 'friend' ? 'friend' : 'self';
     const { data: comp } = await supabase.from('completions').insert({ user_id: user.id, promise_id: task.id, date_key: today, proof_type: proofType }).select().single();
-    const updated = await recordCompletion(pet, user.id);
-    if (updated) {
-      setPet(updated);
-      if (updated.level > prevLevel) { /* level-up flash */ }
+    // Only grant XP for certified (verified) tasks
+    if (certified) {
+      const prevLevel = pet.level;
+      const updated = await recordCompletion(pet, user.id);
+      if (updated) {
+        setPet(updated);
+        if (updated.level > prevLevel) { /* level-up flash */ }
+      }
     }
     const compId = comp?.id ?? crypto.randomUUID();
     const newComp = { id: compId, user_id: user.id, promise_id: task.id, date_key: today, proof_type: proofType, proof_url: null, verified_by: null, completed_at: new Date().toISOString() };
@@ -674,8 +683,15 @@ export default function CategoryHub({ category, onClose }: Props) {
   }
 
   async function undoComplete(completionId: string) {
+    // Check if this completion granted XP (only certified ones do)
+    const comp = history.find(h => h.id === completionId);
     await supabase.from('completions').delete().eq('id', completionId);
     setHistory(prev => prev.filter(h => h.id !== completionId));
+    // Reverse XP only if the original task was certified
+    if (pet && comp && comp.proof_type === 'friend') {
+      const updated = await reverseCompletion(pet, pet.user_id);
+      if (updated) setPet(updated);
+    }
   }
 
   async function addTask(partial: Partial<Promise_>) {

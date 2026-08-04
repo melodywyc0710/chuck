@@ -112,9 +112,10 @@ function TaskCard({
     useSortable({ id: task.id });
 
   const holdTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const pointerStartRef = useRef<{ x: number; y: number; mode: 'idle' | 'h' | 'v' } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [ripple, setRipple] = useState(false);
+  const [dragDx, setDragDx] = useState(0);
 
   const pColor = PRIORITY_COLOR[task.priority] ?? PRIORITY_COLOR[4];
   const today = todayKey();
@@ -141,7 +142,7 @@ function TaskCard({
 
   function handlePointerDown(e: React.PointerEvent) {
     (dndListeners.onPointerDown as React.PointerEventHandler | undefined)?.(e);
-    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    pointerStartRef.current = { x: e.clientX, y: e.clientY, mode: 'idle' };
     holdTimerRef.current = setTimeout(() => {
       holdTimerRef.current = null;
       setMenuOpen(true);
@@ -151,39 +152,59 @@ function TaskCard({
   function handlePointerMove(e: React.PointerEvent) {
     const s = pointerStartRef.current;
     if (!s) return;
-    const dist = Math.hypot(e.clientX - s.x, e.clientY - s.y);
-    if (dist > 8 && holdTimerRef.current) {
-      clearTimeout(holdTimerRef.current);
-      holdTimerRef.current = null;
+    const dx = e.clientX - s.x;
+    const dy = e.clientY - s.y;
+    const dist = Math.hypot(dx, dy);
+
+    // Lock direction once past 8px
+    if (s.mode === 'idle' && dist > 8) {
+      s.mode = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+      if (holdTimerRef.current) { clearTimeout(holdTimerRef.current); holdTimerRef.current = null; }
+    }
+
+    if (s.mode === 'h') {
+      e.stopPropagation();
+      setDragDx(dx * 0.7);
     }
   }
 
   function handlePointerUp(e: React.PointerEvent) {
+    const s = pointerStartRef.current;
+    pointerStartRef.current = null;
+
+    if (s?.mode === 'h') {
+      const dx = e.clientX - s.x;
+      setDragDx(0);
+      const THRESHOLD = 48;
+      if (Math.abs(dx) > THRESHOLD) {
+        onResize(size === 'half' ? 'full' : 'half');
+      }
+      return;
+    }
+
     if (holdTimerRef.current) {
       clearTimeout(holdTimerRef.current);
       holdTimerRef.current = null;
-      // it was a tap (short press, no hold menu)
-      const s = pointerStartRef.current;
-      if (s) {
-        const dist = Math.hypot(e.clientX - s.x, e.clientY - s.y);
-        if (dist < 8 && !isDragging && !menuOpen && !completedToday) {
-          setRipple(true);
-          setTimeout(() => { setRipple(false); onComplete(); }, 120);
-        }
+      // tap — no drag, no hold menu
+      if (s && !isDragging && !menuOpen && !completedToday) {
+        setRipple(true);
+        setTimeout(() => { setRipple(false); onComplete(); }, 120);
       }
     }
-    pointerStartRef.current = null;
   }
 
   const wrapperStyle: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition: isDragging ? transition : 'scale 0.15s ease',
+    transform: `${CSS.Transform.toString(transform) ?? ''} translateX(${dragDx}px)`,
+    transition: isDragging ? transition : dragDx !== 0 ? undefined : 'transform 0.25s ease, scale 0.15s ease',
     gridColumn: size === 'half' ? 'span 1' : 'span 2',
     opacity: isDragging ? 0.35 : 1,
     touchAction: 'none',
     position: 'relative',
     scale: ripple ? '0.93' : '1',
   };
+
+  const RESIZE_THRESHOLD = 48;
+  const hintResize = Math.abs(dragDx) > RESIZE_THRESHOLD;
 
   return (
     // All pointer handlers on the same element as setNodeRef so dnd-kit
@@ -200,6 +221,7 @@ function TaskCard({
       onPointerLeave={() => {
         if (holdTimerRef.current) { clearTimeout(holdTimerRef.current); holdTimerRef.current = null; }
         pointerStartRef.current = null;
+        setDragDx(0);
       }}
     >
 
@@ -210,14 +232,6 @@ function TaskCard({
           style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', minWidth: 160 }}
           onPointerDown={e => e.stopPropagation()}
         >
-          <button
-            onClick={() => { setMenuOpen(false); onResize(size === 'half' ? 'full' : 'half'); }}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-white/80 hover:bg-white/8 transition-colors text-left"
-          >
-            {size === 'half' ? <Maximize2 size={14} className="text-white/40" /> : <Minimize2 size={14} className="text-white/40" />}
-            {size === 'half' ? 'Expand' : 'Compact'}
-          </button>
-          <div style={{ height: 1, background: 'rgba(255,255,255,0.06)', margin: '2px 0' }} />
           <button
             onClick={() => { setMenuOpen(false); onDelete(); }}
             className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm hover:bg-white/8 transition-colors text-left"
@@ -233,12 +247,12 @@ function TaskCard({
       <div
         className="relative flex flex-col rounded-[20px] overflow-hidden"
         style={{
-          background: completedToday ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.06)',
+          background: hintResize ? 'rgba(61,142,255,0.12)' : completedToday ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.06)',
           borderLeft: `3px solid ${completedToday ? 'rgba(255,255,255,0.08)' : pColor}`,
           opacity: completedToday ? 0.55 : 1,
           minHeight: size === 'half' ? 80 : undefined,
           cursor: isDragging ? 'grabbing' : 'grab',
-          transition: 'background 0.2s',
+          transition: 'background 0.15s',
         }}
       >
 
@@ -754,7 +768,7 @@ export default function CategoryHub({ category, onClose }: Props) {
 
         {/* Tip when tasks exist */}
         {tasks.length > 0 && activeTasks.length > 0 && (
-          <p className="text-white/15 text-[10px] text-center mb-3">Tap to complete · Hold for options · Drag to reorder</p>
+          <p className="text-white/15 text-[10px] text-center mb-3">Tap · Drag ↕ reorder · Drag ↔ resize · Hold to delete</p>
         )}
 
         {/* Active task grid — drag and drop */}

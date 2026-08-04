@@ -98,7 +98,7 @@ function isOverdue(task: Promise_, today: string): boolean {
 
 function TaskCard({
   task, completedToday, last7Days, size,
-  onComplete, onDelete, onPin, onResize,
+  onComplete, onDelete, onResize,
 }: {
   task: Promise_;
   completedToday: boolean;
@@ -106,15 +106,17 @@ function TaskCard({
   size: CardSize;
   onComplete: () => void;
   onDelete: () => void;
-  onPin: () => void;
   onResize: (s: CardSize) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: task.id });
 
-  const pressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pressStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
-  const [showMenu, setShowMenu] = useState(false);
+  // Gesture state
+  const gestureRef = useRef<{
+    startX: number; startY: number; startTime: number;
+    mode: 'idle' | 'h' | 'v';
+  } | null>(null);
+  const [swipeX, setSwipeX] = useState(0);
   const [ripple, setRipple] = useState(false);
 
   const pColor = PRIORITY_COLOR[task.priority] ?? PRIORITY_COLOR[4];
@@ -122,122 +124,138 @@ function TaskCard({
   const overdue = isOverdue(task, today);
   const activeToday = appliesToday(task, today, null);
 
-  // Cancel menu if drag starts
+  // Swipe action thresholds
+  const DELETE_THRESHOLD = -72;
+  const RESIZE_THRESHOLD =  72;
+  const swipeAction: 'delete' | 'resize' | null =
+    swipeX < DELETE_THRESHOLD ? 'delete' : swipeX > RESIZE_THRESHOLD ? 'resize' : null;
+
+  // dnd-kit takes over → reset swipe
   useEffect(() => {
-    if (isDragging) {
-      if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
-      setShowMenu(false);
-    }
+    if (isDragging) { setSwipeX(0); gestureRef.current = null; }
   }, [isDragging]);
 
-  const cardStyle: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    gridColumn: size === 'half' ? 'span 1' : 'span 2',
-    opacity: isDragging ? 0.4 : 1,
-    touchAction: 'none',
-  };
+  // Merge my onPointerDown with dnd-kit's so both fire
+  const dndListeners = listeners ?? {};
 
-  function onPointerDown(e: React.PointerEvent) {
-    if (showMenu) return;
-    pressStartRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
-    pressTimerRef.current = setTimeout(() => {
-      setShowMenu(true);
-      pressStartRef.current = null;
-    }, 500);
+  function handlePointerDown(e: React.PointerEvent) {
+    // Forward to dnd-kit's handler (for vertical drag-to-reorder)
+    (dndListeners.onPointerDown as React.PointerEventHandler | undefined)?.(e);
+    gestureRef.current = { startX: e.clientX, startY: e.clientY, startTime: Date.now(), mode: 'idle' };
   }
 
-  function onPointerUp(e: React.PointerEvent) {
-    if (!pressStartRef.current) return;
-    const { x, y, time } = pressStartRef.current;
-    pressStartRef.current = null;
-    if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
-    const dt = Date.now() - time;
-    const dx = Math.abs(e.clientX - x);
-    const dy = Math.abs(e.clientY - y);
-    if (dt < 350 && dx < 10 && dy < 10 && !showMenu && !isDragging) {
+  function handlePointerMove(e: React.PointerEvent) {
+    const g = gestureRef.current;
+    if (!g || isDragging) return;
+    const dx = e.clientX - g.startX;
+    const dy = e.clientY - g.startY;
+
+    if (g.mode === 'idle' && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+      g.mode = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+    }
+    if (g.mode === 'h') {
+      e.preventDefault();
+      setSwipeX(dx * 0.85); // slight resistance
+    }
+  }
+
+  function handlePointerUp(e: React.PointerEvent) {
+    const g = gestureRef.current;
+    if (!g) return;
+    gestureRef.current = null;
+    const dx = e.clientX - g.startX;
+    const dy = e.clientY - g.startY;
+    const dt = Date.now() - g.startTime;
+
+    if (g.mode === 'h') {
+      if (dx < DELETE_THRESHOLD) {
+        // animate off then delete
+        setSwipeX(-320);
+        setTimeout(() => { setSwipeX(0); onDelete(); }, 280);
+      } else if (dx > RESIZE_THRESHOLD) {
+        setSwipeX(320);
+        setTimeout(() => { setSwipeX(0); onResize(size === 'half' ? 'full' : 'half'); }, 280);
+      } else {
+        setSwipeX(0); // snap back
+      }
+    } else if (g.mode === 'idle' && Math.abs(dx) < 8 && Math.abs(dy) < 8 && dt < 350 && !isDragging) {
       if (!completedToday) {
         setRipple(true);
-        setTimeout(() => setRipple(false), 600);
+        setTimeout(() => setRipple(false), 500);
         onComplete();
       }
     }
   }
 
-  function onPointerMove(e: React.PointerEvent) {
-    if (!pressStartRef.current) return;
-    const dx = Math.abs(e.clientX - pressStartRef.current.x);
-    const dy = Math.abs(e.clientY - pressStartRef.current.y);
-    if (dx > 8 || dy > 8) {
-      if (pressTimerRef.current) clearTimeout(pressTimerRef.current);
-    }
-  }
+  // Outer wrapper: dnd-kit positioning
+  const wrapperStyle: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition: isDragging ? transition : undefined,
+    gridColumn: size === 'half' ? 'span 1' : 'span 2',
+    opacity: isDragging ? 0.35 : 1,
+    touchAction: 'none',
+    position: 'relative',
+  };
+
+  // Card translate for swipe
+  const cardStyle: React.CSSProperties = {
+    transform: `translateX(${swipeX}px)`,
+    transition: swipeX === 0 ? 'transform 0.3s cubic-bezier(0.25,0.46,0.45,0.94)' : undefined,
+  };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={cardStyle}
-      className="relative select-none"
-    >
-      {/* Context menu overlay */}
-      {showMenu && (
-        <>
-          <div className="fixed inset-0 z-30" onClick={() => setShowMenu(false)} />
-          <div className="absolute left-0 right-0 top-0 z-40 rounded-[20px] p-2 fade-up" style={{ background: '#1c1c1c', border: '1px solid #2e2e2e', boxShadow: '0 8px 32px rgba(0,0,0,0.6)' }}>
-            <div className="grid grid-cols-2 gap-1.5">
-              <button
-                onClick={() => { onPin(); setShowMenu(false); }}
-                className="flex items-center gap-2 px-3 py-2.5 rounded-2xl text-xs font-medium transition-all"
-                style={{ background: 'rgba(255,255,255,0.06)', color: task.pinned ? 'white' : 'rgba(255,255,255,0.5)' }}
-              >
-                <Pin size={12} style={{ transform: 'rotate(45deg)' }} />
-                {task.pinned ? 'Unpin' : 'Pin to top'}
-              </button>
-              <button
-                onClick={() => { onResize(size === 'half' ? 'full' : 'half'); setShowMenu(false); }}
-                className="flex items-center gap-2 px-3 py-2.5 rounded-2xl text-xs font-medium transition-all"
-                style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)' }}
-              >
-                {size === 'half' ? <Maximize2 size={12} /> : <Minimize2 size={12} />}
-                {size === 'half' ? 'Full width' : 'Make compact'}
-              </button>
-              <button
-                onClick={() => { onDelete(); setShowMenu(false); }}
-                className="col-span-2 flex items-center justify-center gap-2 px-3 py-2.5 rounded-2xl text-xs font-medium transition-all"
-                style={{ background: 'rgba(201,24,24,0.12)', color: '#C91818' }}
-              >
-                <Trash2 size={12} /> Delete goal
-              </button>
-            </div>
-            <button
-              onClick={() => setShowMenu(false)}
-              className="w-full mt-1.5 py-2 text-xs rounded-xl transition-all"
-              style={{ color: 'rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.03)' }}
-            >
-              Cancel
-            </button>
-          </div>
-        </>
-      )}
+    <div ref={setNodeRef} style={wrapperStyle} className="select-none" {...attributes}>
+
+      {/* Left reveal: resize (swipe right) */}
+      <div
+        className="absolute inset-y-0 left-0 flex items-center pl-4 rounded-[20px] overflow-hidden"
+        style={{
+          background: 'linear-gradient(90deg, #3D8EFF33, #3D8EFF11)',
+          width: `${Math.min(Math.max(swipeX, 0), 120)}px`,
+          opacity: swipeX > 20 ? 1 : 0,
+          transition: swipeX === 0 ? 'opacity 0.3s, width 0.3s' : undefined,
+        }}
+      >
+        {size === 'half'
+          ? <Maximize2 size={18} color="#3D8EFF" />
+          : <Minimize2 size={18} color="#3D8EFF" />}
+      </div>
+
+      {/* Right reveal: delete (swipe left) */}
+      <div
+        className="absolute inset-y-0 right-0 flex items-center justify-end pr-4 rounded-[20px] overflow-hidden"
+        style={{
+          background: 'linear-gradient(270deg, #C9181833, #C9181811)',
+          width: `${Math.min(Math.max(-swipeX, 0), 120)}px`,
+          opacity: swipeX < -20 ? 1 : 0,
+          transition: swipeX === 0 ? 'opacity 0.3s, width 0.3s' : undefined,
+        }}
+      >
+        <Trash2 size={18} color="#C91818" />
+      </div>
 
       {/* Card */}
       <div
-        className="relative flex flex-col rounded-[20px] overflow-hidden transition-all duration-200 cursor-pointer"
+        className="relative flex flex-col rounded-[20px] overflow-hidden"
         style={{
-          background: completedToday ? 'rgba(255,255,255,0.025)' : 'rgba(255,255,255,0.06)',
+          ...cardStyle,
+          background: completedToday ? 'rgba(255,255,255,0.025)'
+            : swipeAction === 'delete' ? 'rgba(201,24,24,0.15)'
+            : swipeAction === 'resize' ? 'rgba(61,142,255,0.15)'
+            : 'rgba(255,255,255,0.06)',
           borderLeft: `3px solid ${completedToday ? 'rgba(255,255,255,0.08)' : pColor}`,
           opacity: completedToday ? 0.55 : 1,
           minHeight: size === 'half' ? 80 : undefined,
+          cursor: 'grab',
         }}
-        {...attributes}
-        {...listeners}
-        onPointerDown={onPointerDown}
-        onPointerUp={onPointerUp}
-        onPointerMove={onPointerMove}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
       >
         {/* Ripple */}
         {ripple && (
-          <div className="absolute inset-0 rounded-[20px] pointer-events-none" style={{ background: pColor + '22', animation: 'card-ripple 0.5s ease-out forwards' }} />
+          <div className="absolute inset-0 rounded-[20px] pointer-events-none" style={{ background: pColor + '20', animation: 'card-ripple 0.45s ease-out forwards' }} />
         )}
 
         <div className="px-4 py-3.5 flex flex-col gap-2">
@@ -676,12 +694,6 @@ export default function CategoryHub({ category, onClose }: Props) {
     setTasks(prev => prev.filter(t => t.id !== id));
   }
 
-  async function togglePin(task: Promise_) {
-    const pinned = !task.pinned;
-    await supabase.from('promises').update({ pinned }).eq('id', task.id);
-    setTasks(prev => prev.map(t => t.id === task.id ? { ...t, pinned } : t));
-  }
-
   function resizeTask(id: string, size: CardSize) {
     const next = { ...taskSizes, [id]: size };
     setTaskSizes(next);
@@ -758,7 +770,7 @@ export default function CategoryHub({ category, onClose }: Props) {
 
         {/* Tip when tasks exist */}
         {tasks.length > 0 && activeTasks.length > 0 && (
-          <p className="text-white/15 text-[10px] text-center mb-3">Tap to complete · Hold to edit · Drag to reorder</p>
+          <p className="text-white/15 text-[10px] text-center mb-3">Tap · Swipe ← delete · Swipe → resize · Hold &amp; drag to reorder</p>
         )}
 
         {/* Active task grid — drag and drop */}
@@ -778,7 +790,7 @@ export default function CategoryHub({ category, onClose }: Props) {
                     size={taskSizes[task.id] ?? 'full'}
                     onComplete={() => complete(task)}
                     onDelete={() => deleteTask(task.id)}
-                    onPin={() => togglePin(task)}
+
                     onResize={s => resizeTask(task.id, s)}
                   />
                 ))}
@@ -807,7 +819,7 @@ export default function CategoryHub({ category, onClose }: Props) {
                     size={taskSizes[task.id] ?? 'full'}
                     onComplete={() => {}}
                     onDelete={() => deleteTask(task.id)}
-                    onPin={() => togglePin(task)}
+
                     onResize={s => resizeTask(task.id, s)}
                   />
                 ))}

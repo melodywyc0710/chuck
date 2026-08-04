@@ -30,18 +30,17 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
   loading: true,
 
   init: async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      await loadUserData(session.user.id, set);
-    }
-    set({ session, user: session?.user ?? null, loading: false });
-
-    supabase.auth.onAuthStateChange(async (_event, session) => {
+    // onAuthStateChange fires INITIAL_SESSION immediately with the persisted
+    // session (and refreshes the token if needed), so we don't need getSession().
+    supabase.auth.onAuthStateChange(async (event, session) => {
       set({ session, user: session?.user ?? null });
       if (session?.user) {
         await loadUserData(session.user.id, set);
       } else {
         set({ profile: null, pet: null });
+      }
+      if (event === 'INITIAL_SESSION') {
+        set({ loading: false });
       }
     });
   },

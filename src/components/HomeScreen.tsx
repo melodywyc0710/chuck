@@ -149,13 +149,6 @@ export default function HomeScreen({
             const doneToday = catPromises.filter(p => todayDoneIds.has(p.id)).length;
             const allDone = catPromises.length > 0 && doneToday === catPromises.length;
             const pct = catPromises.length > 0 ? doneToday / catPromises.length : 0;
-            // last 7 days streak dots
-            const last7 = Array.from({ length: 7 }, (_, i) => {
-              const d = new Date(); d.setDate(d.getDate() - (6 - i));
-              const key = d.toISOString().slice(0, 10);
-              return history.some(h => h.date_key === key && catPromises.some(p => p.id === h.promise_id));
-            });
-
             return (
               <button
                 key={cat}
@@ -189,12 +182,6 @@ export default function HomeScreen({
                       {/* Progress bar */}
                       <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)', marginTop: 2 }}>
                         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct * 100}%`, background: cfg.color }} />
-                      </div>
-                      {/* 7-day dots */}
-                      <div className="flex gap-1 mt-1.5">
-                        {last7.map((done, i) => (
-                          <div key={i} className="flex-1 h-1 rounded-full transition-all" style={{ background: done ? cfg.color : 'rgba(255,255,255,0.1)' }} />
-                        ))}
                       </div>
                     </>
                   )}

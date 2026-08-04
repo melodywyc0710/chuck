@@ -7,16 +7,32 @@ export interface Species {
   description: string;
   requiredTier: SubscriptionTier;
   personality: string;
+  stages?: string[]; // image paths for stage 1-5
+}
+
+// Returns the stage image URL for a given species and level
+export function getStageImage(speciesId: string, level: number): string | null {
+  const species = SPECIES_LIST.find(s => s.id === speciesId);
+  if (!species?.stages) return null;
+  const stageIndex = Math.min(Math.floor((level - 1) / 5), species.stages.length - 1);
+  return species.stages[Math.max(0, stageIndex)];
 }
 
 export const SPECIES_LIST: Species[] = [
   {
     id: 'melmel',
     name: 'Melmel',
-    emoji: '🐱',
+    emoji: '🦌',
     description: 'Soft, gentle, always by your side',
     requiredTier: 'free',
     personality: 'gentle',
+    stages: [
+      '/species/melmel-1.webp',
+      '/species/melmel-2.webp',
+      '/species/melmel-3.webp',
+      '/species/melmel-4.webp',
+      '/species/melmel-5.webp',
+    ],
   },
   {
     id: 'lolo',

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import type React from 'react';
 import { LogOut, Flame, Users, CreditCard, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles, Star, BarChart2, Check } from 'lucide-react';
+
 import TraitAllocator from './TraitAllocator';
 import SpeciesSelector from './SpeciesSelector';
 import AiCheckin from './AiCheckin';
-import { SPECIES_LIST } from '../lib/species';
+import { SPECIES_LIST, getStageImage } from '../lib/species';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
@@ -108,8 +109,13 @@ export default function HomeScreen({
         {/* Pet — compact */}
         <div className="flex items-center gap-4 mb-8 fade-up" style={{ animationDelay: '0.1s' }}>
           <button onClick={() => setShowSpecies(true)} className="relative shrink-0">
-            <div className="relative w-16 h-16 rounded-full flex items-center justify-center" style={{ background: '#141414', border: '1px solid #1E1E1E' }}>
-              <Star size={26} strokeWidth={1.5} color="white" opacity={0.7} />
+            <div className="relative w-16 h-16 rounded-full flex items-center justify-center overflow-hidden" style={{ background: '#141414', border: '1px solid #1E1E1E' }}>
+              {(() => {
+                const stageImg = getStageImage(pet.species, pet.level);
+                return stageImg
+                  ? <img src={stageImg} alt={pet.name} className="w-full h-full object-contain" />
+                  : <Star size={26} strokeWidth={1.5} color="white" opacity={0.7} />;
+              })()}
               <span className="absolute -bottom-0.5 -right-0.5 text-white/30"><MoodIcon h={pet.happiness} size={12} /></span>
             </div>
           </button>

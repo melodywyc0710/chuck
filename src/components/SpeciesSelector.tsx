@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, Lock, Star } from 'lucide-react';
+import { getStageImage } from '../lib/species';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { SPECIES_LIST, canAccessSpecies } from '../lib/species';
@@ -68,7 +69,12 @@ export default function SpeciesSelector({ onClose }: Props) {
                   opacity: saving ? 0.7 : 1,
                 }}
               >
-                <Star size={24} strokeWidth={1.5} className="text-white/60" />
+                {(() => {
+                  const img = getStageImage(species.id, 1);
+                  return img
+                    ? <img src={img} alt={species.name} className="w-10 h-10 object-contain flex-shrink-0" />
+                    : <Star size={24} strokeWidth={1.5} className="text-white/60" />;
+                })()}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-white text-sm font-medium">{species.name}</span>

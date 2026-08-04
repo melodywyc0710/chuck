@@ -27,11 +27,11 @@ export const SPECIES_LIST: Species[] = [
     requiredTier: 'free',
     personality: 'gentle',
     stages: [
-      '/species/melmel-1.webp',
-      '/species/melmel-2.webp',
-      '/species/melmel-3.webp',
-      '/species/melmel-4.webp',
-      '/species/melmel-5.webp',
+      '/species/melmel-1.png',
+      '/species/melmel-2.png',
+      '/species/melmel-3.png',
+      '/species/melmel-4.png',
+      '/species/melmel-5.png',
     ],
   },
   {

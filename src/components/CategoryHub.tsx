@@ -610,7 +610,6 @@ export default function CategoryHub({ category, onClose }: Props) {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({ completed: true });
   const [witnessCompletionId, setWitnessCompletionId] = useState<string | null>(null);
   const [taskSizes, setTaskSizes] = useState<Record<string, CardSize>>(getSizes);
-  const [undoToast, setUndoToast] = useState<{ completionId: string; taskTitle: string; timerId: ReturnType<typeof setTimeout> } | null>(null);
 
   const plus = profile?.subscription_tier === 'plus' || profile?.subscription_tier === 'pro';
   const FREE_LIMIT = 5;
@@ -658,15 +657,9 @@ export default function CategoryHub({ category, onClose }: Props) {
     const newComp = { id: compId, user_id: user.id, promise_id: task.id, date_key: today, proof_type: proofType, proof_url: null, verified_by: null, completed_at: new Date().toISOString() };
     setHistory(prev => [newComp, ...prev]);
     if (task.verify_method === 'friend' && comp?.id) setWitnessCompletionId(comp.id);
-
-    // Show undo toast for 4 seconds
-    if (undoToast) clearTimeout(undoToast.timerId);
-    const timerId = setTimeout(() => setUndoToast(null), 4000);
-    setUndoToast({ completionId: compId, taskTitle: task.title, timerId });
   }
 
   async function undoComplete(completionId: string) {
-    if (undoToast) { clearTimeout(undoToast.timerId); setUndoToast(null); }
     await supabase.from('completions').delete().eq('id', completionId);
     setHistory(prev => prev.filter(h => h.id !== completionId));
   }
@@ -800,20 +793,34 @@ export default function CategoryHub({ category, onClose }: Props) {
               onToggle={() => setCollapsed(p => ({ ...p, completed: !p.completed }))}
             />
             {!collapsed.completed && (
-              <div className="grid gap-2" style={{ gridTemplateColumns: '1fr 1fr' }}>
-                {completedTasks.map(task => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    completedToday={true}
-                    last7Days={taskLast7Days(task.id)}
-                    size={taskSizes[task.id] ?? 'full'}
-                    onComplete={() => {}}
-                    onDelete={() => deleteTask(task.id)}
-
-                    onResize={s => resizeTask(task.id, s)}
-                  />
-                ))}
+              <div className="flex flex-col gap-2">
+                {completedTasks.map(task => {
+                  const comp = history.find(h => h.promise_id === task.id && h.date_key === today);
+                  return (
+                    <div key={task.id} className="flex items-center gap-2">
+                      <div className="flex-1 min-w-0">
+                        <TaskCard
+                          task={task}
+                          completedToday={true}
+                          last7Days={taskLast7Days(task.id)}
+                          size="full"
+                          onComplete={() => {}}
+                          onDelete={() => deleteTask(task.id)}
+                          onResize={s => resizeTask(task.id, s)}
+                        />
+                      </div>
+                      {comp && (
+                        <button
+                          onClick={() => undoComplete(comp.id)}
+                          className="shrink-0 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors"
+                          style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }}
+                        >
+                          Undo
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -834,25 +841,6 @@ export default function CategoryHub({ category, onClose }: Props) {
           </div>
         )}
       </div>
-
-      {/* Undo toast */}
-      {undoToast && (
-        <div
-          className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl fade-up"
-          style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', animationDelay: '0s', maxWidth: 320, width: 'calc(100% - 40px)' }}
-        >
-          <p className="text-white/60 text-sm flex-1 truncate">
-            <span className="text-white/30 mr-1">✓</span>{undoToast.taskTitle}
-          </p>
-          <button
-            onClick={() => undoComplete(undoToast.completionId)}
-            className="text-sm font-semibold shrink-0 px-3 py-1 rounded-xl transition-colors"
-            style={{ color: cfg.color, background: cfg.color + '18' }}
-          >
-            Undo
-          </button>
-        </div>
-      )}
 
       {/* Floating add button */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-30 max-w-md w-full px-5 pointer-events-none">

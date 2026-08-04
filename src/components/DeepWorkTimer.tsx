@@ -70,6 +70,96 @@ function CircleTimer({ pct, secs, color }: { pct: number; secs: number; color: s
   );
 }
 
+function SessionHistoryChart({ sessions, color }: { sessions: Session[]; color: string }) {
+  // Build 30-day buckets
+  const days = Array.from({ length: 30 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (29 - i));
+    return d.toISOString().slice(0, 10);
+  });
+
+  const buckets = days.map(key => {
+    const daySessions = sessions.filter(s => s.date_key === key);
+    const completedMins = daySessions.filter(s => s.completed).reduce((sum, s) => sum + (s.actual_mins ?? s.duration_mins), 0);
+    const partialMins = daySessions.filter(s => !s.completed).reduce((sum, s) => sum + (s.actual_mins ?? 0), 0);
+    return { key, completedMins, partialMins, total: completedMins + partialMins };
+  });
+
+  const maxMins = Math.max(...buckets.map(b => b.total), 30);
+  const chartH = 72;
+
+  // last 7 days for detailed log
+  const recent = sessions.slice(0, 8);
+
+  return (
+    <div>
+      {/* Bar chart */}
+      <div className="flex items-end gap-[2px] mb-1" style={{ height: chartH }}>
+        {buckets.map(b => {
+          const totalH = Math.round((b.total / maxMins) * chartH);
+          const compH = b.total > 0 ? Math.round((b.completedMins / b.total) * totalH) : 0;
+          const partH = totalH - compH;
+          return (
+            <div key={b.key} className="flex-1 flex flex-col justify-end" style={{ height: chartH }}>
+              {b.total > 0 ? (
+                <div className="w-full flex flex-col justify-end rounded-t-[2px] overflow-hidden" style={{ height: totalH }}>
+                  {partH > 0 && <div style={{ height: partH, background: 'rgba(61,142,255,0.2)' }} />}
+                  {compH > 0 && <div style={{ height: compH, background: color }} />}
+                </div>
+              ) : (
+                <div className="w-full rounded-t-[2px]" style={{ height: 2, background: 'rgba(255,255,255,0.06)' }} />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {/* X-axis labels: show only first and last date */}
+      <div className="flex justify-between mb-4">
+        <span className="text-[9px] text-white/20">{formatDate(days[0])}</span>
+        <span className="text-[9px] text-white/20">Today</span>
+      </div>
+
+      {/* Legend */}
+      <div className="flex gap-4 mb-4">
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-sm" style={{ background: color }} />
+          <span className="text-[10px] text-white/30">Completed</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-sm" style={{ background: 'rgba(61,142,255,0.25)' }} />
+          <span className="text-[10px] text-white/30">Partial</span>
+        </div>
+      </div>
+
+      {/* Recent sessions list */}
+      <div className="space-y-1.5">
+        {recent.map(s => {
+          const actualMins = s.actual_mins ?? s.duration_mins;
+          const pct = s.duration_mins > 0 ? Math.min(actualMins / s.duration_mins, 1) : 0;
+          return (
+            <div key={s.id} className="flex items-center gap-3 py-2 px-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)' }}>
+              <div className="flex flex-col gap-1 flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-white/60 text-xs font-medium">
+                    {s.completed ? formatDuration(actualMins) : `${formatDuration(actualMins)} / ${formatDuration(s.duration_mins)}`}
+                  </span>
+                  <span className="text-white/25 text-[10px]">{formatDate(s.started_at)}</span>
+                </div>
+                <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${pct * 100}%`, background: s.completed ? color : 'rgba(61,142,255,0.3)' }}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function DeepWorkTimer({ userId }: { userId: string }) {
   useAuthStore(s => s.pet);
   const [selectedMins, setSelectedMins] = useState(25);
@@ -357,35 +447,11 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
       {/* Session history */}
       {sessions.length > 0 && (
         <div className="liquid-glass rounded-[28px] p-5">
-          <div className="w-full flex items-center justify-between">
+          <div className="w-full flex items-center justify-between mb-4">
             <p className="text-white/40 text-xs uppercase tracking-widest">Session history</p>
             <Toggle checked={showHistory} onChange={setShowHistory} color={color} />
           </div>
-          {showHistory && (
-            <div className="mt-3 space-y-2">
-              {sessions.slice(0, 20).map(s => (
-                <div key={s.id} className="flex items-center justify-between px-3 py-2.5 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                  <div>
-                    <p className="text-white/70 text-sm">
-                      {s.completed ? '✓ ' : '○ '}
-                      {formatDuration(s.actual_mins ?? s.duration_mins)}
-                      {!s.completed && s.actual_mins ? ` / ${formatDuration(s.duration_mins)}` : ''}
-                    </p>
-                    <p className="text-white/25 text-xs mt-0.5">{formatDate(s.started_at)}</p>
-                  </div>
-                  <span
-                    className="text-[10px] px-2 py-0.5 rounded-full font-medium"
-                    style={{
-                      background: s.completed ? 'rgba(96,165,250,0.15)' : 'rgba(255,255,255,0.06)',
-                      color: s.completed ? color : 'rgba(255,255,255,0.25)',
-                    }}
-                  >
-                    {s.completed ? 'done' : 'partial'}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
+          {showHistory && <SessionHistoryChart sessions={sessions} color={color} />}
         </div>
       )}
     </div>

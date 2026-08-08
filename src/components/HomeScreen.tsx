@@ -200,7 +200,7 @@ export default function HomeScreen({
                 style={{ background: '#111111', border: '1px solid #1e1e1e', minHeight: 160, display: 'flex', flexDirection: 'column', width: '100%' }}
               >
                 {/* Color glow top band */}
-                <div className="relative flex items-center justify-center" style={{ background: cfg.color, height: 88 }}>
+                <div className="relative flex items-center justify-center" style={{ background: cfg.color, height: 88, width: '100%', flexShrink: 0 }}>
                   {/* Subtle gradient overlay */}
                   <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.15) 100%)' }} />
                   <cfg.Icon size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.95, position: 'relative' }} />

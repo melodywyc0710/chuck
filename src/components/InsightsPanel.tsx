@@ -48,10 +48,13 @@ export default function InsightsPanel({ category, tasks, completions, color }: P
           completions: completions.map(c => ({ promise_id: c.promise_id, date_key: c.date_key })),
         },
       });
-      if (error) throw error;
+      if (error) throw new Error(JSON.stringify(error));
+      if (!data) throw new Error('No data returned');
       setResult(data as HabitInsightsResult);
     } catch (e) {
-      setError((e as Error).message);
+      const msg = (e as Error).message;
+      console.error('habit-insights error:', msg);
+      setError(msg);
     } finally {
       setLoading(false);
       setFetched(true);

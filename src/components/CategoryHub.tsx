@@ -679,7 +679,6 @@ function CategoryStats({ history, tasks, color }: { history: Completion[]; tasks
 
   // Per-task breakdown
   const today = todayKey();
-  const weekAgoKey = weekKey;
 
   return (
     <div className="space-y-4">
@@ -722,24 +721,66 @@ function CategoryStats({ history, tasks, color }: { history: Completion[]; tasks
         </div>
       </div>
 
-      {/* Per-task breakdown */}
+      {/* Per-task breakdown with sparklines */}
       {tasks.length > 0 && (
         <div className="space-y-2">
-          <p className="text-white/25 text-[10px]">By task</p>
+          <p className="text-white/25 text-[10px]">By task · last 14 days</p>
           {tasks.map(task => {
             const taskComps = catHistory.filter(h => h.promise_id === task.id);
-            const weekComps = taskComps.filter(h => h.date_key >= weekAgoKey).length;
             const doneToday = taskComps.some(h => h.date_key === today);
             const taskDoneDays = new Set(taskComps.map(h => h.date_key));
+
+            // Streak
             let ts = 0; const td = new Date();
             if (!taskDoneDays.has(td.toISOString().slice(0,10))) td.setDate(td.getDate()-1);
             while (taskDoneDays.has(td.toISOString().slice(0,10))) { ts++; td.setDate(td.getDate()-1); }
+
+            // 14-day sparkline data
+            const sparkDays = Array.from({ length: 14 }, (_, i) => {
+              const d = new Date(); d.setDate(d.getDate() - (13 - i));
+              return d.toISOString().slice(0, 10);
+            });
+            const sparkCounts = sparkDays.map(dk => taskComps.filter(h => h.date_key === dk).length);
+            const sparkMax = Math.max(1, ...sparkCounts);
+
+            // SVG sparkline
+            const SW = 80, SH = 28, SP = 3;
+            const sPoints = sparkCounts.map((c, i) => {
+              const x = SP + (i / (sparkDays.length - 1)) * (SW - SP * 2);
+              const y = SH - SP - (c / sparkMax) * (SH - SP * 2);
+              return [x, y] as [number, number];
+            });
+            const sPath = sPoints.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+            const sArea = `${sPath} L${sPoints[sPoints.length-1][0].toFixed(1)},${SH} L${sPoints[0][0].toFixed(1)},${SH} Z`;
+            const gradId = `tg-${task.id.slice(0,8)}`;
+
             return (
-              <div key={task.id} className="flex items-center gap-3 px-3 py-2.5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: doneToday ? color : 'rgba(255,255,255,0.15)' }} />
-                <span className="flex-1 text-white/70 text-xs truncate">{task.title}</span>
-                <span className="text-white/30 text-[10px] tabular-nums">{weekComps}×</span>
-                {ts > 0 && <span className="text-[10px] tabular-nums" style={{ color }}>{ts}d 🔥</span>}
+              <div key={task.id} className="px-3 py-3 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                {/* Top row: title + streak */}
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: doneToday ? color : 'rgba(255,255,255,0.15)' }} />
+                  <span className="flex-1 text-white/70 text-xs truncate">{task.title}</span>
+                  {ts > 0 && <span className="text-[10px] font-medium tabular-nums" style={{ color }}>{ts}d streak</span>}
+                </div>
+                {/* Sparkline */}
+                <svg viewBox={`0 0 ${SW} ${SH}`} width="100%" style={{ height: 28, display: 'block' }}>
+                  <defs>
+                    <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+                      <stop offset="100%" stopColor={color} stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path d={sArea} fill={`url(#${gradId})`} />
+                  <path d={sPath} fill="none" stroke={color} strokeWidth="1.2" strokeLinejoin="round" strokeLinecap="round" opacity={doneToday ? 1 : 0.5} />
+                  {sPoints.map(([x, y], i) => sparkCounts[i] > 0 && (
+                    <circle key={i} cx={x} cy={y} r="1.8" fill={color} opacity={i === 13 ? 1 : 0.6} />
+                  ))}
+                </svg>
+                {/* Day labels */}
+                <div className="flex justify-between mt-0.5">
+                  <span className="text-white/15" style={{ fontSize: 8 }}>14d ago</span>
+                  <span className="text-white/15" style={{ fontSize: 8 }}>Today</span>
+                </div>
               </div>
             );
           })}

@@ -642,135 +642,212 @@ function SectionHeader({ label, count, collapsed, onToggle }: { label: string; c
 
 // ─── Category Stats ───────────────────────────────────────────────────────────
 
-function CategoryStats({ history, tasks, color }: { history: Completion[]; tasks: Promise_[]; color: string }) {
-  const taskIds = new Set(tasks.map(t => t.id));
-  const catHistory = history.filter(h => taskIds.has(h.promise_id));
+type RangeKey = '1W' | '1M' | '3M' | '6M' | '1Y' | 'ALL';
+const RANGES: { key: RangeKey; label: string; days: number | null; plus: boolean }[] = [
+  { key: '1W',  label: '1W',  days: 7,   plus: false },
+  { key: '1M',  label: '1M',  days: 30,  plus: false },
+  { key: '3M',  label: '3M',  days: 90,  plus: true  },
+  { key: '6M',  label: '6M',  days: 180, plus: true  },
+  { key: '1Y',  label: '1Y',  days: 365, plus: true  },
+  { key: 'ALL', label: 'ALL', days: null, plus: true  },
+];
 
-  // 30-day data points
-  const days = Array.from({ length: 30 }, (_, i) => {
-    const d = new Date(); d.setDate(d.getDate() - (29 - i));
+function buildDays(numDays: number | null, earliest: string): string[] {
+  if (numDays === null) {
+    // from earliest completion date to today
+    const start = new Date(earliest + 'T00:00:00');
+    const end = new Date();
+    const out: string[] = [];
+    for (const d = new Date(start); d <= end; d.setDate(d.getDate() + 1))
+      out.push(d.toISOString().slice(0, 10));
+    return out;
+  }
+  return Array.from({ length: numDays }, (_, i) => {
+    const d = new Date(); d.setDate(d.getDate() - (numDays - 1 - i));
     return d.toISOString().slice(0, 10);
   });
-  const counts = days.map(dk => catHistory.filter(h => h.date_key === dk).length);
-  const maxCount = Math.max(1, ...counts);
+}
 
-  // SVG line graph
-  const W = 320, H = 64, PAD = 6;
-  const points = counts.map((c, i) => {
-    const x = PAD + (i / (days.length - 1)) * (W - PAD * 2);
-    const y = H - PAD - (c / maxCount) * (H - PAD * 2);
+function LineChart({ days, counts, color }: { days: string[]; counts: number[]; color: string }) {
+  const W = 320, H = 72, PAD = 4;
+  // For large ranges, group by week to avoid overdense lines
+  const bucket = days.length > 90 ? Math.ceil(days.length / 52) : 1;
+  const bucketed: number[] = [];
+  for (let i = 0; i < counts.length; i += bucket)
+    bucketed.push(counts.slice(i, i + bucket).reduce((a, b) => a + b, 0));
+  const bMax = Math.max(1, ...bucketed);
+  const pts = bucketed.map((c, i) => {
+    const x = PAD + (bucketed.length === 1 ? W / 2 : (i / (bucketed.length - 1)) * (W - PAD * 2));
+    const y = H - PAD - (c / bMax) * (H - PAD * 2);
     return [x, y] as [number, number];
   });
-  const pathD = points.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
-  const areaD = `${pathD} L${points[points.length-1][0].toFixed(1)},${H} L${points[0][0].toFixed(1)},${H} Z`;
+  const pathD = pts.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+  const areaD = pts.length > 1
+    ? `${pathD} L${pts[pts.length-1][0].toFixed(1)},${H} L${pts[0][0].toFixed(1)},${H} Z`
+    : '';
+  const gradId = `lg-${color.replace('#', '')}`;
+  const showDots = bucketed.length <= 60;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 72, display: 'block' }}>
+      <defs>
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {areaD && <path d={areaD} fill={`url(#${gradId})`} />}
+      <path d={pathD} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+      {showDots && pts.map(([x, y], i) => bucketed[i] > 0 && (
+        <circle key={i} cx={x} cy={y} r={i === pts.length - 1 ? 3 : 2} fill={color} />
+      ))}
+    </svg>
+  );
+}
 
-  // Summary stats
-  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
-  const weekKey = weekAgo.toISOString().slice(0, 10);
-  const thisWeek = catHistory.filter(h => h.date_key >= weekKey).length;
-  const total = catHistory.length;
-  const doneDays = new Set(catHistory.map(h => h.date_key));
-  let streak = 0;
-  const sd = new Date();
-  if (!doneDays.has(sd.toISOString().slice(0, 10))) sd.setDate(sd.getDate() - 1);
-  while (doneDays.has(sd.toISOString().slice(0, 10))) { streak++; sd.setDate(sd.getDate() - 1); }
+function CalendarStrip({ days, doneDays, color }: { days: string[]; doneDays: Set<string>; color: string }) {
+  // For ≤60 days show individual squares; for longer ranges group into weeks
+  const today = todayKey();
+  if (days.length <= 60) {
+    return (
+      <div className="flex gap-[2px]">
+        {days.map((dk) => {
+          const done = doneDays.has(dk);
+          const isToday = dk === today;
+          return (
+            <div key={dk} className="flex-1 rounded-[2px]"
+              style={{
+                height: 16,
+                background: done ? color : 'rgba(255,255,255,0.06)',
+                opacity: done ? (isToday ? 1 : 0.65) : 1,
+                outline: isToday ? `1.5px solid ${done ? color : 'rgba(255,255,255,0.25)'}` : 'none',
+                outlineOffset: 1,
+              }} />
+          );
+        })}
+      </div>
+    );
+  }
+  // Weekly buckets — each cell = one week
+  const weeks: string[][] = [];
+  for (let i = 0; i < days.length; i += 7) weeks.push(days.slice(i, i + 7));
+  return (
+    <div className="flex gap-[2px]">
+      {weeks.map((wk, wi) => {
+        const doneCount = wk.filter(dk => doneDays.has(dk)).length;
+        const opacity = doneCount === 0 ? 0 : 0.2 + 0.8 * (doneCount / wk.length);
+        return (
+          <div key={wi} className="flex-1 rounded-[2px]"
+            style={{ height: 16, background: doneCount > 0 ? color : 'rgba(255,255,255,0.06)', opacity: doneCount > 0 ? opacity : 1 }} />
+        );
+      })}
+    </div>
+  );
+}
+
+function CategoryStats({ history, tasks, color, plus }: { history: Completion[]; tasks: Promise_[]; color: string; plus: boolean }) {
+  const [range, setRange] = useState<RangeKey>('1M');
+  const taskIds = new Set(tasks.map(t => t.id));
+  const catHistory = history.filter(h => taskIds.has(h.promise_id));
+  const today = todayKey();
+
+  const earliest = catHistory.length
+    ? catHistory.reduce((a, b) => a.date_key < b.date_key ? a : b).date_key
+    : today;
+
+  const rangeCfg = RANGES.find(r => r.key === range)!;
+  const days = buildDays(rangeCfg.days, earliest);
+  const counts = days.map(dk => catHistory.filter(h => h.date_key === dk).length);
+
+  // Summary stats for selected range
+  const rangeStart = days[0];
+  const rangeTotal = catHistory.filter(h => h.date_key >= rangeStart).length;
   let best = 0, run = 0;
   for (const c of counts) { if (c > 0) { run++; best = Math.max(best, run); } else run = 0; }
 
-  // Per-task breakdown
-  const today = todayKey();
+  // Current streak (all-time)
+  const allDoneDays = new Set(catHistory.map(h => h.date_key));
+  let streak = 0;
+  const sd = new Date();
+  if (!allDoneDays.has(sd.toISOString().slice(0, 10))) sd.setDate(sd.getDate() - 1);
+  while (allDoneDays.has(sd.toISOString().slice(0, 10))) { streak++; sd.setDate(sd.getDate() - 1); }
+
+  const rangeLabel = rangeCfg.key === 'ALL'
+    ? `${days.length}d`
+    : `${days.length}d`;
 
   return (
     <div className="space-y-4">
+      {/* Range selector */}
+      <div className="flex gap-1.5">
+        {RANGES.map(r => {
+          const locked = r.plus && !plus;
+          const active = r.key === range;
+          return (
+            <button
+              key={r.key}
+              onClick={() => !locked && setRange(r.key)}
+              className="flex-1 py-1.5 rounded-xl text-[11px] font-semibold transition-all"
+              style={{
+                background: active ? color : 'rgba(255,255,255,0.05)',
+                color: active ? '#fff' : locked ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.45)',
+                cursor: locked ? 'default' : 'pointer',
+              }}
+            >
+              {r.label}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Stat chips */}
       <div className="grid grid-cols-3 gap-2">
         {[
-          { label: 'This week', value: thisWeek },
-          { label: 'Streak', value: `${streak}d` },
-          { label: 'Best 30d', value: `${best}d` },
+          { label: 'Completions', value: rangeTotal },
+          { label: 'Streak',      value: `${streak}d` },
+          { label: `Best (${rangeLabel})`, value: `${best}d` },
         ].map(s => (
-          <div key={s.label} className="flex flex-col gap-0.5 px-3 py-2.5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div key={s.label} className="flex flex-col gap-0.5 px-3 py-2.5 rounded-2xl"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <span className="font-semibold text-white" style={{ fontSize: 18, letterSpacing: '-0.04em' }}>{s.value}</span>
             <span className="text-white/30" style={{ fontSize: 10 }}>{s.label}</span>
           </div>
         ))}
       </div>
 
-      {/* Line graph */}
+      {/* Line chart */}
       <div>
-        <p className="text-white/25 text-[10px] mb-2">Last 30 days · {total} total</p>
-        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 64, display: 'block' }}>
-          <defs>
-            <linearGradient id={`grad-${color.replace('#','')}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-              <stop offset="100%" stopColor={color} stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          {/* Area fill */}
-          <path d={areaD} fill={`url(#grad-${color.replace('#','')})`} />
-          {/* Line */}
-          <path d={pathD} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
-          {/* Dots on non-zero days */}
-          {points.map(([x, y], i) => counts[i] > 0 && (
-            <circle key={i} cx={x} cy={y} r="2.5" fill={color} />
-          ))}
-        </svg>
+        <LineChart days={days} counts={counts} color={color} />
         <div className="flex justify-between mt-0.5">
-          <span className="text-white/20" style={{ fontSize: 9 }}>30d ago</span>
+          <span className="text-white/20" style={{ fontSize: 9 }}>{days[0]}</span>
           <span className="text-white/20" style={{ fontSize: 9 }}>Today</span>
         </div>
       </div>
 
-      {/* Per-task breakdown with sparklines */}
+      {/* Per-task calendar strips */}
       {tasks.length > 0 && (
         <div className="space-y-2">
-          <p className="text-white/25 text-[10px]">By task · last 14 days</p>
+          <p className="text-white/25 text-[10px]">By task</p>
           {tasks.map(task => {
             const taskComps = catHistory.filter(h => h.promise_id === task.id);
             const doneToday = taskComps.some(h => h.date_key === today);
             const taskDoneDays = new Set(taskComps.map(h => h.date_key));
-
-            // Streak
             let ts = 0; const td = new Date();
             if (!taskDoneDays.has(td.toISOString().slice(0,10))) td.setDate(td.getDate()-1);
             while (taskDoneDays.has(td.toISOString().slice(0,10))) { ts++; td.setDate(td.getDate()-1); }
-
-            // 14-day calendar data
-            const sparkDays = Array.from({ length: 14 }, (_, i) => {
-              const d = new Date(); d.setDate(d.getDate() - (13 - i));
-              return d.toISOString().slice(0, 10);
-            });
-
+            const taskRangeCount = taskComps.filter(h => h.date_key >= rangeStart).length;
             return (
-              <div key={task.id} className="px-3 py-3 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                {/* Top row: title + streak */}
+              <div key={task.id} className="px-3 py-3 rounded-2xl"
+                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
                 <div className="flex items-center gap-2 mb-2">
-                  <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: doneToday ? color : 'rgba(255,255,255,0.15)' }} />
+                  <div className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    style={{ background: doneToday ? color : 'rgba(255,255,255,0.15)' }} />
                   <span className="flex-1 text-white/70 text-xs truncate">{task.title}</span>
-                  {ts > 0 && <span className="text-[10px] font-medium tabular-nums" style={{ color }}>{ts}d streak</span>}
+                  <span className="text-white/30 text-[10px] tabular-nums">{taskRangeCount}×</span>
+                  {ts > 0 && <span className="text-[10px] font-medium tabular-nums" style={{ color }}>{ts}d</span>}
                 </div>
-                {/* 14-day calendar strip */}
-                <div className="flex gap-1 mt-1">
-                  {sparkDays.map((dk, i) => {
-                    const done = taskDoneDays.has(dk);
-                    const isToday = i === 13;
-                    return (
-                      <div
-                        key={dk}
-                        className="flex-1 rounded-sm"
-                        style={{
-                          height: 18,
-                          background: done ? color : 'rgba(255,255,255,0.06)',
-                          opacity: done ? (isToday ? 1 : 0.7) : 1,
-                          outline: isToday ? `1px solid ${done ? color : 'rgba(255,255,255,0.2)'}` : 'none',
-                          outlineOffset: 1,
-                        }}
-                      />
-                    );
-                  })}
-                </div>
+                <CalendarStrip days={days} doneDays={taskDoneDays} color={color} />
                 <div className="flex justify-between mt-1">
-                  <span className="text-white/15" style={{ fontSize: 8 }}>14d ago</span>
+                  <span className="text-white/15" style={{ fontSize: 8 }}>{days[0]}</span>
                   <span className="text-white/15" style={{ fontSize: 8 }}>Today</span>
                 </div>
               </div>
@@ -1074,6 +1151,7 @@ export default function CategoryHub({ category, onClose }: Props) {
             history={history}
             tasks={tasks}
             color={cfg.color}
+            plus={plus}
           />
         </div>
       </div>

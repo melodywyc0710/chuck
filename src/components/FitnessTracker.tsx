@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { X, ChevronDown, ChevronUp, Plus, Target, Trash2, Search, Flame, Footprints, Scale } from 'lucide-react';
+import { X, ChevronDown, ChevronUp, Plus, Target, Trash2, Search, Flame, Footprints, Scale, Camera } from 'lucide-react';
 import { getLocalTimeZone, today as getToday, type DateValue } from '@internationalized/date';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { searchFoods, type FoodItem } from '../lib/foodDatabase';
 import { DatePicker } from './DatePicker';
+import FoodPhotoModal from './FoodPhotoModal';
+import { isPlus } from '../lib/species';
 
 import type React from 'react';
 
@@ -149,6 +151,7 @@ function GoalEditor({ metric, goal, onSave, onClose }: { metric: Metric; goal: n
 }
 
 function MetricPanel({ metric, userId, color: overrideColor }: { metric: Metric; userId: string; color?: string }) {
+  const profile = useAuthStore(s => s.profile);
   const cfg = { ...METRIC_CONFIG[metric], color: overrideColor ?? METRIC_CONFIG[metric].color };
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [inputVal, setInputVal] = useState('');
@@ -159,12 +162,14 @@ function MetricPanel({ metric, userId, color: overrideColor }: { metric: Metric;
   const [saving, setSaving] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
   const [logDate, setLogDate] = useState<DateValue>(getToday(getLocalTimeZone()));
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
   // Food search (calories only)
   const [foodQuery, setFoodQuery] = useState('');
   const [foodResults, setFoodResults] = useState<FoodItem[]>([]);
   const [searchMode, setSearchMode] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const today = todayKey();
+  const canUsePhotoAI = isPlus(profile?.subscription_tier ?? 'free');
 
   // Goal stored in localStorage per metric
   const goalKey = `iam_fitness_goal_${metric}`;
@@ -265,6 +270,19 @@ function MetricPanel({ metric, userId, color: overrideColor }: { metric: Metric;
   const avg7 = recent7.length ? recent7.reduce((s, d) => s + d.value, 0) / recent7.length : null;
 
   return (
+    <>
+    {showPhotoModal && (
+      <FoodPhotoModal
+        color={cfg.color}
+        onClose={() => setShowPhotoModal(false)}
+        onSave={(calories, note) => {
+          setInputVal(String(calories));
+          setInputNote(note);
+          setShowPhotoModal(false);
+          setShowAddForm(true);
+        }}
+      />
+    )}
     <div className="liquid-glass rounded-[28px] p-5">
       {/* Header row */}
       <button className="w-full flex items-center justify-between" onClick={() => setExpanded(v => !v)}>
@@ -342,14 +360,26 @@ function MetricPanel({ metric, userId, color: overrideColor }: { metric: Metric;
               {metric === 'calories' && (
                 <div>
                   {!searchMode ? (
-                    <button
-                      onClick={() => { setSearchMode(true); setTimeout(() => searchRef.current?.focus(), 50); }}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm text-white/40 hover:text-white/70 transition-colors"
-                      style={{ background: 'rgba(255,255,255,0.05)' }}
-                    >
-                      <Search size={13} />
-                      Search food database…
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => { setSearchMode(true); setTimeout(() => searchRef.current?.focus(), 50); }}
+                        className="flex-1 flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm text-white/40 hover:text-white/70 transition-colors"
+                        style={{ background: 'rgba(255,255,255,0.05)' }}
+                      >
+                        <Search size={13} />
+                        Search food database…
+                      </button>
+                      {canUsePhotoAI && (
+                        <button
+                          onClick={() => setShowPhotoModal(true)}
+                          className="flex items-center justify-center w-10 h-10 rounded-2xl transition-colors"
+                          style={{ background: 'rgba(255,255,255,0.05)' }}
+                          title="Snap a photo to estimate calories"
+                        >
+                          <Camera size={15} style={{ color: cfg.color, opacity: 0.7 }} />
+                        </button>
+                      )}
+                    </div>
                   ) : (
                     <div>
                       <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl liquid-glass" style={{ background: 'rgba(255,255,255,0.07)' }}>
@@ -497,6 +527,7 @@ function MetricPanel({ metric, userId, color: overrideColor }: { metric: Metric;
         </div>
       )}
     </div>
+    </>
   );
 }
 

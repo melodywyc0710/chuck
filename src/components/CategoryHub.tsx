@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import type React from 'react';
 import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, Eye, Trash2, Pencil, Palette } from 'lucide-react';
+import PhotoVerifyModal from './PhotoVerifyModal';
+import InsightsPanel from './InsightsPanel';
+import type { TaskVerifyResult } from '../lib/aiTypes';
 import {
   DndContext, closestCenter, PointerSensor, TouchSensor,
   useSensor, useSensors, type DragEndEvent,
@@ -897,6 +900,7 @@ export default function CategoryHub({ category, onClose }: Props) {
   const [taskSizes, setTaskSizes] = useState<Record<string, CardSize>>(getSizes);
   const [catColor, setCatColor]   = useState(() => getCategoryColor(category));
   const [showPalette, setShowPalette] = useState(false);
+  const [photoVerifyTask, setPhotoVerifyTask] = useState<Promise_ | null>(null);
 
   const plus = profile?.subscription_tier === 'plus' || profile?.subscription_tier === 'pro';
   const FREE_LIMIT = 5;
@@ -945,10 +949,28 @@ export default function CategoryHub({ category, onClose }: Props) {
 
   async function complete(task: Promise_) {
     if (!user || !pet || completedTodayIds.has(task.id)) return;
-    const certified = isCertified(task.verify_method ?? '');
-    const proofType = task.verify_method === 'friend' ? 'friend' : 'self';
+    // Photo-verified tasks: show the photo modal first (Plus/Pro only; fall through for free)
+    if (task.verify_method === 'photo' && plus) {
+      setPhotoVerifyTask(task);
+      return;
+    }
+    await _doComplete(task, 'self', null);
+    if (task.verify_method === 'friend') {
+      // friend witness flow handled separately
+    }
+  }
+
+  async function completeWithPhotoVerify(task: Promise_, verifyResult: TaskVerifyResult) {
+    if (!user || !pet) return;
+    const proofType = `ai:${verifyResult.status}:${verifyResult.confidence}`;
+    await _doComplete(task, proofType, null);
+    setPhotoVerifyTask(null);
+  }
+
+  async function _doComplete(task: Promise_, proofType: string, proofUrl: string | null) {
+    if (!user || !pet) return;
+    const certified = isCertified(task.verify_method ?? '') || proofType.startsWith('ai:');
     const { data: comp } = await supabase.from('completions').insert({ user_id: user.id, promise_id: task.id, date_key: today, proof_type: proofType }).select().single();
-    // Only grant XP for certified (verified) tasks
     if (certified) {
       const prevLevel = pet.level;
       const updated = await recordCompletion(pet, user.id);
@@ -958,7 +980,7 @@ export default function CategoryHub({ category, onClose }: Props) {
       }
     }
     const compId = comp?.id ?? crypto.randomUUID();
-    const newComp = { id: compId, user_id: user.id, promise_id: task.id, date_key: today, proof_type: proofType, proof_url: null, verified_by: null, completed_at: new Date().toISOString() };
+    const newComp = { id: compId, user_id: user.id, promise_id: task.id, date_key: today, proof_type: proofType, proof_url: proofUrl, verified_by: null, completed_at: new Date().toISOString() };
     setHistory(prev => [newComp, ...prev]);
     if (task.verify_method === 'friend' && comp?.id) setWitnessCompletionId(comp.id);
   }
@@ -1037,6 +1059,16 @@ export default function CategoryHub({ category, onClose }: Props) {
 
       {witnessCompletionId && (
         <WitnessSheet completionId={witnessCompletionId} onClose={() => setWitnessCompletionId(null)} />
+      )}
+      {photoVerifyTask && (
+        <PhotoVerifyModal
+          taskTitle={photoVerifyTask.title}
+          taskNotes={photoVerifyTask.notes}
+          color={catColor}
+          onConfirm={result => completeWithPhotoVerify(photoVerifyTask, result)}
+          onSkip={() => { _doComplete(photoVerifyTask, 'self', null); setPhotoVerifyTask(null); }}
+          onClose={() => setPhotoVerifyTask(null)}
+        />
       )}
       {showAdd && (
         <AddTaskSheet category={category} color={catColor} onAdd={addTask} onClose={() => setShowAdd(false)} />
@@ -1211,6 +1243,21 @@ export default function CategoryHub({ category, onClose }: Props) {
             plus={plus}
           />
         </div>
+
+        {/* AI Insights (Pro) */}
+        {plus && history.length >= 7 && (
+          <>
+            <div className="my-6 border-t border-white/5" />
+            <div className="fade-up" style={{ animationDelay: '0.3s' }}>
+              <InsightsPanel
+                category={category}
+                tasks={tasks}
+                completions={history.filter(h => tasks.some(t => t.id === h.promise_id))}
+                color={catColor}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Floating add button */}

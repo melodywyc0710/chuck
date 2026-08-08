@@ -642,42 +642,53 @@ function SectionHeader({ label, count, collapsed, onToggle }: { label: string; c
 
 // ─── Category Stats ───────────────────────────────────────────────────────────
 
-function CategoryStats({ history, taskIds, color }: { history: Completion[]; taskIds: Set<string>; color: string }) {
+function CategoryStats({ history, tasks, color }: { history: Completion[]; tasks: Promise_[]; color: string }) {
+  const taskIds = new Set(tasks.map(t => t.id));
   const catHistory = history.filter(h => taskIds.has(h.promise_id));
 
-  // 30-day bar chart data
+  // 30-day data points
   const days = Array.from({ length: 30 }, (_, i) => {
     const d = new Date(); d.setDate(d.getDate() - (29 - i));
     return d.toISOString().slice(0, 10);
   });
-  const maxPerDay = Math.max(1, ...days.map(dk => catHistory.filter(h => h.date_key === dk).length));
-  const bars = days.map(dk => ({ dk, count: catHistory.filter(h => h.date_key === dk).length }));
+  const counts = days.map(dk => catHistory.filter(h => h.date_key === dk).length);
+  const maxCount = Math.max(1, ...counts);
 
-  // Stats
+  // SVG line graph
+  const W = 320, H = 64, PAD = 6;
+  const points = counts.map((c, i) => {
+    const x = PAD + (i / (days.length - 1)) * (W - PAD * 2);
+    const y = H - PAD - (c / maxCount) * (H - PAD * 2);
+    return [x, y] as [number, number];
+  });
+  const pathD = points.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+  const areaD = `${pathD} L${points[points.length-1][0].toFixed(1)},${H} L${points[0][0].toFixed(1)},${H} Z`;
+
+  // Summary stats
   const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
   const weekKey = weekAgo.toISOString().slice(0, 10);
   const thisWeek = catHistory.filter(h => h.date_key >= weekKey).length;
   const total = catHistory.length;
-
-  // Current streak (consecutive days with ≥1 completion, ending today or yesterday)
   const doneDays = new Set(catHistory.map(h => h.date_key));
   let streak = 0;
   const sd = new Date();
   if (!doneDays.has(sd.toISOString().slice(0, 10))) sd.setDate(sd.getDate() - 1);
   while (doneDays.has(sd.toISOString().slice(0, 10))) { streak++; sd.setDate(sd.getDate() - 1); }
-
-  // Best streak in the 30-day window
   let best = 0, run = 0;
-  for (const { count } of bars) { if (count > 0) { run++; best = Math.max(best, run); } else run = 0; }
+  for (const c of counts) { if (c > 0) { run++; best = Math.max(best, run); } else run = 0; }
+
+  // Per-task breakdown
+  const today = todayKey();
+  const weekAgoKey = weekKey;
 
   return (
-    <div>
+    <div className="space-y-4">
       {/* Stat chips */}
-      <div className="grid grid-cols-3 gap-2 mb-4">
+      <div className="grid grid-cols-3 gap-2">
         {[
           { label: 'This week', value: thisWeek },
           { label: 'Streak', value: `${streak}d` },
-          { label: 'Best (30d)', value: `${best}d` },
+          { label: 'Best 30d', value: `${best}d` },
         ].map(s => (
           <div key={s.label} className="flex flex-col gap-0.5 px-3 py-2.5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
             <span className="font-semibold text-white" style={{ fontSize: 18, letterSpacing: '-0.04em' }}>{s.value}</span>
@@ -686,28 +697,54 @@ function CategoryStats({ history, taskIds, color }: { history: Completion[]; tas
         ))}
       </div>
 
-      {/* 30-day bar chart */}
-      <div className="px-1">
+      {/* Line graph */}
+      <div>
         <p className="text-white/25 text-[10px] mb-2">Last 30 days · {total} total</p>
-        <div className="flex items-end gap-px" style={{ height: 48 }}>
-          {bars.map(({ dk, count }) => (
-            <div key={dk} className="flex-1 flex items-end">
-              <div
-                className="w-full rounded-sm transition-all duration-300"
-                style={{
-                  height: count === 0 ? 3 : Math.max(6, Math.round((count / maxPerDay) * 44)),
-                  background: count === 0 ? 'rgba(255,255,255,0.06)' : color,
-                  opacity: count === 0 ? 1 : 0.6 + 0.4 * (count / maxPerDay),
-                }}
-              />
-            </div>
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 64, display: 'block' }}>
+          <defs>
+            <linearGradient id={`grad-${color.replace('#','')}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+              <stop offset="100%" stopColor={color} stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {/* Area fill */}
+          <path d={areaD} fill={`url(#grad-${color.replace('#','')})`} />
+          {/* Line */}
+          <path d={pathD} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+          {/* Dots on non-zero days */}
+          {points.map(([x, y], i) => counts[i] > 0 && (
+            <circle key={i} cx={x} cy={y} r="2.5" fill={color} />
           ))}
-        </div>
-        <div className="flex justify-between mt-1">
+        </svg>
+        <div className="flex justify-between mt-0.5">
           <span className="text-white/20" style={{ fontSize: 9 }}>30d ago</span>
           <span className="text-white/20" style={{ fontSize: 9 }}>Today</span>
         </div>
       </div>
+
+      {/* Per-task breakdown */}
+      {tasks.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-white/25 text-[10px]">By task</p>
+          {tasks.map(task => {
+            const taskComps = catHistory.filter(h => h.promise_id === task.id);
+            const weekComps = taskComps.filter(h => h.date_key >= weekAgoKey).length;
+            const doneToday = taskComps.some(h => h.date_key === today);
+            const taskDoneDays = new Set(taskComps.map(h => h.date_key));
+            let ts = 0; const td = new Date();
+            if (!taskDoneDays.has(td.toISOString().slice(0,10))) td.setDate(td.getDate()-1);
+            while (taskDoneDays.has(td.toISOString().slice(0,10))) { ts++; td.setDate(td.getDate()-1); }
+            return (
+              <div key={task.id} className="flex items-center gap-3 px-3 py-2.5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: doneToday ? color : 'rgba(255,255,255,0.15)' }} />
+                <span className="flex-1 text-white/70 text-xs truncate">{task.title}</span>
+                <span className="text-white/30 text-[10px] tabular-nums">{weekComps}×</span>
+                {ts > 0 && <span className="text-[10px] tabular-nums" style={{ color }}>{ts}d 🔥</span>}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -973,17 +1010,6 @@ export default function CategoryHub({ category, onClose }: Props) {
           </div>
         )}
 
-        {/* Stats + chart */}
-        <div className="my-6 border-t border-white/5" />
-        <div className="fade-up" style={{ animationDelay: '0.18s' }}>
-          <p className="text-white/30 text-[10px] uppercase tracking-widest mb-3">Stats</p>
-          <CategoryStats
-            history={history}
-            taskIds={new Set(tasks.map(t => t.id))}
-            color={cfg.color}
-          />
-        </div>
-
         {/* Category-specific panels */}
         <div className="my-6 border-t border-white/5" />
         {category === 'fitness' && (
@@ -998,6 +1024,17 @@ export default function CategoryHub({ category, onClose }: Props) {
             <DeepWorkTimer userId={user.id} />
           </div>
         )}
+
+        {/* Stats + chart */}
+        <div className="my-6 border-t border-white/5" />
+        <div className="fade-up" style={{ animationDelay: '0.25s' }}>
+          <p className="text-white/30 text-[10px] uppercase tracking-widest mb-3">Stats</p>
+          <CategoryStats
+            history={history}
+            tasks={tasks}
+            color={cfg.color}
+          />
+        </div>
       </div>
 
       {/* Floating add button */}

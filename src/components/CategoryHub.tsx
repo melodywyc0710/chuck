@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type React from 'react';
-import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, Eye, Trash2, Pencil } from 'lucide-react';
+import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, Eye, Trash2, Pencil, Palette } from 'lucide-react';
 import {
   DndContext, closestCenter, PointerSensor, TouchSensor,
   useSensor, useSensors, type DragEndEvent,
@@ -43,6 +43,21 @@ function getSizes(): Record<string, CardSize> {
 }
 function saveSizes(s: Record<string, CardSize>) {
   localStorage.setItem('task-sizes', JSON.stringify(s));
+}
+
+// ─── Category color customisation ────────────────────────────────────────────
+
+const COLOR_PALETTE = [
+  '#FF4D4D', '#FF7043', '#F59E0B', '#84CC16',
+  '#10B981', '#06B6D4', '#3D8EFF', '#6366F1',
+  '#8B5CF6', '#EC4899', '#F43F5E', '#A8A8A8',
+];
+
+function getCategoryColor(cat: GoalCategory): string {
+  return localStorage.getItem(`cat-color-${cat}`) ?? CAT[cat].color;
+}
+function saveCategoryColor(cat: GoalCategory, color: string) {
+  localStorage.setItem(`cat-color-${cat}`, color);
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -880,6 +895,8 @@ export default function CategoryHub({ category, onClose }: Props) {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({ completed: true });
   const [witnessCompletionId, setWitnessCompletionId] = useState<string | null>(null);
   const [taskSizes, setTaskSizes] = useState<Record<string, CardSize>>(getSizes);
+  const [catColor, setCatColor]   = useState(() => getCategoryColor(category));
+  const [showPalette, setShowPalette] = useState(false);
 
   const plus = profile?.subscription_tier === 'plus' || profile?.subscription_tier === 'pro';
   const FREE_LIMIT = 5;
@@ -1022,11 +1039,11 @@ export default function CategoryHub({ category, onClose }: Props) {
         <WitnessSheet completionId={witnessCompletionId} onClose={() => setWitnessCompletionId(null)} />
       )}
       {showAdd && (
-        <AddTaskSheet category={category} color={cfg.color} onAdd={addTask} onClose={() => setShowAdd(false)} />
+        <AddTaskSheet category={category} color={catColor} onAdd={addTask} onClose={() => setShowAdd(false)} />
       )}
       {editingTask && (
         <AddTaskSheet
-          category={category} color={cfg.color}
+          category={category} color={catColor}
           onAdd={addTask} onClose={() => setEditingTask(null)}
           editTask={editingTask} onEdit={saveEditTask}
         />
@@ -1037,13 +1054,48 @@ export default function CategoryHub({ category, onClose }: Props) {
         {/* Nav */}
         <div className="flex items-center justify-between mb-8 fade-up" style={{ animationDelay: '0.05s' }}>
           <div className="flex items-center gap-2">
-            <cfg.Icon size={16} strokeWidth={1.5} style={{ color: cfg.color }} />
+            <cfg.Icon size={16} strokeWidth={1.5} style={{ color: catColor }} />
             <h1 className="text-white text-xl font-semibold" style={{ letterSpacing: '-0.03em' }}>{cfg.label}</h1>
             <span className="text-white/25 text-sm">{completedTasks.length}/{tasks.length}</span>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
-            <X size={15} />
-          </button>
+          <div className="flex items-center gap-2">
+            {plus && (
+              <div className="relative">
+                <button
+                  onClick={() => setShowPalette(p => !p)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.06)', color: catColor }}
+                >
+                  <Palette size={14} strokeWidth={1.5} />
+                </button>
+                {showPalette && (
+                  <div
+                    className="absolute right-0 top-full mt-2 z-30 p-3 rounded-2xl shadow-2xl"
+                    style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.08)', width: 180 }}
+                    onPointerDown={e => e.stopPropagation()}
+                  >
+                    <div className="grid grid-cols-6 gap-2">
+                      {COLOR_PALETTE.map(c => (
+                        <button
+                          key={c}
+                          onClick={() => { saveCategoryColor(category, c); setCatColor(c); setShowPalette(false); }}
+                          className="w-6 h-6 rounded-full transition-transform active:scale-90"
+                          style={{
+                            background: c,
+                            outline: c === catColor ? `2px solid white` : 'none',
+                            outlineOffset: 2,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full text-white/40 hover:text-white/80 transition-colors" style={{ background: 'rgba(255,255,255,0.06)' }}>
+              <X size={15} />
+            </button>
+          </div>
         </div>
 
         {/* Empty state */}
@@ -1155,7 +1207,7 @@ export default function CategoryHub({ category, onClose }: Props) {
           <CategoryStats
             history={history}
             tasks={tasks}
-            color={cfg.color}
+            color={catColor}
             plus={plus}
           />
         </div>
@@ -1167,7 +1219,7 @@ export default function CategoryHub({ category, onClose }: Props) {
           <button
             onClick={() => setShowAdd(true)}
             className="flex items-center gap-2 px-5 py-3 rounded-full text-white text-sm font-semibold shadow-2xl transition-all active:scale-95"
-            style={{ background: cfg.color }}
+            style={{ background: catColor }}
           >
             <Plus size={16} strokeWidth={2.5} /> Add goal
           </button>

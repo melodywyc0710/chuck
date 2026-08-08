@@ -20,10 +20,20 @@ function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
   return <Frown size={size} />;
 }
 
-const CATEGORY_CONFIG: Record<GoalCategory, { label: string; Icon: React.ElementType; color: string; tagline: string }> = {
-  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#FF4D4D', tagline: 'No goals yet' },
-  focus:   { label: 'Focus',   Icon: Brain,    color: '#3D8EFF', tagline: 'No goals yet' },
+const CATEGORY_DEFAULTS: Record<GoalCategory, { label: string; Icon: React.ElementType; color: string }> = {
+  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#FF4D4D' },
+  focus:   { label: 'Focus',   Icon: Brain,    color: '#3D8EFF' },
 };
+
+function getCategoryConfig() {
+  return (Object.keys(CATEGORY_DEFAULTS) as GoalCategory[]).reduce((acc, cat) => {
+    acc[cat] = {
+      ...CATEGORY_DEFAULTS[cat],
+      color: localStorage.getItem(`cat-color-${cat}`) ?? CATEGORY_DEFAULTS[cat].color,
+    };
+    return acc;
+  }, {} as Record<GoalCategory, { label: string; Icon: React.ElementType; color: string }>);
+}
 
 
 export default function HomeScreen({
@@ -45,6 +55,7 @@ export default function HomeScreen({
   const [showSpecies, setShowSpecies] = useState(false);
   const [wiggling, setWiggling] = useState(false);
   const [bubble, setBubble] = useState<string | null>(null);
+  const [categoryConfig] = useState(getCategoryConfig);
 
   const tier = profile?.subscription_tier ?? 'free';
   const plus = isPlus(tier);
@@ -193,7 +204,7 @@ export default function HomeScreen({
 
         {/* Category cards */}
         <div className="grid grid-cols-2 gap-3 fade-up" style={{ animationDelay: '0.2s' }}>
-          {(Object.entries(CATEGORY_CONFIG) as [GoalCategory, typeof CATEGORY_CONFIG[GoalCategory]][]).map(([cat, cfg]) => {
+          {(Object.entries(categoryConfig) as [GoalCategory, typeof categoryConfig[GoalCategory]][]).map(([cat, cfg]) => {
             const catPromises = promises.filter(p => p.category === cat);
             const doneToday = catPromises.filter(p => todayDoneIds.has(p.id)).length;
             const allDone = catPromises.length > 0 && doneToday === catPromises.length;

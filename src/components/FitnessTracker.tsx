@@ -150,8 +150,7 @@ function GoalEditor({ metric, goal, onSave, onClose }: { metric: Metric; goal: n
   );
 }
 
-function MetricPanel({ metric, userId, color: overrideColor }: { metric: Metric; userId: string; color?: string }) {
-  const profile = useAuthStore(s => s.profile);
+function MetricPanel({ metric, userId, color: overrideColor, canPhoto }: { metric: Metric; userId: string; color?: string; canPhoto?: boolean }) {
   const cfg = { ...METRIC_CONFIG[metric], color: overrideColor ?? METRIC_CONFIG[metric].color };
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [inputVal, setInputVal] = useState('');
@@ -169,7 +168,7 @@ function MetricPanel({ metric, userId, color: overrideColor }: { metric: Metric;
   const [searchMode, setSearchMode] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const today = todayKey();
-  const canUsePhotoAI = isPlus(profile?.subscription_tier ?? 'free');
+  const canUsePhotoAI = canPhoto ?? false;
 
   // Goal stored in localStorage per metric
   const goalKey = `iam_fitness_goal_${metric}`;
@@ -532,9 +531,11 @@ function MetricPanel({ metric, userId, color: overrideColor }: { metric: Metric;
 }
 
 export function MetricPanels({ userId, color }: { userId: string; color?: string }) {
+  const profile = useAuthStore(s => s.profile);
+  const canPhoto = isPlus(profile?.subscription_tier ?? 'free');
   return (
     <div className="space-y-4">
-      {METRICS.map(m => <MetricPanel key={m} metric={m} userId={userId} color={color} />)}
+      {METRICS.map(m => <MetricPanel key={m} metric={m} userId={userId} color={color} canPhoto={canPhoto} />)}
     </div>
   );
 }

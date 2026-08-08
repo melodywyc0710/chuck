@@ -814,7 +814,15 @@ export default function CategoryHub({ category, onClose }: Props) {
     if (!pet) return;
     const [{ data: t }, { data: h }] = await Promise.all([
       supabase.from('promises').select('*').eq('user_id', pet.user_id).eq('category', category).eq('active', true).order('sort_order').order('created_at'),
-      supabase.from('completions').select('*').eq('user_id', pet.user_id).order('completed_at', { ascending: false }).limit(200),
+      (() => {
+        const q = supabase.from('completions').select('*').eq('user_id', pet.user_id).order('completed_at', { ascending: false });
+        // Free: last 90 days; Plus/Pro: unlimited
+        if (!plus) {
+          const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 90);
+          return q.gte('date_key', cutoff.toISOString().slice(0, 10));
+        }
+        return q;
+      })(),
     ]);
     if (t) setTasks(t.map(x => ({
       ...x,

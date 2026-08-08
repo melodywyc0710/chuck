@@ -57,11 +57,17 @@ export default function HomeScreen({
 
   async function loadData() {
     if (!pet) return;
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - (plus ? 365 : 30));
+    const completionsQuery = (() => {
+      const q = supabase.from('completions').select('*').eq('user_id', pet.user_id);
+      if (!plus) {
+        const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
+        return q.gte('date_key', cutoff.toISOString().slice(0, 10));
+      }
+      return q;
+    })();
     const [{ data: p }, { data: h }] = await Promise.all([
       supabase.from('promises').select('*').eq('user_id', pet.user_id).eq('active', true).order('created_at', { ascending: true }),
-      supabase.from('completions').select('*').eq('user_id', pet.user_id).gte('date_key', cutoff.toISOString().slice(0, 10)),
+      completionsQuery,
     ]);
     if (p) setPromises(p);
     if (h) setHistory(h);

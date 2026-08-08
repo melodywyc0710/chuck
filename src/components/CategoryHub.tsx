@@ -949,15 +949,12 @@ export default function CategoryHub({ category, onClose }: Props) {
 
   async function complete(task: Promise_) {
     if (!user || !pet || completedTodayIds.has(task.id)) return;
-    // Photo-verified tasks: show the photo modal first (Plus/Pro only; fall through for free)
-    if (task.verify_method === 'photo' && plus) {
+    // Plus/Pro: offer photo verification for any task
+    if (plus) {
       setPhotoVerifyTask(task);
       return;
     }
     await _doComplete(task, 'self', null);
-    if (task.verify_method === 'friend') {
-      // friend witness flow handled separately
-    }
   }
 
   async function completeWithPhotoVerify(task: Promise_, verifyResult: TaskVerifyResult) {
@@ -1244,20 +1241,23 @@ export default function CategoryHub({ category, onClose }: Props) {
           />
         </div>
 
-        {/* AI Insights (Pro) */}
-        {plus && history.length >= 7 && (
-          <>
-            <div className="my-6 border-t border-white/5" />
-            <div className="fade-up" style={{ animationDelay: '0.3s' }}>
-              <InsightsPanel
-                category={category}
-                tasks={tasks}
-                completions={history.filter(h => tasks.some(t => t.id === h.promise_id))}
-                color={catColor}
-              />
-            </div>
-          </>
-        )}
+        {/* AI Insights (Plus/Pro) */}
+        {(() => {
+          const catCompletions = history.filter(h => tasks.some(t => t.id === h.promise_id));
+          return plus && (
+            <>
+              <div className="my-6 border-t border-white/5" />
+              <div className="fade-up" style={{ animationDelay: '0.3s' }}>
+                <InsightsPanel
+                  category={category}
+                  tasks={tasks}
+                  completions={catCompletions}
+                  color={catColor}
+                />
+              </div>
+            </>
+          );
+        })()}
       </div>
 
       {/* Floating add button */}

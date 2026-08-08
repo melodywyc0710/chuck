@@ -1241,23 +1241,16 @@ export default function CategoryHub({ category, onClose }: Props) {
           />
         </div>
 
-        {/* AI Insights (Plus/Pro) */}
-        {(() => {
-          const catCompletions = history.filter(h => tasks.some(t => t.id === h.promise_id));
-          return plus && (
-            <>
-              <div className="my-6 border-t border-white/5" />
-              <div className="fade-up" style={{ animationDelay: '0.3s' }}>
-                <InsightsPanel
-                  category={category}
-                  tasks={tasks}
-                  completions={catCompletions}
-                  color={catColor}
-                />
-              </div>
-            </>
-          );
-        })()}
+        {/* AI Insights */}
+        <div className="my-6 border-t border-white/5" />
+        <div className="fade-up" style={{ animationDelay: '0.3s' }}>
+          <InsightsPanel
+            category={category}
+            tasks={tasks}
+            completions={history.filter(h => tasks.some(t => t.id === h.promise_id))}
+            color={catColor}
+          />
+        </div>
       </div>
 
       {/* Floating add button */}

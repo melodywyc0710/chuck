@@ -735,24 +735,11 @@ function CategoryStats({ history, tasks, color }: { history: Completion[]; tasks
             if (!taskDoneDays.has(td.toISOString().slice(0,10))) td.setDate(td.getDate()-1);
             while (taskDoneDays.has(td.toISOString().slice(0,10))) { ts++; td.setDate(td.getDate()-1); }
 
-            // 14-day sparkline data
+            // 14-day calendar data
             const sparkDays = Array.from({ length: 14 }, (_, i) => {
               const d = new Date(); d.setDate(d.getDate() - (13 - i));
               return d.toISOString().slice(0, 10);
             });
-            const sparkCounts = sparkDays.map(dk => taskComps.filter(h => h.date_key === dk).length);
-            const sparkMax = Math.max(1, ...sparkCounts);
-
-            // SVG sparkline
-            const SW = 80, SH = 28, SP = 3;
-            const sPoints = sparkCounts.map((c, i) => {
-              const x = SP + (i / (sparkDays.length - 1)) * (SW - SP * 2);
-              const y = SH - SP - (c / sparkMax) * (SH - SP * 2);
-              return [x, y] as [number, number];
-            });
-            const sPath = sPoints.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
-            const sArea = `${sPath} L${sPoints[sPoints.length-1][0].toFixed(1)},${SH} L${sPoints[0][0].toFixed(1)},${SH} Z`;
-            const gradId = `tg-${task.id.slice(0,8)}`;
 
             return (
               <div key={task.id} className="px-3 py-3 rounded-2xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
@@ -762,22 +749,27 @@ function CategoryStats({ history, tasks, color }: { history: Completion[]; tasks
                   <span className="flex-1 text-white/70 text-xs truncate">{task.title}</span>
                   {ts > 0 && <span className="text-[10px] font-medium tabular-nums" style={{ color }}>{ts}d streak</span>}
                 </div>
-                {/* Sparkline */}
-                <svg viewBox={`0 0 ${SW} ${SH}`} width="100%" style={{ height: 28, display: 'block' }}>
-                  <defs>
-                    <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={color} stopOpacity="0.25" />
-                      <stop offset="100%" stopColor={color} stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <path d={sArea} fill={`url(#${gradId})`} />
-                  <path d={sPath} fill="none" stroke={color} strokeWidth="1.2" strokeLinejoin="round" strokeLinecap="round" opacity={doneToday ? 1 : 0.5} />
-                  {sPoints.map(([x, y], i) => sparkCounts[i] > 0 && (
-                    <circle key={i} cx={x} cy={y} r="1.8" fill={color} opacity={i === 13 ? 1 : 0.6} />
-                  ))}
-                </svg>
-                {/* Day labels */}
-                <div className="flex justify-between mt-0.5">
+                {/* 14-day calendar strip */}
+                <div className="flex gap-1 mt-1">
+                  {sparkDays.map((dk, i) => {
+                    const done = taskDoneDays.has(dk);
+                    const isToday = i === 13;
+                    return (
+                      <div
+                        key={dk}
+                        className="flex-1 rounded-sm"
+                        style={{
+                          height: 18,
+                          background: done ? color : 'rgba(255,255,255,0.06)',
+                          opacity: done ? (isToday ? 1 : 0.7) : 1,
+                          outline: isToday ? `1px solid ${done ? color : 'rgba(255,255,255,0.2)'}` : 'none',
+                          outlineOffset: 1,
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex justify-between mt-1">
                   <span className="text-white/15" style={{ fontSize: 8 }}>14d ago</span>
                   <span className="text-white/15" style={{ fontSize: 8 }}>Today</span>
                 </div>

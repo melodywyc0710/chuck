@@ -34,8 +34,8 @@ export default function InsightsPanel({ category, tasks, completions, color }: P
   const hasEnoughData = completions.length >= 7;
 
   useEffect(() => {
-    if (hasEnoughData) fetchInsights();
-  }, []);
+    if (hasEnoughData && !fetched) fetchInsights();
+  }, [hasEnoughData]);
 
   async function fetchInsights() {
     setLoading(true);

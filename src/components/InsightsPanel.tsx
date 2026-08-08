@@ -34,8 +34,8 @@ export default function InsightsPanel({ category, tasks, completions, color }: P
   const hasEnoughData = completions.length >= 7;
 
   useEffect(() => {
-    if (hasEnoughData && !fetched) fetchInsights();
-  }, [hasEnoughData]);
+    if (!fetched && tasks.length > 0) fetchInsights();
+  }, [tasks.length]);
 
   async function fetchInsights() {
     setLoading(true);
@@ -61,17 +61,12 @@ export default function InsightsPanel({ category, tasks, completions, color }: P
     }
   }
 
-  if (!hasEnoughData) {
-    return (
-      <div className="px-4 py-4 rounded-2xl text-center" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-        <Sparkles size={16} className="mx-auto mb-2" style={{ color, opacity: 0.4 }} />
-        <p className="text-white/30 text-xs">Complete at least 7 tasks to unlock AI insights</p>
-      </div>
-    );
-  }
+  // debug: always show panel, show data count
+  const debugLine = `tasks:${tasks.length} completions:${completions.length} fetched:${fetched} loading:${loading}`;
 
   return (
     <div className="space-y-3">
+      <p className="text-white/30 text-[10px]">{debugLine}</p>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">

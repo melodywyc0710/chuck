@@ -772,14 +772,12 @@ function CategoryStats({ history, tasks, color, plus }: { history: Completion[];
   if (!allDoneDays.has(sd.toISOString().slice(0, 10))) sd.setDate(sd.getDate() - 1);
   while (allDoneDays.has(sd.toISOString().slice(0, 10))) { streak++; sd.setDate(sd.getDate() - 1); }
 
-  const rangeLabel = rangeCfg.key === 'ALL'
-    ? `${days.length}d`
-    : `${days.length}d`;
 
   return (
     <div className="space-y-4">
-      {/* Range selector — collapsed pill, expands on tap */}
-      <div className="relative">
+      {/* Range selector + dim secondary stats inline */}
+      <div className="flex items-center gap-3">
+        <div className="relative">
         <button
           onClick={() => setRangeOpen(o => !o)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all"
@@ -811,21 +809,14 @@ function CategoryStats({ history, tasks, color, plus }: { history: Completion[];
             })}
           </div>
         )}
+        </div>
+        <span className="text-white/20 text-[10px]">{rangeTotal} completions · best {best}d</span>
       </div>
 
-      {/* Stat chips */}
-      <div className="grid grid-cols-3 gap-2">
-        {[
-          { label: 'Completions', value: rangeTotal },
-          { label: 'Streak',      value: `${streak}d` },
-          { label: `Best (${rangeLabel})`, value: `${best}d` },
-        ].map(s => (
-          <div key={s.label} className="flex flex-col gap-0.5 px-3 py-2.5 rounded-2xl"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <span className="font-semibold text-white" style={{ fontSize: 18, letterSpacing: '-0.04em' }}>{s.value}</span>
-            <span className="text-white/30" style={{ fontSize: 10 }}>{s.label}</span>
-          </div>
-        ))}
+      {/* Streak — the one stat worth showing prominently */}
+      <div className="flex items-baseline gap-2">
+        <span className="font-semibold text-white" style={{ fontSize: 32, letterSpacing: '-0.04em' }}>{streak}d</span>
+        <span className="text-white/30 text-xs">streak</span>
       </div>
 
       {/* Line chart */}

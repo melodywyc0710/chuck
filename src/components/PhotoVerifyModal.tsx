@@ -55,27 +55,11 @@ export default function PhotoVerifyModal({ taskTitle, taskNotes, color, onConfir
     setLoading(true);
     try {
       const { base64, mediaType } = await resizeAndEncode(file);
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/verify-task-photo`,
-        {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            'authorization': `Bearer ${session?.access_token ?? ''}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-          },
-          body: JSON.stringify({
-            imageBase64: base64,
-            mediaType,
-            taskTitle,
-            taskNotes,
-          }),
-        },
-      );
-      const json: TaskVerifyResult & { error?: string } = await res.json();
-      if (json.error) throw new Error(json.error);
-      setResult(json);
+      const { data, error } = await supabase.functions.invoke('verify-task-photo', {
+        body: { imageBase64: base64, mediaType, taskTitle, taskNotes },
+      });
+      if (error) throw error;
+      setResult(data as TaskVerifyResult);
     } catch (e) {
       setError((e as Error).message || 'Verification failed. Try again or skip.');
     } finally {

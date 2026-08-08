@@ -41,26 +41,15 @@ export default function InsightsPanel({ category, tasks, completions, color }: P
     setLoading(true);
     setError(null);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/habit-insights`,
-        {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            'authorization': `Bearer ${session?.access_token ?? ''}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-          },
-          body: JSON.stringify({
-            category,
-            tasks: tasks.map(t => ({ id: t.id, title: t.title })),
-            completions: completions.map(c => ({ promise_id: c.promise_id, date_key: c.date_key })),
-          }),
+      const { data, error } = await supabase.functions.invoke('habit-insights', {
+        body: {
+          category,
+          tasks: tasks.map(t => ({ id: t.id, title: t.title })),
+          completions: completions.map(c => ({ promise_id: c.promise_id, date_key: c.date_key })),
         },
-      );
-      const json: HabitInsightsResult & { error?: string } = await res.json();
-      if (json.error) throw new Error(json.error);
-      setResult(json);
+      });
+      if (error) throw error;
+      setResult(data as HabitInsightsResult);
     } catch (e) {
       setError((e as Error).message);
     } finally {

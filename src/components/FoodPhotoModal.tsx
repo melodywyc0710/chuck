@@ -54,23 +54,13 @@ export default function FoodPhotoModal({ color, onSave, onClose }: Props) {
     setLoading(true);
     try {
       const { base64, mediaType } = await resizeAndEncode(file);
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyse-food-photo`,
-        {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            'authorization': `Bearer ${session?.access_token ?? ''}`,
-            'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-          },
-          body: JSON.stringify({ imageBase64: base64, mediaType }),
-        },
-      );
-      const json: FoodPhotoResult & { error?: string } = await res.json();
-      if (json.error) throw new Error(json.error);
-      setResult(json);
-      setEditedItems(json.items);
+      const { data: json, error } = await supabase.functions.invoke('analyse-food-photo', {
+        body: { imageBase64: base64, mediaType },
+      });
+      if (error) throw error;
+      const typedJson = json as FoodPhotoResult;
+      setResult(typedJson);
+      setEditedItems(typedJson.items);
     } catch (e) {
       setError((e as Error).message || 'Analysis failed. Try again.');
     } finally {

@@ -31,8 +31,6 @@ export default function InsightsPanel({ category, tasks, completions, color }: P
   const [error, setError] = useState<string | null>(null);
   const [fetched, setFetched] = useState(false);
 
-  const hasEnoughData = completions.length >= 7;
-
   useEffect(() => {
     if (!fetched && tasks.length > 0) fetchInsights();
   }, [tasks.length]);
@@ -61,8 +59,7 @@ export default function InsightsPanel({ category, tasks, completions, color }: P
     }
   }
 
-  // debug: always show panel, show data count
-  const debugLine = `tasks:${tasks.length} completions:${completions.length} fetched:${fetched} loading:${loading}`;
+  const debugLine = `t:${tasks.length} c:${completions.length} f:${fetched} l:${loading} e:${error ?? 'none'}`;
 
   return (
     <div className="space-y-3">

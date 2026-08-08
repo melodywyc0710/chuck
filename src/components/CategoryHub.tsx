@@ -640,6 +640,78 @@ function SectionHeader({ label, count, collapsed, onToggle }: { label: string; c
   );
 }
 
+// ─── Category Stats ───────────────────────────────────────────────────────────
+
+function CategoryStats({ history, taskIds, color }: { history: Completion[]; taskIds: Set<string>; color: string }) {
+  const catHistory = history.filter(h => taskIds.has(h.promise_id));
+
+  // 30-day bar chart data
+  const days = Array.from({ length: 30 }, (_, i) => {
+    const d = new Date(); d.setDate(d.getDate() - (29 - i));
+    return d.toISOString().slice(0, 10);
+  });
+  const maxPerDay = Math.max(1, ...days.map(dk => catHistory.filter(h => h.date_key === dk).length));
+  const bars = days.map(dk => ({ dk, count: catHistory.filter(h => h.date_key === dk).length }));
+
+  // Stats
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
+  const weekKey = weekAgo.toISOString().slice(0, 10);
+  const thisWeek = catHistory.filter(h => h.date_key >= weekKey).length;
+  const total = catHistory.length;
+
+  // Current streak (consecutive days with ≥1 completion, ending today or yesterday)
+  const doneDays = new Set(catHistory.map(h => h.date_key));
+  let streak = 0;
+  const sd = new Date();
+  if (!doneDays.has(sd.toISOString().slice(0, 10))) sd.setDate(sd.getDate() - 1);
+  while (doneDays.has(sd.toISOString().slice(0, 10))) { streak++; sd.setDate(sd.getDate() - 1); }
+
+  // Best streak in the 30-day window
+  let best = 0, run = 0;
+  for (const { count } of bars) { if (count > 0) { run++; best = Math.max(best, run); } else run = 0; }
+
+  return (
+    <div>
+      {/* Stat chips */}
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        {[
+          { label: 'This week', value: thisWeek },
+          { label: 'Streak', value: `${streak}d` },
+          { label: 'Best (30d)', value: `${best}d` },
+        ].map(s => (
+          <div key={s.label} className="flex flex-col gap-0.5 px-3 py-2.5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <span className="font-semibold text-white" style={{ fontSize: 18, letterSpacing: '-0.04em' }}>{s.value}</span>
+            <span className="text-white/30" style={{ fontSize: 10 }}>{s.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* 30-day bar chart */}
+      <div className="px-1">
+        <p className="text-white/25 text-[10px] mb-2">Last 30 days · {total} total</p>
+        <div className="flex items-end gap-px" style={{ height: 48 }}>
+          {bars.map(({ dk, count }) => (
+            <div key={dk} className="flex-1 flex items-end">
+              <div
+                className="w-full rounded-sm transition-all duration-300"
+                style={{
+                  height: count === 0 ? 3 : Math.max(6, Math.round((count / maxPerDay) * 44)),
+                  background: count === 0 ? 'rgba(255,255,255,0.06)' : color,
+                  opacity: count === 0 ? 1 : 0.6 + 0.4 * (count / maxPerDay),
+                }}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-between mt-1">
+          <span className="text-white/20" style={{ fontSize: 9 }}>30d ago</span>
+          <span className="text-white/20" style={{ fontSize: 9 }}>Today</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function CategoryHub({ category, onClose }: Props) {
@@ -900,6 +972,17 @@ export default function CategoryHub({ category, onClose }: Props) {
             )}
           </div>
         )}
+
+        {/* Stats + chart */}
+        <div className="my-6 border-t border-white/5" />
+        <div className="fade-up" style={{ animationDelay: '0.18s' }}>
+          <p className="text-white/30 text-[10px] uppercase tracking-widest mb-3">Stats</p>
+          <CategoryStats
+            history={history}
+            taskIds={new Set(tasks.map(t => t.id))}
+            color={cfg.color}
+          />
+        </div>
 
         {/* Category-specific panels */}
         <div className="my-6 border-t border-white/5" />

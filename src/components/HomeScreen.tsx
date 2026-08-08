@@ -189,28 +189,9 @@ export default function HomeScreen({
         <div className="grid grid-cols-2 gap-3 fade-up" style={{ animationDelay: '0.2s' }}>
           {(Object.entries(CATEGORY_CONFIG) as [GoalCategory, typeof CATEGORY_CONFIG[GoalCategory]][]).map(([cat, cfg]) => {
             const catPromises = promises.filter(p => p.category === cat);
-            const catIds = new Set(catPromises.map(p => p.id));
             const doneToday = catPromises.filter(p => todayDoneIds.has(p.id)).length;
             const allDone = catPromises.length > 0 && doneToday === catPromises.length;
             const pct = catPromises.length > 0 ? doneToday / catPromises.length : 0;
-
-            // Stats: completions this week + streak for this category
-            const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
-            const weekKey = weekAgo.toISOString().slice(0, 10);
-            const weekCount = history.filter(h => catIds.has(h.promise_id) && h.date_key >= weekKey).length;
-
-            // Category streak: consecutive days with ≥1 completion in this category
-            const doneDays = new Set(history.filter(h => catIds.has(h.promise_id)).map(h => h.date_key));
-            let catStreak = 0;
-            const d = new Date(); d.setDate(d.getDate() - (allDone ? 0 : 1));
-            while (true) {
-              const key = d.toISOString().slice(0, 10);
-              if (!doneDays.has(key)) break;
-              catStreak++;
-              d.setDate(d.getDate() - 1);
-            }
-            if (allDone && doneDays.has(today)) catStreak = Math.max(catStreak, 1);
-
             return (
               <button
                 key={cat}
@@ -245,11 +226,7 @@ export default function HomeScreen({
                       <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)', marginTop: 2 }}>
                         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct * 100}%`, background: cfg.color }} />
                       </div>
-                      {/* Stats row */}
-                      <div className="flex items-center gap-2 mt-1.5" style={{ color: 'rgba(255,255,255,0.28)', fontSize: 10 }}>
-                        <span>{weekCount} this week</span>
-                        {catStreak > 0 && <><span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span><span>🔥 {catStreak}d</span></>}
-                      </div>
+
                     </>
                   )}
                 </div>

@@ -746,6 +746,7 @@ function CalendarStrip({ days, doneDays, color }: { days: string[]; doneDays: Se
 
 function CategoryStats({ history, tasks, color, plus }: { history: Completion[]; tasks: Promise_[]; color: string; plus: boolean }) {
   const [range, setRange] = useState<RangeKey>('1M');
+  const [rangeOpen, setRangeOpen] = useState(false);
   const taskIds = new Set(tasks.map(t => t.id));
   const catHistory = history.filter(h => taskIds.has(h.promise_id));
   const today = todayKey();
@@ -777,26 +778,39 @@ function CategoryStats({ history, tasks, color, plus }: { history: Completion[];
 
   return (
     <div className="space-y-4">
-      {/* Range selector */}
-      <div className="flex gap-1.5">
-        {RANGES.map(r => {
-          const locked = r.plus && !plus;
-          const active = r.key === range;
-          return (
-            <button
-              key={r.key}
-              onClick={() => !locked && setRange(r.key)}
-              className="flex-1 py-1.5 rounded-xl text-[11px] font-semibold transition-all"
-              style={{
-                background: active ? color : 'rgba(255,255,255,0.05)',
-                color: active ? '#fff' : locked ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.45)',
-                cursor: locked ? 'default' : 'pointer',
-              }}
-            >
-              {r.label}
-            </button>
-          );
-        })}
+      {/* Range selector — collapsed pill, expands on tap */}
+      <div className="relative">
+        <button
+          onClick={() => setRangeOpen(o => !o)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all"
+          style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.6)' }}
+        >
+          <span style={{ color }}>{range}</span>
+          <ChevronDown size={10} strokeWidth={2.5} style={{ opacity: 0.4, transform: rangeOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+        </button>
+        {rangeOpen && (
+          <div className="absolute top-full left-0 mt-1.5 z-20 flex gap-1.5 p-2 rounded-2xl shadow-2xl"
+            style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.08)' }}>
+            {RANGES.map(r => {
+              const locked = r.plus && !plus;
+              const active = r.key === range;
+              return (
+                <button
+                  key={r.key}
+                  onClick={() => { if (!locked) { setRange(r.key); setRangeOpen(false); } }}
+                  className="px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all"
+                  style={{
+                    background: active ? color : 'rgba(255,255,255,0.06)',
+                    color: active ? '#fff' : locked ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.5)',
+                    cursor: locked ? 'default' : 'pointer',
+                  }}
+                >
+                  {r.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Stat chips */}

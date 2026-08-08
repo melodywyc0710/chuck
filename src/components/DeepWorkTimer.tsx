@@ -160,7 +160,7 @@ function SessionHistoryChart({ sessions, color }: { sessions: Session[]; color: 
   );
 }
 
-export default function DeepWorkTimer({ userId }: { userId: string }) {
+export default function DeepWorkTimer({ userId, color: propColor }: { userId: string; color?: string }) {
   useAuthStore(s => s.pet);
   const [selectedMins, setSelectedMins] = useState(25);
   const [customInput, setCustomInput] = useState('');
@@ -306,7 +306,7 @@ export default function DeepWorkTimer({ userId }: { userId: string }) {
   useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current); }, []);
 
   const pct = totalSecs > 0 ? 1 - secsLeft / totalSecs : 0;
-  const color = '#3D8EFF';
+  const color = propColor ?? '#3D8EFF';
 
   const todaySessions = sessions.filter(s => s.date_key === todayKey());
   const todayMins = todaySessions.filter(s => s.completed).reduce((sum, s) => sum + (s.actual_mins ?? s.duration_mins), 0);

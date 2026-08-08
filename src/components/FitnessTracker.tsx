@@ -148,8 +148,8 @@ function GoalEditor({ metric, goal, onSave, onClose }: { metric: Metric; goal: n
   );
 }
 
-function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
-  const cfg = METRIC_CONFIG[metric];
+function MetricPanel({ metric, userId, color: overrideColor }: { metric: Metric; userId: string; color?: string }) {
+  const cfg = { ...METRIC_CONFIG[metric], color: overrideColor ?? METRIC_CONFIG[metric].color };
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [inputVal, setInputVal] = useState('');
   const [inputNote, setInputNote] = useState('');
@@ -500,10 +500,10 @@ function MetricPanel({ metric, userId }: { metric: Metric; userId: string }) {
   );
 }
 
-export function MetricPanels({ userId }: { userId: string }) {
+export function MetricPanels({ userId, color }: { userId: string; color?: string }) {
   return (
     <div className="space-y-4">
-      {METRICS.map(m => <MetricPanel key={m} metric={m} userId={userId} />)}
+      {METRICS.map(m => <MetricPanel key={m} metric={m} userId={userId} color={color} />)}
     </div>
   );
 }

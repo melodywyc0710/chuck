@@ -52,6 +52,8 @@ export interface Profile {
   id: string;
   username: string;
   subscription_tier: 'free' | 'plus' | 'pro';
+  body_weight_kg?: number | null;
+  weight_unit?: 'kg' | 'lbs';
   created_at: string;
 }
 

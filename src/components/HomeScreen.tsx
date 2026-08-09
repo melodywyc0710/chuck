@@ -37,12 +37,13 @@ function getCategoryConfig() {
 
 
 export default function HomeScreen({
-  onFriends, onPayment, onStats, onCategory,
+  onFriends, onPayment, onStats, onCategory, onWorkout,
 }: {
   onFriends: () => void;
   onPayment: () => void;
   onStats: () => void;
   onCategory: (c: GoalCategory) => void;
+  onWorkout: () => void;
 }) {
   const pet = useAuthStore(s => s.pet);
   const profile = useAuthStore(s => s.profile);
@@ -251,6 +252,21 @@ export default function HomeScreen({
             );
           })}
         </div>
+
+        {/* Gym button */}
+        <button
+          onClick={onWorkout}
+          className="mt-3 w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] transition-all active:scale-[0.97] fade-up"
+          style={{ background: 'rgba(255,77,77,0.08)', border: '1px solid rgba(255,77,77,0.15)', animationDelay: '0.25s' }}
+        >
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,77,77,0.15)' }}>
+            <Dumbbell size={16} style={{ color: '#FF4D4D' }} strokeWidth={1.5} />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-white/70 text-sm font-semibold">Gym</p>
+            <p className="text-white/25 text-[10px]">Log a workout</p>
+          </div>
+        </button>
 
         {/* Pro AI check-in */}
         {pro && (

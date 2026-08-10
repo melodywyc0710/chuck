@@ -37,13 +37,14 @@ function getCategoryConfig() {
 
 
 export default function HomeScreen({
-  onFriends, onPayment, onStats, onCategory, onWorkout,
+  onFriends, onPayment, onStats, onCategory, onWorkout, onDiary,
 }: {
   onFriends: () => void;
   onPayment: () => void;
   onStats: () => void;
   onCategory: (c: GoalCategory) => void;
   onWorkout: () => void;
+  onDiary: () => void;
 }) {
   const pet = useAuthStore(s => s.pet);
   const profile = useAuthStore(s => s.profile);
@@ -253,20 +254,41 @@ export default function HomeScreen({
           })}
         </div>
 
-        {/* Gym button */}
-        <button
-          onClick={onWorkout}
-          className="mt-3 w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] transition-all active:scale-[0.97] fade-up"
-          style={{ background: 'rgba(255,77,77,0.08)', border: '1px solid rgba(255,77,77,0.15)', animationDelay: '0.25s' }}
-        >
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,77,77,0.15)' }}>
-            <Dumbbell size={16} style={{ color: '#FF4D4D' }} strokeWidth={1.5} />
-          </div>
-          <div className="flex-1 text-left">
-            <p className="text-white/70 text-sm font-semibold">Gym</p>
-            <p className="text-white/25 text-[10px]">Log a workout</p>
-          </div>
-        </button>
+        {/* Gym + Diary buttons */}
+        <div className="mt-3 grid grid-cols-2 gap-2 fade-up" style={{ animationDelay: '0.25s' }}>
+          <button
+            onClick={onWorkout}
+            className="flex items-center gap-2.5 px-3.5 py-3 rounded-[20px] transition-all active:scale-[0.97]"
+            style={{ background: 'rgba(255,77,77,0.08)', border: '1px solid rgba(255,77,77,0.15)' }}
+          >
+            <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,77,77,0.15)' }}>
+              <Dumbbell size={14} style={{ color: '#FF4D4D' }} strokeWidth={1.5} />
+            </div>
+            <div className="text-left">
+              <p className="text-white/70 text-xs font-semibold">Gym</p>
+              <p className="text-white/25 text-[9px]">Log a workout</p>
+            </div>
+          </button>
+          <button
+            onClick={onDiary}
+            className="flex items-center gap-2.5 px-3.5 py-3 rounded-[20px] transition-all active:scale-[0.97]"
+            style={{ background: 'rgba(255,77,77,0.08)', border: '1px solid rgba(255,77,77,0.15)' }}
+          >
+            <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,77,77,0.15)' }}>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="1" width="9" height="12" rx="1.2" stroke="#FF4D4D" strokeWidth="1.1" />
+                <line x1="4" y1="4.5" x2="9" y2="4.5" stroke="#FF4D4D" strokeWidth="0.9" strokeLinecap="round" />
+                <line x1="4" y1="7" x2="9" y2="7" stroke="#FF4D4D" strokeWidth="0.9" strokeLinecap="round" />
+                <line x1="4" y1="9.5" x2="7" y2="9.5" stroke="#FF4D4D" strokeWidth="0.9" strokeLinecap="round" />
+                <line x1="2" y1="1" x2="2" y2="13" stroke="#FF4D4D" strokeWidth="1.7" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div className="text-left">
+              <p className="text-white/70 text-xs font-semibold">Diary</p>
+              <p className="text-white/25 text-[9px]">Write today's entry</p>
+            </div>
+          </button>
+        </div>
 
         {/* Pro AI check-in */}
         {pro && (

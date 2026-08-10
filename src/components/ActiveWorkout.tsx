@@ -243,11 +243,13 @@ function ExerciseCard({
   ex,
   weightUnit,
   previousData,
+  nudgeSuggestion,
   onRemove,
 }: {
   ex: ActiveExercise;
   weightUnit: string;
   previousData: string | null;
+  nudgeSuggestion: number | null;
   onRemove: () => void;
 }) {
   const [collapsed, setCollapsed] = useState(false);
@@ -286,6 +288,11 @@ function ExerciseCard({
           </div>
           {previousData && (
             <p className="text-white/25 text-[10px] mt-0.5 truncate">Last: {previousData}</p>
+          )}
+          {nudgeSuggestion !== null && isStrength && (
+            <p className="text-[10px] mt-1 font-medium" style={{ color: '#F59E0B' }}>
+              ↑ Same weight 3 sessions — try {nudgeSuggestion}{weightUnit}
+            </p>
           )}
         </div>
         <div className="flex items-center gap-1.5">
@@ -451,6 +458,7 @@ export default function ActiveWorkout({ onFinish, onDiscard }: Props) {
   const [showCreateExercise, setShowCreateExercise] = useState(false);
   const [customExercises, setCustomExercises] = useState<CustomExercise[]>([]);
   const [previousMap, setPreviousMap] = useState<Record<string, string>>({});
+  const [nudgeMap, setNudgeMap] = useState<Record<string, number>>({});
   const user = useAuthStore(s => s.user);
   const profile = useAuthStore(s => s.profile);
 
@@ -469,31 +477,49 @@ export default function ActiveWorkout({ onFinish, onDiscard }: Props) {
 
   async function loadPreviousPerformance() {
     if (!user) return;
-    // Load last workout for each slug
     const { data: workouts } = await supabase
       .from('workouts')
-      .select('id, workout_exercises(exercise_slug, exercise_name, workout_sets(weight, repetitions, completed, weight_unit))')
+      .select('id, created_at, workout_exercises(exercise_slug, workout_sets(weight, repetitions, completed, weight_unit))')
       .eq('user_id', user.id)
       .eq('is_template', false)
       .order('created_at', { ascending: false })
       .limit(20);
 
     if (!workouts) return;
-    const map: Record<string, string> = {};
+
+    // Build per-slug session history: [{maxWeight, label}]
+    const history: Record<string, { maxWeight: number; label: string }[]> = {};
+
     for (const w of workouts as any[]) {
       for (const we of (w.workout_exercises ?? [])) {
         const slug = we.exercise_slug;
-        if (!slug || map[slug]) continue;
+        if (!slug) continue;
         const completedSets = (we.workout_sets ?? []).filter((s: any) => s.completed && s.weight && s.repetitions);
         if (completedSets.length === 0) continue;
-        const parts = completedSets.slice(0, 3).map((s: any) => {
-          const u = s.weight_unit ?? 'kg';
-          return `${s.weight}${u}×${s.repetitions}`;
-        });
-        map[slug] = parts.join(', ');
+        const maxWeight = Math.max(...completedSets.map((s: any) => parseFloat(s.weight)));
+        const label = completedSets.slice(0, 3).map((s: any) => `${s.weight}${s.weight_unit ?? 'kg'}×${s.repetitions}`).join(', ');
+        if (!history[slug]) history[slug] = [];
+        history[slug].push({ maxWeight, label });
       }
     }
-    setPreviousMap(map);
+
+    const prevMap: Record<string, string> = {};
+    const nudge: Record<string, number> = {};
+
+    for (const [slug, sessions] of Object.entries(history)) {
+      if (sessions.length > 0) prevMap[slug] = sessions[0].label;
+
+      // Stagnation: last 3 sessions all at same max weight
+      if (sessions.length >= 3) {
+        const [s1, s2, s3] = sessions;
+        if (s1.maxWeight > 0 && s1.maxWeight <= s2.maxWeight && s2.maxWeight <= s3.maxWeight) {
+          nudge[slug] = s1.maxWeight + 2.5;
+        }
+      }
+    }
+
+    setPreviousMap(prevMap);
+    setNudgeMap(nudge);
   }
 
   if (!active) return null;
@@ -556,6 +582,7 @@ export default function ActiveWorkout({ onFinish, onDiscard }: Props) {
                 ex={ex}
                 weightUnit={weightUnit}
                 previousData={slug ? (previousMap[slug] ?? null) : null}
+                nudgeSuggestion={slug ? (nudgeMap[slug] ?? null) : null}
                 onRemove={() => removeExercise(ex.id)}
               />
             );

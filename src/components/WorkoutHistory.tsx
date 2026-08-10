@@ -11,6 +11,146 @@ interface Props {
   onRepeat?: () => void;
 }
 
+// Monday of the week containing `date`
+function weekStart(date: Date): string {
+  const d = new Date(date);
+  const day = d.getDay();
+  d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+  return d.toISOString().slice(0, 10);
+}
+
+// "YYYY-MM" month key
+function monthKey(date: Date): string {
+  return date.toISOString().slice(0, 7);
+}
+
+function shortLabel(key: string, mode: 'week' | 'month'): string {
+  if (mode === 'month') {
+    const [y, m] = key.split('-');
+    return new Date(parseInt(y), parseInt(m) - 1, 1).toLocaleDateString('en-US', { month: 'short' });
+  }
+  // key is YYYY-MM-DD (Monday)
+  const d = new Date(key + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function buildBuckets(workouts: WorkoutWithDetails[], mode: 'week' | 'month') {
+  const count = mode === 'week' ? 8 : 6;
+  const now = new Date();
+  const keys: string[] = [];
+
+  for (let i = count - 1; i >= 0; i--) {
+    const d = new Date(now);
+    if (mode === 'week') {
+      d.setDate(d.getDate() - i * 7);
+      keys.push(weekStart(d));
+    } else {
+      d.setMonth(d.getMonth() - i);
+      keys.push(monthKey(d));
+    }
+  }
+
+  const volumeMap: Record<string, number> = {};
+  for (const k of keys) volumeMap[k] = 0;
+
+  for (const w of workouts) {
+    const d = new Date(w.started_at);
+    const k = mode === 'week' ? weekStart(d) : monthKey(d);
+    if (k in volumeMap) volumeMap[k] += w.total_volume ?? 0;
+  }
+
+  const currentKey = mode === 'week' ? weekStart(now) : monthKey(now);
+  return keys.map(k => ({ key: k, volume: volumeMap[k], isCurrent: k === currentKey }));
+}
+
+// Returns Set of "workoutId:exerciseSlug" strings that are PRs
+function buildPRSet(workouts: WorkoutWithDetails[]): Set<string> {
+  const prs = new Set<string>();
+  const best: Record<string, number> = {};
+  // Process oldest first
+  const sorted = [...workouts].sort((a, b) =>
+    new Date(a.started_at).getTime() - new Date(b.started_at).getTime()
+  );
+  for (const w of sorted) {
+    for (const we of w.workout_exercises) {
+      const slug = we.exercise_slug;
+      if (!slug) continue;
+      const completedSets = we.workout_sets.filter(s => s.completed && s.weight != null);
+      if (completedSets.length === 0) continue;
+      const maxW = Math.max(...completedSets.map(s => s.weight ?? 0));
+      if (maxW > 0 && maxW > (best[slug] ?? 0)) {
+        best[slug] = maxW;
+        prs.add(`${w.id}:${slug}`);
+      }
+    }
+  }
+  return prs;
+}
+
+function VolumeChart({ workouts }: { workouts: WorkoutWithDetails[] }) {
+  const [mode, setMode] = useState<'week' | 'month'>('week');
+  const buckets = buildBuckets(workouts, mode);
+  const maxVol = Math.max(...buckets.map(b => b.volume), 1);
+
+  const W = 300, H = 72, barW = mode === 'week' ? 26 : 32, gap = mode === 'week' ? 8 : 10;
+  const totalW = buckets.length * (barW + gap) - gap;
+  const offsetX = (W - totalW) / 2;
+
+  return (
+    <div className="rounded-[20px] px-4 py-4" style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-white/40 text-[10px] uppercase tracking-widest">Training Volume</p>
+        <div className="flex gap-1">
+          {(['week', 'month'] as const).map(m => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className="px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-colors"
+              style={mode === m
+                ? { background: '#FF4D4D', color: '#fff' }
+                : { background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.35)' }}
+            >
+              {m === 'week' ? '8W' : '6M'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <svg viewBox={`0 0 ${W} ${H + 20}`} width="100%" style={{ overflow: 'visible' }}>
+        {buckets.map((b, i) => {
+          const x = offsetX + i * (barW + gap);
+          const barH = b.volume > 0 ? Math.max(4, (b.volume / maxVol) * H) : 2;
+          const y = H - barH;
+          return (
+            <g key={b.key}>
+              {/* Background track */}
+              <rect x={x} y={0} width={barW} height={H} rx={6}
+                fill="rgba(255,255,255,0.04)" />
+              {/* Volume bar */}
+              <rect x={x} y={y} width={barW} height={barH} rx={6}
+                fill={b.isCurrent ? '#FF4D4D' : b.volume > 0 ? 'rgba(255,255,255,0.2)' : 'transparent'} />
+              {/* Label */}
+              <text
+                x={x + barW / 2} y={H + 14}
+                textAnchor="middle"
+                fontSize={8}
+                fill={b.isCurrent ? 'rgba(255,77,77,0.8)' : 'rgba(255,255,255,0.2)'}
+                fontFamily="-apple-system, sans-serif"
+              >
+                {shortLabel(b.key, mode)}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      <p className="text-white/20 text-[10px] mt-1">
+        {mode === 'week' ? 'Last 8 weeks' : 'Last 6 months'} · {formatVolume(buckets.reduce((s, b) => s + b.volume, 0))} total
+      </p>
+    </div>
+  );
+}
+
 export default function WorkoutHistory({ onRepeat }: Props) {
   const user = useAuthStore(s => s.user);
   const addExercise = useWorkoutStore(s => s.addExercise);
@@ -26,13 +166,7 @@ export default function WorkoutHistory({ onRepeat }: Props) {
     setLoading(true);
     const { data } = await supabase
       .from('workouts')
-      .select(`
-        *,
-        workout_exercises (
-          *,
-          workout_sets (*)
-        )
-      `)
+      .select(`*, workout_exercises(*, workout_sets(*))`)
       .eq('user_id', user.id)
       .eq('is_template', false)
       .order('created_at', { ascending: false })
@@ -45,9 +179,7 @@ export default function WorkoutHistory({ onRepeat }: Props) {
     if (!onRepeat) return;
     startWorkout(w.name);
     for (const we of w.workout_exercises.sort((a, b) => a.exercise_order - b.exercise_order)) {
-      const ex = we.exercise_slug
-        ? BUILT_IN_EXERCISES.find(e => e.slug === we.exercise_slug)
-        : null;
+      const ex = we.exercise_slug ? BUILT_IN_EXERCISES.find(e => e.slug === we.exercise_slug) : null;
       if (ex) addExercise(ex);
     }
     onRepeat();
@@ -70,8 +202,12 @@ export default function WorkoutHistory({ onRepeat }: Props) {
     );
   }
 
+  const prSet = buildPRSet(workouts);
+
   return (
     <div className="space-y-3">
+      <VolumeChart workouts={workouts} />
+
       {workouts.map(w => {
         const isExpanded = expanded === w.id;
         const exCount = w.workout_exercises.length;
@@ -118,7 +254,6 @@ export default function WorkoutHistory({ onRepeat }: Props) {
 
             {isExpanded && (
               <div className="px-4 pb-4 space-y-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                {/* Stats */}
                 <div className="flex gap-3 pt-3">
                   {w.total_volume != null && w.total_volume > 0 && (
                     <Stat label="Volume" value={formatVolume(w.total_volume)} />
@@ -127,7 +262,6 @@ export default function WorkoutHistory({ onRepeat }: Props) {
                   {w.best_estimate_calories && <Stat label="~Calories" value={`${w.best_estimate_calories} kcal`} />}
                 </div>
 
-                {/* Exercise list */}
                 <div className="space-y-1.5">
                   {w.workout_exercises
                     .sort((a, b) => a.exercise_order - b.exercise_order)
@@ -135,20 +269,27 @@ export default function WorkoutHistory({ onRepeat }: Props) {
                       const completedSets = we.workout_sets.filter(s => s.completed);
                       const totalReps = completedSets.reduce((s, set) => s + (set.repetitions ?? 0), 0);
                       const maxWeight = Math.max(0, ...completedSets.map(s => s.weight ?? 0));
+                      const isPR = we.exercise_slug ? prSet.has(`${w.id}:${we.exercise_slug}`) : false;
                       return (
                         <div key={we.id} className="flex items-center justify-between px-3 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)' }}>
                           <p className="text-white/70 text-xs">{we.exercise_name}</p>
-                          <p className="text-white/30 text-[10px]">
-                            {completedSets.length > 0 && `${completedSets.length} sets`}
-                            {totalReps > 0 && ` · ${totalReps} reps`}
-                            {maxWeight > 0 && ` · ${maxWeight}${we.workout_sets[0]?.weight_unit ?? 'kg'} max`}
-                          </p>
+                          <div className="flex items-center gap-1.5">
+                            {isPR && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md" style={{ background: 'rgba(255,77,77,0.15)', color: '#FF4D4D' }}>
+                                PB
+                              </span>
+                            )}
+                            <p className="text-white/30 text-[10px]">
+                              {completedSets.length > 0 && `${completedSets.length} sets`}
+                              {totalReps > 0 && ` · ${totalReps} reps`}
+                              {maxWeight > 0 && ` · ${maxWeight}${we.workout_sets[0]?.weight_unit ?? 'kg'} max`}
+                            </p>
+                          </div>
                         </div>
                       );
                     })}
                 </div>
 
-                {/* Repeat button */}
                 {onRepeat && (
                   <button
                     onClick={() => handleRepeat(w)}

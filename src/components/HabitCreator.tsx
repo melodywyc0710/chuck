@@ -7,6 +7,8 @@ import type { TrackingType, HabitFrequency } from '../lib/habitTypes';
 interface Props {
   onSaved: () => void;
   onClose: () => void;
+  existingCategories?: string[];
+  defaultCategory?: string;
 }
 
 const TRACKING_TYPES: { type: TrackingType; label: string; desc: string; Icon: React.ElementType }[] = [
@@ -17,7 +19,7 @@ const TRACKING_TYPES: { type: TrackingType; label: string; desc: string; Icon: R
   { type: 'avoid',     label: 'Avoid',     desc: 'Reduce or quit something', Icon: TrendingDown },
   { type: 'journal',   label: 'Journal',   desc: 'Written reflection',       Icon: BookOpen },
   { type: 'checklist', label: 'Checklist', desc: 'Repeatable list of steps', Icon: List },
-  { type: 'workout',   label: 'Workout',   desc: 'Gym sessions, weight & calories', Icon: Dumbbell },
+  { type: 'workout',   label: 'Workout',   desc: 'Gym sessions & exercise',  Icon: Dumbbell },
 ];
 
 const FREQUENCIES: { value: HabitFrequency; label: string }[] = [
@@ -27,8 +29,9 @@ const FREQUENCIES: { value: HabitFrequency; label: string }[] = [
   { value: 'weekly',   label: 'Weekly' },
 ];
 
-export default function HabitCreator({ onSaved, onClose }: Props) {
+export default function HabitCreator({ onSaved, onClose, existingCategories = [], defaultCategory = '' }: Props) {
   const user = useAuthStore(s => s.user);
+  const [category, setCategory] = useState(defaultCategory);
   const [name, setName] = useState('');
   const [trackingType, setTrackingType] = useState<TrackingType>('complete');
   const [targetValue, setTargetValue] = useState<string>('');
@@ -62,6 +65,7 @@ export default function HabitCreator({ onSaved, onClose }: Props) {
       checklist_items: items,
       sort_order: Math.floor(Date.now() / 1000),
       archived: false,
+      category: category.trim() || null,
     });
     setSaving(false);
     onSaved();
@@ -69,6 +73,7 @@ export default function HabitCreator({ onSaved, onClose }: Props) {
 
   const cfg = TRACKING_TYPES.find(t => t.type === trackingType)!;
   const showTarget = ['timer', 'counter', 'numeric'].includes(trackingType);
+  const otherCats = existingCategories.filter(c => c !== category.trim());
 
   return (
     <>
@@ -88,13 +93,40 @@ export default function HabitCreator({ onSaved, onClose }: Props) {
           </div>
 
           <div className="space-y-5">
+            {/* Category */}
+            <div>
+              <p className="text-white/30 text-[10px] uppercase tracking-widest mb-1.5">Category</p>
+              <input
+                type="text"
+                placeholder="e.g. Fitness, Focus, Health…"
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+                autoFocus
+                className="w-full text-white text-sm font-medium bg-transparent outline-none placeholder-white/20 px-3 py-2.5 rounded-xl"
+                style={{ background: 'rgba(255,255,255,0.06)' }}
+              />
+              {otherCats.length > 0 && (
+                <div className="flex gap-1.5 flex-wrap mt-2">
+                  {otherCats.map(c => (
+                    <button
+                      key={c}
+                      onClick={() => setCategory(c)}
+                      className="px-2.5 py-1 rounded-xl text-[11px] font-medium transition-all"
+                      style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Name */}
             <input
               type="text"
               placeholder="Name your habit…"
               value={name}
               onChange={e => setName(e.target.value)}
-              autoFocus
               className="w-full text-white text-base font-medium bg-transparent outline-none placeholder-white/20"
             />
 

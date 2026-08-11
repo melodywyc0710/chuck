@@ -1,20 +1,183 @@
 import { useEffect, useState } from 'react';
-import { LogOut, Flame, Users, CreditCard, Laugh, Smile, Meh, Frown, Sparkles, Star, BarChart2, Check, Plus, ChevronRight } from 'lucide-react';
+import {
+  LogOut, Flame, Users, CreditCard, Laugh, Smile, Meh, Frown,
+  Sparkles, Star, BarChart2, Check, Plus,
+  Dumbbell, BookOpen, List, Timer, Hash, Activity, TrendingDown,
+} from 'lucide-react';
 
 import TraitAllocator from './TraitAllocator';
 import SpeciesSelector from './SpeciesSelector';
 import AiCheckin from './AiCheckin';
+import HabitCreator from './HabitCreator';
 import { SPECIES_LIST, getStageImage } from '../lib/species';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 import { applyDecayIfNeeded } from '../lib/petEngine';
-import { isPro } from '../lib/species';
+import { isPlus, isPro } from '../lib/species';
 import type { Habit, HabitLog } from '../lib/habitTypes';
 
-const TYPE_LABEL: Record<string, string> = {
-  complete: 'Complete', timer: 'Timer', counter: 'Counter', numeric: 'Number',
-  avoid: 'Avoid', journal: 'Journal', checklist: 'Checklist', workout: 'Workout',
+// ─── Habit type config ────────────────────────────────────────────────────────
+
+const TYPE_CONFIG: Record<string, { label: string; Icon: React.ElementType; defaultColor: string }> = {
+  workout:   { label: 'Workout',   Icon: Dumbbell,     defaultColor: '#FF4D4D' },
+  journal:   { label: 'Journal',   Icon: BookOpen,     defaultColor: '#F59E0B' },
+  checklist: { label: 'Checklist', Icon: List,         defaultColor: '#10B981' },
+  complete:  { label: 'Complete',  Icon: Check,        defaultColor: '#8B5CF6' },
+  timer:     { label: 'Timer',     Icon: Timer,        defaultColor: '#6366F1' },
+  counter:   { label: 'Counter',   Icon: Hash,         defaultColor: '#3B82F6' },
+  numeric:   { label: 'Number',    Icon: Activity,     defaultColor: '#06B6D4' },
+  avoid:     { label: 'Avoid',     Icon: TrendingDown, defaultColor: '#F97316' },
 };
+
+const COLOR_PALETTE = [
+  '#FF4D4D', '#F97316', '#F59E0B', '#10B981',
+  '#06B6D4', '#3B82F6', '#6366F1', '#8B5CF6',
+  '#EC4899', '#888888',
+];
+
+function getHabitColor(habitId: string, type: string): string {
+  return localStorage.getItem(`habit-color-${habitId}`) ?? TYPE_CONFIG[type]?.defaultColor ?? '#FF4D4D';
+}
+
+// ─── Color picker popover ─────────────────────────────────────────────────────
+
+function ColorPicker({ habitId, current, onClose }: { habitId: string; current: string; onClose: () => void }) {
+  function pick(color: string) {
+    localStorage.setItem(`habit-color-${habitId}`, color);
+    onClose();
+  }
+  return (
+    <>
+      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <div
+        className="absolute top-2 right-2 z-50 p-2 rounded-2xl flex flex-wrap gap-1.5"
+        style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', width: 136 }}
+      >
+        {COLOR_PALETTE.map(c => (
+          <button
+            key={c}
+            onClick={() => pick(c)}
+            className="w-8 h-8 rounded-xl transition-all active:scale-90"
+            style={{ background: c, border: current === c ? '2px solid white' : '2px solid transparent' }}
+          />
+        ))}
+      </div>
+    </>
+  );
+}
+
+// ─── Habit card ───────────────────────────────────────────────────────────────
+
+function HabitCard({
+  habit, log, canCustomize, onClick,
+}: {
+  habit: Habit;
+  log: HabitLog | null;
+  canCustomize: boolean;
+  onClick: () => void;
+}) {
+  const [colorPicker, setColorPicker] = useState(false);
+  const [color, setColor] = useState(() => getHabitColor(habit.id, habit.tracking_type));
+
+  const cfg = TYPE_CONFIG[habit.tracking_type] ?? TYPE_CONFIG.complete;
+  const Icon = cfg.Icon;
+  const done = !!log;
+
+  function refreshColor() {
+    setColor(getHabitColor(habit.id, habit.tracking_type));
+    setColorPicker(false);
+  }
+
+  // Progress text
+  const progressText = (() => {
+    if (!log) return null;
+    const tt = habit.tracking_type;
+    if (tt === 'timer' && log.value != null) return `${log.value} min`;
+    if (tt === 'counter' && log.value != null)
+      return habit.target_value ? `${log.value}/${habit.target_value}` : `${log.value}`;
+    if (tt === 'numeric' && log.value != null)
+      return `${log.value}${habit.target_unit ? ' ' + habit.target_unit : ''}`;
+    if (tt === 'checklist' && log.value != null)
+      return `${log.value}/${habit.checklist_items.length}`;
+    return null;
+  })();
+
+  const pct = (() => {
+    if (!log || !habit.target_value) return done ? 1 : 0;
+    const tt = habit.tracking_type;
+    if (tt === 'timer' || tt === 'counter' || tt === 'numeric')
+      return Math.min(1, (log.value ?? 0) / habit.target_value);
+    if (tt === 'checklist')
+      return habit.checklist_items.length > 0
+        ? Math.min(1, (log.value ?? 0) / habit.checklist_items.length)
+        : done ? 1 : 0;
+    return done ? 1 : 0;
+  })();
+
+  return (
+    <div className="relative">
+      <button
+        onClick={onClick}
+        className="relative rounded-[24px] overflow-hidden text-left transition-all duration-200 active:scale-[0.97] w-full"
+        style={{ background: '#111111', border: '1px solid #1e1e1e', minHeight: 160, display: 'flex', flexDirection: 'column' }}
+      >
+        {/* Colored top band */}
+        <div
+          className="relative flex items-center justify-center"
+          style={{ background: done ? '#10B981' : color, height: 88, width: '100%', flexShrink: 0 }}
+        >
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.15) 100%)' }} />
+          {done
+            ? <Check size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.95, position: 'relative' }} />
+            : <Icon size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.95, position: 'relative' }} />
+          }
+        </div>
+
+        {/* Body */}
+        <div className="flex flex-col flex-1 px-4 pt-3 pb-3 gap-1" style={{ background: '#141414', marginTop: -6, borderRadius: '14px 14px 0 0' }}>
+          <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            {cfg.label}
+          </span>
+          <p className="text-white/80 text-sm font-semibold leading-tight truncate">{habit.name}</p>
+          {progressText && (
+            <p className="text-[11px] font-medium tabular-nums" style={{ color: done ? '#10B981' : 'rgba(255,255,255,0.4)' }}>
+              {progressText}
+            </p>
+          )}
+          {/* Progress bar */}
+          {pct > 0 && (
+            <div className="h-1 rounded-full overflow-hidden mt-1" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <div
+                className="h-full rounded-full transition-all duration-700"
+                style={{ width: `${pct * 100}%`, background: done ? '#10B981' : color }}
+              />
+            </div>
+          )}
+        </div>
+      </button>
+
+      {/* Color picker button — Pro/Plus only */}
+      {canCustomize && (
+        <div className="absolute top-2 right-2 z-10">
+          <button
+            onClick={e => { e.stopPropagation(); setColorPicker(v => !v); }}
+            className="w-5 h-5 rounded-full border-2 border-white/30 transition-all active:scale-90"
+            style={{ background: color }}
+          />
+          {colorPicker && (
+            <ColorPicker
+              habitId={habit.id}
+              current={color}
+              onClose={refreshColor}
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Mood icon ────────────────────────────────────────────────────────────────
 
 function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
   if (h >= 80) return <Laugh size={size} />;
@@ -23,6 +186,7 @@ function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
   return <Frown size={size} />;
 }
 
+// ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function HomeScreen({
   onFriends, onPayment, onStats, onHabits,
@@ -40,13 +204,16 @@ export default function HomeScreen({
   const [habits, setHabits] = useState<Habit[]>([]);
   const [todayLogs, setTodayLogs] = useState<Record<string, HabitLog>>({});
   const [habitsLoading, setHabitsLoading] = useState(true);
+  const [showCreator, setShowCreator] = useState(false);
   const [showTraits, setShowTraits] = useState(false);
   const [showSpecies, setShowSpecies] = useState(false);
   const [wiggling, setWiggling] = useState(false);
   const [bubble, setBubble] = useState<string | null>(null);
 
   const tier = profile?.subscription_tier ?? 'free';
+  const plus = isPlus(tier);
   const pro = isPro(tier);
+  const canCustomize = plus || pro;
 
   useEffect(() => {
     loadData();
@@ -77,10 +244,10 @@ export default function HomeScreen({
   if (!pet) return null;
 
   const MOOD_MESSAGES: Record<string, string[]> = {
-    happy:   ['Yay! ✨', 'I love you!', 'Let\'s go! 🌟', 'So happy~', 'You\'re the best!'],
-    good:    ['Hi there! 👋', 'Keep it up!', 'Feeling good!', 'You got this~', '*happy wiggle*'],
-    meh:     ['...hi.', 'I\'m okay.', 'Maybe a goal today?', 'Mmmph.', 'Could be better~'],
-    sad:     ['I miss you...', 'Please come back 🥺', 'I\'m lonely...', 'Don\'t forget me~', '*sad eyes*'],
+    happy: ['Yay!', 'I love you!', "Let's go!", 'So happy~', "You're the best!"],
+    good:  ['Hi there!', 'Keep it up!', 'Feeling good!', 'You got this~', '*happy wiggle*'],
+    meh:   ['...hi.', "I'm okay.", 'Maybe a goal today?', 'Mmmph.', 'Could be better~'],
+    sad:   ['I miss you...', 'Please come back', "I'm lonely...", "Don't forget me~", '*sad eyes*'],
   };
 
   function getMoodKey(h: number) {
@@ -136,17 +303,19 @@ export default function HomeScreen({
           </div>
         </div>
 
-        {/* Pet — compact */}
+        {/* Pet */}
         <div className="flex items-center gap-4 mb-8 fade-up" style={{ animationDelay: '0.1s' }}>
           <div className="relative shrink-0">
             {bubble && (
-              <div className="pet-bubble absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1.5 rounded-2xl text-xs font-medium z-20"
-                style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}>
+              <div
+                className="pet-bubble absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap px-3 py-1.5 rounded-2xl text-xs font-medium z-20"
+                style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.85)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 4px 16px rgba(0,0,0,0.4)' }}
+              >
                 {bubble}
                 <span className="absolute left-1/2 -translate-x-1/2 -bottom-1.5 w-0 h-0" style={{ borderLeft: '6px solid transparent', borderRight: '6px solid transparent', borderTop: '6px solid #1e1e1e' }} />
               </div>
             )}
-            <button onClick={tapPet} className="relative block" aria-label="Pet melmel">
+            <button onClick={tapPet} className="relative block" aria-label="Pet">
               <div className={`relative w-16 h-16 rounded-full flex items-center justify-center overflow-hidden${wiggling ? ' pet-wiggle' : ''}`} style={{ background: '#141414', border: '1px solid #1E1E1E' }}>
                 {(() => {
                   const stageImg = getStageImage(pet.species, pet.level);
@@ -187,28 +356,26 @@ export default function HomeScreen({
           </div>
         </div>
 
-        {/* Date */}
-        <p className="text-white/25 text-xs mb-5 fade-up" style={{ animationDelay: '0.15s' }}>{todayLabel}</p>
+        {/* Date + Today count */}
+        <div className="flex items-center justify-between mb-5 fade-up" style={{ animationDelay: '0.15s' }}>
+          <p className="text-white/25 text-xs">{todayLabel}</p>
+          {habits.length > 0 && (
+            <span className="text-white/20 text-xs">{doneCount}/{habits.length} done</span>
+          )}
+        </div>
 
-        {/* Today's habits */}
+        {/* Habit cards */}
         <div className="fade-up" style={{ animationDelay: '0.2s' }}>
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-white/30 text-[10px] uppercase tracking-widest">Today</p>
-            {habits.length > 0 && (
-              <span className="text-white/20 text-[10px]">{doneCount}/{habits.length}</span>
-            )}
-          </div>
-
           {habitsLoading && (
-            <div className="flex justify-center py-8">
+            <div className="flex justify-center py-12">
               <div className="w-4 h-4 rounded-full border-2 border-white/15 border-t-white/50 animate-spin" />
             </div>
           )}
 
           {!habitsLoading && habits.length === 0 && (
             <button
-              onClick={onHabits}
-              className="w-full flex flex-col items-center justify-center py-10 rounded-[24px] transition-all active:scale-[0.98]"
+              onClick={() => setShowCreator(true)}
+              className="w-full flex flex-col items-center justify-center py-12 rounded-[24px] transition-all active:scale-[0.98]"
               style={{ background: '#111111', border: '1px dashed rgba(255,255,255,0.1)' }}
             >
               <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3" style={{ background: 'rgba(255,77,77,0.1)' }}>
@@ -220,57 +387,31 @@ export default function HomeScreen({
           )}
 
           {!habitsLoading && habits.length > 0 && (
-            <div className="space-y-2">
-              {habits.slice(0, 5).map(habit => {
-                const done = !!todayLogs[habit.id];
-                return (
-                  <button
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                {habits.map(habit => (
+                  <HabitCard
                     key={habit.id}
+                    habit={habit}
+                    log={todayLogs[habit.id] ?? null}
+                    canCustomize={canCustomize}
                     onClick={onHabits}
-                    className="w-full flex items-center gap-3 px-4 py-3 rounded-[18px] text-left transition-all active:scale-[0.98]"
-                    style={{
-                      background: done ? 'rgba(16,185,129,0.06)' : '#111111',
-                      border: `1px solid ${done ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.07)'}`,
-                    }}
-                  >
-                    <div
-                      className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
-                      style={{ background: done ? 'rgba(16,185,129,0.15)' : 'rgba(255,77,77,0.1)' }}
-                    >
-                      {done
-                        ? <Check size={13} style={{ color: '#10B981' }} strokeWidth={2.5} />
-                        : <div className="w-2 h-2 rounded-full" style={{ background: '#FF4D4D', opacity: 0.7 }} />
-                      }
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate" style={{ color: done ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.8)', textDecoration: done ? 'line-through' : 'none' }}>
-                        {habit.name}
-                      </p>
-                      <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
-                        {TYPE_LABEL[habit.tracking_type] ?? habit.tracking_type}
-                        {habit.target_value != null && ` · ${habit.target_value}${habit.target_unit ? ' ' + habit.target_unit : ''}`}
-                      </p>
-                    </div>
-                  </button>
-                );
-              })}
-              {habits.length > 5 && (
+                  />
+                ))}
+
+                {/* Add habit card */}
                 <button
-                  onClick={onHabits}
-                  className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-[18px] text-xs transition-all active:scale-[0.98]"
-                  style={{ color: 'rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.03)' }}
+                  onClick={() => setShowCreator(true)}
+                  className="rounded-[24px] flex flex-col items-center justify-center transition-all active:scale-[0.97]"
+                  style={{ background: '#111111', border: '1px dashed rgba(255,255,255,0.08)', minHeight: 160 }}
                 >
-                  {habits.length - 5} more <ChevronRight size={11} />
+                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2" style={{ background: 'rgba(255,77,77,0.08)' }}>
+                    <Plus size={16} style={{ color: '#FF4D4D' }} strokeWidth={2} />
+                  </div>
+                  <p className="text-white/25 text-xs font-medium">Add habit</p>
                 </button>
-              )}
-              <button
-                onClick={onHabits}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[18px] text-xs font-medium transition-all active:scale-[0.98]"
-                style={{ color: 'rgba(255,77,77,0.7)', background: 'rgba(255,77,77,0.06)', border: '1px solid rgba(255,77,77,0.12)' }}
-              >
-                <Plus size={12} strokeWidth={2.5} /> Add habit
-              </button>
-            </div>
+              </div>
+            </>
           )}
         </div>
 
@@ -292,6 +433,13 @@ export default function HomeScreen({
           </button>
         )}
       </div>
+
+      {showCreator && (
+        <HabitCreator
+          onSaved={() => { setShowCreator(false); loadData(); }}
+          onClose={() => setShowCreator(false)}
+        />
+      )}
     </>
   );
 }

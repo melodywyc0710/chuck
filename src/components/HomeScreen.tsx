@@ -205,7 +205,7 @@ export default function HomeScreen({
         {/* Date */}
         <p className="text-white/25 text-xs mb-5 fade-up" style={{ animationDelay: '0.15s' }}>{todayLabel}</p>
 
-        {/* Category cards */}
+        {/* Category cards + nested shortcuts */}
         <div className="grid grid-cols-2 gap-3 fade-up" style={{ animationDelay: '0.2s' }}>
           {(Object.entries(categoryConfig) as [GoalCategory, typeof categoryConfig[GoalCategory]][]).map(([cat, cfg]) => {
             const catPromises = promises.filter(p => p.category === cat);
@@ -213,44 +213,79 @@ export default function HomeScreen({
             const allDone = catPromises.length > 0 && doneToday === catPromises.length;
             const pct = catPromises.length > 0 ? doneToday / catPromises.length : 0;
             return (
-              <button
-                key={cat}
-                onClick={() => onCategory(cat)}
-                className="relative rounded-[24px] overflow-hidden text-left transition-all duration-200 active:scale-[0.97]"
-                style={{ background: '#111111', border: '1px solid #1e1e1e', minHeight: 160, display: 'flex', flexDirection: 'column', width: '100%' }}
-              >
-                {/* Color glow top band */}
-                <div className="relative flex items-center justify-center" style={{ background: cfg.color, height: 88, width: '100%', flexShrink: 0 }}>
-                  {/* Subtle gradient overlay */}
-                  <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.15) 100%)' }} />
-                  <cfg.Icon size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.95, position: 'relative' }} />
-                  {allDone && catPromises.length > 0 && (
-                    <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.3)' }}>
-                      <Check size={12} color="white" strokeWidth={2.5} />
-                    </div>
-                  )}
-                </div>
-
-                {/* Body */}
-                <div className="flex flex-col flex-1 px-4 pt-3 pb-3 gap-1" style={{ background: '#141414', marginTop: -6, borderRadius: '14px 14px 0 0' }}>
-                  <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>{cfg.label}</span>
-
-                  {catPromises.length === 0 ? (
-                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>Tap to add goals</p>
-                  ) : (
-                    <>
-                      <p className="font-semibold text-white leading-none" style={{ fontSize: 22, letterSpacing: '-0.04em' }}>
-                        {doneToday}<span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', letterSpacing: 0 }}>/{catPromises.length}</span>
-                      </p>
-                      {/* Progress bar */}
-                      <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)', marginTop: 2 }}>
-                        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct * 100}%`, background: cfg.color }} />
+              <div key={cat} className="flex flex-col gap-2">
+                <button
+                  onClick={() => onCategory(cat)}
+                  className="relative rounded-[24px] overflow-hidden text-left transition-all duration-200 active:scale-[0.97]"
+                  style={{ background: '#111111', border: '1px solid #1e1e1e', minHeight: 160, display: 'flex', flexDirection: 'column', width: '100%' }}
+                >
+                  {/* Color glow top band */}
+                  <div className="relative flex items-center justify-center" style={{ background: cfg.color, height: 88, width: '100%', flexShrink: 0 }}>
+                    <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.15) 100%)' }} />
+                    <cfg.Icon size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.95, position: 'relative' }} />
+                    {allDone && catPromises.length > 0 && (
+                      <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.3)' }}>
+                        <Check size={12} color="white" strokeWidth={2.5} />
                       </div>
+                    )}
+                  </div>
 
-                    </>
-                  )}
-                </div>
-              </button>
+                  {/* Body */}
+                  <div className="flex flex-col flex-1 px-4 pt-3 pb-3 gap-1" style={{ background: '#141414', marginTop: -6, borderRadius: '14px 14px 0 0' }}>
+                    <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>{cfg.label}</span>
+                    {catPromises.length === 0 ? (
+                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>Tap to add goals</p>
+                    ) : (
+                      <>
+                        <p className="font-semibold text-white leading-none" style={{ fontSize: 22, letterSpacing: '-0.04em' }}>
+                          {doneToday}<span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', letterSpacing: 0 }}>/{catPromises.length}</span>
+                        </p>
+                        <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)', marginTop: 2 }}>
+                          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct * 100}%`, background: cfg.color }} />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </button>
+
+                {/* Nested shortcut per category */}
+                {cat === 'fitness' && (
+                  <button
+                    onClick={onWorkout}
+                    className="flex items-center gap-2.5 px-3.5 py-3 rounded-[20px] transition-all active:scale-[0.97]"
+                    style={{ background: 'rgba(255,77,77,0.08)', border: '1px solid rgba(255,77,77,0.15)' }}
+                  >
+                    <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,77,77,0.15)' }}>
+                      <Dumbbell size={14} style={{ color: '#FF4D4D' }} strokeWidth={1.5} />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-white/70 text-xs font-semibold">Gym</p>
+                      <p className="text-white/25 text-[9px]">Log a workout</p>
+                    </div>
+                  </button>
+                )}
+                {cat === 'focus' && (
+                  <button
+                    onClick={onDiary}
+                    className="flex items-center gap-2.5 px-3.5 py-3 rounded-[20px] transition-all active:scale-[0.97]"
+                    style={{ background: 'rgba(61,142,255,0.08)', border: '1px solid rgba(61,142,255,0.15)' }}
+                  >
+                    <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(61,142,255,0.15)' }}>
+                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="1" width="9" height="12" rx="1.2" stroke="#3D8EFF" strokeWidth="1.1" />
+                        <line x1="4" y1="4.5" x2="9" y2="4.5" stroke="#3D8EFF" strokeWidth="0.9" strokeLinecap="round" />
+                        <line x1="4" y1="7" x2="9" y2="7" stroke="#3D8EFF" strokeWidth="0.9" strokeLinecap="round" />
+                        <line x1="4" y1="9.5" x2="7" y2="9.5" stroke="#3D8EFF" strokeWidth="0.9" strokeLinecap="round" />
+                        <line x1="2" y1="1" x2="2" y2="13" stroke="#3D8EFF" strokeWidth="1.7" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                    <div className="text-left">
+                      <p className="text-white/70 text-xs font-semibold">Diary</p>
+                      <p className="text-white/25 text-[9px]">Write today's entry</p>
+                    </div>
+                  </button>
+                )}
+              </div>
             );
           })}
         </div>
@@ -269,42 +304,6 @@ export default function HomeScreen({
             <p className="text-white/25 text-[10px]">Track your daily habits</p>
           </div>
         </button>
-
-        {/* Gym + Diary buttons */}
-        <div className="mt-2 grid grid-cols-2 gap-2 fade-up" style={{ animationDelay: '0.25s' }}>
-          <button
-            onClick={onWorkout}
-            className="flex items-center gap-2.5 px-3.5 py-3 rounded-[20px] transition-all active:scale-[0.97]"
-            style={{ background: 'rgba(255,77,77,0.08)', border: '1px solid rgba(255,77,77,0.15)' }}
-          >
-            <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,77,77,0.15)' }}>
-              <Dumbbell size={14} style={{ color: '#FF4D4D' }} strokeWidth={1.5} />
-            </div>
-            <div className="text-left">
-              <p className="text-white/70 text-xs font-semibold">Gym</p>
-              <p className="text-white/25 text-[9px]">Log a workout</p>
-            </div>
-          </button>
-          <button
-            onClick={onDiary}
-            className="flex items-center gap-2.5 px-3.5 py-3 rounded-[20px] transition-all active:scale-[0.97]"
-            style={{ background: 'rgba(255,77,77,0.08)', border: '1px solid rgba(255,77,77,0.15)' }}
-          >
-            <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,77,77,0.15)' }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2" y="1" width="9" height="12" rx="1.2" stroke="#FF4D4D" strokeWidth="1.1" />
-                <line x1="4" y1="4.5" x2="9" y2="4.5" stroke="#FF4D4D" strokeWidth="0.9" strokeLinecap="round" />
-                <line x1="4" y1="7" x2="9" y2="7" stroke="#FF4D4D" strokeWidth="0.9" strokeLinecap="round" />
-                <line x1="4" y1="9.5" x2="7" y2="9.5" stroke="#FF4D4D" strokeWidth="0.9" strokeLinecap="round" />
-                <line x1="2" y1="1" x2="2" y2="13" stroke="#FF4D4D" strokeWidth="1.7" strokeLinecap="round" />
-              </svg>
-            </div>
-            <div className="text-left">
-              <p className="text-white/70 text-xs font-semibold">Diary</p>
-              <p className="text-white/25 text-[9px]">Write today's entry</p>
-            </div>
-          </button>
-        </div>
 
         {/* Pro AI check-in */}
         {pro && (

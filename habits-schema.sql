@@ -15,6 +15,7 @@ create table if not exists public.habits (
   checklist_items text[] not null default '{}',
   sort_order integer not null default 0,
   archived boolean not null default false,
+  category text,
   created_at timestamptz not null default now()
 );
 

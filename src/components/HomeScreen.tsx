@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import type React from 'react';
-import { LogOut, Flame, Users, CreditCard, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles, Star, BarChart2, Check, ListChecks } from 'lucide-react';
+import { LogOut, Flame, Users, CreditCard, Laugh, Smile, Meh, Frown, Sparkles, Star, BarChart2, Check, Plus, ChevronRight } from 'lucide-react';
 
 import TraitAllocator from './TraitAllocator';
 import SpeciesSelector from './SpeciesSelector';
@@ -8,10 +7,14 @@ import AiCheckin from './AiCheckin';
 import { SPECIES_LIST, getStageImage } from '../lib/species';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
-import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
 import { applyDecayIfNeeded } from '../lib/petEngine';
-import { isPlus, isPro } from '../lib/species';
+import { isPro } from '../lib/species';
+import type { Habit, HabitLog } from '../lib/habitTypes';
 
+const TYPE_LABEL: Record<string, string> = {
+  complete: 'Complete', timer: 'Timer', counter: 'Counter', numeric: 'Number',
+  avoid: 'Avoid', journal: 'Journal', checklist: 'Checklist', workout: 'Workout',
+};
 
 function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
   if (h >= 80) return <Laugh size={size} />;
@@ -20,31 +23,13 @@ function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
   return <Frown size={size} />;
 }
 
-const CATEGORY_DEFAULTS: Record<GoalCategory, { label: string; Icon: React.ElementType; color: string }> = {
-  fitness: { label: 'Fitness', Icon: Dumbbell, color: '#FF4D4D' },
-  focus:   { label: 'Focus',   Icon: Brain,    color: '#3D8EFF' },
-};
-
-function getCategoryConfig() {
-  return (Object.keys(CATEGORY_DEFAULTS) as GoalCategory[]).reduce((acc, cat) => {
-    acc[cat] = {
-      ...CATEGORY_DEFAULTS[cat],
-      color: localStorage.getItem(`cat-color-${cat}`) ?? CATEGORY_DEFAULTS[cat].color,
-    };
-    return acc;
-  }, {} as Record<GoalCategory, { label: string; Icon: React.ElementType; color: string }>);
-}
-
 
 export default function HomeScreen({
-  onFriends, onPayment, onStats, onCategory, onWorkout, onDiary, onHabits,
+  onFriends, onPayment, onStats, onHabits,
 }: {
   onFriends: () => void;
   onPayment: () => void;
   onStats: () => void;
-  onCategory: (c: GoalCategory) => void;
-  onWorkout: () => void;
-  onDiary: () => void;
   onHabits: () => void;
 }) {
   const pet = useAuthStore(s => s.pet);
@@ -52,16 +37,15 @@ export default function HomeScreen({
   const signOut = useAuthStore(s => s.signOut);
   const updatePetState = useAuthStore(s => s.setPetLocal);
 
-  const [promises, setPromises] = useState<Promise_[]>([]);
-  const [history, setHistory] = useState<Completion[]>([]);
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [todayLogs, setTodayLogs] = useState<Record<string, HabitLog>>({});
+  const [habitsLoading, setHabitsLoading] = useState(true);
   const [showTraits, setShowTraits] = useState(false);
   const [showSpecies, setShowSpecies] = useState(false);
   const [wiggling, setWiggling] = useState(false);
   const [bubble, setBubble] = useState<string | null>(null);
-  const [categoryConfig] = useState(getCategoryConfig);
 
   const tier = profile?.subscription_tier ?? 'free';
-  const plus = isPlus(tier);
   const pro = isPro(tier);
 
   useEffect(() => {
@@ -71,20 +55,23 @@ export default function HomeScreen({
 
   async function loadData() {
     if (!pet) return;
-    const completionsQuery = (() => {
-      const q = supabase.from('completions').select('*').eq('user_id', pet.user_id);
-      if (!plus) {
-        const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
-        return q.gte('date_key', cutoff.toISOString().slice(0, 10));
+    const dateKey = new Date().toISOString().slice(0, 10);
+    try {
+      const [{ data: h }, { data: l }] = await Promise.all([
+        supabase.from('habits').select('*').eq('user_id', pet.user_id).eq('archived', false).order('sort_order'),
+        supabase.from('habit_logs').select('*').eq('user_id', pet.user_id).eq('date_key', dateKey),
+      ]);
+      if (h) setHabits(h.map(x => ({ ...x, checklist_items: x.checklist_items ?? [] })) as Habit[]);
+      if (l) {
+        const map: Record<string, HabitLog> = {};
+        for (const log of l) map[log.habit_id] = log as HabitLog;
+        setTodayLogs(map);
       }
-      return q;
-    })();
-    const [{ data: p }, { data: h }] = await Promise.all([
-      supabase.from('promises').select('*').eq('user_id', pet.user_id).eq('active', true).order('created_at', { ascending: true }),
-      completionsQuery,
-    ]);
-    if (p) setPromises(p);
-    if (h) setHistory(h);
+    } catch (e) {
+      console.error('HomeScreen loadData error:', e);
+    } finally {
+      setHabitsLoading(false);
+    }
   }
 
   if (!pet) return null;
@@ -113,10 +100,8 @@ export default function HomeScreen({
   }
 
   const xpPct = pet.xp / pet.xp_to_next;
-  const today = new Date().toISOString().slice(0, 10);
-  const todayDoneIds = new Set(history.filter(h => h.date_key === today).map(h => h.promise_id));
-
   const todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  const doneCount = habits.filter(h => !!todayLogs[h.id]).length;
 
   return (
     <>
@@ -205,105 +190,89 @@ export default function HomeScreen({
         {/* Date */}
         <p className="text-white/25 text-xs mb-5 fade-up" style={{ animationDelay: '0.15s' }}>{todayLabel}</p>
 
-        {/* Category cards + nested shortcuts */}
-        <div className="grid grid-cols-2 gap-3 fade-up" style={{ animationDelay: '0.2s' }}>
-          {(Object.entries(categoryConfig) as [GoalCategory, typeof categoryConfig[GoalCategory]][]).map(([cat, cfg]) => {
-            const catPromises = promises.filter(p => p.category === cat);
-            const doneToday = catPromises.filter(p => todayDoneIds.has(p.id)).length;
-            const allDone = catPromises.length > 0 && doneToday === catPromises.length;
-            const pct = catPromises.length > 0 ? doneToday / catPromises.length : 0;
-            return (
-              <div key={cat} className="flex flex-col gap-2">
-                <button
-                  onClick={() => onCategory(cat)}
-                  className="relative rounded-[24px] overflow-hidden text-left transition-all duration-200 active:scale-[0.97]"
-                  style={{ background: '#111111', border: '1px solid #1e1e1e', minHeight: 160, display: 'flex', flexDirection: 'column', width: '100%' }}
-                >
-                  {/* Color glow top band */}
-                  <div className="relative flex items-center justify-center" style={{ background: cfg.color, height: 88, width: '100%', flexShrink: 0 }}>
-                    <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.15) 100%)' }} />
-                    <cfg.Icon size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.95, position: 'relative' }} />
-                    {allDone && catPromises.length > 0 && (
-                      <div className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.3)' }}>
-                        <Check size={12} color="white" strokeWidth={2.5} />
-                      </div>
-                    )}
-                  </div>
+        {/* Today's habits */}
+        <div className="fade-up" style={{ animationDelay: '0.2s' }}>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-white/30 text-[10px] uppercase tracking-widest">Today</p>
+            {habits.length > 0 && (
+              <span className="text-white/20 text-[10px]">{doneCount}/{habits.length}</span>
+            )}
+          </div>
 
-                  {/* Body */}
-                  <div className="flex flex-col flex-1 px-4 pt-3 pb-3 gap-1" style={{ background: '#141414', marginTop: -6, borderRadius: '14px 14px 0 0' }}>
-                    <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>{cfg.label}</span>
-                    {catPromises.length === 0 ? (
-                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)' }}>Tap to add goals</p>
-                    ) : (
-                      <>
-                        <p className="font-semibold text-white leading-none" style={{ fontSize: 22, letterSpacing: '-0.04em' }}>
-                          {doneToday}<span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)', letterSpacing: 0 }}>/{catPromises.length}</span>
-                        </p>
-                        <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)', marginTop: 2 }}>
-                          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct * 100}%`, background: cfg.color }} />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </button>
+          {habitsLoading && (
+            <div className="flex justify-center py-8">
+              <div className="w-4 h-4 rounded-full border-2 border-white/15 border-t-white/50 animate-spin" />
+            </div>
+          )}
 
-                {/* Nested shortcut per category */}
-                {cat === 'fitness' && (
-                  <button
-                    onClick={onWorkout}
-                    className="flex items-center gap-2.5 px-3.5 py-3 rounded-[20px] transition-all active:scale-[0.97]"
-                    style={{ background: 'rgba(255,77,77,0.08)', border: '1px solid rgba(255,77,77,0.15)' }}
-                  >
-                    <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,77,77,0.15)' }}>
-                      <Dumbbell size={14} style={{ color: '#FF4D4D' }} strokeWidth={1.5} />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-white/70 text-xs font-semibold">Gym</p>
-                      <p className="text-white/25 text-[9px]">Log a workout</p>
-                    </div>
-                  </button>
-                )}
-                {cat === 'focus' && (
-                  <button
-                    onClick={onDiary}
-                    className="flex items-center gap-2.5 px-3.5 py-3 rounded-[20px] transition-all active:scale-[0.97]"
-                    style={{ background: 'rgba(61,142,255,0.08)', border: '1px solid rgba(61,142,255,0.15)' }}
-                  >
-                    <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(61,142,255,0.15)' }}>
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="2" y="1" width="9" height="12" rx="1.2" stroke="#3D8EFF" strokeWidth="1.1" />
-                        <line x1="4" y1="4.5" x2="9" y2="4.5" stroke="#3D8EFF" strokeWidth="0.9" strokeLinecap="round" />
-                        <line x1="4" y1="7" x2="9" y2="7" stroke="#3D8EFF" strokeWidth="0.9" strokeLinecap="round" />
-                        <line x1="4" y1="9.5" x2="7" y2="9.5" stroke="#3D8EFF" strokeWidth="0.9" strokeLinecap="round" />
-                        <line x1="2" y1="1" x2="2" y2="13" stroke="#3D8EFF" strokeWidth="1.7" strokeLinecap="round" />
-                      </svg>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-white/70 text-xs font-semibold">Diary</p>
-                      <p className="text-white/25 text-[9px]">Write today's entry</p>
-                    </div>
-                  </button>
-                )}
+          {!habitsLoading && habits.length === 0 && (
+            <button
+              onClick={onHabits}
+              className="w-full flex flex-col items-center justify-center py-10 rounded-[24px] transition-all active:scale-[0.98]"
+              style={{ background: '#111111', border: '1px dashed rgba(255,255,255,0.1)' }}
+            >
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3" style={{ background: 'rgba(255,77,77,0.1)' }}>
+                <Plus size={18} style={{ color: '#FF4D4D' }} strokeWidth={2} />
               </div>
-            );
-          })}
-        </div>
+              <p className="text-white/40 text-sm font-medium">Add your first habit</p>
+              <p className="text-white/20 text-xs mt-1">Workout, journal, meditate and more</p>
+            </button>
+          )}
 
-        {/* Habits entry */}
-        <button
-          onClick={onHabits}
-          className="mt-3 w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] transition-all active:scale-[0.97] fade-up"
-          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', animationDelay: '0.23s' }}
-        >
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,255,255,0.07)' }}>
-            <ListChecks size={15} style={{ color: 'rgba(255,255,255,0.6)' }} strokeWidth={1.5} />
-          </div>
-          <div className="flex-1 text-left">
-            <p className="text-white/70 text-sm font-semibold">Habits</p>
-            <p className="text-white/25 text-[10px]">Track your daily habits</p>
-          </div>
-        </button>
+          {!habitsLoading && habits.length > 0 && (
+            <div className="space-y-2">
+              {habits.slice(0, 5).map(habit => {
+                const done = !!todayLogs[habit.id];
+                return (
+                  <button
+                    key={habit.id}
+                    onClick={onHabits}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-[18px] text-left transition-all active:scale-[0.98]"
+                    style={{
+                      background: done ? 'rgba(16,185,129,0.06)' : '#111111',
+                      border: `1px solid ${done ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.07)'}`,
+                    }}
+                  >
+                    <div
+                      className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
+                      style={{ background: done ? 'rgba(16,185,129,0.15)' : 'rgba(255,77,77,0.1)' }}
+                    >
+                      {done
+                        ? <Check size={13} style={{ color: '#10B981' }} strokeWidth={2.5} />
+                        : <div className="w-2 h-2 rounded-full" style={{ background: '#FF4D4D', opacity: 0.7 }} />
+                      }
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate" style={{ color: done ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.8)', textDecoration: done ? 'line-through' : 'none' }}>
+                        {habit.name}
+                      </p>
+                      <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                        {TYPE_LABEL[habit.tracking_type] ?? habit.tracking_type}
+                        {habit.target_value != null && ` · ${habit.target_value}${habit.target_unit ? ' ' + habit.target_unit : ''}`}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+              {habits.length > 5 && (
+                <button
+                  onClick={onHabits}
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-[18px] text-xs transition-all active:scale-[0.98]"
+                  style={{ color: 'rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.03)' }}
+                >
+                  {habits.length - 5} more <ChevronRight size={11} />
+                </button>
+              )}
+              <button
+                onClick={onHabits}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[18px] text-xs font-medium transition-all active:scale-[0.98]"
+                style={{ color: 'rgba(255,77,77,0.7)', background: 'rgba(255,77,77,0.06)', border: '1px solid rgba(255,77,77,0.12)' }}
+              >
+                <Plus size={12} strokeWidth={2.5} /> Add habit
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Pro AI check-in */}
         {pro && (

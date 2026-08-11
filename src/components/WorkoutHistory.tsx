@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Clock, Dumbbell, Flame, ChevronRight, ChevronDown, RefreshCw } from 'lucide-react';
+import { Clock, Dumbbell, Flame, ChevronRight, ChevronDown, RefreshCw, Trash2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
 import type { WorkoutWithDetails } from '../lib/workoutTypes';
@@ -158,6 +158,7 @@ export default function WorkoutHistory({ onRepeat }: Props) {
   const [workouts, setWorkouts] = useState<WorkoutWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   useEffect(() => { load(); }, []);
 
@@ -173,6 +174,12 @@ export default function WorkoutHistory({ onRepeat }: Props) {
       .limit(50);
     if (data) setWorkouts(data as WorkoutWithDetails[]);
     setLoading(false);
+  }
+
+  async function handleDelete(id: string) {
+    await supabase.from('workouts').delete().eq('id', id);
+    setWorkouts(prev => prev.filter(w => w.id !== id));
+    setConfirmDelete(null);
   }
 
   function handleRepeat(w: WorkoutWithDetails) {
@@ -221,7 +228,7 @@ export default function WorkoutHistory({ onRepeat }: Props) {
           >
             <button
               className="w-full flex items-center gap-3 px-4 py-4 text-left"
-              onClick={() => setExpanded(isExpanded ? null : w.id)}
+              onClick={() => { setExpanded(isExpanded ? null : w.id); setConfirmDelete(null); }}
             >
               <div className="flex-1 min-w-0">
                 <p className="text-white/85 text-sm font-semibold truncate">{w.name}</p>
@@ -290,15 +297,38 @@ export default function WorkoutHistory({ onRepeat }: Props) {
                     })}
                 </div>
 
-                {onRepeat && (
+                <div className="flex gap-2">
+                  {onRepeat && (
+                    <button
+                      onClick={() => handleRepeat(w)}
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm text-white/50 hover:text-white/80 transition-colors"
+                      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+                    >
+                      <RefreshCw size={13} />
+                      Repeat
+                    </button>
+                  )}
                   <button
-                    onClick={() => handleRepeat(w)}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-2xl text-sm text-white/50 hover:text-white/80 transition-colors"
+                    onClick={() => setConfirmDelete(confirmDelete === w.id ? null : w.id)}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-2xl text-xs text-white/30 hover:text-red-400 transition-colors"
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
                   >
-                    <RefreshCw size={13} />
-                    Repeat this workout
+                    <Trash2 size={12} />
                   </button>
+                </div>
+
+                {confirmDelete === w.id && (
+                  <div className="px-3 py-2.5 rounded-xl flex items-center justify-between gap-3" style={{ background: 'rgba(255,77,77,0.08)', border: '1px solid rgba(255,77,77,0.2)' }}>
+                    <p className="text-white/50 text-xs">Delete this workout?</p>
+                    <div className="flex gap-2">
+                      <button onClick={() => setConfirmDelete(null)} className="text-white/35 text-xs px-2 py-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                        Cancel
+                      </button>
+                      <button onClick={() => handleDelete(w.id)} className="text-white text-xs px-2 py-1 rounded-lg font-semibold" style={{ background: '#FF4D4D' }}>
+                        Delete
+                      </button>
+                    </div>
+                  </div>
                 )}
               </div>
             )}

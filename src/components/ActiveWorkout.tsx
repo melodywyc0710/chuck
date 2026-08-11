@@ -90,6 +90,65 @@ function RestTimerBar() {
   );
 }
 
+function PlusMinus({
+  value,
+  onChange,
+  step,
+  min,
+  unit,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  step: number;
+  min?: number;
+  unit?: string;
+  placeholder?: string;
+}) {
+  const num = parseFloat(value);
+  const dec = (num - Math.floor(num)) > 0 ? 1 : 0;
+  function inc() {
+    const next = isNaN(num) ? step : parseFloat((num + step).toFixed(dec || (step % 1 !== 0 ? 1 : 0)));
+    onChange(String(next));
+  }
+  function dec_() {
+    if (isNaN(num)) return;
+    const next = parseFloat((num - step).toFixed(dec || (step % 1 !== 0 ? 1 : 0)));
+    if (min !== undefined && next < min) return;
+    onChange(String(next));
+  }
+  return (
+    <div className="flex items-center gap-0.5">
+      <button
+        onClick={dec_}
+        className="w-6 h-6 rounded-md flex items-center justify-center text-white/50 hover:text-white/80 transition-colors shrink-0"
+        style={{ background: 'rgba(255,255,255,0.06)' }}
+      >
+        <span className="text-xs font-bold leading-none">−</span>
+      </button>
+      <div className="flex items-baseline gap-0.5 min-w-0 px-1">
+        <input
+          type="number"
+          inputMode="decimal"
+          placeholder={placeholder ?? '—'}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          className="w-10 bg-transparent text-white text-sm font-semibold text-center outline-none"
+          style={{ minWidth: 0 }}
+        />
+        {unit && <span className="text-white/30 text-[10px] shrink-0">{unit}</span>}
+      </div>
+      <button
+        onClick={inc}
+        className="w-6 h-6 rounded-md flex items-center justify-center text-white/50 hover:text-white/80 transition-colors shrink-0"
+        style={{ background: 'rgba(255,255,255,0.06)' }}
+      >
+        <span className="text-xs font-bold leading-none">+</span>
+      </button>
+    </div>
+  );
+}
+
 function SetRow({
   set,
   trackingType,
@@ -118,7 +177,7 @@ function SetRow({
 
   return (
     <div
-      className="flex items-center gap-2 py-2 px-3 rounded-xl"
+      className="flex items-center gap-2 py-2.5 px-3 rounded-xl"
       style={{
         background: set.completed ? 'rgba(16,185,129,0.08)' : 'rgba(255,255,255,0.03)',
         border: `1px solid ${set.completed ? 'rgba(16,185,129,0.2)' : 'transparent'}`,
@@ -154,38 +213,32 @@ function SetRow({
       {/* Set number */}
       <span className="text-white/25 text-xs w-4 shrink-0 text-center">{set.set_number}</span>
 
-      {/* Weight */}
+      {/* Weight +/- */}
       {showWeight && !isBodyweight && (
-        <input
-          type="number"
-          inputMode="decimal"
-          placeholder="—"
+        <PlusMinus
           value={set.weight}
-          onChange={e => onUpdate({ weight: e.target.value })}
-          className="w-16 bg-transparent text-white text-sm font-medium text-center outline-none rounded-lg py-1"
-          style={{ background: 'rgba(255,255,255,0.05)' }}
+          onChange={v => onUpdate({ weight: v })}
+          step={2.5}
+          min={0}
+          unit={weightUnit}
+          placeholder="—"
         />
       )}
       {isBodyweight && (
-        <span className="w-16 text-white/25 text-xs text-center shrink-0">BW</span>
-      )}
-      {showWeight && !isBodyweight && (
-        <span className="text-white/25 text-[10px] shrink-0">{weightUnit}</span>
+        <span className="text-white/25 text-xs shrink-0 px-2">BW</span>
       )}
 
-      {/* Reps */}
+      {/* Reps +/- */}
       {showReps && (
-        <input
-          type="number"
-          inputMode="numeric"
-          placeholder="—"
+        <PlusMinus
           value={set.repetitions}
-          onChange={e => onUpdate({ repetitions: e.target.value })}
-          className="w-14 bg-transparent text-white text-sm font-medium text-center outline-none rounded-lg py-1 flex-1"
-          style={{ background: 'rgba(255,255,255,0.05)' }}
+          onChange={v => onUpdate({ repetitions: v })}
+          step={1}
+          min={1}
+          unit="reps"
+          placeholder="—"
         />
       )}
-      {showReps && <span className="text-white/25 text-[10px] shrink-0">reps</span>}
 
       {/* Duration (timed exercises) */}
       {showDuration && (
@@ -203,18 +256,7 @@ function SetRow({
         </>
       )}
 
-      {/* RPE */}
-      <select
-        value={set.rpe ?? ''}
-        onChange={e => onUpdate({ rpe: e.target.value ? parseInt(e.target.value) : null })}
-        className="bg-transparent text-white/40 text-[10px] outline-none shrink-0 w-12"
-        style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 6, padding: '2px 4px' }}
-      >
-        <option value="">RPE</option>
-        {[6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10].map(r => (
-          <option key={r} value={r}>{r}</option>
-        ))}
-      </select>
+      <div className="flex-1" />
 
       {/* Complete button */}
       <button
@@ -222,17 +264,17 @@ function SetRow({
           onToggleComplete();
           if (!set.completed) onStartRest();
         }}
-        className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-90"
+        className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-all active:scale-90"
         style={{
           background: set.completed ? '#10B981' : 'rgba(255,255,255,0.06)',
           border: `1.5px solid ${set.completed ? '#10B981' : 'rgba(255,255,255,0.12)'}`,
         }}
       >
-        <Check size={13} color={set.completed ? '#fff' : 'rgba(255,255,255,0.3)'} strokeWidth={2.5} />
+        <Check size={15} color={set.completed ? '#fff' : 'rgba(255,255,255,0.35)'} strokeWidth={2.5} />
       </button>
 
       {/* Delete */}
-      <button onClick={onRemove} className="text-white/15 hover:text-red-400 transition-colors shrink-0">
+      <button onClick={onRemove} className="text-white/15 hover:text-red-400 transition-colors shrink-0 ml-1">
         <Trash2 size={12} />
       </button>
     </div>
@@ -396,13 +438,9 @@ function ExerciseCard({
               <div className="flex items-center gap-2 px-3">
                 <span className="w-7 shrink-0" />
                 <span className="w-4 shrink-0" />
-                {isStrength && tt !== 'bodyweight_reps' && <span className="w-16 text-white/25 text-[9px] uppercase text-center">Weight</span>}
-                {tt === 'bodyweight_reps' && <span className="w-16 text-white/25 text-[9px] uppercase text-center">Load</span>}
-                {isStrength && <span className="flex-1 text-white/25 text-[9px] uppercase text-center">Reps</span>}
+                {isStrength && tt !== 'bodyweight_reps' && <span className="text-white/25 text-[9px] uppercase">Weight</span>}
+                {isStrength && <span className="ml-2 text-white/25 text-[9px] uppercase">Reps</span>}
                 {isTimed && <span className="flex-1 text-white/25 text-[9px] uppercase text-center">Seconds</span>}
-                <span className="w-12 shrink-0" />
-                <span className="w-8 shrink-0" />
-                <span className="w-3 shrink-0" />
               </div>
 
               {ex.sets.map(set => (

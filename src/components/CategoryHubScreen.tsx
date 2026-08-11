@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ArrowLeft, Check, Play, Pause, Plus, Minus,
+  ArrowLeft, Check, Play, Pause, Plus, Minus, Trash2,
   BookOpen, List, Timer as TimerIcon, Hash, Activity, TrendingDown, Dumbbell,
+  ChevronUp, ChevronDown, Edit2,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
@@ -14,9 +15,39 @@ interface Props {
   categoryName: string;
   initialHabits: Habit[];
   allCategoryNames: string[];
+  color: string;
+  canCustomize: boolean;
   onBack: () => void;
   onWorkout: () => void;
   onJournal: () => void;
+}
+
+// ─── Color picker ─────────────────────────────────────────────────────────────
+
+const COLOR_PALETTE = [
+  '#FF4D4D', '#F97316', '#F59E0B', '#10B981',
+  '#06B6D4', '#3B82F6', '#6366F1', '#8B5CF6',
+  '#EC4899', '#888888',
+];
+
+function ColorPicker({ catName, current, onPick }: { catName: string; current: string; onPick: (c: string) => void }) {
+  function pick(c: string) {
+    localStorage.setItem(`cat-color-${catName}`, c);
+    onPick(c);
+  }
+  return (
+    <>
+      <div className="fixed inset-0 z-40" onClick={() => onPick(current)} />
+      <div className="absolute top-8 right-0 z-50 p-2 rounded-2xl flex flex-wrap gap-1.5"
+        style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', width: 136 }}>
+        {COLOR_PALETTE.map(c => (
+          <button key={c} onClick={() => pick(c)}
+            className="w-8 h-8 rounded-xl transition-all active:scale-90"
+            style={{ background: c, border: current === c ? '2px solid white' : '2px solid transparent' }} />
+        ))}
+      </div>
+    </>
+  );
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -39,18 +70,13 @@ function formatLogValue(habit: Habit, log: HabitLog): string {
   if (tt === 'checklist' && log.value != null) return `${log.value}/${habit.checklist_items.length} steps`;
   if (tt === 'complete' || tt === 'avoid') return 'Done';
   if (tt === 'journal') return 'Written';
-  if (tt === 'workout') {
-    try {
-      const d = JSON.parse(log.notes ?? '{}') as { workout_done?: boolean };
-      return d.workout_done ? 'Workout logged' : 'Logged';
-    } catch { return 'Logged'; }
-  }
+  if (tt === 'workout') return 'Logged';
   return 'Done';
 }
 
 // ─── Inline timer ─────────────────────────────────────────────────────────────
 
-function InlineTimer({ habit, onLog }: { habit: Habit; onLog: (mins: number) => void }) {
+function InlineTimer({ habit, color, onLog }: { habit: Habit; color: string; onLog: (mins: number) => void }) {
   const targetSecs = (habit.target_value ?? 25) * 60;
   const [secsLeft, setSecsLeft] = useState(targetSecs);
   const [running, setRunning] = useState(false);
@@ -87,13 +113,14 @@ function InlineTimer({ habit, onLog }: { habit: Habit; onLog: (mins: number) => 
   const circ = 2 * Math.PI * r;
   const mm = String(Math.floor(secsLeft / 60)).padStart(2, '0');
   const ss = String(secsLeft % 60).padStart(2, '0');
+  const strokeColor = finished ? '#10B981' : color;
 
   return (
     <div className="flex items-center gap-4">
       <div className="relative flex items-center justify-center" style={{ width: 80, height: 80 }}>
         <svg className="absolute inset-0 -rotate-90" viewBox="0 0 128 128" width="80" height="80">
           <circle cx="64" cy="64" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
-          <circle cx="64" cy="64" r={r} fill="none" stroke={finished ? '#10B981' : '#FF4D4D'} strokeWidth="4"
+          <circle cx="64" cy="64" r={r} fill="none" stroke={strokeColor} strokeWidth="4"
             strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={circ * pct}
             style={{ transition: 'stroke-dashoffset 1s linear' }} />
         </svg>
@@ -103,7 +130,7 @@ function InlineTimer({ habit, onLog }: { habit: Habit; onLog: (mins: number) => 
         {!finished && (
           <button onClick={startStop}
             className="w-10 h-10 rounded-full flex items-center justify-center text-white"
-            style={{ background: '#FF4D4D' }}>
+            style={{ background: color }}>
             {running ? <Pause size={15} fill="white" /> : <Play size={15} fill="white" style={{ marginLeft: 1 }} />}
           </button>
         )}
@@ -128,13 +155,21 @@ const TYPE_ICONS: Record<string, React.ElementType> = {
 };
 
 function HabitPanel({
-  habit, todayLog, pet, user,
+  habit, todayLog, pet, user, color,
+  editMode, isFirst, isLast, onMoveUp, onMoveDown, onDelete,
   onLogUpdated, onWorkout, onJournal,
 }: {
   habit: Habit;
   todayLog: HabitLog | null;
   pet: ReturnType<typeof useAuthStore.getState>['pet'];
   user: ReturnType<typeof useAuthStore.getState>['user'];
+  color: string;
+  editMode: boolean;
+  isFirst: boolean;
+  isLast: boolean;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
+  onDelete: () => void;
   onLogUpdated: (log: HabitLog) => void;
   onWorkout: () => void;
   onJournal: () => void;
@@ -147,6 +182,7 @@ function HabitPanel({
     try { return new Set(JSON.parse(todayLog?.notes ?? '[]') as number[]); } catch { return new Set(); }
   });
   const [journalDone, setJournalDone] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   useEffect(() => {
     if (habit.tracking_type === 'journal' && user) {
@@ -207,168 +243,223 @@ function HabitPanel({
   }
 
   return (
-    <div className="rounded-[20px] px-4 py-4" style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.07)' }}>
-      {/* Habit header */}
-      <div className="flex items-center gap-2.5 mb-4">
-        <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: isDone ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.07)' }}>
-          {isDone
-            ? <Check size={13} style={{ color: '#10B981' }} strokeWidth={2.5} />
-            : <TypeIcon size={13} style={{ color: 'rgba(255,255,255,0.5)' }} strokeWidth={1.5} />
-          }
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-white/80 text-sm font-semibold truncate">{habit.name}</p>
-          <p className="text-white/25 text-[10px] capitalize">{tt} · {habit.frequency}</p>
-        </div>
-        {isDone && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981' }}>Done</span>}
-      </div>
-
-      {/* Tracking UI */}
-      {tt === 'complete' && !isDone && (
-        <button onClick={() => logHabit(1)}
-          className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97]"
-          style={{ background: 'rgba(255,255,255,0.08)' }}>
-          Mark done
-        </button>
-      )}
-
-      {tt === 'avoid' && !isDone && (
-        <button onClick={() => logHabit(1)}
-          className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97]"
-          style={{ background: 'rgba(255,255,255,0.08)' }}>
-          Stayed clean today
-        </button>
-      )}
-
-      {tt === 'timer' && (
-        isDone
-          ? <p className="text-sm" style={{ color: '#10B981' }}>{todayLog?.value} min logged</p>
-          : <InlineTimer habit={habit} onLog={mins => logHabit(mins)} />
-      )}
-
-      {tt === 'counter' && (
-        <div>
-          <div className="flex items-center gap-3">
-            <button onClick={() => handleCounter(-1)} className="w-9 h-9 rounded-xl flex items-center justify-center text-white/60" style={{ background: 'rgba(255,255,255,0.07)' }}>
-              <Minus size={14} />
+    <div className="rounded-[20px] overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
+      {/* Edit mode controls */}
+      {editMode && (
+        <div className="flex items-center justify-between px-4 py-2.5"
+          style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div className="flex gap-1">
+            <button onClick={onMoveUp} disabled={isFirst}
+              className="w-7 h-7 rounded-lg flex items-center justify-center transition-all disabled:opacity-20"
+              style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <ChevronUp size={14} color="white" />
             </button>
-            <p className="flex-1 text-center text-white font-semibold tabular-nums text-2xl" style={{ letterSpacing: '-0.02em' }}>
-              {counter}
-              {habit.target_value != null && <span className="text-white/30 text-base font-normal">/{habit.target_value}</span>}
-            </p>
-            <button onClick={() => handleCounter(1)} className="w-9 h-9 rounded-xl flex items-center justify-center text-white/60" style={{ background: 'rgba(255,255,255,0.07)' }}>
-              <Plus size={14} />
+            <button onClick={onMoveDown} disabled={isLast}
+              className="w-7 h-7 rounded-lg flex items-center justify-center transition-all disabled:opacity-20"
+              style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <ChevronDown size={14} color="white" />
             </button>
           </div>
-          {habit.target_value != null && (
-            <div className="h-1 rounded-full overflow-hidden mt-3" style={{ background: 'rgba(255,255,255,0.08)' }}>
-              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.min(100, (counter / habit.target_value) * 100)}%`, background: isDone ? '#10B981' : '#FF4D4D' }} />
+          {confirming ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white/40">Delete?</span>
+              <button onClick={onDelete} className="text-xs font-semibold px-2 py-1 rounded-lg" style={{ background: 'rgba(239,68,68,0.2)', color: '#f87171' }}>Yes</button>
+              <button onClick={() => setConfirming(false)} className="text-xs font-semibold px-2 py-1 rounded-lg" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)' }}>No</button>
             </div>
+          ) : (
+            <button onClick={() => setConfirming(true)} className="w-7 h-7 rounded-lg flex items-center justify-center"
+              style={{ background: 'rgba(239,68,68,0.1)' }}>
+              <Trash2 size={13} color="#f87171" />
+            </button>
           )}
         </div>
       )}
 
-      {tt === 'numeric' && (
-        isDone
-          ? <p className="text-sm" style={{ color: '#10B981' }}>{todayLog?.value} {habit.target_unit ?? ''} logged</p>
-          : (
-            <div className="flex gap-2">
-              <input type="number" inputMode="decimal"
-                placeholder={`Value${habit.target_unit ? ` (${habit.target_unit})` : ''}…`}
-                value={numInput} onChange={e => setNumInput(e.target.value)}
-                className="flex-1 px-3 py-2.5 rounded-xl text-white text-sm outline-none"
-                style={{ background: 'rgba(255,255,255,0.06)' }} />
-              <button onClick={() => { const v = parseFloat(numInput); if (!isNaN(v)) logHabit(v); }}
-                disabled={!numInput}
-                className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-40"
-                style={{ background: '#FF4D4D' }}>
-                Log
+      {/* Main card */}
+      <div className="px-4 py-4" style={{ background: '#111111' }}>
+        <div className="flex items-center gap-2.5 mb-4">
+          <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
+            style={{ background: isDone ? 'rgba(16,185,129,0.15)' : `${color}18` }}>
+            {isDone
+              ? <Check size={13} style={{ color: '#10B981' }} strokeWidth={2.5} />
+              : <TypeIcon size={13} style={{ color: color }} strokeWidth={1.5} />
+            }
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-white/80 text-sm font-semibold truncate">{habit.name}</p>
+            <p className="text-white/25 text-[10px] capitalize">{tt} · {habit.frequency}</p>
+          </div>
+          {isDone && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.12)', color: '#10B981' }}>Done</span>}
+        </div>
+
+        {tt === 'complete' && !isDone && (
+          <button onClick={() => logHabit(1)}
+            className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97]"
+            style={{ background: `${color}20`, color: color }}>
+            Mark done
+          </button>
+        )}
+
+        {tt === 'avoid' && !isDone && (
+          <button onClick={() => logHabit(1)}
+            className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-[0.97]"
+            style={{ background: `${color}20`, color: color }}>
+            Stayed clean today
+          </button>
+        )}
+
+        {tt === 'timer' && (
+          isDone
+            ? <p className="text-sm" style={{ color: '#10B981' }}>{todayLog?.value} min logged</p>
+            : <InlineTimer habit={habit} color={color} onLog={mins => logHabit(mins)} />
+        )}
+
+        {tt === 'counter' && (
+          <div>
+            <div className="flex items-center gap-3">
+              <button onClick={() => handleCounter(-1)} className="w-9 h-9 rounded-xl flex items-center justify-center text-white/60" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                <Minus size={14} />
+              </button>
+              <p className="flex-1 text-center text-white font-semibold tabular-nums text-2xl" style={{ letterSpacing: '-0.02em' }}>
+                {counter}
+                {habit.target_value != null && <span className="text-white/30 text-base font-normal">/{habit.target_value}</span>}
+              </p>
+              <button onClick={() => handleCounter(1)} className="w-9 h-9 rounded-xl flex items-center justify-center text-white/60" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                <Plus size={14} />
               </button>
             </div>
-          )
-      )}
-
-      {tt === 'journal' && (
-        journalDone
-          ? <p className="text-sm" style={{ color: '#10B981' }}>Entry written today</p>
-          : (
-            <button onClick={() => { logHabit(1); onJournal(); }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white"
-              style={{ background: 'rgba(255,255,255,0.08)' }}>
-              <BookOpen size={13} /> Write today's entry
-            </button>
-          )
-      )}
-
-      {tt === 'checklist' && (
-        <div className="space-y-1.5">
-          {habit.checklist_items.map((item, idx) => (
-            <button key={idx} onClick={() => toggleChecklistItem(idx)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] text-left transition-all"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 transition-all"
-                style={{ border: `1.5px solid ${checkedItems.has(idx) ? '#10B981' : 'rgba(255,255,255,0.2)'}`, background: checkedItems.has(idx) ? '#10B981' : 'transparent' }}>
-                {checkedItems.has(idx) && <Check size={8} color="white" strokeWidth={3} />}
+            {habit.target_value != null && (
+              <div className="h-1 rounded-full overflow-hidden mt-3" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <div className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min(100, (counter / habit.target_value) * 100)}%`, background: isDone ? '#10B981' : color }} />
               </div>
-              <span className="text-sm" style={{ color: checkedItems.has(idx) ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.7)', textDecoration: checkedItems.has(idx) ? 'line-through' : 'none' }}>
-                {item}
-              </span>
-            </button>
-          ))}
-          {habit.checklist_items.length > 0 && (
-            <div className="h-0.5 rounded-full overflow-hidden mt-2" style={{ background: 'rgba(255,255,255,0.08)' }}>
-              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${(checkedItems.size / habit.checklist_items.length) * 100}%`, background: isDone ? '#10B981' : '#FF4D4D' }} />
-            </div>
-          )}
-        </div>
-      )}
+            )}
+          </div>
+        )}
 
-      {tt === 'workout' && (
-        isDone
-          ? <p className="text-sm" style={{ color: '#10B981' }}>Workout logged today</p>
-          : (
-            <button onClick={() => { logHabit(1); onWorkout(); }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white"
-              style={{ background: '#FF4D4D' }}>
-              <Dumbbell size={13} strokeWidth={1.5} /> Log workout
-            </button>
-          )
-      )}
+        {tt === 'numeric' && (
+          isDone
+            ? <p className="text-sm" style={{ color: '#10B981' }}>{todayLog?.value} {habit.target_unit ?? ''} logged</p>
+            : (
+              <div className="flex gap-2">
+                <input type="number" inputMode="decimal"
+                  placeholder={`Value${habit.target_unit ? ` (${habit.target_unit})` : ''}…`}
+                  value={numInput} onChange={e => setNumInput(e.target.value)}
+                  className="flex-1 px-3 py-2.5 rounded-xl text-white text-sm outline-none"
+                  style={{ background: 'rgba(255,255,255,0.06)' }} />
+                <button onClick={() => { const v = parseFloat(numInput); if (!isNaN(v)) logHabit(v); }}
+                  disabled={!numInput}
+                  className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white disabled:opacity-40"
+                  style={{ background: color }}>
+                  Log
+                </button>
+              </div>
+            )
+        )}
+
+        {tt === 'journal' && (
+          journalDone
+            ? <p className="text-sm" style={{ color: '#10B981' }}>Entry written today</p>
+            : (
+              <button onClick={() => { logHabit(1); onJournal(); }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold"
+                style={{ background: `${color}20`, color: color }}>
+                <BookOpen size={13} /> Write today's entry
+              </button>
+            )
+        )}
+
+        {tt === 'checklist' && (
+          <div className="space-y-1.5">
+            {habit.checklist_items.map((item, idx) => (
+              <button key={idx} onClick={() => toggleChecklistItem(idx)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-[14px] text-left transition-all"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 transition-all"
+                  style={{ border: `1.5px solid ${checkedItems.has(idx) ? '#10B981' : 'rgba(255,255,255,0.2)'}`, background: checkedItems.has(idx) ? '#10B981' : 'transparent' }}>
+                  {checkedItems.has(idx) && <Check size={8} color="white" strokeWidth={3} />}
+                </div>
+                <span className="text-sm" style={{ color: checkedItems.has(idx) ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.7)', textDecoration: checkedItems.has(idx) ? 'line-through' : 'none' }}>
+                  {item}
+                </span>
+              </button>
+            ))}
+            {habit.checklist_items.length > 0 && (
+              <div className="h-0.5 rounded-full overflow-hidden mt-2" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <div className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${(checkedItems.size / habit.checklist_items.length) * 100}%`, background: isDone ? '#10B981' : color }} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {tt === 'workout' && (
+          isDone
+            ? <p className="text-sm" style={{ color: '#10B981' }}>Workout logged today</p>
+            : (
+              <button onClick={() => { logHabit(1); onWorkout(); }}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white"
+                style={{ background: color }}>
+                <Dumbbell size={13} strokeWidth={1.5} /> Log workout
+              </button>
+            )
+        )}
+      </div>
     </div>
   );
 }
 
-// ─── History section ──────────────────────────────────────────────────────────
+// ─── History chart ─────────────────────────────────────────────────────────────
 
-function HistorySection({ habit, logs }: { habit: Habit; logs: HabitLog[] }) {
-  const [expanded, setExpanded] = useState(false);
-  const shown = expanded ? logs : logs.slice(0, 3);
+function HabitHistoryChart({ habit, logs, color }: { habit: Habit; logs: HabitLog[]; color: string }) {
+  const days = Array.from({ length: 14 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (13 - i));
+    return d.toISOString().slice(0, 10);
+  });
 
-  if (logs.length === 0) return (
-    <div className="rounded-[18px] px-4 py-3" style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.06)' }}>
-      <p className="text-white/50 text-sm font-medium mb-0.5">{habit.name}</p>
-      <p className="text-white/20 text-xs">No history yet</p>
-    </div>
-  );
+  const logMap = new Map(logs.map(l => [l.date_key, l]));
+
+  const values = days.map(day => {
+    const log = logMap.get(day);
+    if (!log) return 0;
+    if (['complete', 'avoid', 'journal', 'workout'].includes(habit.tracking_type)) return log ? 1 : 0;
+    return log.value ?? 0;
+  });
+
+  const maxVal = Math.max(...values, 1);
+  const barW = 14;
+  const barGap = 4;
+  const svgW = days.length * (barW + barGap) - barGap;
+  const svgH = 56;
+
+  const thisWeekDays = days.slice(7);
+  const thisWeekDone = thisWeekDays.filter(d => logMap.has(d)).length;
+  const allTimeDone = logs.length;
 
   return (
-    <div className="rounded-[18px] overflow-hidden" style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.06)' }}>
-      <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-        <p className="text-white/60 text-sm font-medium">{habit.name}</p>
-      </div>
-      {shown.map(log => (
-        <div key={log.id} className="flex items-center justify-between px-4 py-2.5 border-b last:border-b-0" style={{ borderColor: 'rgba(255,255,255,0.04)' }}>
-          <p className="text-white/50 text-sm">{formatDate(log.date_key)}</p>
-          <p className="text-white/30 text-xs">{formatLogValue(habit, log)}</p>
+    <div className="rounded-[20px] px-4 py-4" style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <p className="text-white/70 text-sm font-semibold mb-3">{habit.name}</p>
+      <svg width="100%" viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="none" style={{ height: svgH }}>
+        {values.map((v, i) => {
+          const h = Math.max(3, (v / maxVal) * svgH);
+          const x = i * (barW + barGap);
+          return (
+            <rect key={i} x={x} y={svgH - h} width={barW} height={h} rx={4}
+              fill={v > 0 ? color : 'rgba(255,255,255,0.07)'} />
+          );
+        })}
+      </svg>
+      <div className="flex gap-4 mt-3">
+        <div>
+          <p className="text-white/25 text-[10px] uppercase tracking-widest">This week</p>
+          <p className="text-white/70 text-sm font-semibold tabular-nums">{thisWeekDone}/7</p>
         </div>
-      ))}
-      {logs.length > 3 && (
-        <button onClick={() => setExpanded(v => !v)}
-          className="w-full px-4 py-2.5 text-xs text-white/25 hover:text-white/50 transition-colors">
-          {expanded ? 'Show less' : `Show all ${logs.length} entries`}
-        </button>
-      )}
+        <div>
+          <p className="text-white/25 text-[10px] uppercase tracking-widest">All time</p>
+          <p className="text-white/70 text-sm font-semibold tabular-nums">{allTimeDone}</p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -376,18 +467,22 @@ function HistorySection({ habit, logs }: { habit: Habit; logs: HabitLog[] }) {
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function CategoryHubScreen({
-  categoryName, initialHabits, allCategoryNames, onBack, onWorkout, onJournal,
+  categoryName, initialHabits, allCategoryNames, color: initialColor, canCustomize,
+  onBack, onWorkout, onJournal,
 }: Props) {
   const user = useAuthStore(s => s.user);
   const pet = useAuthStore(s => s.pet);
 
   const today = new Date().toISOString().slice(0, 10);
-  const [habits] = useState<Habit[]>(initialHabits);
+  const [habits, setHabits] = useState<Habit[]>(initialHabits);
   const [todayLogs, setTodayLogs] = useState<Record<string, HabitLog>>({});
   const [allLogs, setAllLogs] = useState<Record<string, HabitLog[]>>({});
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<'today' | 'history'>('today');
   const [showCreator, setShowCreator] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [color, setColor] = useState(initialColor);
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   useEffect(() => { load(); }, []);
 
@@ -431,6 +526,29 @@ export default function CategoryHubScreen({
     });
   }
 
+  async function moveHabit(index: number, direction: 'up' | 'down') {
+    const other = direction === 'up' ? index - 1 : index + 1;
+    if (other < 0 || other >= habits.length) return;
+    const updated = [...habits];
+    const aOrder = updated[index].sort_order;
+    const bOrder = updated[other].sort_order;
+    updated[index] = { ...updated[index], sort_order: bOrder };
+    updated[other] = { ...updated[other], sort_order: aOrder };
+    [updated[index], updated[other]] = [updated[other], updated[index]];
+    setHabits(updated);
+    await Promise.all([
+      supabase.from('habits').update({ sort_order: bOrder }).eq('id', habits[index].id),
+      supabase.from('habits').update({ sort_order: aOrder }).eq('id', habits[other].id),
+    ]);
+  }
+
+  async function deleteHabit(habitId: string) {
+    if (!user) return;
+    await supabase.from('habit_logs').delete().eq('habit_id', habitId).eq('user_id', user.id);
+    await supabase.from('habits').delete().eq('id', habitId).eq('user_id', user.id);
+    setHabits(prev => prev.filter(h => h.id !== habitId));
+  }
+
   const hasWorkout = habits.some(h => h.tracking_type === 'workout');
   const doneCount = habits.filter(h => !!todayLogs[h.id]).length;
 
@@ -439,25 +557,47 @@ export default function CategoryHubScreen({
       <div className="scene-bg" />
       <div className="scene-overlay" />
 
+      {/* Color bar */}
+      <div className="fixed top-0 left-0 right-0 z-20" style={{ height: 4, background: color }} />
+
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto">
         {/* Header */}
-        <div className="px-5 pt-safe pt-6 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-          <button onClick={onBack} className="flex items-center gap-2 text-white/30 hover:text-white/60 transition-colors mb-4">
-            <ArrowLeft size={18} />
-            <span className="text-sm">Back</span>
-          </button>
-          <div className="flex items-end justify-between">
-            <div>
-              <h1 className="text-white font-semibold text-xl" style={{ letterSpacing: '-0.03em' }}>{categoryName}</h1>
-              <p className="text-white/25 text-xs mt-0.5">{doneCount}/{habits.length} done today</p>
-            </div>
-            <button
-              onClick={() => setShowCreator(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-white/50 hover:text-white/80 transition-colors"
-              style={{ background: 'rgba(255,255,255,0.06)' }}
-            >
-              <Plus size={12} /> Add habit
+        <div className="px-5 pt-8 pb-4" style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+          <div className="flex items-center justify-between mb-4">
+            <button onClick={onBack} className="flex items-center gap-2 text-white/30 hover:text-white/60 transition-colors">
+              <ArrowLeft size={18} />
+              <span className="text-sm">Back</span>
             </button>
+            <div className="flex items-center gap-2">
+              {canCustomize && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowColorPicker(v => !v)}
+                    className="w-5 h-5 rounded-full border-2 border-white/30 transition-all active:scale-90"
+                    style={{ background: color }}
+                  />
+                  {showColorPicker && (
+                    <ColorPicker catName={categoryName} current={color} onPick={c => { setColor(c); setShowColorPicker(false); }} />
+                  )}
+                </div>
+              )}
+              <button
+                onClick={() => setEditMode(v => !v)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all"
+                style={{ background: editMode ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.06)', color: editMode ? 'white' : 'rgba(255,255,255,0.5)' }}>
+                <Edit2 size={10} /> {editMode ? 'Done' : 'Edit'}
+              </button>
+              <button
+                onClick={() => setShowCreator(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-white/50 hover:text-white/80 transition-colors"
+                style={{ background: 'rgba(255,255,255,0.06)' }}>
+                <Plus size={12} /> Add
+              </button>
+            </div>
+          </div>
+          <div>
+            <h1 className="text-white font-semibold text-xl" style={{ letterSpacing: '-0.03em' }}>{categoryName}</h1>
+            <p className="text-white/25 text-xs mt-0.5">{doneCount}/{habits.length} done today</p>
           </div>
         </div>
 
@@ -466,7 +606,7 @@ export default function CategoryHubScreen({
           {(['today', 'history'] as const).map(t => (
             <button key={t} onClick={() => setTab(t)}
               className="text-sm font-semibold capitalize pb-2 transition-colors"
-              style={{ color: tab === t ? 'white' : 'rgba(255,255,255,0.25)', borderBottom: `2px solid ${tab === t ? '#FF4D4D' : 'transparent'}` }}>
+              style={{ color: tab === t ? 'white' : 'rgba(255,255,255,0.25)', borderBottom: `2px solid ${tab === t ? color : 'transparent'}` }}>
               {t}
             </button>
           ))}
@@ -482,24 +622,30 @@ export default function CategoryHubScreen({
 
           {!loading && tab === 'today' && (
             <div className="space-y-3">
-              {habits.map(habit => (
+              {habits.map((habit, index) => (
                 <HabitPanel
                   key={habit.id}
                   habit={habit}
                   todayLog={todayLogs[habit.id] ?? null}
                   pet={pet}
                   user={user}
+                  color={color}
+                  editMode={editMode}
+                  isFirst={index === 0}
+                  isLast={index === habits.length - 1}
+                  onMoveUp={() => moveHabit(index, 'up')}
+                  onMoveDown={() => moveHabit(index, 'down')}
+                  onDelete={() => deleteHabit(habit.id)}
                   onLogUpdated={log => handleLogUpdated(habit.id, log)}
                   onWorkout={onWorkout}
                   onJournal={onJournal}
                 />
               ))}
 
-              {/* Calorie / steps / weight tracker — shown when category has workout habits */}
               {hasWorkout && user && (
                 <div className="pt-2">
                   <p className="text-white/25 text-[10px] uppercase tracking-widest mb-3">Body Metrics</p>
-                  <MetricPanels userId={user.id} color="#FF4D4D" />
+                  <MetricPanels userId={user.id} color={color} />
                 </div>
               )}
 
@@ -514,12 +660,16 @@ export default function CategoryHubScreen({
           {!loading && tab === 'history' && (
             <div className="space-y-3">
               {habits.map(habit => (
-                <HistorySection
+                <HabitHistoryChart
                   key={habit.id}
                   habit={habit}
                   logs={allLogs[habit.id] ?? []}
+                  color={color}
                 />
               ))}
+              {habits.length === 0 && (
+                <p className="text-center text-white/20 text-sm py-12">No habits yet</p>
+              )}
             </div>
           )}
         </div>

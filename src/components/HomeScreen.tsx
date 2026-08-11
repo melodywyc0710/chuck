@@ -164,7 +164,7 @@ export default function HomeScreen({
   onFriends: () => void;
   onPayment: () => void;
   onStats: () => void;
-  onCategory: (name: string, habits: Habit[], allCategories: string[]) => void;
+  onCategory: (name: string, habits: Habit[], allCategories: string[], color: string, canCustomize: boolean) => void;
 }) {
   const pet = useAuthStore(s => s.pet);
   const profile = useAuthStore(s => s.profile);
@@ -375,7 +375,7 @@ export default function HomeScreen({
                   habits={catHabits}
                   logs={todayLogs}
                   canCustomize={canCustomize}
-                  onClick={() => onCategory(catName, catHabits, allCategoryNames)}
+                  onClick={() => onCategory(catName, catHabits, allCategoryNames, getCatColor(catName, catHabits), canCustomize)}
                 />
               ))}
               <button

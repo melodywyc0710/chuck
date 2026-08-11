@@ -11,9 +11,11 @@ import PaymentScreen from './components/PaymentScreen';
 import StatsScreen from './components/StatsScreen';
 import WorkoutScreen from './components/WorkoutScreen';
 import DiaryScreen from './components/DiaryScreen';
-import HabitDetailScreen from './components/HabitDetailScreen';
+import CategoryHubScreen from './components/CategoryHubScreen';
 
-type Screen = 'home' | 'friends' | 'payment' | 'stats' | 'workout' | 'diary' | { habit: Habit };
+type Screen =
+  | 'home' | 'friends' | 'payment' | 'stats' | 'workout' | 'diary'
+  | { category: string; habits: Habit[]; allCategories: string[] };
 
 export default function App() {
   const init = useAuthStore(s => s.init);
@@ -47,16 +49,12 @@ export default function App() {
   if (screen === 'stats') return <StatsScreen onBack={() => setScreen('home')} />;
   if (screen === 'workout') return <WorkoutScreen onClose={() => setScreen('home')} />;
   if (screen === 'diary') return <DiaryScreen onClose={() => setScreen('home')} />;
-  if (typeof screen === 'object' && 'habit' in screen) {
-    if (screen.habit.tracking_type === 'workout') {
-      return <WorkoutScreen onClose={() => setScreen('home')} />;
-    }
-    if (screen.habit.tracking_type === 'journal') {
-      return <DiaryScreen onClose={() => setScreen('home')} />;
-    }
+  if (typeof screen === 'object' && 'category' in screen) {
     return (
-      <HabitDetailScreen
-        habit={screen.habit}
+      <CategoryHubScreen
+        categoryName={screen.category}
+        initialHabits={screen.habits}
+        allCategoryNames={screen.allCategories}
         onBack={() => setScreen('home')}
         onWorkout={() => setScreen('workout')}
         onJournal={() => setScreen('diary')}
@@ -68,7 +66,9 @@ export default function App() {
       onFriends={() => setScreen('friends')}
       onPayment={() => setScreen('payment')}
       onStats={() => setScreen('stats')}
-      onHabit={(habit) => setScreen({ habit })}
+      onCategory={(name, habits, allCategories) =>
+        setScreen({ category: name, habits, allCategories })
+      }
     />
   );
 }

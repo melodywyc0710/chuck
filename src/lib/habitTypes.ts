@@ -23,6 +23,7 @@ export interface Habit {
   sort_order: number;
   archived: boolean;
   created_at: string;
+  category: string | null;
 }
 
 export interface HabitLog {

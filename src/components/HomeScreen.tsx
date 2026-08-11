@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
   LogOut, Flame, Users, CreditCard, Laugh, Smile, Meh, Frown,
-  Sparkles, Star, BarChart2, Check, Plus,
-  Dumbbell, BookOpen, List, Timer, Hash, Activity, TrendingDown,
+  Sparkles, Star, BarChart2, Plus,
+  Dumbbell, BookOpen, List, Timer, Hash, Activity, TrendingDown, Check,
 } from 'lucide-react';
 
 import TraitAllocator from './TraitAllocator';
@@ -16,7 +16,7 @@ import { applyDecayIfNeeded } from '../lib/petEngine';
 import { isPlus, isPro } from '../lib/species';
 import type { Habit, HabitLog } from '../lib/habitTypes';
 
-// ─── Habit type config ────────────────────────────────────────────────────────
+// ─── Type config ──────────────────────────────────────────────────────────────
 
 const TYPE_CONFIG: Record<string, { label: string; Icon: React.ElementType; defaultColor: string }> = {
   workout:   { label: 'Workout',   Icon: Dumbbell,     defaultColor: '#FF4D4D' },
@@ -35,15 +35,18 @@ const COLOR_PALETTE = [
   '#EC4899', '#888888',
 ];
 
-function getHabitColor(habitId: string, type: string): string {
-  return localStorage.getItem(`habit-color-${habitId}`) ?? TYPE_CONFIG[type]?.defaultColor ?? '#FF4D4D';
+function getCatColor(catName: string, habits: Habit[]): string {
+  const stored = localStorage.getItem(`cat-color-${catName}`);
+  if (stored) return stored;
+  const primaryType = habits[0]?.tracking_type ?? 'complete';
+  return TYPE_CONFIG[primaryType]?.defaultColor ?? '#FF4D4D';
 }
 
-// ─── Color picker popover ─────────────────────────────────────────────────────
+// ─── Color picker ─────────────────────────────────────────────────────────────
 
-function ColorPicker({ habitId, current, onClose }: { habitId: string; current: string; onClose: () => void }) {
+function ColorPicker({ catName, current, onClose }: { catName: string; current: string; onClose: () => void }) {
   function pick(color: string) {
-    localStorage.setItem(`habit-color-${habitId}`, color);
+    localStorage.setItem(`cat-color-${catName}`, color);
     onClose();
   }
   return (
@@ -54,65 +57,40 @@ function ColorPicker({ habitId, current, onClose }: { habitId: string; current: 
         style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', width: 136 }}
       >
         {COLOR_PALETTE.map(c => (
-          <button
-            key={c}
-            onClick={() => pick(c)}
+          <button key={c} onClick={() => pick(c)}
             className="w-8 h-8 rounded-xl transition-all active:scale-90"
-            style={{ background: c, border: current === c ? '2px solid white' : '2px solid transparent' }}
-          />
+            style={{ background: c, border: current === c ? '2px solid white' : '2px solid transparent' }} />
         ))}
       </div>
     </>
   );
 }
 
-// ─── Habit card ───────────────────────────────────────────────────────────────
+// ─── Category card ────────────────────────────────────────────────────────────
 
-function HabitCard({
-  habit, log, canCustomize, onClick,
+function CategoryCard({
+  name, habits, logs, canCustomize, onClick,
 }: {
-  habit: Habit;
-  log: HabitLog | null;
+  name: string;
+  habits: Habit[];
+  logs: Record<string, HabitLog>;
   canCustomize: boolean;
   onClick: () => void;
 }) {
   const [colorPicker, setColorPicker] = useState(false);
-  const [color, setColor] = useState(() => getHabitColor(habit.id, habit.tracking_type));
+  const [color, setColor] = useState(() => getCatColor(name, habits));
 
-  const cfg = TYPE_CONFIG[habit.tracking_type] ?? TYPE_CONFIG.complete;
-  const Icon = cfg.Icon;
-  const done = !!log;
+  const doneCount = habits.filter(h => !!logs[h.id]).length;
+  const total = habits.length;
+  const allDone = total > 0 && doneCount === total;
+  const pct = total > 0 ? doneCount / total : 0;
+
+  const uniqueTypes = [...new Set(habits.map(h => h.tracking_type))].slice(0, 4);
 
   function refreshColor() {
-    setColor(getHabitColor(habit.id, habit.tracking_type));
+    setColor(getCatColor(name, habits));
     setColorPicker(false);
   }
-
-  // Progress text
-  const progressText = (() => {
-    if (!log) return null;
-    const tt = habit.tracking_type;
-    if (tt === 'timer' && log.value != null) return `${log.value} min`;
-    if (tt === 'counter' && log.value != null)
-      return habit.target_value ? `${log.value}/${habit.target_value}` : `${log.value}`;
-    if (tt === 'numeric' && log.value != null)
-      return `${log.value}${habit.target_unit ? ' ' + habit.target_unit : ''}`;
-    if (tt === 'checklist' && log.value != null)
-      return `${log.value}/${habit.checklist_items.length}`;
-    return null;
-  })();
-
-  const pct = (() => {
-    if (!log || !habit.target_value) return done ? 1 : 0;
-    const tt = habit.tracking_type;
-    if (tt === 'timer' || tt === 'counter' || tt === 'numeric')
-      return Math.min(1, (log.value ?? 0) / habit.target_value);
-    if (tt === 'checklist')
-      return habit.checklist_items.length > 0
-        ? Math.min(1, (log.value ?? 0) / habit.checklist_items.length)
-        : done ? 1 : 0;
-    return done ? 1 : 0;
-  })();
 
   return (
     <div className="relative">
@@ -124,39 +102,37 @@ function HabitCard({
         {/* Colored top band */}
         <div
           className="relative flex items-center justify-center"
-          style={{ background: done ? '#10B981' : color, height: 88, width: '100%', flexShrink: 0 }}
+          style={{ background: allDone ? '#10B981' : color, height: 88, width: '100%', flexShrink: 0 }}
         >
           <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.15) 100%)' }} />
-          {done
+          {allDone
             ? <Check size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.95, position: 'relative' }} />
-            : <Icon size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.95, position: 'relative' }} />
+            : (
+              <div className="flex items-center gap-2 relative">
+                {uniqueTypes.map(type => {
+                  const Ic = TYPE_CONFIG[type]?.Icon ?? Check;
+                  return <Ic key={type} size={uniqueTypes.length === 1 ? 40 : 22} strokeWidth={1.4} color="white" style={{ opacity: 0.9 }} />;
+                })}
+              </div>
+            )
           }
         </div>
 
         {/* Body */}
         <div className="flex flex-col flex-1 px-4 pt-3 pb-3 gap-1" style={{ background: '#141414', marginTop: -6, borderRadius: '14px 14px 0 0' }}>
-          <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            {cfg.label}
-          </span>
-          <p className="text-white/80 text-sm font-semibold leading-tight truncate">{habit.name}</p>
-          {progressText && (
-            <p className="text-[11px] font-medium tabular-nums" style={{ color: done ? '#10B981' : 'rgba(255,255,255,0.4)' }}>
-              {progressText}
-            </p>
-          )}
-          {/* Progress bar */}
+          <p className="text-white/80 text-sm font-semibold leading-tight truncate">{name}</p>
+          <p className="text-[11px] font-medium tabular-nums" style={{ color: allDone ? '#10B981' : 'rgba(255,255,255,0.35)' }}>
+            {allDone ? 'All done!' : `${doneCount}/${total} today`}
+          </p>
           {pct > 0 && (
             <div className="h-1 rounded-full overflow-hidden mt-1" style={{ background: 'rgba(255,255,255,0.08)' }}>
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${pct * 100}%`, background: done ? '#10B981' : color }}
-              />
+              <div className="h-full rounded-full transition-all duration-700"
+                style={{ width: `${pct * 100}%`, background: allDone ? '#10B981' : color }} />
             </div>
           )}
         </div>
       </button>
 
-      {/* Color picker button — Pro/Plus only */}
       {canCustomize && (
         <div className="absolute top-2 right-2 z-10">
           <button
@@ -164,13 +140,7 @@ function HabitCard({
             className="w-5 h-5 rounded-full border-2 border-white/30 transition-all active:scale-90"
             style={{ background: color }}
           />
-          {colorPicker && (
-            <ColorPicker
-              habitId={habit.id}
-              current={color}
-              onClose={refreshColor}
-            />
-          )}
+          {colorPicker && <ColorPicker catName={name} current={color} onClose={refreshColor} />}
         </div>
       )}
     </div>
@@ -189,12 +159,12 @@ function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function HomeScreen({
-  onFriends, onPayment, onStats, onHabit,
+  onFriends, onPayment, onStats, onCategory,
 }: {
   onFriends: () => void;
   onPayment: () => void;
   onStats: () => void;
-  onHabit: (habit: Habit) => void;
+  onCategory: (name: string, habits: Habit[], allCategories: string[]) => void;
 }) {
   const pet = useAuthStore(s => s.pet);
   const profile = useAuthStore(s => s.profile);
@@ -243,6 +213,16 @@ export default function HomeScreen({
 
   if (!pet) return null;
 
+  // Group habits by category
+  const categoryMap = new Map<string, Habit[]>();
+  for (const h of habits) {
+    const cat = h.category ?? 'General';
+    if (!categoryMap.has(cat)) categoryMap.set(cat, []);
+    categoryMap.get(cat)!.push(h);
+  }
+  const categories = [...categoryMap.entries()];
+  const allCategoryNames = categories.map(([name]) => name);
+
   const MOOD_MESSAGES: Record<string, string[]> = {
     happy: ['Yay!', 'I love you!', "Let's go!", 'So happy~', "You're the best!"],
     good:  ['Hi there!', 'Keep it up!', 'Feeling good!', 'You got this~', '*happy wiggle*'],
@@ -268,7 +248,7 @@ export default function HomeScreen({
 
   const xpPct = pet.xp / pet.xp_to_next;
   const todayLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-  const doneCount = habits.filter(h => !!todayLogs[h.id]).length;
+  const totalDone = habits.filter(h => !!todayLogs[h.id]).length;
 
   return (
     <>
@@ -356,15 +336,15 @@ export default function HomeScreen({
           </div>
         </div>
 
-        {/* Date + Today count */}
+        {/* Date + count */}
         <div className="flex items-center justify-between mb-5 fade-up" style={{ animationDelay: '0.15s' }}>
           <p className="text-white/25 text-xs">{todayLabel}</p>
           {habits.length > 0 && (
-            <span className="text-white/20 text-xs">{doneCount}/{habits.length} done</span>
+            <span className="text-white/20 text-xs">{totalDone}/{habits.length} done</span>
           )}
         </div>
 
-        {/* Habit cards */}
+        {/* Category cards */}
         <div className="fade-up" style={{ animationDelay: '0.2s' }}>
           {habitsLoading && (
             <div className="flex justify-center py-12">
@@ -381,37 +361,34 @@ export default function HomeScreen({
               <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3" style={{ background: 'rgba(255,77,77,0.1)' }}>
                 <Plus size={18} style={{ color: '#FF4D4D' }} strokeWidth={2} />
               </div>
-              <p className="text-white/40 text-sm font-medium">Add your first habit</p>
-              <p className="text-white/20 text-xs mt-1">Workout, journal, meditate and more</p>
+              <p className="text-white/40 text-sm font-medium">Create your first category</p>
+              <p className="text-white/20 text-xs mt-1">e.g. Fitness, Focus, Health</p>
             </button>
           )}
 
           {!habitsLoading && habits.length > 0 && (
-            <>
-              <div className="grid grid-cols-2 gap-3">
-                {habits.map(habit => (
-                  <HabitCard
-                    key={habit.id}
-                    habit={habit}
-                    log={todayLogs[habit.id] ?? null}
-                    canCustomize={canCustomize}
-                    onClick={() => onHabit(habit)}
-                  />
-                ))}
-
-                {/* Add habit card */}
-                <button
-                  onClick={() => setShowCreator(true)}
-                  className="rounded-[24px] flex flex-col items-center justify-center transition-all active:scale-[0.97]"
-                  style={{ background: '#111111', border: '1px dashed rgba(255,255,255,0.08)', minHeight: 160 }}
-                >
-                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2" style={{ background: 'rgba(255,77,77,0.08)' }}>
-                    <Plus size={16} style={{ color: '#FF4D4D' }} strokeWidth={2} />
-                  </div>
-                  <p className="text-white/25 text-xs font-medium">Add habit</p>
-                </button>
-              </div>
-            </>
+            <div className="grid grid-cols-2 gap-3">
+              {categories.map(([catName, catHabits]) => (
+                <CategoryCard
+                  key={catName}
+                  name={catName}
+                  habits={catHabits}
+                  logs={todayLogs}
+                  canCustomize={canCustomize}
+                  onClick={() => onCategory(catName, catHabits, allCategoryNames)}
+                />
+              ))}
+              <button
+                onClick={() => setShowCreator(true)}
+                className="rounded-[24px] flex flex-col items-center justify-center transition-all active:scale-[0.97]"
+                style={{ background: '#111111', border: '1px dashed rgba(255,255,255,0.08)', minHeight: 160 }}
+              >
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2" style={{ background: 'rgba(255,77,77,0.08)' }}>
+                  <Plus size={16} style={{ color: '#FF4D4D' }} strokeWidth={2} />
+                </div>
+                <p className="text-white/25 text-xs font-medium">Add habit</p>
+              </button>
+            </div>
           )}
         </div>
 
@@ -436,6 +413,7 @@ export default function HomeScreen({
 
       {showCreator && (
         <HabitCreator
+          existingCategories={allCategoryNames}
           onSaved={() => { setShowCreator(false); loadData(); }}
           onClose={() => setShowCreator(false)}
         />

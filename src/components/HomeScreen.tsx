@@ -82,7 +82,6 @@ function CategoryCard({
 
   const doneCount = habits.filter(h => !!logs[h.id]).length;
   const total = habits.length;
-  const allDone = total > 0 && doneCount === total;
   const pct = total > 0 ? doneCount / total : 0;
 
   const uniqueTypes = [...new Set(habits.map(h => h.tracking_type))].slice(0, 4);
@@ -102,32 +101,27 @@ function CategoryCard({
         {/* Colored top band */}
         <div
           className="relative flex items-center justify-center"
-          style={{ background: allDone ? '#10B981' : color, height: 88, width: '100%', flexShrink: 0 }}
+          style={{ background: color, height: 88, width: '100%', flexShrink: 0 }}
         >
           <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.15) 100%)' }} />
-          {allDone
-            ? <Check size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.95, position: 'relative' }} />
-            : (
-              <div className="flex items-center gap-2 relative">
-                {uniqueTypes.map(type => {
-                  const Ic = TYPE_CONFIG[type]?.Icon ?? Check;
-                  return <Ic key={type} size={uniqueTypes.length === 1 ? 40 : 22} strokeWidth={1.4} color="white" style={{ opacity: 0.9 }} />;
-                })}
-              </div>
-            )
-          }
+          <div className="flex items-center gap-2 relative">
+            {uniqueTypes.map(type => {
+              const Ic = TYPE_CONFIG[type]?.Icon ?? Check;
+              return <Ic key={type} size={uniqueTypes.length === 1 ? 40 : 22} strokeWidth={1.4} color="white" style={{ opacity: 0.9 }} />;
+            })}
+          </div>
         </div>
 
         {/* Body */}
         <div className="flex flex-col flex-1 px-4 pt-3 pb-3 gap-1" style={{ background: '#141414', marginTop: -6, borderRadius: '14px 14px 0 0' }}>
           <p className="text-white/80 text-sm font-semibold leading-tight truncate">{name}</p>
-          <p className="text-[11px] font-medium tabular-nums" style={{ color: allDone ? '#10B981' : 'rgba(255,255,255,0.35)' }}>
-            {allDone ? 'All done!' : `${doneCount}/${total} today`}
+          <p className="text-[11px] font-medium tabular-nums" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            {doneCount}/{total} today
           </p>
           {pct > 0 && (
             <div className="h-1 rounded-full overflow-hidden mt-1" style={{ background: 'rgba(255,255,255,0.08)' }}>
               <div className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${pct * 100}%`, background: allDone ? '#10B981' : color }} />
+                style={{ width: `${pct * 100}%`, background: color }} />
             </div>
           )}
         </div>

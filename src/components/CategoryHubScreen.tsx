@@ -870,7 +870,7 @@ export default function CategoryHubScreen({
       {photoVerifyHabit && (
         <PhotoVerifyModal
           taskTitle={photoVerifyHabit.habit.name}
-          taskNotes={photoVerifyHabit.habit.notes ?? null}
+          taskNotes={null}
           color={color}
           onConfirm={result => { photoVerifyHabit.onConfirm(result); setPhotoVerifyHabit(null); }}
           onSkip={() => { photoVerifyHabit.onConfirm({} as any); setPhotoVerifyHabit(null); }}

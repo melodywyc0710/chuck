@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import type React from 'react';
 import { X, Plus, Dumbbell, Brain, Pin, RotateCcw, Flag, Calendar, ChevronDown, ChevronUp, Eye, Trash2, Pencil, Palette } from 'lucide-react';
 import PhotoVerifyModal from './PhotoVerifyModal';
-import InsightsPanel from './InsightsPanel';
 import type { TaskVerifyResult } from '../lib/aiTypes';
 import {
   DndContext, closestCenter, PointerSensor, TouchSensor,
@@ -1241,16 +1240,7 @@ export default function CategoryHub({ category, onClose }: Props) {
           />
         </div>
 
-        {/* AI Insights */}
-        <div className="my-6 border-t border-white/5" />
-        <div className="fade-up" style={{ animationDelay: '0.3s' }}>
-          <InsightsPanel
-            category={category}
-            tasks={tasks}
-            completions={history.filter(h => tasks.some(t => t.id === h.promise_id))}
-            color={catColor}
-          />
-        </div>
+
       </div>
 
       {/* Floating add button */}

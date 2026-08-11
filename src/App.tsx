@@ -15,7 +15,7 @@ import CategoryHubScreen from './components/CategoryHubScreen';
 
 type Screen =
   | 'home' | 'friends' | 'payment' | 'stats' | 'workout' | 'diary'
-  | { category: string; habits: Habit[]; allCategories: string[]; color: string; canCustomize: boolean };
+  | { category: string; habits: Habit[]; allCategories: string[]; color: string; canCustomize: boolean; isPro: boolean };
 
 export default function App() {
   const init = useAuthStore(s => s.init);
@@ -57,6 +57,7 @@ export default function App() {
         allCategoryNames={screen.allCategories}
         color={screen.color}
         canCustomize={screen.canCustomize}
+        isPro={screen.isPro}
         onBack={() => setScreen('home')}
         onWorkout={() => setScreen('workout')}
         onJournal={() => setScreen('diary')}
@@ -68,8 +69,8 @@ export default function App() {
       onFriends={() => setScreen('friends')}
       onPayment={() => setScreen('payment')}
       onStats={() => setScreen('stats')}
-      onCategory={(name, habits, allCategories, color, canCustomize) =>
-        setScreen({ category: name, habits, allCategories, color, canCustomize })
+      onCategory={(name, habits, allCategories, color, canCustomize, isPro) =>
+        setScreen({ category: name, habits, allCategories, color, canCustomize, isPro })
       }
     />
   );

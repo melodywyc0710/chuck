@@ -12,6 +12,7 @@ import HabitCreator from './HabitCreator';
 import type { Habit, HabitLog } from '../lib/habitTypes';
 
 interface Props {
+  isPro: boolean;
   categoryName: string;
   initialHabits: Habit[];
   allCategoryNames: string[];
@@ -493,21 +494,17 @@ function HabitHistoryChart({ habit, logs, color, canExpand }: {
           <p className="text-white/70 text-sm font-semibold">{habit.name}</p>
           {/* Timeframe picker */}
           <div className="flex gap-1">
-            {TIMEFRAMES.map(t => {
-              const locked = t.pro && !canExpand;
-              return (
-                <button key={t.value}
-                  onClick={() => !locked && setTimeframe(t.value)}
-                  className="px-2 py-0.5 rounded-lg text-[10px] font-semibold transition-all"
-                  style={{
-                    background: timeframe === t.value ? color : 'rgba(255,255,255,0.06)',
-                    color: locked ? 'rgba(255,255,255,0.2)' : timeframe === t.value ? 'white' : 'rgba(255,255,255,0.4)',
-                    cursor: locked ? 'default' : 'pointer',
-                  }}>
-                  {t.label}{locked ? ' 🔒' : ''}
-                </button>
-              );
-            })}
+            {TIMEFRAMES.filter(t => canExpand || !t.pro).map(t => (
+              <button key={t.value}
+                onClick={() => setTimeframe(t.value)}
+                className="px-2 py-0.5 rounded-lg text-[10px] font-semibold transition-all"
+                style={{
+                  background: timeframe === t.value ? color : 'rgba(255,255,255,0.06)',
+                  color: timeframe === t.value ? 'white' : 'rgba(255,255,255,0.4)',
+                }}>
+                {t.label}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -594,16 +591,17 @@ function HabitHistoryChart({ habit, logs, color, canExpand }: {
                 </div>
               ))}
             </div>
-            {logs.length > 5 && (
+            {logs.length > 5 && canExpand && (
               <button onClick={() => setShowAll(v => !v)}
                 className="w-full mt-2 py-2 text-xs transition-colors"
-                style={{ color: canExpand ? color : 'rgba(255,255,255,0.25)' }}>
-                {showAll
-                  ? 'Show less'
-                  : canExpand
-                    ? `Show all ${logs.length} entries`
-                    : `Show all ${logs.length} entries (Plus/Pro)`}
+                style={{ color: color }}>
+                {showAll ? 'Show less' : `Show all ${logs.length} entries`}
               </button>
+            )}
+            {logs.length > 5 && !canExpand && (
+              <p className="w-full mt-2 py-2 text-xs text-center" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                Upgrade to Pro for unlimited history
+              </p>
             )}
           </div>
         )}
@@ -618,7 +616,7 @@ function HabitHistoryChart({ habit, logs, color, canExpand }: {
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function CategoryHubScreen({
-  categoryName, initialHabits, allCategoryNames, color: initialColor, canCustomize,
+  categoryName, initialHabits, allCategoryNames, color: initialColor, canCustomize, isPro,
   onBack, onWorkout, onJournal,
 }: Props) {
   const user = useAuthStore(s => s.user);
@@ -816,7 +814,7 @@ export default function CategoryHubScreen({
                   habit={habit}
                   logs={allLogs[habit.id] ?? []}
                   color={color}
-                  canExpand={canCustomize}
+                  canExpand={isPro}
                 />
               ))}
               {habits.length === 0 && (

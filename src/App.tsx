@@ -48,6 +48,12 @@ export default function App() {
   if (screen === 'workout') return <WorkoutScreen onClose={() => setScreen('home')} />;
   if (screen === 'diary') return <DiaryScreen onClose={() => setScreen('home')} />;
   if (typeof screen === 'object' && 'habit' in screen) {
+    if (screen.habit.tracking_type === 'workout') {
+      return <WorkoutScreen onClose={() => setScreen('home')} />;
+    }
+    if (screen.habit.tracking_type === 'journal') {
+      return <DiaryScreen onClose={() => setScreen('home')} />;
+    }
     return (
       <HabitDetailScreen
         habit={screen.habit}

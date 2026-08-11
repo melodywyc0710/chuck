@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react';
 import './index.css';
 import { useAuthStore } from './store/authStore';
-import type { GoalCategory } from './lib/supabase';
 import { initRevenueCat } from './lib/revenuecat';
+import type { Habit } from './lib/habitTypes';
 import AuthScreen from './components/AuthScreen';
 import OnboardingFlow from './components/OnboardingFlow';
 import HomeScreen from './components/HomeScreen';
 import FriendsScreen from './components/FriendsScreen';
 import PaymentScreen from './components/PaymentScreen';
-import CategoryHub from './components/CategoryHub';
 import StatsScreen from './components/StatsScreen';
 import WorkoutScreen from './components/WorkoutScreen';
 import DiaryScreen from './components/DiaryScreen';
-import HabitsScreen from './components/HabitsScreen';
+import HabitDetailScreen from './components/HabitDetailScreen';
 
-type Screen = 'home' | 'friends' | 'payment' | 'stats' | 'workout' | 'diary' | 'habits' | { category: GoalCategory };
+type Screen = 'home' | 'friends' | 'payment' | 'stats' | 'workout' | 'diary' | { habit: Habit };
 
 export default function App() {
   const init = useAuthStore(s => s.init);
@@ -48,22 +47,22 @@ export default function App() {
   if (screen === 'stats') return <StatsScreen onBack={() => setScreen('home')} />;
   if (screen === 'workout') return <WorkoutScreen onClose={() => setScreen('home')} />;
   if (screen === 'diary') return <DiaryScreen onClose={() => setScreen('home')} />;
-  if (screen === 'habits') return (
-    <HabitsScreen
-      onClose={() => setScreen('home')}
-      onWorkout={() => setScreen('workout')}
-      onJournal={() => setScreen('diary')}
-    />
-  );
-  if (typeof screen === 'object' && 'category' in screen) {
-    return <CategoryHub category={screen.category} onClose={() => setScreen('home')} />;
+  if (typeof screen === 'object' && 'habit' in screen) {
+    return (
+      <HabitDetailScreen
+        habit={screen.habit}
+        onBack={() => setScreen('home')}
+        onWorkout={() => setScreen('workout')}
+        onJournal={() => setScreen('diary')}
+      />
+    );
   }
   return (
     <HomeScreen
       onFriends={() => setScreen('friends')}
       onPayment={() => setScreen('payment')}
       onStats={() => setScreen('stats')}
-      onHabits={() => setScreen('habits')}
+      onHabit={(habit) => setScreen({ habit })}
     />
   );
 }

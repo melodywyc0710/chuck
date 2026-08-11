@@ -213,10 +213,10 @@ export default function HomeScreen({
 
   if (!pet) return null;
 
-  // Group habits by category
+  // Group habits by category (fallback to localStorage if DB column not yet populated)
   const categoryMap = new Map<string, Habit[]>();
   for (const h of habits) {
-    const cat = h.category ?? 'General';
+    const cat = h.category ?? localStorage.getItem(`habit-cat-${h.id}`) ?? 'General';
     if (!categoryMap.has(cat)) categoryMap.set(cat, []);
     categoryMap.get(cat)!.push(h);
   }

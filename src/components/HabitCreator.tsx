@@ -90,7 +90,7 @@ export default function HabitCreator({ onSaved, onClose }: Props) {
       target_unit: targetUnit.trim() || null,
       frequency,
       checklist_items: items,
-      sort_order: Date.now(),
+      sort_order: Math.floor(Date.now() / 1000),
       archived: false,
     });
     setSaving(false);

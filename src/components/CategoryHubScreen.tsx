@@ -52,27 +52,6 @@ function ColorPicker({ catName, current, onPick }: { catName: string; current: s
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function formatDate(dateKey: string): string {
-  const today = new Date().toISOString().slice(0, 10);
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  if (dateKey === today) return 'Today';
-  if (dateKey === yesterday) return 'Yesterday';
-  return new Date(dateKey + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-}
-
-function formatLogValue(habit: Habit, log: HabitLog): string {
-  const tt = habit.tracking_type;
-  if (tt === 'timer' && log.value != null) return `${log.value} min`;
-  if (tt === 'counter' && log.value != null)
-    return habit.target_value ? `${log.value}/${habit.target_value}` : `${log.value}`;
-  if (tt === 'numeric' && log.value != null)
-    return `${log.value}${habit.target_unit ? ' ' + habit.target_unit : ''}`;
-  if (tt === 'checklist' && log.value != null) return `${log.value}/${habit.checklist_items.length} steps`;
-  if (tt === 'complete' || tt === 'avoid') return 'Done';
-  if (tt === 'journal') return 'Written';
-  if (tt === 'workout') return 'Logged';
-  return 'Done';
-}
 
 // ─── Inline timer ─────────────────────────────────────────────────────────────
 

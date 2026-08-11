@@ -189,12 +189,12 @@ function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function HomeScreen({
-  onFriends, onPayment, onStats, onHabits,
+  onFriends, onPayment, onStats, onHabit,
 }: {
   onFriends: () => void;
   onPayment: () => void;
   onStats: () => void;
-  onHabits: () => void;
+  onHabit: (habit: Habit) => void;
 }) {
   const pet = useAuthStore(s => s.pet);
   const profile = useAuthStore(s => s.profile);
@@ -395,7 +395,7 @@ export default function HomeScreen({
                     habit={habit}
                     log={todayLogs[habit.id] ?? null}
                     canCustomize={canCustomize}
-                    onClick={onHabits}
+                    onClick={() => onHabit(habit)}
                   />
                 ))}
 

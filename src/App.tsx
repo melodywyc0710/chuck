@@ -63,9 +63,6 @@ export default function App() {
       onFriends={() => setScreen('friends')}
       onPayment={() => setScreen('payment')}
       onStats={() => setScreen('stats')}
-      onCategory={(c) => setScreen({ category: c })}
-      onWorkout={() => setScreen('workout')}
-      onDiary={() => setScreen('diary')}
       onHabits={() => setScreen('habits')}
     />
   );

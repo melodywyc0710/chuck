@@ -2,14 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft, Check, Play, Pause, Plus, Minus, Trash2,
   BookOpen, List, Timer as TimerIcon, Hash, Activity, TrendingDown, Dumbbell,
-  ChevronUp, ChevronDown, Edit2,
+  ChevronUp, ChevronDown, Edit2, Camera,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
 import { recordCompletion } from '../lib/petEngine';
 import { MetricPanels } from './FitnessTracker';
 import HabitCreator from './HabitCreator';
+import InsightsPanel from './InsightsPanel';
+import PhotoVerifyModal from './PhotoVerifyModal';
 import type { Habit, HabitLog } from '../lib/habitTypes';
+import type { TaskVerifyResult } from '../lib/aiTypes';
 
 interface Props {
   isPro: boolean;
@@ -135,15 +138,16 @@ const TYPE_ICONS: Record<string, React.ElementType> = {
 };
 
 function HabitPanel({
-  habit, todayLog, pet, user, color,
+  habit, todayLog, pet, user, color, isPro,
   editMode, isFirst, isLast, onMoveUp, onMoveDown, onDelete,
-  onLogUpdated, onWorkout, onJournal,
+  onLogUpdated, onWorkout, onJournal, onPhotoVerify,
 }: {
   habit: Habit;
   todayLog: HabitLog | null;
   pet: ReturnType<typeof useAuthStore.getState>['pet'];
   user: ReturnType<typeof useAuthStore.getState>['user'];
   color: string;
+  isPro: boolean;
   editMode: boolean;
   isFirst: boolean;
   isLast: boolean;
@@ -153,6 +157,7 @@ function HabitPanel({
   onLogUpdated: (log: HabitLog) => void;
   onWorkout: () => void;
   onJournal: () => void;
+  onPhotoVerify: () => void;
 }) {
   const setPet = useAuthStore(s => s.setPetLocal);
   const today = new Date().toISOString().slice(0, 10);
@@ -273,19 +278,37 @@ function HabitPanel({
         </div>
 
         {tt === 'complete' && !isDone && (
-          <button onClick={() => logHabit(1)}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all active:scale-[0.97]"
-            style={{ background: `${color}20`, color: color }}>
-            Mark done
-          </button>
+          <div className="flex gap-2">
+            <button onClick={() => logHabit(1)}
+              className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-[0.97]"
+              style={{ background: `${color}20`, color: color }}>
+              Mark done
+            </button>
+            {isPro && (
+              <button onClick={onPhotoVerify}
+                className="w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-90"
+                style={{ background: 'rgba(255,255,255,0.06)' }} title="Verify with photo">
+                <Camera size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
+              </button>
+            )}
+          </div>
         )}
 
         {tt === 'avoid' && !isDone && (
-          <button onClick={() => logHabit(1)}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-[0.97]"
-            style={{ background: `${color}20`, color: color }}>
-            Stayed clean today
-          </button>
+          <div className="flex gap-2">
+            <button onClick={() => logHabit(1)}
+              className="flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all active:scale-[0.97]"
+              style={{ background: `${color}20`, color: color }}>
+              Stayed clean today
+            </button>
+            {isPro && (
+              <button onClick={onPhotoVerify}
+                className="w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-90"
+                style={{ background: 'rgba(255,255,255,0.06)' }} title="Verify with photo">
+                <Camera size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
+              </button>
+            )}
+          </div>
         )}
 
         {tt === 'timer' && (
@@ -632,6 +655,7 @@ export default function CategoryHubScreen({
   const [editMode, setEditMode] = useState(false);
   const [color, setColor] = useState(initialColor);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [photoVerifyHabit, setPhotoVerifyHabit] = useState<{ habit: Habit; onConfirm: (r: TaskVerifyResult) => void } | null>(null);
 
   useEffect(() => { load(); }, []);
 
@@ -788,6 +812,14 @@ export default function CategoryHubScreen({
                   onLogUpdated={log => handleLogUpdated(habit.id, log)}
                   onWorkout={onWorkout}
                   onJournal={onJournal}
+                  isPro={isPro}
+                  onPhotoVerify={() => setPhotoVerifyHabit({
+                    habit,
+                    onConfirm: () => {
+                      const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+                      handleLogUpdated(habit.id, { habit_id: habit.id, date_key: today, value: 1, note: null } as any);
+                    },
+                  })}
                 />
               ))}
 
@@ -820,10 +852,31 @@ export default function CategoryHubScreen({
               {habits.length === 0 && (
                 <p className="text-center text-white/20 text-sm py-12">No habits yet</p>
               )}
+              {isPro && habits.length > 0 && (
+                <div className="rounded-[20px] px-4 py-4" style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.07)' }}>
+                  <InsightsPanel
+                    categoryName={categoryName}
+                    habits={habits}
+                    logs={Object.values(allLogs).flat()}
+                    color={color}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
+
+      {photoVerifyHabit && (
+        <PhotoVerifyModal
+          taskTitle={photoVerifyHabit.habit.name}
+          taskNotes={null}
+          color={color}
+          onConfirm={result => { photoVerifyHabit.onConfirm(result); setPhotoVerifyHabit(null); }}
+          onSkip={() => { photoVerifyHabit.onConfirm({} as any); setPhotoVerifyHabit(null); }}
+          onClose={() => setPhotoVerifyHabit(null)}
+        />
+      )}
 
       {showCreator && (
         <HabitCreator

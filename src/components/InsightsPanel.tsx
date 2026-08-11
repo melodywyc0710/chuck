@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Sparkles, Loader, RefreshCw, TrendingUp, Lightbulb, Flame, AlertTriangle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { HabitInsight, HabitInsightsResult } from '../lib/aiTypes';
-import type { Promise_, Completion, GoalCategory } from '../lib/supabase';
+import type { Habit, HabitLog } from '../lib/habitTypes';
 
 const INSIGHT_ICON: Record<string, React.ElementType> = {
   pattern:        TrendingUp,
@@ -19,21 +19,21 @@ const INSIGHT_COLOR: Record<string, string> = {
 };
 
 interface Props {
-  category: GoalCategory;
-  tasks: Promise_[];
-  completions: Completion[];
+  categoryName: string;
+  habits: Habit[];
+  logs: HabitLog[];
   color: string;
 }
 
-export default function InsightsPanel({ category, tasks, completions, color }: Props) {
+export default function InsightsPanel({ categoryName, habits, logs, color }: Props) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<HabitInsightsResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
-    if (!fetched && tasks.length > 0) fetchInsights();
-  }, [tasks.length]);
+    if (!fetched && habits.length > 0 && logs.length >= 7) fetchInsights();
+  }, [habits.length, logs.length]);
 
   async function fetchInsights() {
     setLoading(true);
@@ -41,9 +41,9 @@ export default function InsightsPanel({ category, tasks, completions, color }: P
     try {
       const { data, error } = await supabase.functions.invoke('habit-insights', {
         body: {
-          category,
-          tasks: tasks.map(t => ({ id: t.id, title: t.title })),
-          completions: completions.map(c => ({ promise_id: c.promise_id, date_key: c.date_key })),
+          category: { name: categoryName },
+          tasks: habits.map(h => ({ id: h.id, title: h.name })),
+          completions: logs.map(l => ({ promise_id: l.habit_id, date_key: l.date_key })),
         },
       });
       if (error) throw new Error(JSON.stringify(error));
@@ -59,11 +59,12 @@ export default function InsightsPanel({ category, tasks, completions, color }: P
     }
   }
 
-  const debugLine = `t:${tasks.length} c:${completions.length} f:${fetched} l:${loading} e:${error ?? 'none'}`;
+  if (logs.length < 7 && !fetched) return (
+    <p className="text-white/20 text-xs text-center py-2">Complete at least 7 habits to unlock AI insights</p>
+  );
 
   return (
     <div className="space-y-3">
-      <p className="text-white/30 text-[10px]">{debugLine}</p>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type React from 'react';
-import { LogOut, Flame, Users, CreditCard, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles, Star, BarChart2, Check } from 'lucide-react';
+import { LogOut, Flame, Users, CreditCard, Dumbbell, Brain, Laugh, Smile, Meh, Frown, Sparkles, Star, BarChart2, Check, ListChecks } from 'lucide-react';
 
 import TraitAllocator from './TraitAllocator';
 import SpeciesSelector from './SpeciesSelector';
@@ -37,7 +37,7 @@ function getCategoryConfig() {
 
 
 export default function HomeScreen({
-  onFriends, onPayment, onStats, onCategory, onWorkout, onDiary,
+  onFriends, onPayment, onStats, onCategory, onWorkout, onDiary, onHabits,
 }: {
   onFriends: () => void;
   onPayment: () => void;
@@ -45,6 +45,7 @@ export default function HomeScreen({
   onCategory: (c: GoalCategory) => void;
   onWorkout: () => void;
   onDiary: () => void;
+  onHabits: () => void;
 }) {
   const pet = useAuthStore(s => s.pet);
   const profile = useAuthStore(s => s.profile);
@@ -254,8 +255,23 @@ export default function HomeScreen({
           })}
         </div>
 
+        {/* Habits entry */}
+        <button
+          onClick={onHabits}
+          className="mt-3 w-full flex items-center gap-3 px-4 py-3.5 rounded-[20px] transition-all active:scale-[0.97] fade-up"
+          style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', animationDelay: '0.23s' }}
+        >
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ background: 'rgba(255,255,255,0.07)' }}>
+            <ListChecks size={15} style={{ color: 'rgba(255,255,255,0.6)' }} strokeWidth={1.5} />
+          </div>
+          <div className="flex-1 text-left">
+            <p className="text-white/70 text-sm font-semibold">Habits</p>
+            <p className="text-white/25 text-[10px]">Track your daily habits</p>
+          </div>
+        </button>
+
         {/* Gym + Diary buttons */}
-        <div className="mt-3 grid grid-cols-2 gap-2 fade-up" style={{ animationDelay: '0.25s' }}>
+        <div className="mt-2 grid grid-cols-2 gap-2 fade-up" style={{ animationDelay: '0.25s' }}>
           <button
             onClick={onWorkout}
             className="flex items-center gap-2.5 px-3.5 py-3 rounded-[20px] transition-all active:scale-[0.97]"

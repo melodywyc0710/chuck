@@ -5,13 +5,13 @@ function uuid(): string {
   return crypto.randomUUID();
 }
 
-function makeDefaultSet(setNumber: number, prevSet?: ActiveSet): ActiveSet {
+function makeDefaultSet(setNumber: number, prevSet?: ActiveSet, defWeight?: string, defReps?: string): ActiveSet {
   return {
     id: uuid(),
     set_number: setNumber,
     set_type: prevSet?.set_type ?? 'working',
-    weight: prevSet?.weight ?? '',
-    repetitions: prevSet?.repetitions ?? '',
+    weight: defWeight ?? prevSet?.weight ?? '',
+    repetitions: defReps ?? prevSet?.repetitions ?? '',
     duration_seconds: prevSet?.duration_seconds ?? '',
     distance: prevSet?.distance ?? '',
     rpe: null,
@@ -56,6 +56,7 @@ interface WorkoutState {
 interface WorkoutActions {
   startWorkout: (name?: string) => void;
   addExercise: (exercise: BuiltInExercise | CustomExercise) => void;
+  addExerciseWithDefaults: (exercise: BuiltInExercise | CustomExercise, defaults: { sets?: number; weight?: string; reps?: string }) => void;
   removeExercise: (exerciseId: string) => void;
   reorderExercises: (fromIndex: number, toIndex: number) => void;
   updateExerciseNotes: (exerciseId: string, notes: string) => void;
@@ -100,12 +101,25 @@ export const useWorkoutStore = create<WorkoutState & WorkoutActions>((set, get) 
     const { active } = get();
     if (!active) return;
     const order = active.exercises.length;
-    set({
-      active: {
-        ...active,
-        exercises: [...active.exercises, makeExercise(exercise, order)],
-      },
-    });
+    set({ active: { ...active, exercises: [...active.exercises, makeExercise(exercise, order)] } });
+  },
+
+  addExerciseWithDefaults: (exercise, { sets = 1, weight = '', reps = '' } = {}) => {
+    const { active } = get();
+    if (!active) return;
+    const order = active.exercises.length;
+    const defaultSets: ActiveSet[] = [];
+    for (let i = 0; i < sets; i++) {
+      defaultSets.push(makeDefaultSet(i + 1, i > 0 ? defaultSets[i - 1] : undefined, weight || undefined, reps || undefined));
+    }
+    const ex: ActiveExercise = {
+      id: uuid(), exercise, exercise_order: order,
+      sets: defaultSets, notes: '',
+      duration_seconds: '', distance: '', distance_unit: 'km',
+      speed: '', incline: '', resistance_level: '',
+      average_heart_rate: '', maximum_heart_rate: '', machine_calories: '',
+    };
+    set({ active: { ...active, exercises: [...active.exercises, ex] } });
   },
 
   removeExercise: (exerciseId) => {

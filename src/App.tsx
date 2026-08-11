@@ -12,8 +12,9 @@ import CategoryHub from './components/CategoryHub';
 import StatsScreen from './components/StatsScreen';
 import WorkoutScreen from './components/WorkoutScreen';
 import DiaryScreen from './components/DiaryScreen';
+import HabitsScreen from './components/HabitsScreen';
 
-type Screen = 'home' | 'friends' | 'payment' | 'stats' | 'workout' | 'diary' | { category: GoalCategory };
+type Screen = 'home' | 'friends' | 'payment' | 'stats' | 'workout' | 'diary' | 'habits' | { category: GoalCategory };
 
 export default function App() {
   const init = useAuthStore(s => s.init);
@@ -47,6 +48,13 @@ export default function App() {
   if (screen === 'stats') return <StatsScreen onBack={() => setScreen('home')} />;
   if (screen === 'workout') return <WorkoutScreen onClose={() => setScreen('home')} />;
   if (screen === 'diary') return <DiaryScreen onClose={() => setScreen('home')} />;
+  if (screen === 'habits') return (
+    <HabitsScreen
+      onClose={() => setScreen('home')}
+      onWorkout={() => setScreen('workout')}
+      onJournal={() => setScreen('diary')}
+    />
+  );
   if (typeof screen === 'object' && 'category' in screen) {
     return <CategoryHub category={screen.category} onClose={() => setScreen('home')} />;
   }
@@ -58,6 +66,7 @@ export default function App() {
       onCategory={(c) => setScreen({ category: c })}
       onWorkout={() => setScreen('workout')}
       onDiary={() => setScreen('diary')}
+      onHabits={() => setScreen('habits')}
     />
   );
 }

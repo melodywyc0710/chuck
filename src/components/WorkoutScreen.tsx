@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
-import { X, Dumbbell, Play, History, Bookmark, User, ChevronRight } from 'lucide-react';
+import { X, Dumbbell, History, Bookmark, User } from 'lucide-react';
 import { useWorkoutStore } from '../store/workoutStore';
 import ActiveWorkout from './ActiveWorkout';
 import WorkoutSummary from './WorkoutSummary';
 import WorkoutHistory from './WorkoutHistory';
 import WorkoutTemplates from './WorkoutTemplates';
+import TemplateEditor from './TemplateEditor';
 import type { Promise_ } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
-import { BUILT_IN_EXERCISES } from '../lib/exerciseData';
 
-type Tab = 'start' | 'history' | 'templates';
+type Tab = 'plans' | 'history';
 type WorkoutPhase = 'menu' | 'active' | 'summary';
 
 interface Props {
@@ -25,12 +25,14 @@ export default function WorkoutScreen({ onClose }: Props) {
   const user = useAuthStore(s => s.user);
   const profile = useAuthStore(s => s.profile);
 
-  const [tab, setTab] = useState<Tab>('start');
+  const [tab, setTab] = useState<Tab>('plans');
   const [phase, setPhase] = useState<WorkoutPhase>(active ? 'active' : 'menu');
   const [fitnessPromises, setFitnessPromises] = useState<Promise_[]>([]);
   const [showBodyWeightPrompt, setShowBodyWeightPrompt] = useState(false);
   const [bwInput, setBwInput] = useState('');
   const [savingBw, setSavingBw] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<{ id?: string; name?: string } | null>(null);
+  const [templatesKey, setTemplatesKey] = useState(0);
 
   useEffect(() => {
     loadFitnessPromises();
@@ -71,7 +73,6 @@ export default function WorkoutScreen({ onClose }: Props) {
     setPhase('menu');
   }
 
-  // If we have an active workout and we're in active phase, show ActiveWorkout
   if (phase === 'active') {
     return (
       <ActiveWorkout
@@ -81,7 +82,6 @@ export default function WorkoutScreen({ onClose }: Props) {
     );
   }
 
-  // Summary
   if (phase === 'summary') {
     const snapshot = getSnapshot();
     if (!snapshot) { setPhase('menu'); return null; }
@@ -95,7 +95,20 @@ export default function WorkoutScreen({ onClose }: Props) {
     );
   }
 
-  // Menu
+  if (editingTemplate !== null) {
+    return (
+      <TemplateEditor
+        templateId={editingTemplate.id}
+        initialName={editingTemplate.name ?? ''}
+        onClose={() => setEditingTemplate(null)}
+        onSaved={() => {
+          setEditingTemplate(null);
+          setTemplatesKey(k => k + 1);
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <div className="scene-bg" />
@@ -149,10 +162,9 @@ export default function WorkoutScreen({ onClose }: Props) {
         {/* Tabs */}
         <div className="flex gap-0 mx-5 mb-5 rounded-2xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
           {([
-            { key: 'start', label: 'Start', Icon: Play },
-            { key: 'history', label: 'History', Icon: History },
-            { key: 'templates', label: 'Templates', Icon: Bookmark },
-          ] as const).map(({ key, label, Icon }) => (
+            { key: 'plans' as const, label: 'Plans', Icon: Bookmark },
+            { key: 'history' as const, label: 'History', Icon: History },
+          ]).map(({ key, label, Icon }) => (
             <button
               key={key}
               onClick={() => setTab(key)}
@@ -168,99 +180,33 @@ export default function WorkoutScreen({ onClose }: Props) {
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 pb-8">
-          {tab === 'start' && (
+          {tab === 'plans' && (
             <div className="space-y-4">
-              {/* Quick start */}
-              <button
-                onClick={handleStartEmpty}
-                className="w-full flex items-center gap-4 px-5 py-5 rounded-[24px] transition-all active:scale-[0.97]"
-                style={{ background: '#FF4D4D' }}
-              >
-                <div className="w-11 h-11 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.2)' }}>
-                  <Play size={20} color="#fff" fill="#fff" />
-                </div>
-                <div className="text-left">
-                  <p className="text-white font-semibold text-base">Start empty workout</p>
-                  <p className="text-white/60 text-xs mt-0.5">Add exercises as you go</p>
-                </div>
-              </button>
+              <WorkoutTemplates
+                key={templatesKey}
+                onStartTemplate={() => setPhase('active')}
+                onEdit={(id, name) => setEditingTemplate({ id, name })}
+                onCreateNew={() => setEditingTemplate({})}
+              />
 
-              {/* Resume hint */}
-              <div className="px-4 py-3 rounded-2xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <p className="text-white/35 text-xs leading-relaxed">
-                  Or <button className="text-white/60 underline" onClick={() => setTab('templates')}>start from a template</button> · <button className="text-white/60 underline" onClick={() => setTab('history')}>repeat a past workout</button>
-                </p>
+              {/* Start empty as secondary option */}
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }} className="pt-4">
+                <button
+                  onClick={handleStartEmpty}
+                  className="w-full py-3 rounded-2xl text-sm text-white/40 hover:text-white/70 transition-colors"
+                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}
+                >
+                  Start empty workout
+                </button>
               </div>
-
-              {/* Recent workouts preview */}
-              <RecentWorkoutsPreview onRepeat={() => setPhase('active')} />
             </div>
           )}
 
           {tab === 'history' && (
             <WorkoutHistory onRepeat={() => setPhase('active')} />
           )}
-
-          {tab === 'templates' && (
-            <WorkoutTemplates onStartTemplate={() => setPhase('active')} />
-          )}
         </div>
       </div>
     </>
-  );
-}
-
-function RecentWorkoutsPreview({ onRepeat }: { onRepeat: () => void }) {
-  const user = useAuthStore(s => s.user);
-  const startWorkout = useWorkoutStore(s => s.startWorkout);
-  const addExercise = useWorkoutStore(s => s.addExercise);
-  const [recent, setRecent] = useState<any[]>([]);
-  useEffect(() => {
-    if (!user) return;
-    supabase
-      .from('workouts')
-      .select('id, name, started_at, workout_exercises(exercise_name, exercise_slug, exercise_order)')
-      .eq('user_id', user.id)
-      .eq('is_template', false)
-      .order('created_at', { ascending: false })
-      .limit(3)
-      .then(({ data }) => { if (data) setRecent(data); });
-  }, []);
-
-  if (recent.length === 0) return null;
-
-  function repeat(w: any) {
-    startWorkout(w.name);
-    const sorted = [...w.workout_exercises].sort((a: any, b: any) => a.exercise_order - b.exercise_order);
-    for (const we of sorted) {
-      const ex = we.exercise_slug ? BUILT_IN_EXERCISES.find((e: any) => e.slug === we.exercise_slug) : null;
-      if (ex) addExercise(ex);
-    }
-    onRepeat();
-  }
-
-  return (
-    <div>
-      <p className="text-white/25 text-[10px] uppercase tracking-widest mb-3">Recent</p>
-      <div className="space-y-2">
-        {recent.map(w => (
-          <button
-            key={w.id}
-            onClick={() => repeat(w)}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-colors text-left"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.05)' }}
-          >
-            <div className="flex-1 min-w-0">
-              <p className="text-white/75 text-sm font-medium truncate">{w.name}</p>
-              <p className="text-white/25 text-[10px] mt-0.5">
-                {new Date(w.started_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                {w.workout_exercises?.length > 0 && ` · ${w.workout_exercises.length} exercises`}
-              </p>
-            </div>
-            <ChevronRight size={14} className="text-white/20 shrink-0" />
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }

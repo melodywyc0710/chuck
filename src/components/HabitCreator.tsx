@@ -48,13 +48,16 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
     setChecklistItems(p => p.filter((_, idx) => idx !== i));
   }
 
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   async function save() {
     if (!user || !name.trim()) return;
     setSaving(true);
+    setSaveError(null);
     const items = trackingType === 'checklist'
       ? checklistItems.map(s => s.trim()).filter(Boolean)
       : [];
-    await supabase.from('habits').insert({
+    const payload = {
       user_id: user.id,
       name: name.trim(),
       icon: trackingType,
@@ -66,8 +69,28 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
       sort_order: Math.floor(Date.now() / 1000),
       archived: false,
       category: category.trim() || null,
-    });
+    };
+
+    let { data: inserted, error } = await supabase.from('habits').insert(payload).select('id').single();
+
+    // Fallback: schema cache may not know about `category` yet — insert without it
+    if (error?.message?.includes('category')) {
+      const { category: _cat, ...payloadWithoutCat } = payload;
+      const fallback = await supabase.from('habits').insert(payloadWithoutCat).select('id').single();
+      inserted = fallback.data;
+      error = fallback.error;
+      // Store category locally until DB is ready
+      if (!error && inserted && payload.category) {
+        localStorage.setItem(`habit-cat-${inserted.id}`, payload.category);
+      }
+    }
+
     setSaving(false);
+    if (error) {
+      console.error('Failed to save habit:', error);
+      setSaveError(error.message);
+      return;
+    }
     onSaved();
   }
 
@@ -224,6 +247,13 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
                 ))}
               </div>
             </div>
+
+            {/* Error */}
+            {saveError && (
+              <p className="text-xs px-1" style={{ color: '#FF4D4D' }}>
+                Failed to save: {saveError}
+              </p>
+            )}
 
             {/* Save */}
             <button

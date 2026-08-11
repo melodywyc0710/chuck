@@ -388,56 +388,228 @@ function HabitPanel({
   );
 }
 
-// ─── History chart ─────────────────────────────────────────────────────────────
+// ─── History chart (comprehensive) ───────────────────────────────────────────
 
-function HabitHistoryChart({ habit, logs, color }: { habit: Habit; logs: HabitLog[]; color: string }) {
-  const days = Array.from({ length: 14 }, (_, i) => {
+type Timeframe = '7d' | '30d' | '90d' | 'all';
+
+function shortDate(dateKey: string) {
+  return new Date(dateKey + 'T00:00:00').toLocaleDateString('en', { month: 'short', day: 'numeric' });
+}
+
+function formatDate(dateKey: string): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (dateKey === today) return 'Today';
+  if (dateKey === yesterday) return 'Yesterday';
+  return new Date(dateKey + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
+function formatLogValue(habit: Habit, log: HabitLog): string {
+  const tt = habit.tracking_type;
+  if (tt === 'timer' && log.value != null) return `${log.value} min`;
+  if (tt === 'counter' && log.value != null)
+    return habit.target_value ? `${log.value}/${habit.target_value}` : `${log.value}`;
+  if (tt === 'numeric' && log.value != null)
+    return `${log.value}${habit.target_unit ? ' ' + habit.target_unit : ''}`;
+  if (tt === 'checklist' && log.value != null) return `${log.value}/${habit.checklist_items.length} steps`;
+  if (tt === 'complete' || tt === 'avoid') return 'Done';
+  if (tt === 'journal') return 'Written';
+  if (tt === 'workout') return 'Logged';
+  return 'Done';
+}
+
+function getDays(n: number): string[] {
+  return Array.from({ length: n }, (_, i) => {
     const d = new Date();
-    d.setDate(d.getDate() - (13 - i));
+    d.setDate(d.getDate() - (n - 1 - i));
     return d.toISOString().slice(0, 10);
   });
+}
+
+function HabitHistoryChart({ habit, logs, color, canExpand }: {
+  habit: Habit; logs: HabitLog[]; color: string; canExpand: boolean;
+}) {
+  const TIMEFRAMES: { value: Timeframe; label: string; days: number; pro: boolean }[] = [
+    { value: '7d',  label: '7d',   days: 7,   pro: false },
+    { value: '30d', label: '30d',  days: 30,  pro: false },
+    { value: '90d', label: '90d',  days: 90,  pro: true  },
+    { value: 'all', label: 'All',  days: 999, pro: true  },
+  ];
+
+  const [timeframe, setTimeframe] = useState<Timeframe>('30d');
+  const [showAll, setShowAll] = useState(false);
 
   const logMap = new Map(logs.map(l => [l.date_key, l]));
 
+  const tf = TIMEFRAMES.find(t => t.value === timeframe)!;
+  const days = timeframe === 'all'
+    ? (logs.length > 0 ? (() => {
+        const earliest = logs[logs.length - 1].date_key;
+        const start = new Date(earliest + 'T00:00:00');
+        const today = new Date();
+        const n = Math.ceil((today.getTime() - start.getTime()) / 86400000) + 1;
+        return getDays(Math.min(n, 365));
+      })() : getDays(30))
+    : getDays(tf.days);
+
+  const isBinary = ['complete', 'avoid', 'journal', 'workout'].includes(habit.tracking_type);
   const values = days.map(day => {
     const log = logMap.get(day);
     if (!log) return 0;
-    if (['complete', 'avoid', 'journal', 'workout'].includes(habit.tracking_type)) return log ? 1 : 0;
-    return log.value ?? 0;
+    return isBinary ? 1 : (log.value ?? 0);
   });
 
   const maxVal = Math.max(...values, 1);
-  const barW = 14;
-  const barGap = 4;
-  const svgW = days.length * (barW + barGap) - barGap;
-  const svgH = 56;
+  const W = 320;
+  const H = 80;
+  const PAD = { left: 4, right: 4, top: 8, bottom: 4 };
+  const innerW = W - PAD.left - PAD.right;
+  const innerH = H - PAD.top - PAD.bottom;
 
-  const thisWeekDays = days.slice(7);
-  const thisWeekDone = thisWeekDays.filter(d => logMap.has(d)).length;
+  const points = values.map((v, i) => ({
+    x: PAD.left + (days.length === 1 ? innerW / 2 : (i / (days.length - 1)) * innerW),
+    y: PAD.top + innerH - (v / maxVal) * innerH,
+    v, date: days[i],
+  }));
+
+  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const areaPath = `${linePath} L${points[points.length - 1].x.toFixed(1)},${(PAD.top + innerH).toFixed(1)} L${PAD.left},${(PAD.top + innerH).toFixed(1)} Z`;
+
+  // Stats
+  const thisWeekDone = getDays(7).filter(d => logMap.has(d)).length;
   const allTimeDone = logs.length;
+  const activeDays = values.filter(v => v > 0).length;
+
+  // Last 14 days dot grid
+  const last14 = getDays(14);
+
+  // Log list
+  const shownLogs = showAll ? logs : logs.slice(0, 5);
 
   return (
-    <div className="rounded-[20px] px-4 py-4" style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.07)' }}>
-      <p className="text-white/70 text-sm font-semibold mb-3">{habit.name}</p>
-      <svg width="100%" viewBox={`0 0 ${svgW} ${svgH}`} preserveAspectRatio="none" style={{ height: svgH }}>
-        {values.map((v, i) => {
-          const h = Math.max(3, (v / maxVal) * svgH);
-          const x = i * (barW + barGap);
-          return (
-            <rect key={i} x={x} y={svgH - h} width={barW} height={h} rx={4}
-              fill={v > 0 ? color : 'rgba(255,255,255,0.07)'} />
-          );
-        })}
-      </svg>
-      <div className="flex gap-4 mt-3">
-        <div>
-          <p className="text-white/25 text-[10px] uppercase tracking-widest">This week</p>
-          <p className="text-white/70 text-sm font-semibold tabular-nums">{thisWeekDone}/7</p>
+    <div className="rounded-[20px] overflow-hidden" style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <div className="px-4 pt-4 pb-3">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-white/70 text-sm font-semibold">{habit.name}</p>
+          {/* Timeframe picker */}
+          <div className="flex gap-1">
+            {TIMEFRAMES.map(t => {
+              const locked = t.pro && !canExpand;
+              return (
+                <button key={t.value}
+                  onClick={() => !locked && setTimeframe(t.value)}
+                  className="px-2 py-0.5 rounded-lg text-[10px] font-semibold transition-all"
+                  style={{
+                    background: timeframe === t.value ? color : 'rgba(255,255,255,0.06)',
+                    color: locked ? 'rgba(255,255,255,0.2)' : timeframe === t.value ? 'white' : 'rgba(255,255,255,0.4)',
+                    cursor: locked ? 'default' : 'pointer',
+                  }}>
+                  {t.label}{locked ? ' 🔒' : ''}
+                </button>
+              );
+            })}
+          </div>
         </div>
-        <div>
-          <p className="text-white/25 text-[10px] uppercase tracking-widest">All time</p>
-          <p className="text-white/70 text-sm font-semibold tabular-nums">{allTimeDone}</p>
+
+        {/* Summary pills */}
+        <div className="flex gap-2 mb-3">
+          {[
+            { label: 'This week', val: thisWeekDone },
+            { label: 'All time',  val: allTimeDone },
+            { label: 'Active days', val: activeDays },
+          ].map(s => (
+            <div key={s.label} className="flex-1 rounded-xl px-2 py-2 text-center" style={{ background: 'rgba(255,255,255,0.04)' }}>
+              <p className="text-white font-semibold tabular-nums text-base" style={{ letterSpacing: '-0.03em' }}>{s.val}</p>
+              <p className="text-white/30 text-[10px] mt-0.5">{s.label}</p>
+            </div>
+          ))}
         </div>
+
+        {/* Area chart */}
+        <div className="rounded-xl px-3 pt-3 pb-2 mb-3" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <p className="text-white/30 text-[10px] mb-2">{isBinary ? 'completions' : habit.target_unit ?? 'value'} · last {timeframe === 'all' ? 'year' : timeframe}</p>
+          <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ height: 72, display: 'block' }}>
+            <defs>
+              <linearGradient id={`grad-${habit.id}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+                <stop offset="100%" stopColor={color} stopOpacity="0.02" />
+              </linearGradient>
+            </defs>
+            {[0.25, 0.5, 0.75, 1].map(v => (
+              <line key={v} x1={PAD.left} y1={PAD.top + innerH - v * innerH}
+                x2={W - PAD.right} y2={PAD.top + innerH - v * innerH}
+                stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+            ))}
+            <path d={areaPath} fill={`url(#grad-${habit.id})`} />
+            <path d={linePath} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+            {points.filter(p => p.v > 0).map((p, i) => (
+              <circle key={i} cx={p.x} cy={p.y} r="2.5" fill={color} />
+            ))}
+          </svg>
+          <div className="flex justify-between mt-1">
+            <span className="text-white/20 text-[10px]">{shortDate(days[0])}</span>
+            {days.length > 10 && <span className="text-white/20 text-[10px]">{shortDate(days[Math.floor(days.length / 2)])}</span>}
+            <span className="text-white/20 text-[10px]">Today</span>
+          </div>
+        </div>
+
+        {/* 14-day dot grid */}
+        <div className="rounded-xl px-3 py-3 mb-3" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <p className="text-white/30 text-[10px] mb-2">last 14 days</p>
+          <div className="flex gap-1.5">
+            {last14.map(day => {
+              const log = logMap.get(day);
+              const hasLog = !!log;
+              const val = log?.value ?? 0;
+              const opacity = !hasLog ? 0 : isBinary ? 1 : Math.min(1, val / maxVal);
+              return (
+                <div key={day} className="flex flex-col items-center gap-1 flex-1">
+                  <div className="w-full rounded-md transition-all"
+                    style={{ height: 20, background: hasLog ? `${color}${Math.round(opacity * 0.8 * 255 + 50).toString(16).padStart(2, '0')}` : 'rgba(255,255,255,0.06)' }} />
+                  <span className="text-white/15 text-[8px]">
+                    {new Date(day + 'T00:00:00').getDate()}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Log list */}
+        {logs.length > 0 && (
+          <div>
+            <p className="text-white/30 text-[10px] mb-2">log</p>
+            <div className="space-y-1">
+              {shownLogs.map(log => (
+                <div key={log.id} className="flex items-center justify-between px-3 py-2 rounded-xl"
+                  style={{ background: 'rgba(255,255,255,0.03)' }}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                      style={{ background: 'rgba(16,185,129,0.15)' }}>
+                      <Check size={9} style={{ color: '#10B981' }} strokeWidth={2.5} />
+                    </div>
+                    <p className="text-white/50 text-xs">{formatDate(log.date_key)}</p>
+                  </div>
+                  <p className="text-white/30 text-xs">{formatLogValue(habit, log)}</p>
+                </div>
+              ))}
+            </div>
+            {logs.length > 5 && (
+              <button onClick={() => setShowAll(v => !v)}
+                className="w-full mt-2 py-2 text-xs transition-colors"
+                style={{ color: canExpand ? color : 'rgba(255,255,255,0.25)' }}>
+                {showAll
+                  ? 'Show less'
+                  : canExpand
+                    ? `Show all ${logs.length} entries`
+                    : `Show all ${logs.length} entries (Plus/Pro)`}
+              </button>
+            )}
+          </div>
+        )}
+        {logs.length === 0 && (
+          <p className="text-white/20 text-xs text-center py-2">No history yet</p>
+        )}
       </div>
     </div>
   );
@@ -644,6 +816,7 @@ export default function CategoryHubScreen({
                   habit={habit}
                   logs={allLogs[habit.id] ?? []}
                   color={color}
+                  canExpand={canCustomize}
                 />
               ))}
               {habits.length === 0 && (

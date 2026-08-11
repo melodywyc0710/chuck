@@ -121,7 +121,7 @@ function CategoryCard({
           {pct > 0 && (
             <div className="h-1 rounded-full overflow-hidden mt-1" style={{ background: 'rgba(255,255,255,0.08)' }}>
               <div className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${pct * 100}%`, background: color }} />
+                style={{ width: `${pct * 100}%`, background: 'rgba(255,255,255,0.5)' }} />
             </div>
           )}
         </div>
@@ -352,8 +352,8 @@ export default function HomeScreen({
               className="w-full flex flex-col items-center justify-center py-12 rounded-[24px] transition-all active:scale-[0.98]"
               style={{ background: '#111111', border: '1px dashed rgba(255,255,255,0.1)' }}
             >
-              <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3" style={{ background: 'rgba(255,77,77,0.1)' }}>
-                <Plus size={18} style={{ color: '#FF4D4D' }} strokeWidth={2} />
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <Plus size={18} style={{ color: 'rgba(255,255,255,0.5)' }} strokeWidth={2} />
               </div>
               <p className="text-white/40 text-sm font-medium">Create your first category</p>
               <p className="text-white/20 text-xs mt-1">e.g. Fitness, Focus, Health</p>
@@ -377,8 +377,8 @@ export default function HomeScreen({
                 className="rounded-[24px] flex flex-col items-center justify-center transition-all active:scale-[0.97]"
                 style={{ background: '#111111', border: '1px dashed rgba(255,255,255,0.08)', minHeight: 160 }}
               >
-                <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2" style={{ background: 'rgba(255,77,77,0.08)' }}>
-                  <Plus size={16} style={{ color: '#FF4D4D' }} strokeWidth={2} />
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                  <Plus size={16} style={{ color: 'rgba(255,255,255,0.4)' }} strokeWidth={2} />
                 </div>
                 <p className="text-white/25 text-xs font-medium">Add habit</p>
               </button>

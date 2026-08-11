@@ -382,7 +382,7 @@ export default function CategoryHubScreen({
   const pet = useAuthStore(s => s.pet);
 
   const today = new Date().toISOString().slice(0, 10);
-  const [habits, setHabits] = useState<Habit[]>(initialHabits);
+  const [habits] = useState<Habit[]>(initialHabits);
   const [todayLogs, setTodayLogs] = useState<Record<string, HabitLog>>({});
   const [allLogs, setAllLogs] = useState<Record<string, HabitLog[]>>({});
   const [loading, setLoading] = useState(true);

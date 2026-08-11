@@ -438,22 +438,27 @@ export default function HabitsScreen({ onClose, onWorkout, onJournal }: Props) {
     if (!user) return;
     setLoading(true);
 
-    const [{ data: h }, { data: l }, { data: w }, { data: d }] = await Promise.all([
-      supabase.from('habits').select('*').eq('user_id', user.id).eq('archived', false).order('sort_order'),
-      supabase.from('habit_logs').select('*').eq('user_id', user.id).eq('date_key', today),
-      supabase.from('workouts').select('id').eq('user_id', user.id).eq('is_template', false).gte('started_at', today + 'T00:00:00').limit(1),
-      supabase.from('diary_entries').select('id').eq('user_id', user.id).eq('date_key', today).limit(1),
-    ]);
+    try {
+      const [{ data: h }, { data: l }, { data: w }, { data: d }] = await Promise.all([
+        supabase.from('habits').select('*').eq('user_id', user.id).eq('archived', false).order('sort_order'),
+        supabase.from('habit_logs').select('*').eq('user_id', user.id).eq('date_key', today),
+        supabase.from('workouts').select('id').eq('user_id', user.id).eq('is_template', false).gte('started_at', today + 'T00:00:00').limit(1),
+        supabase.from('diary_entries').select('id').eq('user_id', user.id).eq('date_key', today).limit(1),
+      ]);
 
-    if (h) setHabits(h.map(x => ({ ...x, checklist_items: x.checklist_items ?? [] })) as Habit[]);
-    if (l) {
-      const map: Record<string, HabitLog> = {};
-      for (const log of l) map[log.habit_id] = log as HabitLog;
-      setLogs(map);
+      if (h) setHabits(h.map(x => ({ ...x, checklist_items: x.checklist_items ?? [] })) as Habit[]);
+      if (l) {
+        const map: Record<string, HabitLog> = {};
+        for (const log of l) map[log.habit_id] = log as HabitLog;
+        setLogs(map);
+      }
+      setWorkoutDoneToday((w?.length ?? 0) > 0);
+      setJournalDoneToday((d?.length ?? 0) > 0);
+    } catch (e) {
+      console.error('HabitsScreen load error:', e);
+    } finally {
+      setLoading(false);
     }
-    setWorkoutDoneToday((w?.length ?? 0) > 0);
-    setJournalDoneToday((d?.length ?? 0) > 0);
-    setLoading(false);
   }
 
   async function logHabit(habitId: string, value: number | null, notes?: string) {

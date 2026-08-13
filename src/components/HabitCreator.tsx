@@ -29,6 +29,16 @@ const FREQUENCIES: { value: HabitFrequency; label: string }[] = [
   { value: 'weekly',   label: 'Weekly' },
 ];
 
+const DAYS: { value: HabitFrequency; label: string }[] = [
+  { value: 'monday',    label: 'Mon' },
+  { value: 'tuesday',   label: 'Tue' },
+  { value: 'wednesday', label: 'Wed' },
+  { value: 'thursday',  label: 'Thu' },
+  { value: 'friday',    label: 'Fri' },
+  { value: 'saturday',  label: 'Sat' },
+  { value: 'sunday',    label: 'Sun' },
+];
+
 export default function HabitCreator({ onSaved, onClose, existingCategories = [], defaultCategory = '' }: Props) {
   const user = useAuthStore(s => s.user);
   const [category, setCategory] = useState(defaultCategory);
@@ -103,7 +113,7 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
       <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
         className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto rounded-t-[32px] pb-safe"
-        style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.08)', maxHeight: '88vh', overflowY: 'auto' }}
+        style={{ background: '#111111', border: '1px solid #1e1e1e', maxHeight: '88vh', overflowY: 'auto' }}
       >
         <div className="px-5 pt-5 pb-8">
           <div className="w-8 h-1 rounded-full bg-white/15 mx-auto mb-5" />
@@ -119,28 +129,36 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
             {/* Category */}
             <div>
               <p className="text-white/30 text-[10px] uppercase tracking-widest mb-1.5">Category</p>
-              <input
-                type="text"
-                placeholder="e.g. Fitness, Focus, Health…"
-                value={category}
-                onChange={e => setCategory(e.target.value)}
-                autoFocus
-                className="w-full text-white text-sm font-medium bg-transparent outline-none placeholder-white/20 px-3 py-2.5 rounded-xl"
-                style={{ background: 'rgba(255,255,255,0.06)' }}
-              />
-              {otherCats.length > 0 && (
-                <div className="flex gap-1.5 flex-wrap mt-2">
-                  {otherCats.map(c => (
-                    <button
-                      key={c}
-                      onClick={() => setCategory(c)}
-                      className="px-2.5 py-1 rounded-xl text-[11px] font-medium transition-all"
-                      style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.4)' }}
-                    >
-                      {c}
-                    </button>
-                  ))}
+              {defaultCategory ? (
+                <div className="px-3 py-2.5 rounded-xl" style={{ background: '#1e1e1e' }}>
+                  <p className="text-white text-sm font-medium">{defaultCategory}</p>
                 </div>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    placeholder="e.g. Fitness, Focus, Health…"
+                    value={category}
+                    onChange={e => setCategory(e.target.value)}
+                    autoFocus
+                    className="w-full text-white text-sm font-medium bg-transparent outline-none placeholder-white/20 px-3 py-2.5 rounded-xl"
+                    style={{ background: '#1e1e1e' }}
+                  />
+                  {otherCats.length > 0 && (
+                    <div className="flex gap-1.5 flex-wrap mt-2">
+                      {otherCats.map(c => (
+                        <button
+                          key={c}
+                          onClick={() => setCategory(c)}
+                          className="px-2.5 py-1 rounded-xl text-[11px] font-medium transition-all"
+                          style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.5)' }}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
@@ -150,6 +168,7 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
               placeholder="Name your habit…"
               value={name}
               onChange={e => setName(e.target.value)}
+              autoFocus={!!defaultCategory}
               className="w-full text-white text-base font-medium bg-transparent outline-none placeholder-white/20"
             />
 
@@ -163,8 +182,8 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
                     onClick={() => setTrackingType(t.type)}
                     className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-left transition-all"
                     style={{
-                      background: trackingType === t.type ? 'rgba(255,77,77,0.12)' : 'rgba(255,255,255,0.04)',
-                      border: `1px solid ${trackingType === t.type ? 'rgba(255,77,77,0.3)' : 'transparent'}`,
+                      background: trackingType === t.type ? '#2d1515' : '#181818',
+                      border: `1px solid ${trackingType === t.type ? '#5c2020' : 'transparent'}`,
                     }}
                   >
                     <t.Icon size={13} style={{ color: trackingType === t.type ? '#FF4D4D' : 'rgba(255,255,255,0.35)', flexShrink: 0 }} strokeWidth={1.5} />
@@ -186,7 +205,7 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
                     type="number" inputMode="decimal" placeholder="e.g. 30"
                     value={targetValue} onChange={e => setTargetValue(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-xl text-white text-sm outline-none"
-                    style={{ background: 'rgba(255,255,255,0.06)' }}
+                    style={{ background: '#1e1e1e' }}
                   />
                 </div>
                 <div className="flex-1">
@@ -196,7 +215,7 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
                     placeholder={trackingType === 'timer' ? 'min' : trackingType === 'counter' ? 'times' : 'kg'}
                     value={targetUnit} onChange={e => setTargetUnit(e.target.value)}
                     className="w-full px-3 py-2.5 rounded-xl text-white text-sm outline-none"
-                    style={{ background: 'rgba(255,255,255,0.06)' }}
+                    style={{ background: '#1e1e1e' }}
                   />
                 </div>
               </div>
@@ -213,7 +232,7 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
                         type="text" placeholder={`Step ${i + 1}…`}
                         value={item} onChange={e => updateChecklistItem(i, e.target.value)}
                         className="flex-1 px-3 py-2 rounded-xl text-white/80 text-sm outline-none"
-                        style={{ background: 'rgba(255,255,255,0.06)' }}
+                        style={{ background: '#1e1e1e' }}
                       />
                       {checklistItems.length > 1 && (
                         <button onClick={() => removeChecklistItem(i)} className="text-white/20 hover:text-red-400 transition-colors">
@@ -232,17 +251,31 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
             {/* Frequency */}
             <div>
               <p className="text-white/30 text-[10px] uppercase tracking-widest mb-2">Frequency</p>
-              <div className="flex gap-1.5 flex-wrap">
+              <div className="flex gap-1.5 flex-wrap mb-2">
                 {FREQUENCIES.map(f => (
                   <button
                     key={f.value} onClick={() => setFrequency(f.value)}
                     className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all"
                     style={{
-                      background: frequency === f.value ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.05)',
+                      background: frequency === f.value ? '#2e2e2e' : '#1a1a1a',
                       color: frequency === f.value ? 'white' : 'rgba(255,255,255,0.35)',
                     }}
                   >
                     {f.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-1.5">
+                {DAYS.map(d => (
+                  <button
+                    key={d.value} onClick={() => setFrequency(d.value)}
+                    className="flex-1 py-1.5 rounded-xl text-[11px] font-medium transition-all"
+                    style={{
+                      background: frequency === d.value ? '#2e2e2e' : '#1a1a1a',
+                      color: frequency === d.value ? 'white' : 'rgba(255,255,255,0.35)',
+                    }}
+                  >
+                    {d.label}
                   </button>
                 ))}
               </div>

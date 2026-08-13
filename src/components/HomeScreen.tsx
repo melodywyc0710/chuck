@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   LogOut, Flame, Users, CreditCard, Laugh, Smile, Meh, Frown,
-  Sparkles, Star, BarChart2, Plus, Settings2,
+  Sparkles, Star, BarChart2, Plus, Settings2, Pencil,
   Dumbbell, BookOpen, List, Timer, Hash, Activity, TrendingDown, Check,
 } from 'lucide-react';
 import CategoryIconPicker, { getCatIcon } from './CategoryIconPicker';
@@ -31,9 +31,10 @@ const TYPE_CONFIG: Record<string, { label: string; Icon: React.ElementType; defa
 };
 
 const COLOR_PALETTE = [
-  '#FF4D4D', '#F97316', '#F59E0B', '#10B981',
-  '#06B6D4', '#3B82F6', '#6366F1', '#8B5CF6',
-  '#EC4899', '#888888',
+  '#FF4D4D', '#FF2D55', '#EC4899', '#F43F5E', '#F97316',
+  '#FB923C', '#F59E0B', '#EAB308', '#84CC16', '#10B981',
+  '#22C55E', '#14B8A6', '#06B6D4', '#3B82F6', '#6366F1',
+  '#8B5CF6', '#A855F7', '#D946EF', '#64748B', '#888888',
 ];
 
 function getCatColor(catName: string, habits: Habit[]): string {
@@ -129,9 +130,7 @@ function CategoryEditSheet({
           {CustomIcon
             ? <CustomIcon size={18} color="rgba(255,255,255,0.6)" strokeWidth={1.5} />
             : <Star size={18} color="rgba(255,255,255,0.3)" strokeWidth={1.5} />}
-          <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            {CustomIcon ? 'Change Icon' : 'Add Icon'}
-          </span>
+          <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Icon</span>
         </button>
 
         {/* Delete — two-step confirm */}
@@ -401,16 +400,21 @@ export default function HomeScreen({
 
   async function loadData() {
     if (!pet) return;
+    const userId = pet.user_id;
     const dateKey = new Date().toISOString().slice(0, 10);
     try {
-      const [{ data: h }, { data: l }] = await Promise.all([
-        supabase.from('habits').select('*').eq('user_id', pet.user_id).eq('archived', false).order('sort_order'),
-        supabase.from('habit_logs').select('*').eq('user_id', pet.user_id).eq('date_key', dateKey),
+      const [habitRes, logRes] = await Promise.all([
+        supabase.from('habits').select('*').eq('user_id', userId).eq('archived', false).order('sort_order'),
+        supabase.from('habit_logs').select('*').eq('user_id', userId).eq('date_key', dateKey),
       ]);
-      if (h) setHabits(h.map(x => ({ ...x, checklist_items: x.checklist_items ?? [] })) as Habit[]);
-      if (l) {
+      if (habitRes.error) console.error('[habits] fetch error:', habitRes.error.message, habitRes.error);
+      if (habitRes.data) {
+        setHabits(habitRes.data.map(x => ({ ...x, checklist_items: x.checklist_items ?? [] })) as Habit[]);
+      }
+      if (logRes.error) console.error('[logs] fetch error:', logRes.error.message);
+      if (logRes.data) {
         const map: Record<string, HabitLog> = {};
-        for (const log of l) map[log.habit_id] = log as HabitLog;
+        for (const log of logRes.data) map[log.habit_id] = log as HabitLog;
         setTodayLogs(map);
       }
     } catch (e) {
@@ -556,12 +560,22 @@ export default function HomeScreen({
           </div>
         </div>
 
-        {/* Date + count + edit mode Done button */}
+        {/* Date + count + edit/done button */}
         <div className="flex items-center justify-between mb-5 fade-up" style={{ animationDelay: '0.15s' }}>
           <p className="text-white/25 text-xs">{todayLabel}</p>
           <div className="flex items-center gap-3">
             {habits.length > 0 && (
               <span className="text-white/20 text-xs">{totalDone}/{habits.length} done</span>
+            )}
+            {habits.length > 0 && !editMode && (
+              <button
+                onClick={() => setEditMode(true)}
+                className="w-7 h-7 flex items-center justify-center rounded-full transition-all active:scale-90"
+                style={{ background: '#1e1e1e' }}
+                aria-label="Edit categories"
+              >
+                <Pencil size={11} color="rgba(255,255,255,0.4)" strokeWidth={1.5} />
+              </button>
             )}
             {editMode && (
               <button
@@ -630,40 +644,26 @@ export default function HomeScreen({
                       isDragging={isLifted}
                       refreshKey={cardRefreshKey}
                       onPointerDown={e => {
-                        if (editMode) {
-                          // In edit mode: track movement to detect drag vs tap
-                          const startX = e.clientX, startY = e.clientY;
-                          let dragging = false;
-                          function onMove(ev: PointerEvent) {
-                            if (ev.pointerId !== e.pointerId) return;
-                            const dist = Math.hypot(ev.clientX - startX, ev.clientY - startY);
-                            if (!dragging && dist > 8) {
-                              dragging = true;
-                              document.removeEventListener('pointermove', onMove);
-                              document.removeEventListener('pointerup', onUp);
-                              startCatDrag(idx, e, 2);
-                            }
-                          }
-                          function onUp() {
+                        if (!editMode) return;
+                        // In edit mode: track movement to detect drag
+                        const startX = e.clientX, startY = e.clientY;
+                        let dragging = false;
+                        function onMove(ev: PointerEvent) {
+                          if (ev.pointerId !== e.pointerId) return;
+                          const dist = Math.hypot(ev.clientX - startX, ev.clientY - startY);
+                          if (!dragging && dist > 8) {
+                            dragging = true;
                             document.removeEventListener('pointermove', onMove);
                             document.removeEventListener('pointerup', onUp);
+                            startCatDrag(idx, e, 2);
                           }
-                          document.addEventListener('pointermove', onMove);
-                          document.addEventListener('pointerup', onUp, { once: true });
-                        } else {
-                          // Normal mode: 500ms long press → enter edit mode
-                          const lpTimer = setTimeout(() => {
-                            setEditMode(true);
-                            try { navigator.vibrate?.(40); } catch {}
-                          }, 500);
-                          function cancelLp() {
-                            clearTimeout(lpTimer);
-                            document.removeEventListener('pointerup', cancelLp);
-                            document.removeEventListener('pointermove', cancelLp);
-                          }
-                          document.addEventListener('pointerup', cancelLp, { once: true });
-                          document.addEventListener('pointermove', cancelLp, { once: true });
                         }
+                        function onUp() {
+                          document.removeEventListener('pointermove', onMove);
+                          document.removeEventListener('pointerup', onUp);
+                        }
+                        document.addEventListener('pointermove', onMove);
+                        document.addEventListener('pointerup', onUp, { once: true });
                       }}
                       onClick={() => {
                         if (catDidDragRef.current) { catDidDragRef.current = false; return; }

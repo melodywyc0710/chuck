@@ -244,6 +244,20 @@ function HabitPanel({
     if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; }
   }
 
+  const tt = habit.tracking_type;
+  const TypeIcon = TYPE_ICONS[tt] ?? Check;
+
+  const isDone = (() => {
+    if (tt === 'journal') return journalDone;
+    if (!todayLog) return false;
+    if (tt === 'complete' || tt === 'avoid') return true;
+    if ((tt === 'timer' || tt === 'counter') && habit.target_value != null)
+      return (todayLog.value ?? 0) >= habit.target_value;
+    if (tt === 'checklist')
+      return habit.checklist_items.length > 0 && checkedItems.size >= habit.checklist_items.length;
+    return !!todayLog;
+  })();
+
   // ── Swipe to complete / undo ──────────────────────────────────────────────────
   const canSwipeComplete = (tt === 'complete' || tt === 'avoid') && !isDone;
   const canSwipeUndo = isDone && (tt === 'complete' || tt === 'avoid');
@@ -287,20 +301,6 @@ function HabitPanel({
     if (holdIntervalRef.current) { clearInterval(holdIntervalRef.current); holdIntervalRef.current = null; }
     setHoldPct(0);
   }
-
-  const tt = habit.tracking_type;
-  const TypeIcon = TYPE_ICONS[tt] ?? Check;
-
-  const isDone = (() => {
-    if (tt === 'journal') return journalDone;
-    if (!todayLog) return false;
-    if (tt === 'complete' || tt === 'avoid') return true;
-    if ((tt === 'timer' || tt === 'counter') && habit.target_value != null)
-      return (todayLog.value ?? 0) >= habit.target_value;
-    if (tt === 'checklist')
-      return habit.checklist_items.length > 0 && checkedItems.size >= habit.checklist_items.length;
-    return !!todayLog;
-  })();
 
   function handleCounter(delta: number) {
     const next = Math.max(0, counter + delta);

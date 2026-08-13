@@ -10,10 +10,10 @@ import {
   Timer, Clock, AlarmClock, Calendar, CalendarCheck, CheckSquare, ListTodo,
   Inbox, Archive, Layers, Layout, Grid, LayoutGrid, BarChart2, TrendingUp,
   // Nature / outdoor
-  Tree, Leaf, Flower, Flower2, Mountain, Waves, Umbrella, Cloud, CloudRain,
+  Trees, Leaf, Flower, Flower2, Mountain, Waves, Umbrella, Cloud, CloudRain,
   Snowflake, Sunrise, Sunset, Bird, Fish, Cat, Dog,
   // Social / life
-  Users, User, Heart as HeartIcon, Home, Coffee, Utensils, Wine, ShoppingBag,
+  Users, User, Home, Coffee, Utensils, Wine, ShoppingBag,
   Smile, Star, Gift, Music, Headphones, Camera, Film, Tv, Gamepad2,
   // Finance / work
   DollarSign, CreditCard, PiggyBank, Briefcase, Building, Laptop, Code,
@@ -21,7 +21,7 @@ import {
   // Sport / movement
   Bike, Footprints, Trophy, Medal, Swords, Shield,
   // Misc
-  Sparkles, Rocket, Diamond, Crown, Key, Lock, Compass, Map,
+  Sparkles, Rocket, Diamond, Crown, Key, Lock, Compass, Map as MapIcon,
 } from 'lucide-react';
 
 export const ICON_LIST: { id: string; Icon: React.ElementType }[] = [
@@ -48,11 +48,13 @@ export const ICON_LIST: { id: string; Icon: React.ElementType }[] = [
   { id: 'layout', Icon: Layout }, { id: 'grid', Icon: Grid }, { id: 'layoutgrid', Icon: LayoutGrid },
   { id: 'barchart2', Icon: BarChart2 }, { id: 'trendingup', Icon: TrendingUp },
   // Nature / outdoor
-  { id: 'tree', Icon: Tree }, { id: 'leaf', Icon: Leaf }, { id: 'flower', Icon: Flower },
+  { id: 'leaf', Icon: Leaf }, { id: 'flower', Icon: Flower },
   { id: 'flower2', Icon: Flower2 }, { id: 'mountain', Icon: Mountain }, { id: 'waves', Icon: Waves },
   { id: 'umbrella', Icon: Umbrella }, { id: 'cloud', Icon: Cloud }, { id: 'cloudrain', Icon: CloudRain },
   { id: 'snowflake', Icon: Snowflake }, { id: 'sunrise', Icon: Sunrise }, { id: 'sunset', Icon: Sunset },
   { id: 'bird', Icon: Bird }, { id: 'fish', Icon: Fish }, { id: 'cat', Icon: Cat }, { id: 'dog', Icon: Dog },
+  // Nature / outdoor continued
+  { id: 'trees', Icon: Trees },
   // Social / life
   { id: 'users', Icon: Users }, { id: 'user', Icon: User },
   { id: 'home', Icon: Home }, { id: 'coffee', Icon: Coffee }, { id: 'utensils', Icon: Utensils },
@@ -72,10 +74,10 @@ export const ICON_LIST: { id: string; Icon: React.ElementType }[] = [
   // Misc
   { id: 'sparkles', Icon: Sparkles }, { id: 'rocket', Icon: Rocket }, { id: 'diamond', Icon: Diamond },
   { id: 'crown', Icon: Crown }, { id: 'key', Icon: Key }, { id: 'lock', Icon: Lock },
-  { id: 'compass', Icon: Compass }, { id: 'map', Icon: Map },
+  { id: 'compass', Icon: Compass }, { id: 'map', Icon: MapIcon },
 ];
 
-const ICON_MAP = new Map(ICON_LIST.map(i => [i.id, i.Icon]));
+const ICON_MAP = new Map<string, React.ElementType>(ICON_LIST.map(i => [i.id, i.Icon]));
 
 export function getCatIcon(catName: string): React.ElementType | null {
   const stored = localStorage.getItem(`cat-icon-${catName}`);

@@ -57,12 +57,14 @@ function CategoryEditSheet({
   const [name, setName] = useState(catName);
   const [color, setColor] = useState(() => getCatColor(catName, habits));
   const [showIconPicker, setShowIconPicker] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [, forceUpdate] = useState(0);
   const CustomIcon = getCatIcon(catName);
 
   function saveRename() {
     const trimmed = name.trim();
     if (trimmed && trimmed !== catName) onRenamed(trimmed);
+    else onClose();
   }
 
   function pickColor(c: string) {
@@ -86,20 +88,27 @@ function CategoryEditSheet({
       <div
         className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto rounded-t-[28px] px-5 pt-5 pb-10"
         style={{ background: '#111111', border: '1px solid #1e1e1e' }}
+        onClick={e => e.stopPropagation()}
       >
         <div className="w-8 h-1 rounded-full bg-white/15 mx-auto mb-5" />
-        <p className="text-white/40 text-[10px] uppercase tracking-widest mb-4">Edit Category</p>
 
-        {/* Name */}
-        <p className="text-white/30 text-[10px] uppercase tracking-widest mb-1.5">Name</p>
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          onBlur={saveRename}
-          onKeyDown={e => { if (e.key === 'Enter') { saveRename(); onClose(); } }}
-          className="w-full px-3 py-3 rounded-xl text-white text-base font-semibold outline-none mb-5"
-          style={{ background: '#1e1e1e' }}
-        />
+        {/* Color swatch header */}
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-10 h-10 rounded-2xl shrink-0 flex items-center justify-center" style={{ background: color }}>
+            {CustomIcon
+              ? <CustomIcon size={20} color="white" strokeWidth={1.5} />
+              : <Star size={16} color="rgba(255,255,255,0.6)" strokeWidth={1.5} />}
+          </div>
+          <input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') saveRename(); }}
+            onBlur={saveRename}
+            className="flex-1 text-white text-base font-semibold outline-none bg-transparent"
+            placeholder="Category name"
+            autoFocus
+          />
+        </div>
 
         {/* Color */}
         <p className="text-white/30 text-[10px] uppercase tracking-widest mb-2">Color</p>
@@ -125,14 +134,33 @@ function CategoryEditSheet({
           </span>
         </button>
 
-        {/* Delete */}
-        <button
-          onClick={onDeleted}
-          className="w-full py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.98]"
-          style={{ background: '#2d1515', color: '#FF4D4D', border: '1px solid #5c2020' }}
-        >
-          Delete Category
-        </button>
+        {/* Delete — two-step confirm */}
+        {!confirmDelete ? (
+          <button
+            onClick={() => setConfirmDelete(true)}
+            className="w-full py-3 rounded-xl text-sm font-medium transition-all active:scale-[0.98]"
+            style={{ color: '#FF4D4D', background: '#1a1a1a' }}
+          >
+            Delete Category
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="flex-1 py-3 rounded-xl text-sm font-medium transition-all"
+              style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.4)' }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onDeleted}
+              className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.98]"
+              style={{ background: '#FF4D4D', color: 'white' }}
+            >
+              Yes, Delete
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
@@ -141,38 +169,45 @@ function CategoryEditSheet({
 // ─── Category card ────────────────────────────────────────────────────────────
 
 function CategoryCard({
-  name, habits, logs, isDragging, onPointerDown, onClick, onEditClick,
+  name, habits, logs, editMode, isDragging, refreshKey,
+  onPointerDown, onClick, onSettingsClick,
 }: {
   name: string;
   habits: Habit[];
   logs: Record<string, HabitLog>;
+  editMode: boolean;
   isDragging: boolean;
+  refreshKey: number;
   onPointerDown: (e: React.PointerEvent) => void;
   onClick: () => void;
-  onEditClick: (e: React.PointerEvent | React.MouseEvent) => void;
+  onSettingsClick: (e: React.MouseEvent) => void;
 }) {
-  const [, forceUpdate] = useState(0);
-  void forceUpdate;
+  // Re-read color/icon from localStorage on every render (refreshKey forces this)
   const currentColor = getCatColor(name, habits);
+  const CustomIcon = getCatIcon(name);
+  void refreshKey;
 
   const doneCount = habits.filter(h => !!logs[h.id]).length;
   const total = habits.length;
   const pct = total > 0 ? doneCount / total : 0;
-
-  const CustomIcon = getCatIcon(name);
   const uniqueTypes = [...new Set(habits.map(h => h.tracking_type))].slice(0, 4);
 
   return (
-    <div className="relative select-none" style={{ userSelect: 'none' }}>
+    <div
+      className={`relative select-none${editMode && !isDragging ? ' cat-jiggle' : ''}`}
+      style={{ userSelect: 'none' }}
+    >
       <div
         className="relative rounded-[24px] overflow-hidden text-left w-full"
         style={{
-          background: '#111111', border: '1px solid #1e1e1e', minHeight: 160,
+          background: '#111111',
+          border: editMode ? `1px solid ${currentColor}44` : '1px solid #1e1e1e',
+          minHeight: 160,
           display: 'flex', flexDirection: 'column',
           boxShadow: isDragging
             ? '0 28px 64px rgba(0,0,0,0.85), 0 8px 24px rgba(0,0,0,0.6)'
             : 'none',
-          transition: isDragging ? 'none' : 'box-shadow 0.2s',
+          transition: isDragging ? 'none' : 'box-shadow 0.2s, border-color 0.2s',
         }}
         onPointerDown={onPointerDown}
         onClick={onClick}
@@ -190,15 +225,21 @@ function CategoryCard({
                 })
             }
           </div>
-          {/* Subtle settings icon — top-right corner of colored band */}
+
+          {/* Settings icon — only visible in edit mode */}
           <button
             onPointerDown={e => e.stopPropagation()}
-            onClick={onEditClick}
+            onClick={onSettingsClick}
             className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90"
-            style={{ background: 'rgba(0,0,0,0.25)' }}
+            style={{
+              background: 'rgba(0,0,0,0.45)',
+              opacity: editMode ? 1 : 0,
+              pointerEvents: editMode ? 'auto' : 'none',
+              transition: 'opacity 0.2s',
+            }}
             aria-label="Edit category"
           >
-            <Settings2 size={13} color="rgba(255,255,255,0.55)" strokeWidth={1.5} />
+            <Settings2 size={13} color="white" strokeWidth={1.5} />
           </button>
         </div>
 
@@ -253,8 +294,14 @@ export default function HomeScreen({
   const [wiggling, setWiggling] = useState(false);
   const [bubble, setBubble] = useState<string | null>(null);
 
-  // ── Category edit sheet ───────────────────────────────────────────────────
+  // ── Edit mode (iOS-style) ─────────────────────────────────────────────────
+  const [editMode, setEditMode] = useState(false);
   const [catEditName, setCatEditName] = useState<string | null>(null);
+  // Incrementing this key forces CategoryCard to re-read localStorage after edits
+  const [cardRefreshKey, setCardRefreshKey] = useState(0);
+
+  // Exit edit mode when tapping outside cards
+  function exitEditMode() { setEditMode(false); }
 
   // ── Category drag-to-reorder ──────────────────────────────────────────────
   type CatDrag = { fromIdx: number; toIdx: number; offsetX: number; offsetY: number; slotW: number; slotH: number };
@@ -322,14 +369,24 @@ export default function HomeScreen({
       if (v) { localStorage.setItem(prefix + newName, v); localStorage.removeItem(prefix + oldName); }
     });
     setCatOrder(prev => prev.map(n => n === oldName ? newName : n));
-    setCatEditName(null);
+    closeCatEdit();
     loadData();
   }
 
   async function deleteCategory(catName: string) {
+    // Move all habits in this category to null (they'll appear under 'General')
     await supabase.from('habits').update({ category: null }).eq('user_id', pet!.user_id).eq('category', catName);
-    setCatEditName(null);
+    ['cat-color-', 'cat-icon-'].forEach(prefix => localStorage.removeItem(prefix + catName));
+    setCatOrder(prev => prev.filter(n => n !== catName));
+    closeCatEdit();
     loadData();
+  }
+
+  function closeCatEdit() {
+    setCatEditName(null);
+    setEditMode(false);
+    // Force cards to re-read color/icon from localStorage
+    setCardRefreshKey(k => k + 1);
   }
 
   const tier = profile?.subscription_tier ?? 'free';
@@ -373,9 +430,11 @@ export default function HomeScreen({
     categoryMap.get(cat)!.push(h);
   }
   const categoriesBase = [...categoryMap.entries()];
-  const orderedNames = catOrder.length
-    ? [...catOrder.filter(n => categoryMap.has(n)), ...categoriesBase.map(([n]) => n).filter(n => !catOrder.includes(n))]
-    : categoriesBase.map(([n]) => n);
+
+  // Merge saved order with any new categories not yet in the saved order
+  const savedNames = catOrder.filter(n => categoryMap.has(n));
+  const newNames = categoriesBase.map(([n]) => n).filter(n => !catOrder.includes(n));
+  const orderedNames = [...savedNames, ...newNames];
   const categories = orderedNames.map(n => [n, categoryMap.get(n)!] as [string, Habit[]]);
   const allCategoryNames = categories.map(([name]) => name);
 
@@ -412,6 +471,11 @@ export default function HomeScreen({
       <div className="scene-overlay" />
       {showTraits && <TraitAllocator onClose={() => setShowTraits(false)} />}
       {showSpecies && <SpeciesSelector onClose={() => setShowSpecies(false)} />}
+
+      {/* Edit mode backdrop — tap to exit */}
+      {editMode && (
+        <div className="fixed inset-0 z-10" onClick={exitEditMode} />
+      )}
 
       <div className="relative z-10 min-h-screen flex flex-col max-w-md mx-auto px-5 pt-12 pb-8">
 
@@ -492,12 +556,23 @@ export default function HomeScreen({
           </div>
         </div>
 
-        {/* Date + count */}
+        {/* Date + count + edit mode Done button */}
         <div className="flex items-center justify-between mb-5 fade-up" style={{ animationDelay: '0.15s' }}>
           <p className="text-white/25 text-xs">{todayLabel}</p>
-          {habits.length > 0 && (
-            <span className="text-white/20 text-xs">{totalDone}/{habits.length} done</span>
-          )}
+          <div className="flex items-center gap-3">
+            {habits.length > 0 && (
+              <span className="text-white/20 text-xs">{totalDone}/{habits.length} done</span>
+            )}
+            {editMode && (
+              <button
+                onClick={exitEditMode}
+                className="px-3 py-1 rounded-xl text-xs font-semibold transition-all"
+                style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.7)' }}
+              >
+                Done
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Category cards */}
@@ -551,24 +626,51 @@ export default function HomeScreen({
                       name={catName}
                       habits={catHabits}
                       logs={todayLogs}
+                      editMode={editMode}
                       isDragging={isLifted}
+                      refreshKey={cardRefreshKey}
                       onPointerDown={e => {
-                        const lpTimer = setTimeout(() => {
-                          startCatDrag(idx, e, 2);
-                        }, 400);
-                        function cancelLp() {
-                          clearTimeout(lpTimer);
-                          document.removeEventListener('pointerup', cancelLp);
-                          document.removeEventListener('pointermove', cancelLp);
+                        if (editMode) {
+                          // In edit mode: track movement to detect drag vs tap
+                          const startX = e.clientX, startY = e.clientY;
+                          let dragging = false;
+                          function onMove(ev: PointerEvent) {
+                            if (ev.pointerId !== e.pointerId) return;
+                            const dist = Math.hypot(ev.clientX - startX, ev.clientY - startY);
+                            if (!dragging && dist > 8) {
+                              dragging = true;
+                              document.removeEventListener('pointermove', onMove);
+                              document.removeEventListener('pointerup', onUp);
+                              startCatDrag(idx, e, 2);
+                            }
+                          }
+                          function onUp() {
+                            document.removeEventListener('pointermove', onMove);
+                            document.removeEventListener('pointerup', onUp);
+                          }
+                          document.addEventListener('pointermove', onMove);
+                          document.addEventListener('pointerup', onUp, { once: true });
+                        } else {
+                          // Normal mode: 500ms long press → enter edit mode
+                          const lpTimer = setTimeout(() => {
+                            setEditMode(true);
+                            try { navigator.vibrate?.(40); } catch {}
+                          }, 500);
+                          function cancelLp() {
+                            clearTimeout(lpTimer);
+                            document.removeEventListener('pointerup', cancelLp);
+                            document.removeEventListener('pointermove', cancelLp);
+                          }
+                          document.addEventListener('pointerup', cancelLp, { once: true });
+                          document.addEventListener('pointermove', cancelLp, { once: true });
                         }
-                        document.addEventListener('pointerup', cancelLp, { once: true });
-                        document.addEventListener('pointermove', cancelLp, { once: true });
                       }}
                       onClick={() => {
                         if (catDidDragRef.current) { catDidDragRef.current = false; return; }
+                        if (editMode) return; // In edit mode, tap opens settings (handled by settings button)
                         onCategory(catName, catHabits, allCategoryNames, getCatColor(catName, catHabits), canCustomize, pro);
                       }}
-                      onEditClick={e => {
+                      onSettingsClick={e => {
                         e.stopPropagation();
                         setCatEditName(catName);
                       }}
@@ -577,7 +679,7 @@ export default function HomeScreen({
                 );
               })}
               <button
-                onClick={() => setShowCreator(true)}
+                onClick={() => { exitEditMode(); setShowCreator(true); }}
                 className="rounded-[24px] flex flex-col items-center justify-center transition-all active:scale-[0.97]"
                 style={{ background: '#111111', border: '1px dashed #1e1e1e', minHeight: 160 }}
               >
@@ -623,7 +725,7 @@ export default function HomeScreen({
           <CategoryEditSheet
             catName={catEditName}
             habits={editHabits}
-            onClose={() => setCatEditName(null)}
+            onClose={closeCatEdit}
             onRenamed={newName => renameCategory(catEditName, newName)}
             onDeleted={() => deleteCategory(catEditName)}
           />

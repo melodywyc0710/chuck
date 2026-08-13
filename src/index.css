@@ -391,6 +391,8 @@ html, body { margin: 0; font-family: 'Inter', sans-serif; background: #0A0A0A; c
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 .fade-up { opacity:0; animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) forwards; }
+@keyframes catJiggle { 0%,100%{transform:rotate(0deg)} 20%{transform:rotate(-1.8deg)} 60%{transform:rotate(1.8deg)} 80%{transform:rotate(-0.9deg)} }
+.cat-jiggle { animation: catJiggle 0.5s ease-in-out infinite; }
 
 /* Surface styles */
 .liquid-glass {

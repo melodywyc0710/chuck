@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
-import { X, Dumbbell, History, Bookmark, User } from 'lucide-react';
+import { X, Dumbbell, History, Bookmark, User, BarChart2 } from 'lucide-react';
 import { useWorkoutStore } from '../store/workoutStore';
 import ActiveWorkout from './ActiveWorkout';
 import WorkoutSummary from './WorkoutSummary';
 import WorkoutHistory from './WorkoutHistory';
 import WorkoutTemplates from './WorkoutTemplates';
 import TemplateEditor from './TemplateEditor';
+import WorkoutInsights from './WorkoutInsights';
 import type { Promise_ } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
 import { supabase } from '../lib/supabase';
 
-type Tab = 'plans' | 'history';
+type Tab = 'plans' | 'history' | 'insights';
 type WorkoutPhase = 'menu' | 'active' | 'summary';
 
 interface Props {
@@ -164,6 +165,7 @@ export default function WorkoutScreen({ onClose }: Props) {
           {([
             { key: 'plans' as const, label: 'Plans', Icon: Bookmark },
             { key: 'history' as const, label: 'History', Icon: History },
+            { key: 'insights' as const, label: 'Insights', Icon: BarChart2 },
           ]).map(({ key, label, Icon }) => (
             <button
               key={key}
@@ -204,6 +206,10 @@ export default function WorkoutScreen({ onClose }: Props) {
 
           {tab === 'history' && (
             <WorkoutHistory onRepeat={() => setPhase('active')} />
+          )}
+
+          {tab === 'insights' && (
+            <WorkoutInsights />
           )}
         </div>
       </div>

@@ -53,7 +53,6 @@ export const ICON_LIST: { id: string; Icon: React.ElementType }[] = [
   { id: 'umbrella', Icon: Umbrella }, { id: 'cloud', Icon: Cloud }, { id: 'cloudrain', Icon: CloudRain },
   { id: 'snowflake', Icon: Snowflake }, { id: 'sunrise', Icon: Sunrise }, { id: 'sunset', Icon: Sunset },
   { id: 'bird', Icon: Bird }, { id: 'fish', Icon: Fish }, { id: 'cat', Icon: Cat }, { id: 'dog', Icon: Dog },
-  // Nature / outdoor continued
   { id: 'trees', Icon: Trees },
   // Social / life
   { id: 'users', Icon: Users }, { id: 'user', Icon: User },
@@ -107,8 +106,10 @@ export default function CategoryIconPicker({
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto rounded-t-[28px]"
-        style={{ background: '#111111', border: '1px solid #1e1e1e', maxHeight: '70vh', display: 'flex', flexDirection: 'column' }}>
+      <div
+        className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto rounded-t-[28px]"
+        style={{ background: '#111111', border: '1px solid #1e1e1e', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+      >
         <div className="px-4 pt-4 pb-2 shrink-0">
           <div className="w-8 h-1 rounded-full bg-white/15 mx-auto mb-3" />
           <p className="text-white/50 text-xs font-medium mb-2">Choose icon for {catName}</p>
@@ -122,12 +123,19 @@ export default function CategoryIconPicker({
           />
         </div>
         <div className="overflow-y-auto px-4 pb-8">
-          <div className="grid grid-cols-8 gap-2 pt-2">
+          <div className="grid grid-cols-5 gap-3 pt-3">
             {filtered.map(({ id, Icon }) => (
               <button key={id} onClick={() => pick(id)}
-                className="aspect-square rounded-xl flex items-center justify-center transition-all active:scale-90"
-                style={{ background: current === id ? color : '#1e1e1e', border: current === id ? `2px solid ${color}` : '2px solid transparent' }}>
-                <Icon size={18} color={current === id ? 'white' : 'rgba(255,255,255,0.5)'} strokeWidth={1.5} />
+                className="rounded-2xl flex flex-col items-center justify-center gap-1.5 py-3 transition-all active:scale-90"
+                style={{
+                  background: current === id ? color : '#1e1e1e',
+                  border: current === id ? `2px solid ${color}` : '2px solid transparent',
+                }}>
+                <Icon size={26} color={current === id ? 'white' : 'rgba(255,255,255,0.55)'} strokeWidth={1.5} />
+                <span className="text-[9px] font-medium truncate w-full text-center px-1"
+                  style={{ color: current === id ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)' }}>
+                  {id}
+                </span>
               </button>
             ))}
           </div>

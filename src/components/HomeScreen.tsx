@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   LogOut, Flame, Users, CreditCard, Laugh, Smile, Meh, Frown,
-  Sparkles, Star, BarChart2, Plus,
+  Sparkles, Star, BarChart2, Plus, Settings2,
   Dumbbell, BookOpen, List, Timer, Hash, Activity, TrendingDown, Check,
 } from 'lucide-react';
 import CategoryIconPicker, { getCatIcon } from './CategoryIconPicker';
@@ -43,25 +43,96 @@ function getCatColor(catName: string, habits: Habit[]): string {
   return TYPE_CONFIG[primaryType]?.defaultColor ?? '#FF4D4D';
 }
 
-// ─── Color picker ─────────────────────────────────────────────────────────────
+// ─── Category edit sheet ──────────────────────────────────────────────────────
 
-function ColorPicker({ catName, current, onClose }: { catName: string; current: string; onClose: () => void }) {
-  function pick(color: string) {
-    localStorage.setItem(`cat-color-${catName}`, color);
-    onClose();
+function CategoryEditSheet({
+  catName, habits, onClose, onRenamed, onDeleted,
+}: {
+  catName: string;
+  habits: Habit[];
+  onClose: () => void;
+  onRenamed: (newName: string) => void;
+  onDeleted: () => void;
+}) {
+  const [name, setName] = useState(catName);
+  const [color, setColor] = useState(() => getCatColor(catName, habits));
+  const [showIconPicker, setShowIconPicker] = useState(false);
+  const [, forceUpdate] = useState(0);
+  const CustomIcon = getCatIcon(catName);
+
+  function saveRename() {
+    const trimmed = name.trim();
+    if (trimmed && trimmed !== catName) onRenamed(trimmed);
   }
+
+  function pickColor(c: string) {
+    localStorage.setItem(`cat-color-${catName}`, c);
+    setColor(c);
+  }
+
+  if (showIconPicker) {
+    return (
+      <CategoryIconPicker
+        catName={catName}
+        color={color}
+        onClose={() => { setShowIconPicker(false); forceUpdate(n => n + 1); }}
+      />
+    );
+  }
+
   return (
     <>
-      <div className="fixed inset-0 z-40" onClick={onClose} />
+      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="absolute top-2 right-2 z-50 p-2 rounded-2xl flex flex-wrap gap-1.5"
-        style={{ background: '#1e1e1e', border: '1px solid rgba(255,255,255,0.1)', width: 136 }}
+        className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto rounded-t-[28px] px-5 pt-5 pb-10"
+        style={{ background: '#111111', border: '1px solid #1e1e1e' }}
       >
-        {COLOR_PALETTE.map(c => (
-          <button key={c} onClick={() => pick(c)}
-            className="w-8 h-8 rounded-xl transition-all active:scale-90"
-            style={{ background: c, border: current === c ? '2px solid white' : '2px solid transparent' }} />
-        ))}
+        <div className="w-8 h-1 rounded-full bg-white/15 mx-auto mb-5" />
+        <p className="text-white/40 text-[10px] uppercase tracking-widest mb-4">Edit Category</p>
+
+        {/* Name */}
+        <p className="text-white/30 text-[10px] uppercase tracking-widest mb-1.5">Name</p>
+        <input
+          value={name}
+          onChange={e => setName(e.target.value)}
+          onBlur={saveRename}
+          onKeyDown={e => { if (e.key === 'Enter') { saveRename(); onClose(); } }}
+          className="w-full px-3 py-3 rounded-xl text-white text-base font-semibold outline-none mb-5"
+          style={{ background: '#1e1e1e' }}
+        />
+
+        {/* Color */}
+        <p className="text-white/30 text-[10px] uppercase tracking-widest mb-2">Color</p>
+        <div className="flex gap-2 flex-wrap mb-5">
+          {COLOR_PALETTE.map(c => (
+            <button key={c} onClick={() => pickColor(c)}
+              className="w-9 h-9 rounded-xl active:scale-90 transition-all"
+              style={{ background: c, border: color === c ? '2.5px solid white' : '2.5px solid transparent' }} />
+          ))}
+        </div>
+
+        {/* Icon */}
+        <button
+          onClick={() => setShowIconPicker(true)}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl mb-5 transition-all active:scale-[0.98]"
+          style={{ background: '#1e1e1e' }}
+        >
+          {CustomIcon
+            ? <CustomIcon size={18} color="rgba(255,255,255,0.6)" strokeWidth={1.5} />
+            : <Star size={18} color="rgba(255,255,255,0.3)" strokeWidth={1.5} />}
+          <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            {CustomIcon ? 'Change Icon' : 'Add Icon'}
+          </span>
+        </button>
+
+        {/* Delete */}
+        <button
+          onClick={onDeleted}
+          className="w-full py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.98]"
+          style={{ background: '#2d1515', color: '#FF4D4D', border: '1px solid #5c2020' }}
+        >
+          Delete Category
+        </button>
       </div>
     </>
   );
@@ -70,20 +141,19 @@ function ColorPicker({ catName, current, onClose }: { catName: string; current: 
 // ─── Category card ────────────────────────────────────────────────────────────
 
 function CategoryCard({
-  name, habits, logs, canCustomize, isDragging, onPointerDown, onClick,
+  name, habits, logs, isDragging, onPointerDown, onClick, onEditClick,
 }: {
   name: string;
   habits: Habit[];
   logs: Record<string, HabitLog>;
-  canCustomize: boolean;
   isDragging: boolean;
   onPointerDown: (e: React.PointerEvent) => void;
   onClick: () => void;
+  onEditClick: (e: React.PointerEvent | React.MouseEvent) => void;
 }) {
-  const [colorPicker, setColorPicker] = useState(false);
-  const [iconPicker, setIconPicker] = useState(false);
-  const [color, setColor] = useState(() => getCatColor(name, habits));
   const [, forceUpdate] = useState(0);
+  void forceUpdate;
+  const currentColor = getCatColor(name, habits);
 
   const doneCount = habits.filter(h => !!logs[h.id]).length;
   const total = habits.length;
@@ -92,8 +162,6 @@ function CategoryCard({
   const CustomIcon = getCatIcon(name);
   const uniqueTypes = [...new Set(habits.map(h => h.tracking_type))].slice(0, 4);
 
-  function refreshColor() { setColor(getCatColor(name, habits)); setColorPicker(false); }
-
   return (
     <div className="relative select-none" style={{ userSelect: 'none' }}>
       <div
@@ -101,15 +169,17 @@ function CategoryCard({
         style={{
           background: '#111111', border: '1px solid #1e1e1e', minHeight: 160,
           display: 'flex', flexDirection: 'column',
-          boxShadow: isDragging ? '0 16px 48px rgba(0,0,0,0.7)' : 'none',
+          boxShadow: isDragging
+            ? '0 28px 64px rgba(0,0,0,0.85), 0 8px 24px rgba(0,0,0,0.6)'
+            : 'none',
           transition: isDragging ? 'none' : 'box-shadow 0.2s',
         }}
         onPointerDown={onPointerDown}
-        onClick={isDragging ? undefined : onClick}
+        onClick={onClick}
       >
         {/* Colored top band */}
         <div className="relative flex items-center justify-center"
-          style={{ background: color, height: 88, width: '100%', flexShrink: 0 }}>
+          style={{ background: currentColor, height: 88, width: '100%', flexShrink: 0 }}>
           <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.15) 100%)' }} />
           <div className="flex items-center gap-2 relative">
             {CustomIcon
@@ -120,6 +190,16 @@ function CategoryCard({
                 })
             }
           </div>
+          {/* Subtle settings icon — top-right corner of colored band */}
+          <button
+            onPointerDown={e => e.stopPropagation()}
+            onClick={onEditClick}
+            className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all active:scale-90"
+            style={{ background: 'rgba(0,0,0,0.25)' }}
+            aria-label="Edit category"
+          >
+            <Settings2 size={13} color="rgba(255,255,255,0.55)" strokeWidth={1.5} />
+          </button>
         </div>
 
         {/* Body */}
@@ -131,37 +211,11 @@ function CategoryCard({
           {pct > 0 && (
             <div className="h-1 rounded-full overflow-hidden mt-1" style={{ background: '#282828' }}>
               <div className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${pct * 100}%`, background: color }} />
+                style={{ width: `${pct * 100}%`, background: currentColor }} />
             </div>
           )}
         </div>
       </div>
-
-      {canCustomize && (
-        <div className="absolute top-2 right-2 z-10 flex gap-1">
-          {/* Icon picker trigger */}
-          <button
-            onPointerDown={e => e.stopPropagation()}
-            onClick={e => { e.stopPropagation(); setIconPicker(v => !v); }}
-            className="w-6 h-6 rounded-full flex items-center justify-center"
-            style={{ background: '#1e1e1e', border: '1.5px solid #333' }}
-            title="Change icon"
-          >
-            <Star size={10} color="rgba(255,255,255,0.5)" strokeWidth={1.5} />
-          </button>
-          {/* Color picker trigger */}
-          <button
-            onPointerDown={e => e.stopPropagation()}
-            onClick={e => { e.stopPropagation(); setColorPicker(v => !v); }}
-            className="w-6 h-6 rounded-full border-2 border-white/30 transition-all active:scale-90"
-            style={{ background: color }}
-          />
-          {colorPicker && <ColorPicker catName={name} current={color} onClose={refreshColor} />}
-        </div>
-      )}
-      {iconPicker && (
-        <CategoryIconPicker catName={name} color={color} onClose={() => { setIconPicker(false); forceUpdate(n => n + 1); }} />
-      )}
     </div>
   );
 }
@@ -199,10 +253,14 @@ export default function HomeScreen({
   const [wiggling, setWiggling] = useState(false);
   const [bubble, setBubble] = useState<string | null>(null);
 
+  // ── Category edit sheet ───────────────────────────────────────────────────
+  const [catEditName, setCatEditName] = useState<string | null>(null);
+
   // ── Category drag-to-reorder ──────────────────────────────────────────────
   type CatDrag = { fromIdx: number; toIdx: number; offsetX: number; offsetY: number; slotW: number; slotH: number };
   const [catDrag, setCatDrag] = useState<CatDrag | null>(null);
   const catDragRef = useRef<CatDrag | null>(null);
+  const catDidDragRef = useRef(false);
   const [catOrder, setCatOrder] = useState<string[]>(() => {
     try { return JSON.parse(localStorage.getItem(`cat-order-${pet?.user_id}`) ?? '[]'); } catch { return []; }
   });
@@ -216,7 +274,7 @@ export default function HomeScreen({
     const slotH = rect ? rect.height + 12 : 180;
     const state: CatDrag = { fromIdx: idx, toIdx: idx, offsetX: 0, offsetY: 0, slotW, slotH };
     catDragRef.current = state; setCatDrag(state);
-    try { navigator.vibrate?.(20); } catch {}
+    try { navigator.vibrate?.(30); } catch {}
 
     function onMove(ev: PointerEvent) {
       if (ev.pointerId !== e.pointerId) return;
@@ -236,7 +294,10 @@ export default function HomeScreen({
       document.removeEventListener('pointerup', onEnd);
       document.removeEventListener('pointercancel', onEnd);
       const dr = catDragRef.current; catDragRef.current = null; setCatDrag(null);
-      if (dr && dr.fromIdx !== dr.toIdx) saveCatOrder(dr.fromIdx, dr.toIdx);
+      if (dr && dr.fromIdx !== dr.toIdx) {
+        catDidDragRef.current = true;
+        saveCatOrder(dr.fromIdx, dr.toIdx);
+      }
     }
     document.addEventListener('pointermove', onMove);
     document.addEventListener('pointerup', onEnd);
@@ -252,6 +313,23 @@ export default function HomeScreen({
       localStorage.setItem(`cat-order-${pet?.user_id}`, JSON.stringify(arr));
       return arr;
     });
+  }
+
+  async function renameCategory(oldName: string, newName: string) {
+    await supabase.from('habits').update({ category: newName }).eq('user_id', pet!.user_id).eq('category', oldName);
+    ['cat-color-', 'cat-icon-'].forEach(prefix => {
+      const v = localStorage.getItem(prefix + oldName);
+      if (v) { localStorage.setItem(prefix + newName, v); localStorage.removeItem(prefix + oldName); }
+    });
+    setCatOrder(prev => prev.map(n => n === oldName ? newName : n));
+    setCatEditName(null);
+    loadData();
+  }
+
+  async function deleteCategory(catName: string) {
+    await supabase.from('habits').update({ category: null }).eq('user_id', pet!.user_id).eq('category', catName);
+    setCatEditName(null);
+    loadData();
   }
 
   const tier = profile?.subscription_tier ?? 'free';
@@ -295,7 +373,6 @@ export default function HomeScreen({
     categoryMap.get(cat)!.push(h);
   }
   const categoriesBase = [...categoryMap.entries()];
-  // Apply custom order
   const orderedNames = catOrder.length
     ? [...catOrder.filter(n => categoryMap.has(n)), ...categoriesBase.map(([n]) => n).filter(n => !catOrder.includes(n))]
     : categoriesBase.map(([n]) => n);
@@ -453,25 +530,20 @@ export default function HomeScreen({
                   const { fromIdx, toIdx, offsetX, offsetY, slotW, slotH } = catDrag;
                   if (idx === fromIdx) { translateX = offsetX; translateY = offsetY; isLifted = true; }
                   else {
-                    // Simple slot-push: items shift one slot toward the gap
                     const cols = 2;
-                    const fromRow = Math.floor(fromIdx / cols), fromCol = fromIdx % cols;
-                    const toRow = Math.floor(toIdx / cols), toCol = toIdx % cols;
-                    const iRow = Math.floor(idx / cols), iCol = idx % cols;
-                    // Determine if this item is in the range [min(from,to), max(from,to)]
+                    const iCol = idx % cols;
                     if (idx > Math.min(fromIdx, toIdx) && idx <= Math.max(fromIdx, toIdx)) {
                       if (fromIdx < toIdx) { translateX = -slotW; if (iCol === 0) { translateX = slotW; translateY = -slotH; } }
                       else { translateX = slotW; if (iCol === cols - 1) { translateX = -slotW; translateY = slotH; } }
-                    } else if (idx < Math.min(fromIdx, toIdx) && idx >= Math.min(fromIdx, toIdx)) {
-                      // covered above
                     }
-                    void fromRow; void fromCol; void toRow; void toCol; void iRow; void iCol;
                   }
                 }
                 return (
                   <div key={catName} ref={el => { catCardRefs.current[idx] = el; }}
                     style={{
-                      transform: `translate(${translateX}px, ${translateY}px)`,
+                      transform: isLifted
+                        ? `translate(${translateX}px, ${translateY}px) scale(1.08) rotate(2deg)`
+                        : `translate(${translateX}px, ${translateY}px)`,
                       transition: isLifted ? 'none' : 'transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
                       zIndex: isLifted ? 20 : 1, position: 'relative',
                     }}>
@@ -479,18 +551,27 @@ export default function HomeScreen({
                       name={catName}
                       habits={catHabits}
                       logs={todayLogs}
-                      canCustomize={canCustomize}
                       isDragging={isLifted}
                       onPointerDown={e => {
-                        // Long-press to start drag (400ms)
                         const lpTimer = setTimeout(() => {
                           startCatDrag(idx, e, 2);
                         }, 400);
-                        function cancelLp() { clearTimeout(lpTimer); document.removeEventListener('pointerup', cancelLp); document.removeEventListener('pointermove', cancelLp); }
+                        function cancelLp() {
+                          clearTimeout(lpTimer);
+                          document.removeEventListener('pointerup', cancelLp);
+                          document.removeEventListener('pointermove', cancelLp);
+                        }
                         document.addEventListener('pointerup', cancelLp, { once: true });
                         document.addEventListener('pointermove', cancelLp, { once: true });
                       }}
-                      onClick={() => onCategory(catName, catHabits, allCategoryNames, getCatColor(catName, catHabits), canCustomize, pro)}
+                      onClick={() => {
+                        if (catDidDragRef.current) { catDidDragRef.current = false; return; }
+                        onCategory(catName, catHabits, allCategoryNames, getCatColor(catName, catHabits), canCustomize, pro);
+                      }}
+                      onEditClick={e => {
+                        e.stopPropagation();
+                        setCatEditName(catName);
+                      }}
                     />
                   </div>
                 );
@@ -535,6 +616,19 @@ export default function HomeScreen({
           onClose={() => setShowCreator(false)}
         />
       )}
+
+      {catEditName && (() => {
+        const editHabits = categoryMap.get(catEditName) ?? [];
+        return (
+          <CategoryEditSheet
+            catName={catEditName}
+            habits={editHabits}
+            onClose={() => setCatEditName(null)}
+            onRenamed={newName => renameCategory(catEditName, newName)}
+            onDeleted={() => deleteCategory(catEditName)}
+          />
+        );
+      })()}
     </>
   );
 }

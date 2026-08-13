@@ -8,7 +8,9 @@ export type TrackingType =
   | 'checklist'
   | 'workout';
 
-export type HabitFrequency = 'daily' | 'weekdays' | 'weekends' | 'weekly';
+export type HabitFrequency =
+  | 'daily' | 'weekdays' | 'weekends' | 'weekly'
+  | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
 
 export interface Habit {
   id: string;

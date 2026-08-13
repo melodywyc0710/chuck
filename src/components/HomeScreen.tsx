@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   LogOut, Flame, Users, CreditCard, Laugh, Smile, Meh, Frown,
-  Sparkles, Star, BarChart2, Plus, Settings2, Pencil,
+  Sparkles, Star, BarChart2, Plus, Settings2,
   Dumbbell, BookOpen, List, Timer, Hash, Activity, TrendingDown, Check,
 } from 'lucide-react';
 import CategoryIconPicker, { getCatIcon } from './CategoryIconPicker';
@@ -313,6 +313,7 @@ export default function HomeScreen({
   const catCardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   function startCatDrag(idx: number, e: React.PointerEvent, numCols: number) {
+    if (!editMode) return;
     e.preventDefault();
     const el = catCardRefs.current[idx];
     const rect = el?.getBoundingClientRect();
@@ -574,7 +575,7 @@ export default function HomeScreen({
                 style={{ background: '#1e1e1e' }}
                 aria-label="Edit categories"
               >
-                <Pencil size={11} color="rgba(255,255,255,0.4)" strokeWidth={1.5} />
+                <Settings2 size={11} color="rgba(255,255,255,0.4)" strokeWidth={1.5} />
               </button>
             )}
             {editMode && (

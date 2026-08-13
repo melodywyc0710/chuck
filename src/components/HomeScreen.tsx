@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   LogOut, Flame, Users, CreditCard, Laugh, Smile, Meh, Frown,
   Sparkles, Star, BarChart2, Plus,
   Dumbbell, BookOpen, List, Timer, Hash, Activity, TrendingDown, Check,
 } from 'lucide-react';
+import CategoryIconPicker, { getCatIcon } from './CategoryIconPicker';
 
 import TraitAllocator from './TraitAllocator';
 import SpeciesSelector from './SpeciesSelector';
@@ -69,73 +70,97 @@ function ColorPicker({ catName, current, onClose }: { catName: string; current: 
 // ─── Category card ────────────────────────────────────────────────────────────
 
 function CategoryCard({
-  name, habits, logs, canCustomize, onClick,
+  name, habits, logs, canCustomize, isDragging, onPointerDown, onClick,
 }: {
   name: string;
   habits: Habit[];
   logs: Record<string, HabitLog>;
   canCustomize: boolean;
+  isDragging: boolean;
+  onPointerDown: (e: React.PointerEvent) => void;
   onClick: () => void;
 }) {
   const [colorPicker, setColorPicker] = useState(false);
+  const [iconPicker, setIconPicker] = useState(false);
   const [color, setColor] = useState(() => getCatColor(name, habits));
+  const [, forceUpdate] = useState(0);
 
   const doneCount = habits.filter(h => !!logs[h.id]).length;
   const total = habits.length;
   const pct = total > 0 ? doneCount / total : 0;
 
+  const CustomIcon = getCatIcon(name);
   const uniqueTypes = [...new Set(habits.map(h => h.tracking_type))].slice(0, 4);
 
-  function refreshColor() {
-    setColor(getCatColor(name, habits));
-    setColorPicker(false);
-  }
+  function refreshColor() { setColor(getCatColor(name, habits)); setColorPicker(false); }
 
   return (
-    <div className="relative">
-      <button
-        onClick={onClick}
-        className="relative rounded-[24px] overflow-hidden text-left transition-all duration-200 active:scale-[0.97] w-full"
-        style={{ background: '#111111', border: '1px solid #1e1e1e', minHeight: 160, display: 'flex', flexDirection: 'column' }}
+    <div className="relative select-none" style={{ userSelect: 'none' }}>
+      <div
+        className="relative rounded-[24px] overflow-hidden text-left w-full"
+        style={{
+          background: '#111111', border: '1px solid #1e1e1e', minHeight: 160,
+          display: 'flex', flexDirection: 'column',
+          boxShadow: isDragging ? '0 16px 48px rgba(0,0,0,0.7)' : 'none',
+          transition: isDragging ? 'none' : 'box-shadow 0.2s',
+        }}
+        onPointerDown={onPointerDown}
+        onClick={isDragging ? undefined : onClick}
       >
         {/* Colored top band */}
-        <div
-          className="relative flex items-center justify-center"
-          style={{ background: color, height: 88, width: '100%', flexShrink: 0 }}
-        >
+        <div className="relative flex items-center justify-center"
+          style={{ background: color, height: 88, width: '100%', flexShrink: 0 }}>
           <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0.15) 100%)' }} />
           <div className="flex items-center gap-2 relative">
-            {uniqueTypes.map(type => {
-              const Ic = TYPE_CONFIG[type]?.Icon ?? Check;
-              return <Ic key={type} size={uniqueTypes.length === 1 ? 40 : 22} strokeWidth={1.4} color="white" style={{ opacity: 0.9 }} />;
-            })}
+            {CustomIcon
+              ? <CustomIcon size={40} strokeWidth={1.4} color="white" style={{ opacity: 0.9 }} />
+              : uniqueTypes.map(type => {
+                  const Ic = TYPE_CONFIG[type]?.Icon ?? Check;
+                  return <Ic key={type} size={uniqueTypes.length === 1 ? 40 : 22} strokeWidth={1.4} color="white" style={{ opacity: 0.9 }} />;
+                })
+            }
           </div>
         </div>
 
         {/* Body */}
         <div className="flex flex-col flex-1 px-4 pt-3 pb-3 gap-1" style={{ background: '#141414', marginTop: -6, borderRadius: '14px 14px 0 0' }}>
-          <p className="text-white/80 text-sm font-semibold leading-tight truncate">{name}</p>
+          <p className="text-white text-sm font-semibold leading-tight truncate">{name}</p>
           <p className="text-[11px] font-medium tabular-nums" style={{ color: 'rgba(255,255,255,0.35)' }}>
             {doneCount}/{total} today
           </p>
           {pct > 0 && (
-            <div className="h-1 rounded-full overflow-hidden mt-1" style={{ background: 'rgba(255,255,255,0.08)' }}>
+            <div className="h-1 rounded-full overflow-hidden mt-1" style={{ background: '#282828' }}>
               <div className="h-full rounded-full transition-all duration-700"
-                style={{ width: `${pct * 100}%`, background: 'rgba(255,255,255,0.5)' }} />
+                style={{ width: `${pct * 100}%`, background: color }} />
             </div>
           )}
         </div>
-      </button>
+      </div>
 
       {canCustomize && (
-        <div className="absolute top-2 right-2 z-10">
+        <div className="absolute top-2 right-2 z-10 flex gap-1">
+          {/* Icon picker trigger */}
           <button
+            onPointerDown={e => e.stopPropagation()}
+            onClick={e => { e.stopPropagation(); setIconPicker(v => !v); }}
+            className="w-6 h-6 rounded-full flex items-center justify-center"
+            style={{ background: '#1e1e1e', border: '1.5px solid #333' }}
+            title="Change icon"
+          >
+            <Star size={10} color="rgba(255,255,255,0.5)" strokeWidth={1.5} />
+          </button>
+          {/* Color picker trigger */}
+          <button
+            onPointerDown={e => e.stopPropagation()}
             onClick={e => { e.stopPropagation(); setColorPicker(v => !v); }}
-            className="w-5 h-5 rounded-full border-2 border-white/30 transition-all active:scale-90"
+            className="w-6 h-6 rounded-full border-2 border-white/30 transition-all active:scale-90"
             style={{ background: color }}
           />
           {colorPicker && <ColorPicker catName={name} current={color} onClose={refreshColor} />}
         </div>
+      )}
+      {iconPicker && (
+        <CategoryIconPicker catName={name} color={color} onClose={() => { setIconPicker(false); forceUpdate(n => n + 1); }} />
       )}
     </div>
   );
@@ -174,6 +199,61 @@ export default function HomeScreen({
   const [wiggling, setWiggling] = useState(false);
   const [bubble, setBubble] = useState<string | null>(null);
 
+  // ── Category drag-to-reorder ──────────────────────────────────────────────
+  type CatDrag = { fromIdx: number; toIdx: number; offsetX: number; offsetY: number; slotW: number; slotH: number };
+  const [catDrag, setCatDrag] = useState<CatDrag | null>(null);
+  const catDragRef = useRef<CatDrag | null>(null);
+  const [catOrder, setCatOrder] = useState<string[]>(() => {
+    try { return JSON.parse(localStorage.getItem(`cat-order-${pet?.user_id}`) ?? '[]'); } catch { return []; }
+  });
+  const catCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  function startCatDrag(idx: number, e: React.PointerEvent, numCols: number) {
+    e.preventDefault();
+    const el = catCardRefs.current[idx];
+    const rect = el?.getBoundingClientRect();
+    const slotW = rect ? rect.width + 12 : 160;
+    const slotH = rect ? rect.height + 12 : 180;
+    const state: CatDrag = { fromIdx: idx, toIdx: idx, offsetX: 0, offsetY: 0, slotW, slotH };
+    catDragRef.current = state; setCatDrag(state);
+    try { navigator.vibrate?.(20); } catch {}
+
+    function onMove(ev: PointerEvent) {
+      if (ev.pointerId !== e.pointerId) return;
+      const dr = catDragRef.current; if (!dr) return;
+      const dx = ev.clientX - e.clientX;
+      const dy = ev.clientY - e.clientY;
+      const colOff = Math.round(dx / dr.slotW);
+      const rowOff = Math.round(dy / dr.slotH);
+      const total = catCardRefs.current.filter(Boolean).length;
+      const toIdx = Math.max(0, Math.min(total - 1, dr.fromIdx + colOff + rowOff * numCols));
+      const next = { ...dr, toIdx, offsetX: dx, offsetY: dy };
+      catDragRef.current = next; setCatDrag(next);
+    }
+    function onEnd(ev: PointerEvent) {
+      if (ev.pointerId !== e.pointerId) return;
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onEnd);
+      document.removeEventListener('pointercancel', onEnd);
+      const dr = catDragRef.current; catDragRef.current = null; setCatDrag(null);
+      if (dr && dr.fromIdx !== dr.toIdx) saveCatOrder(dr.fromIdx, dr.toIdx);
+    }
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onEnd);
+    document.addEventListener('pointercancel', onEnd);
+  }
+
+  function saveCatOrder(from: number, to: number) {
+    setCatOrder(prev => {
+      const names = prev.length ? prev : categoriesBase.map(([n]) => n);
+      const arr = [...names];
+      const [removed] = arr.splice(from, 1);
+      arr.splice(to, 0, removed);
+      localStorage.setItem(`cat-order-${pet?.user_id}`, JSON.stringify(arr));
+      return arr;
+    });
+  }
+
   const tier = profile?.subscription_tier ?? 'free';
   const plus = isPlus(tier);
   const pro = isPro(tier);
@@ -207,14 +287,19 @@ export default function HomeScreen({
 
   if (!pet) return null;
 
-  // Group habits by category (fallback to localStorage if DB column not yet populated)
+  // Group habits by category
   const categoryMap = new Map<string, Habit[]>();
   for (const h of habits) {
     const cat = h.category ?? localStorage.getItem(`habit-cat-${h.id}`) ?? 'General';
     if (!categoryMap.has(cat)) categoryMap.set(cat, []);
     categoryMap.get(cat)!.push(h);
   }
-  const categories = [...categoryMap.entries()];
+  const categoriesBase = [...categoryMap.entries()];
+  // Apply custom order
+  const orderedNames = catOrder.length
+    ? [...catOrder.filter(n => categoryMap.has(n)), ...categoriesBase.map(([n]) => n).filter(n => !catOrder.includes(n))]
+    : categoriesBase.map(([n]) => n);
+  const categories = orderedNames.map(n => [n, categoryMap.get(n)!] as [string, Habit[]]);
   const allCategoryNames = categories.map(([name]) => name);
 
   const MOOD_MESSAGES: Record<string, string[]> = {
@@ -362,22 +447,60 @@ export default function HomeScreen({
 
           {!habitsLoading && habits.length > 0 && (
             <div className="grid grid-cols-2 gap-3">
-              {categories.map(([catName, catHabits]) => (
-                <CategoryCard
-                  key={catName}
-                  name={catName}
-                  habits={catHabits}
-                  logs={todayLogs}
-                  canCustomize={canCustomize}
-                  onClick={() => onCategory(catName, catHabits, allCategoryNames, getCatColor(catName, catHabits), canCustomize, pro)}
-                />
-              ))}
+              {categories.map(([catName, catHabits], idx) => {
+                let translateX = 0, translateY = 0, isLifted = false;
+                if (catDrag) {
+                  const { fromIdx, toIdx, offsetX, offsetY, slotW, slotH } = catDrag;
+                  if (idx === fromIdx) { translateX = offsetX; translateY = offsetY; isLifted = true; }
+                  else {
+                    // Simple slot-push: items shift one slot toward the gap
+                    const cols = 2;
+                    const fromRow = Math.floor(fromIdx / cols), fromCol = fromIdx % cols;
+                    const toRow = Math.floor(toIdx / cols), toCol = toIdx % cols;
+                    const iRow = Math.floor(idx / cols), iCol = idx % cols;
+                    // Determine if this item is in the range [min(from,to), max(from,to)]
+                    if (idx > Math.min(fromIdx, toIdx) && idx <= Math.max(fromIdx, toIdx)) {
+                      if (fromIdx < toIdx) { translateX = -slotW; if (iCol === 0) { translateX = slotW; translateY = -slotH; } }
+                      else { translateX = slotW; if (iCol === cols - 1) { translateX = -slotW; translateY = slotH; } }
+                    } else if (idx < Math.min(fromIdx, toIdx) && idx >= Math.min(fromIdx, toIdx)) {
+                      // covered above
+                    }
+                    void fromRow; void fromCol; void toRow; void toCol; void iRow; void iCol;
+                  }
+                }
+                return (
+                  <div key={catName} ref={el => { catCardRefs.current[idx] = el; }}
+                    style={{
+                      transform: `translate(${translateX}px, ${translateY}px)`,
+                      transition: isLifted ? 'none' : 'transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
+                      zIndex: isLifted ? 20 : 1, position: 'relative',
+                    }}>
+                    <CategoryCard
+                      name={catName}
+                      habits={catHabits}
+                      logs={todayLogs}
+                      canCustomize={canCustomize}
+                      isDragging={isLifted}
+                      onPointerDown={e => {
+                        // Long-press to start drag (400ms)
+                        const lpTimer = setTimeout(() => {
+                          startCatDrag(idx, e, 2);
+                        }, 400);
+                        function cancelLp() { clearTimeout(lpTimer); document.removeEventListener('pointerup', cancelLp); document.removeEventListener('pointermove', cancelLp); }
+                        document.addEventListener('pointerup', cancelLp, { once: true });
+                        document.addEventListener('pointermove', cancelLp, { once: true });
+                      }}
+                      onClick={() => onCategory(catName, catHabits, allCategoryNames, getCatColor(catName, catHabits), canCustomize, pro)}
+                    />
+                  </div>
+                );
+              })}
               <button
                 onClick={() => setShowCreator(true)}
                 className="rounded-[24px] flex flex-col items-center justify-center transition-all active:scale-[0.97]"
-                style={{ background: '#111111', border: '1px dashed rgba(255,255,255,0.08)', minHeight: 160 }}
+                style={{ background: '#111111', border: '1px dashed #1e1e1e', minHeight: 160 }}
               >
-                <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2" style={{ background: 'rgba(255,255,255,0.06)' }}>
+                <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2" style={{ background: '#1a1a1a' }}>
                   <Plus size={16} style={{ color: 'rgba(255,255,255,0.4)' }} strokeWidth={2} />
                 </div>
                 <p className="text-white/25 text-xs font-medium">Add habit</p>

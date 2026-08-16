@@ -47,22 +47,26 @@ function getCatColor(catName: string, habits: Habit[]): string {
 // ─── Category edit sheet ──────────────────────────────────────────────────────
 
 function CategoryEditSheet({
-  catName, habits, onClose, onRenamed, onDeleted,
+  catName, habits, otherCategories, onClose, onRenamed, onDeletedWithHabits, onMoved,
 }: {
   catName: string;
   habits: Habit[];
+  otherCategories: string[];
   onClose: () => void;
   onRenamed: (newName: string) => void;
-  onDeleted: () => void;
+  onDeletedWithHabits: () => void;
+  onMoved: (targetCat: string) => void;
 }) {
   const [name, setName] = useState(catName);
+  const [nameChanged, setNameChanged] = useState(false);
   const [color, setColor] = useState(() => getCatColor(catName, habits));
   const [showIconPicker, setShowIconPicker] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<'idle' | 'choose' | 'move'>('idle');
+  const [moveTo, setMoveTo] = useState('');
   const [, forceUpdate] = useState(0);
   const CustomIcon = getCatIcon(catName);
 
-  function saveRename() {
+  function commitRename() {
     const trimmed = name.trim();
     if (trimmed && trimmed !== catName) onRenamed(trimmed);
     else onClose();
@@ -102,13 +106,21 @@ function CategoryEditSheet({
           </div>
           <input
             value={name}
-            onChange={e => setName(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') saveRename(); }}
-            onBlur={saveRename}
+            onChange={e => { setName(e.target.value); setNameChanged(true); }}
+            onKeyDown={e => { if (e.key === 'Enter') commitRename(); }}
             className="flex-1 text-white text-base font-semibold outline-none bg-transparent"
             placeholder="Category name"
             autoFocus
           />
+          {nameChanged && name.trim() && name.trim() !== catName && (
+            <button
+              onClick={commitRename}
+              className="px-3 py-1.5 rounded-xl text-xs font-semibold"
+              style={{ background: '#FF4D4D', color: 'white' }}
+            >
+              Save
+            </button>
+          )}
         </div>
 
         {/* Color */}
@@ -133,31 +145,81 @@ function CategoryEditSheet({
           <span className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>Icon</span>
         </button>
 
-        {/* Delete — two-step confirm */}
-        {!confirmDelete ? (
+        {/* Delete flow */}
+        {deleteStep === 'idle' && (
           <button
-            onClick={() => setConfirmDelete(true)}
+            onClick={() => setDeleteStep('choose')}
             className="w-full py-3 rounded-xl text-sm font-medium transition-all active:scale-[0.98]"
             style={{ color: '#FF4D4D', background: '#1a1a1a' }}
           >
             Delete Category
           </button>
-        ) : (
-          <div className="flex gap-2">
+        )}
+
+        {deleteStep === 'choose' && (
+          <div className="space-y-2">
+            <p className="text-white/40 text-xs text-center mb-3">What should happen to the habits inside?</p>
             <button
-              onClick={() => setConfirmDelete(false)}
-              className="flex-1 py-3 rounded-xl text-sm font-medium transition-all"
-              style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.4)' }}
+              onClick={onDeletedWithHabits}
+              className="w-full py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.98]"
+              style={{ background: '#DC2626', color: 'white' }}
+            >
+              Delete category &amp; all habits
+            </button>
+            {otherCategories.length > 0 && (
+              <button
+                onClick={() => { setDeleteStep('move'); setMoveTo(otherCategories[0]); }}
+                className="w-full py-3 rounded-xl text-sm font-medium transition-all active:scale-[0.98]"
+                style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.7)' }}
+              >
+                Move habits to another category
+              </button>
+            )}
+            <button
+              onClick={() => setDeleteStep('idle')}
+              className="w-full py-2 text-xs transition-all"
+              style={{ color: 'rgba(255,255,255,0.3)' }}
             >
               Cancel
             </button>
-            <button
-              onClick={onDeleted}
-              className="flex-1 py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.98]"
-              style={{ background: '#FF4D4D', color: 'white' }}
-            >
-              Yes, Delete
-            </button>
+          </div>
+        )}
+
+        {deleteStep === 'move' && (
+          <div className="space-y-3">
+            <p className="text-white/40 text-xs mb-2">Move habits to:</p>
+            <div className="flex gap-2 flex-wrap">
+              {otherCategories.map(c => (
+                <button
+                  key={c}
+                  onClick={() => setMoveTo(c)}
+                  className="px-3 py-1.5 rounded-xl text-xs font-medium transition-all"
+                  style={{
+                    background: moveTo === c ? '#2e2e2e' : '#1a1a1a',
+                    color: moveTo === c ? 'white' : 'rgba(255,255,255,0.4)',
+                    border: moveTo === c ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent',
+                  }}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => setDeleteStep('choose')}
+                className="flex-1 py-3 rounded-xl text-sm font-medium"
+                style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.4)' }}
+              >
+                Back
+              </button>
+              <button
+                onClick={() => moveTo && onMoved(moveTo)}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold"
+                style={{ background: '#FF4D4D', color: 'white', opacity: moveTo ? 1 : 0.4 }}
+              >
+                Move &amp; Delete
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -328,11 +390,33 @@ export default function HomeScreen({
   const currentPageRef = useRef(0);
   function setCurrentPage(n: number) { currentPageRef.current = n; _setCurrentPage(n); }
 
-  const [totalPages, setTotalPages] = useState(() =>
+  const [totalPages, _setTotalPages] = useState(() =>
     pet ? parseInt(localStorage.getItem(`page-count-${pet.user_id}`) ?? '1') : 1
   );
   const totalPagesRef = useRef(totalPages);
+  function setTotalPages(n: number) { totalPagesRef.current = n; _setTotalPages(n); }
   useEffect(() => { totalPagesRef.current = totalPages; }, [totalPages]);
+
+  const [pageNames, setPageNames] = useState<Record<number, string>>(() => {
+    if (!pet) return {};
+    const result: Record<number, string> = {};
+    const total = parseInt(localStorage.getItem(`page-count-${pet.user_id}`) ?? '1');
+    for (let i = 0; i < total; i++) {
+      const n = localStorage.getItem(`page-name-${pet.user_id}-${i}`);
+      if (n) result[i] = n;
+    }
+    return result;
+  });
+  const [editingPageName, setEditingPageName] = useState(false);
+  const [pageNameInput, setPageNameInput] = useState('');
+
+  function getPageName(i: number) { return pageNames[i] ?? `Page ${i + 1}`; }
+  function savePageName(val: string) {
+    const trimmed = val.trim() || `Page ${currentPage + 1}`;
+    localStorage.setItem(`page-name-${pet!.user_id}-${currentPage}`, trimmed);
+    setPageNames(prev => ({ ...prev, [currentPage]: trimmed }));
+    setEditingPageName(false);
+  }
 
   // ── Page swipe ─────────────────────────────────────────────────────────────
   const [swipeDrag, setSwipeDrag] = useState(0);
@@ -371,10 +455,12 @@ export default function HomeScreen({
     const dx = e.clientX - d.startX;
     const THRESHOLD = 60;
     if (dx < -THRESHOLD) {
-      // Swipe left → next page (create if needed)
+      // Swipe left → next page (only create new page if current page has content)
       const cp = currentPageRef.current;
       const tp = totalPagesRef.current;
       if (cp >= tp - 1) {
+        const currentHasContent = [...categoryMap.entries()].some(([n]) => getCatPage(n) === cp);
+        if (!currentHasContent) return;
         const newTotal = tp + 1;
         localStorage.setItem(`page-count-${pet!.user_id}`, String(newTotal));
         setTotalPages(newTotal);
@@ -468,7 +554,17 @@ export default function HomeScreen({
   }
 
   async function renameCategory(oldName: string, newName: string) {
+    // Update habits in DB
     await supabase.from('habits').update({ category: newName }).eq('user_id', pet!.user_id).eq('category', oldName);
+    // Also update habits stored via localStorage fallback (category = null in DB)
+    for (const h of habits) {
+      const localCat = localStorage.getItem(`habit-cat-${h.id}`);
+      if (localCat === oldName) {
+        localStorage.setItem(`habit-cat-${h.id}`, newName);
+        supabase.from('habits').update({ category: newName }).eq('id', h.id).then(() => {});
+      }
+    }
+    // Migrate category metadata keys
     ['cat-color-', 'cat-icon-', 'cat-page-'].forEach(prefix => {
       const v = localStorage.getItem(prefix + oldName);
       if (v) { localStorage.setItem(prefix + newName, v); localStorage.removeItem(prefix + oldName); }
@@ -478,9 +574,31 @@ export default function HomeScreen({
     loadData();
   }
 
-  async function deleteCategory(catName: string) {
-    // Move all habits in this category to null (they'll appear under 'General')
-    await supabase.from('habits').update({ category: null }).eq('user_id', pet!.user_id).eq('category', catName);
+  async function deleteCategoryAndHabits(catName: string) {
+    // Archive all habits in this category
+    await supabase.from('habits').update({ archived: true }).eq('user_id', pet!.user_id).eq('category', catName);
+    // Also archive localStorage-fallback habits
+    for (const h of habits) {
+      const localCat = localStorage.getItem(`habit-cat-${h.id}`);
+      if (localCat === catName) {
+        supabase.from('habits').update({ archived: true }).eq('id', h.id).then(() => {});
+      }
+    }
+    ['cat-color-', 'cat-icon-', 'cat-page-'].forEach(prefix => localStorage.removeItem(prefix + catName));
+    setCatOrder(prev => prev.filter(n => n !== catName));
+    closeCatEdit();
+    loadData();
+  }
+
+  async function moveCategoryHabits(catName: string, targetCat: string) {
+    await supabase.from('habits').update({ category: targetCat }).eq('user_id', pet!.user_id).eq('category', catName);
+    for (const h of habits) {
+      const localCat = localStorage.getItem(`habit-cat-${h.id}`);
+      if (localCat === catName) {
+        localStorage.setItem(`habit-cat-${h.id}`, targetCat);
+        supabase.from('habits').update({ category: targetCat }).eq('id', h.id).then(() => {});
+      }
+    }
     ['cat-color-', 'cat-icon-', 'cat-page-'].forEach(prefix => localStorage.removeItem(prefix + catName));
     setCatOrder(prev => prev.filter(n => n !== catName));
     closeCatEdit();
@@ -684,46 +802,71 @@ export default function HomeScreen({
           )}
         </div>
 
-        {/* Page dots + nav arrows */}
+        {/* Page name + dots + nav arrows */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <button
-              onClick={() => currentPage > 0 && setCurrentPage(currentPage - 1)}
-              className="w-6 h-6 flex items-center justify-center rounded-full transition-all"
-              style={{ opacity: currentPage > 0 ? 0.4 : 0.1, pointerEvents: currentPage > 0 ? 'auto' : 'none' }}
-            >
-              <ChevronLeft size={12} color="white" />
-            </button>
-            <div className="flex items-center gap-1.5">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i)}
-                  className="rounded-full transition-all duration-300"
-                  style={{
-                    width: i === currentPage ? 20 : 6,
-                    height: 6,
-                    background: i === currentPage ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)',
-                  }}
-                />
-              ))}
+          <div className="flex flex-col items-center gap-1.5 mb-4">
+            {/* Page name — tappable in edit mode */}
+            {editingPageName ? (
+              <input
+                autoFocus
+                value={pageNameInput}
+                onChange={e => setPageNameInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') savePageName(pageNameInput); if (e.key === 'Escape') setEditingPageName(false); }}
+                onBlur={() => savePageName(pageNameInput)}
+                className="text-white text-xs font-semibold text-center outline-none bg-transparent border-b border-white/30 pb-0.5 w-32"
+                placeholder={`Page ${currentPage + 1}`}
+              />
+            ) : (
+              <button
+                onClick={() => { if (editMode) { setPageNameInput(getPageName(currentPage)); setEditingPageName(true); } }}
+                className="text-xs font-medium transition-colors"
+                style={{ color: editMode ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.3)', cursor: editMode ? 'text' : 'default' }}
+              >
+                {getPageName(currentPage)}{editMode && ' ✎'}
+              </button>
+            )}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => currentPage > 0 && setCurrentPage(currentPage - 1)}
+                className="w-6 h-6 flex items-center justify-center rounded-full transition-all"
+                style={{ opacity: currentPage > 0 ? 0.4 : 0.1, pointerEvents: currentPage > 0 ? 'auto' : 'none' }}
+              >
+                <ChevronLeft size={12} color="white" />
+              </button>
+              <div className="flex items-center gap-1.5">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i)}
+                    className="rounded-full transition-all duration-300"
+                    style={{
+                      width: i === currentPage ? 20 : 6,
+                      height: 6,
+                      background: i === currentPage ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)',
+                    }}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={() => {
+                  if (currentPage < totalPages - 1) {
+                    setCurrentPage(currentPage + 1);
+                  } else {
+                    // Only create a new page if current page has content
+                    const currentHasContent = categories.some(([n]) => getCatPage(n) === currentPage);
+                    if (!currentHasContent) return;
+                    const newTotal = totalPages + 1;
+                    localStorage.setItem(`page-count-${pet!.user_id}`, String(newTotal));
+                    setTotalPages(newTotal);
+                    setCurrentPage(totalPages);
+                  }
+                }}
+                className="w-6 h-6 flex items-center justify-center rounded-full transition-all"
+                style={{ opacity: currentPage < totalPages - 1 || categories.some(([n]) => getCatPage(n) === currentPage) ? 0.4 : 0.1 }}
+              >
+                <ChevronRight size={12} color="white" />
+              </button>
             </div>
-            <button
-              onClick={() => {
-                if (currentPage < totalPages - 1) {
-                  setCurrentPage(currentPage + 1);
-                } else {
-                  const newTotal = totalPages + 1;
-                  localStorage.setItem(`page-count-${pet!.user_id}`, String(newTotal));
-                  setTotalPages(newTotal);
-                  setCurrentPage(totalPages);
-                }
-              }}
-              className="w-6 h-6 flex items-center justify-center rounded-full transition-all"
-              style={{ opacity: 0.4 }}
-            >
-              <ChevronRight size={12} color="white" />
-            </button>
           </div>
         )}
 
@@ -941,7 +1084,7 @@ export default function HomeScreen({
         </div>
       )}
 
-      {/* Confirm delete sheet */}
+      {/* Confirm delete sheet (drag-down gesture) */}
       {confirmDeleteCat && (
         <>
           <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm" onClick={() => setConfirmDeleteCat(null)} />
@@ -951,27 +1094,40 @@ export default function HomeScreen({
             onClick={e => e.stopPropagation()}
           >
             <div className="w-8 h-1 rounded-full bg-white/15 mx-auto mb-5" />
-            <div className="flex flex-col items-center text-center mb-6">
+            <div className="flex flex-col items-center text-center mb-5">
               <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style={{ background: '#1e1e1e' }}>
                 <span className="text-xl">🗑</span>
               </div>
               <p className="text-white font-semibold text-base mb-1">Delete "{confirmDeleteCat}"?</p>
-              <p className="text-white/35 text-sm">Habits in this category will be moved to General.</p>
+              <p className="text-white/35 text-sm">What should happen to the habits inside?</p>
             </div>
-            <div className="flex gap-2">
+            <div className="space-y-2">
               <button
-                onClick={() => setConfirmDeleteCat(null)}
-                className="flex-1 py-3 rounded-xl text-sm font-medium"
-                style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.5)' }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => { deleteCategory(confirmDeleteCat!); setConfirmDeleteCat(null); }}
-                className="flex-1 py-3 rounded-xl text-sm font-semibold"
+                onClick={() => { deleteCategoryAndHabits(confirmDeleteCat!); setConfirmDeleteCat(null); }}
+                className="w-full py-3 rounded-xl text-sm font-semibold"
                 style={{ background: '#DC2626', color: 'white' }}
               >
-                Delete
+                Delete category &amp; all habits
+              </button>
+              {allCategoryNames.filter(n => n !== confirmDeleteCat).length > 0 && (
+                <button
+                  onClick={() => {
+                    const target = allCategoryNames.filter(n => n !== confirmDeleteCat)[0];
+                    moveCategoryHabits(confirmDeleteCat!, target);
+                    setConfirmDeleteCat(null);
+                  }}
+                  className="w-full py-3 rounded-xl text-sm font-medium"
+                  style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.7)' }}
+                >
+                  Move habits to "{allCategoryNames.filter(n => n !== confirmDeleteCat)[0]}"
+                </button>
+              )}
+              <button
+                onClick={() => setConfirmDeleteCat(null)}
+                className="w-full py-2 text-xs"
+                style={{ color: 'rgba(255,255,255,0.3)' }}
+              >
+                Cancel
               </button>
             </div>
           </div>
@@ -988,13 +1144,16 @@ export default function HomeScreen({
 
       {catEditName && (() => {
         const editHabits = categoryMap.get(catEditName) ?? [];
+        const others = allCategoryNames.filter(n => n !== catEditName);
         return (
           <CategoryEditSheet
             catName={catEditName}
             habits={editHabits}
+            otherCategories={others}
             onClose={closeCatEdit}
             onRenamed={newName => renameCategory(catEditName, newName)}
-            onDeleted={() => deleteCategory(catEditName)}
+            onDeletedWithHabits={() => deleteCategoryAndHabits(catEditName)}
+            onMoved={targetCat => moveCategoryHabits(catEditName, targetCat)}
           />
         );
       })()}

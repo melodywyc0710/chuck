@@ -843,14 +843,18 @@ export default function CategoryHubScreen({
     if (!user) return;
     setLoading(true);
     try {
-      // Always fetch fresh habits for this category
-      const { data: habitData } = await supabase
+      // Fetch all non-archived habits then filter by category using the same
+      // localStorage fallback as HomeScreen (habits created before the `category`
+      // DB column existed may have category=null with a localStorage entry instead).
+      const { data: allHabitData } = await supabase
         .from('habits').select('*')
         .eq('user_id', user.id)
-        .eq('category', categoryName)
         .eq('archived', false)
         .order('sort_order', { ascending: true });
-      const freshHabits = (habitData as Habit[]) ?? [];
+      const freshHabits = ((allHabitData as Habit[]) ?? []).filter(h => {
+        const cat = h.category ?? localStorage.getItem(`habit-cat-${h.id}`) ?? 'General';
+        return cat === categoryName;
+      });
       setHabits(freshHabits);
 
       const habitIds = freshHabits.map(h => h.id);

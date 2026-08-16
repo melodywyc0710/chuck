@@ -89,9 +89,11 @@ export default function HabitCreator({ onSaved, onClose, existingCategories = []
       const fallback = await supabase.from('habits').insert(payloadWithoutCat).select('id').single();
       inserted = fallback.data;
       error = fallback.error;
-      // Store category locally until DB is ready
+      // Store category locally as a fallback
       if (!error && inserted && payload.category) {
         localStorage.setItem(`habit-cat-${inserted.id}`, payload.category);
+        // Try to patch the category column in a follow-up update (non-blocking)
+        supabase.from('habits').update({ category: payload.category }).eq('id', inserted.id).then(() => {});
       }
     }
 

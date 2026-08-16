@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   LogOut, Flame, Users, CreditCard, Laugh, Smile, Meh, Frown,
-  Sparkles, Star, BarChart2, Plus, Settings2,
+  Sparkles, Star, BarChart2, Plus,
   Dumbbell, BookOpen, List, Timer, Hash, Activity, TrendingDown, Check, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import CategoryIconPicker, { getCatIcon } from './CategoryIconPicker';
@@ -168,7 +168,7 @@ function CategoryEditSheet({
 // ─── Category card ────────────────────────────────────────────────────────────
 
 function CategoryCard({
-  name, habits, logs, editMode, isDragging, refreshKey,
+  name, habits, logs, editMode, isDragging, deleteDragY = 0, refreshKey,
   onPointerDown, onClick, onSettingsClick,
 }: {
   name: string;
@@ -176,6 +176,7 @@ function CategoryCard({
   logs: Record<string, HabitLog>;
   editMode: boolean;
   isDragging: boolean;
+  deleteDragY?: number;
   refreshKey: number;
   onPointerDown: (e: React.PointerEvent) => void;
   onClick: () => void;
@@ -191,9 +192,12 @@ function CategoryCard({
   const pct = total > 0 ? doneCount / total : 0;
   const uniqueTypes = [...new Set(habits.map(h => h.tracking_type))].slice(0, 4);
 
+  const deleteProgress = Math.min(1, deleteDragY / 140);
+  const showReleaseHint = deleteDragY > 110;
+
   return (
     <div
-      className={`relative select-none${editMode && !isDragging ? ' cat-jiggle' : ''}`}
+      className={`relative select-none${editMode && !isDragging && deleteDragY === 0 ? ' cat-jiggle' : ''}`}
       style={{ userSelect: 'none' }}
     >
       <div
@@ -238,7 +242,7 @@ function CategoryCard({
             }}
             aria-label="Edit category"
           >
-            <Settings2 size={13} color="white" strokeWidth={1.5} />
+            <Star size={13} color="white" strokeWidth={1.5} />
           </button>
         </div>
 
@@ -255,6 +259,23 @@ function CategoryCard({
             </div>
           )}
         </div>
+
+        {/* Delete drag overlay */}
+        {deleteDragY > 0 && (
+          <div
+            className="absolute inset-0 rounded-[24px] flex flex-col items-center justify-center gap-2 z-10"
+            style={{ background: `rgba(220,38,38,${deleteProgress * 0.88})`, transition: 'none' }}
+          >
+            {showReleaseHint && (
+              <>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                  <span className="text-white text-base">🗑</span>
+                </div>
+                <p className="text-white text-xs font-semibold">Release to delete</p>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -372,8 +393,15 @@ export default function HomeScreen({
   // Incrementing this key forces CategoryCard to re-read localStorage after edits
   const [cardRefreshKey, setCardRefreshKey] = useState(0);
 
-  // Exit edit mode when tapping outside cards
-  function exitEditMode() { setEditMode(false); }
+  function enterEditMode() {
+    setEditMode(true);
+    try { navigator.vibrate?.(50); } catch {}
+  }
+  function exitEditMode() {
+    setEditMode(false);
+    setDeletingCat(null);
+    setDeleteDragY(0);
+  }
 
   // ── Category drag-to-reorder ──────────────────────────────────────────────
   type CatDrag = { fromIdx: number; toIdx: number; offsetX: number; offsetY: number; slotW: number; slotH: number };
@@ -384,6 +412,10 @@ export default function HomeScreen({
     try { return JSON.parse(localStorage.getItem(`cat-order-${pet?.user_id}`) ?? '[]'); } catch { return []; }
   });
   const catCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [deletingCat, setDeletingCat] = useState<string | null>(null);
+  const [deleteDragY, setDeleteDragY] = useState(0);
+  const [confirmDeleteCat, setConfirmDeleteCat] = useState<string | null>(null);
 
   function startCatDrag(idx: number, e: React.PointerEvent, numCols: number) {
     if (!editMode) return;
@@ -642,33 +674,14 @@ export default function HomeScreen({
           </div>
         </div>
 
-        {/* Date + count + edit/done button */}
+        {/* Date + count */}
         <div className="flex items-center justify-between mb-5 fade-up" style={{ animationDelay: '0.15s' }}>
           <p className="text-white/25 text-xs">{todayLabel}</p>
-          <div className="flex items-center gap-3">
-            {habits.length > 0 && (
-              <span className="text-white/20 text-xs">{totalDone}/{habits.length} done</span>
-            )}
-            {habits.length > 0 && !editMode && (
-              <button
-                onClick={() => setEditMode(true)}
-                className="w-7 h-7 flex items-center justify-center rounded-full transition-all active:scale-90"
-                style={{ background: '#1e1e1e' }}
-                aria-label="Edit categories"
-              >
-                <Settings2 size={11} color="rgba(255,255,255,0.4)" strokeWidth={1.5} />
-              </button>
-            )}
-            {editMode && (
-              <button
-                onClick={exitEditMode}
-                className="px-3 py-1 rounded-xl text-xs font-semibold transition-all"
-                style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.7)' }}
-              >
-                Done
-              </button>
-            )}
-          </div>
+          {habits.length > 0 && (
+            <span className={`text-xs transition-colors ${editMode ? 'text-white/40' : 'text-white/20'}`}>
+              {editMode ? 'Hold & drag down to delete' : `${totalDone}/${habits.length} done`}
+            </span>
+          )}
         </div>
 
         {/* Page dots + nav arrows */}
@@ -774,9 +787,11 @@ export default function HomeScreen({
                       style={{
                         transform: isLifted
                           ? `translate(${translateX}px, ${translateY}px) scale(1.08) rotate(2deg)`
+                          : deletingCat === catName
+                          ? `translateY(${deleteDragY}px) scale(${Math.max(0.90, 1 - deleteDragY * 0.0008)})`
                           : `translate(${translateX}px, ${translateY}px)`,
-                        transition: isLifted ? 'none' : 'transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
-                        zIndex: isLifted ? 20 : 1, position: 'relative',
+                        transition: isLifted || deletingCat === catName ? 'none' : 'transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
+                        zIndex: isLifted || deletingCat === catName ? 20 : 1, position: 'relative',
                       }}>
                       <CategoryCard
                         name={catName}
@@ -784,27 +799,77 @@ export default function HomeScreen({
                         logs={todayLogs}
                         editMode={editMode}
                         isDragging={isLifted}
+                        deleteDragY={deletingCat === catName ? deleteDragY : 0}
                         refreshKey={cardRefreshKey}
                         onPointerDown={e => {
-                          if (!editMode) return;
-                          const startX = e.clientX, startY = e.clientY;
-                          let dragging = false;
-                          function onMove(ev: PointerEvent) {
-                            if (ev.pointerId !== e.pointerId) return;
-                            const dist = Math.hypot(ev.clientX - startX, ev.clientY - startY);
-                            if (!dragging && dist > 8) {
-                              dragging = true;
+                          if (editMode) {
+                            const startX = e.clientX, startY = e.clientY;
+                            const pid = e.pointerId;
+                            let mode: 'pending' | 'reorder' | 'delete' = 'pending';
+                            function onMove(ev: PointerEvent) {
+                              if (ev.pointerId !== pid) return;
+                              const dx = ev.clientX - startX;
+                              const dy = ev.clientY - startY;
+                              if (mode === 'pending') {
+                                if (Math.hypot(dx, dy) < 8) return;
+                                if (dy > Math.abs(dx) * 1.2 && dy > 0) {
+                                  mode = 'delete';
+                                } else {
+                                  mode = 'reorder';
+                                  document.removeEventListener('pointermove', onMove);
+                                  document.removeEventListener('pointerup', onUp);
+                                  startCatDrag(idx, e, 2);
+                                  return;
+                                }
+                              }
+                              if (mode === 'delete') {
+                                setDeletingCat(catName);
+                                setDeleteDragY(Math.max(0, dy));
+                              }
+                            }
+                            function onUp(ev: PointerEvent) {
+                              if (ev.pointerId !== pid) return;
                               document.removeEventListener('pointermove', onMove);
                               document.removeEventListener('pointerup', onUp);
-                              startCatDrag(idx, e, 2);
+                              if (mode === 'delete') {
+                                const dy = ev.clientY - startY;
+                                setDeletingCat(null);
+                                setDeleteDragY(0);
+                                if (dy > 120) setConfirmDeleteCat(catName);
+                              }
                             }
+                            document.addEventListener('pointermove', onMove);
+                            document.addEventListener('pointerup', onUp);
+                          } else {
+                            // Long-press to enter edit mode
+                            const startX = e.clientX, startY = e.clientY;
+                            const pid = e.pointerId;
+                            if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+                            const timer = setTimeout(() => {
+                              longPressTimerRef.current = null;
+                              document.removeEventListener('pointermove', onLPMove);
+                              document.removeEventListener('pointerup', onLPUp);
+                              enterEditMode();
+                            }, 500);
+                            longPressTimerRef.current = timer;
+                            function onLPMove(ev: PointerEvent) {
+                              if (ev.pointerId !== pid) return;
+                              if (Math.hypot(ev.clientX - startX, ev.clientY - startY) > 10) {
+                                clearTimeout(timer);
+                                longPressTimerRef.current = null;
+                                document.removeEventListener('pointermove', onLPMove);
+                                document.removeEventListener('pointerup', onLPUp);
+                              }
+                            }
+                            function onLPUp() {
+                              clearTimeout(timer);
+                              longPressTimerRef.current = null;
+                              document.removeEventListener('pointermove', onLPMove);
+                              document.removeEventListener('pointerup', onLPUp);
+                            }
+                            document.addEventListener('pointermove', onLPMove);
+                            document.addEventListener('pointerup', onLPUp, { once: true });
                           }
-                          function onUp() {
-                            document.removeEventListener('pointermove', onMove);
-                            document.removeEventListener('pointerup', onUp);
-                          }
-                          document.addEventListener('pointermove', onMove);
-                          document.addEventListener('pointerup', onUp, { once: true });
                         }}
                         onClick={() => {
                           if (catDidDragRef.current) { catDidDragRef.current = false; return; }
@@ -862,6 +927,56 @@ export default function HomeScreen({
           </button>
         )}
       </div>
+
+      {/* Floating Done button in edit mode */}
+      {editMode && (
+        <div className="fixed bottom-10 left-0 right-0 z-30 flex justify-center pointer-events-none">
+          <button
+            onClick={exitEditMode}
+            className="pointer-events-auto px-10 py-3.5 rounded-2xl text-sm font-semibold transition-all active:scale-95"
+            style={{ background: 'white', color: '#111', boxShadow: '0 8px 40px rgba(0,0,0,0.7)' }}
+          >
+            Done
+          </button>
+        </div>
+      )}
+
+      {/* Confirm delete sheet */}
+      {confirmDeleteCat && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm" onClick={() => setConfirmDeleteCat(null)} />
+          <div
+            className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto rounded-t-[28px] px-5 pt-5 pb-10"
+            style={{ background: '#111111', border: '1px solid #1e1e1e' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="w-8 h-1 rounded-full bg-white/15 mx-auto mb-5" />
+            <div className="flex flex-col items-center text-center mb-6">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style={{ background: '#1e1e1e' }}>
+                <span className="text-xl">🗑</span>
+              </div>
+              <p className="text-white font-semibold text-base mb-1">Delete "{confirmDeleteCat}"?</p>
+              <p className="text-white/35 text-sm">Habits in this category will be moved to General.</p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmDeleteCat(null)}
+                className="flex-1 py-3 rounded-xl text-sm font-medium"
+                style={{ background: '#1e1e1e', color: 'rgba(255,255,255,0.5)' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { deleteCategory(confirmDeleteCat!); setConfirmDeleteCat(null); }}
+                className="flex-1 py-3 rounded-xl text-sm font-semibold"
+                style={{ background: '#DC2626', color: 'white' }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {showCreator && (
         <HabitCreator

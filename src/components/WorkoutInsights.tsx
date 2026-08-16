@@ -108,6 +108,131 @@ function workoutStreak(dates: string[]) {
   return { current: diffToday <= 1 ? streak : 0, best };
 }
 
+// ─── Body heatmap SVG ─────────────────────────────────────────────────────────
+
+/**
+ * Returns a hex color for a muscle based on its intensity (0–1).
+ * 0 = untrained (dark), 1 = fully trained (bright red).
+ */
+function heatColor(intensity: number, active: boolean): string {
+  if (!active || intensity === 0) return '#1c1c1c';
+  // interpolate from dim red (#7a1a1a) → bright red (#FF4D4D)
+  const r = Math.round(0x7a + (0xff - 0x7a) * intensity);
+  const g = Math.round(0x1a + (0x4d - 0x1a) * intensity);
+  const b = Math.round(0x1a + (0x4d - 0x1a) * intensity);
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+function BodyHeatmap({ muscleIntensity }: { muscleIntensity: Map<MuscleGroup, number> }) {
+  function c(m: MuscleGroup) {
+    const v = muscleIntensity.get(m) ?? 0;
+    return heatColor(v, true);
+  }
+  const allBody = muscleIntensity.get('full_body') ?? 0;
+  // If full_body is trained, blend it into all muscles
+  function cb(m: MuscleGroup) {
+    const v = Math.max(muscleIntensity.get(m) ?? 0, allBody * 0.6);
+    return heatColor(v, true);
+  }
+
+  return (
+    <div className="flex gap-3 justify-center items-end">
+      {/* FRONT */}
+      <svg viewBox="0 0 100 220" width="120" height="264" xmlns="http://www.w3.org/2000/svg">
+        {/* Head */}
+        <ellipse cx="50" cy="14" rx="11" ry="13" fill="#222" stroke="#333" strokeWidth="0.8" />
+        {/* Neck */}
+        <rect x="45" y="25" width="10" height="8" rx="3" fill="#1e1e1e" />
+        {/* Torso */}
+        <rect x="31" y="32" width="38" height="46" rx="6" fill="#1c1c1c" />
+        {/* Chest — two pecs */}
+        <ellipse cx="42" cy="44" rx="9" ry="8" fill={cb('chest')} />
+        <ellipse cx="58" cy="44" rx="9" ry="8" fill={cb('chest')} />
+        {/* Abs — 3 rows */}
+        <rect x="42" y="54" width="7" height="5" rx="2" fill={cb('abs')} />
+        <rect x="51" y="54" width="7" height="5" rx="2" fill={cb('abs')} />
+        <rect x="42" y="61" width="7" height="5" rx="2" fill={cb('abs')} />
+        <rect x="51" y="61" width="7" height="5" rx="2" fill={cb('abs')} />
+        <rect x="42" y="68" width="7" height="5" rx="2" fill={cb('abs')} />
+        <rect x="51" y="68" width="7" height="5" rx="2" fill={cb('abs')} />
+        {/* Shoulders */}
+        <ellipse cx="27" cy="40" rx="7" ry="7" fill={cb('shoulders')} />
+        <ellipse cx="73" cy="40" rx="7" ry="7" fill={cb('shoulders')} />
+        {/* Upper arms — biceps */}
+        <rect x="18" y="44" width="10" height="22" rx="5" fill={cb('biceps')} />
+        <rect x="72" y="44" width="10" height="22" rx="5" fill={cb('biceps')} />
+        {/* Forearms */}
+        <rect x="15" y="68" width="9" height="20" rx="4" fill={cb('forearms')} />
+        <rect x="76" y="68" width="9" height="20" rx="4" fill={cb('forearms')} />
+        {/* Hands */}
+        <ellipse cx="20" cy="91" rx="5" ry="4" fill="#1e1e1e" />
+        <ellipse cx="80" cy="91" rx="5" ry="4" fill="#1e1e1e" />
+        {/* Hips */}
+        <rect x="31" y="77" width="38" height="14" rx="5" fill="#1c1c1c" />
+        {/* Quads */}
+        <rect x="32" y="90" width="16" height="36" rx="7" fill={cb('quads')} />
+        <rect x="52" y="90" width="16" height="36" rx="7" fill={cb('quads')} />
+        {/* Knees */}
+        <ellipse cx="40" cy="129" rx="8" ry="5" fill="#1e1e1e" />
+        <ellipse cx="60" cy="129" rx="8" ry="5" fill="#1e1e1e" />
+        {/* Calves front */}
+        <rect x="33" y="133" width="13" height="30" rx="6" fill={cb('calves')} />
+        <rect x="53" y="133" width="13" height="30" rx="6" fill={cb('calves')} />
+        {/* Feet */}
+        <ellipse cx="40" cy="166" rx="7" ry="4" fill="#1e1e1e" />
+        <ellipse cx="60" cy="166" rx="7" ry="4" fill="#1e1e1e" />
+      </svg>
+
+      {/* BACK */}
+      <svg viewBox="0 0 100 220" width="120" height="264" xmlns="http://www.w3.org/2000/svg">
+        {/* Head */}
+        <ellipse cx="50" cy="14" rx="11" ry="13" fill="#222" stroke="#333" strokeWidth="0.8" />
+        {/* Neck */}
+        <rect x="45" y="25" width="10" height="8" rx="3" fill="#1e1e1e" />
+        {/* Torso back */}
+        <rect x="31" y="32" width="38" height="46" rx="6" fill="#1c1c1c" />
+        {/* Traps */}
+        <ellipse cx="40" cy="36" rx="8" ry="5" fill={cb('back')} />
+        <ellipse cx="60" cy="36" rx="8" ry="5" fill={cb('back')} />
+        {/* Lats */}
+        <ellipse cx="36" cy="54" rx="6" ry="14" fill={cb('back')} />
+        <ellipse cx="64" cy="54" rx="6" ry="14" fill={cb('back')} />
+        {/* Lower back */}
+        <rect x="39" y="64" width="22" height="12" rx="4" fill={cb('back')} />
+        {/* Shoulders back */}
+        <ellipse cx="27" cy="40" rx="7" ry="7" fill={cb('shoulders')} />
+        <ellipse cx="73" cy="40" rx="7" ry="7" fill={cb('shoulders')} />
+        {/* Upper arms — triceps */}
+        <rect x="18" y="44" width="10" height="22" rx="5" fill={cb('triceps')} />
+        <rect x="72" y="44" width="10" height="22" rx="5" fill={cb('triceps')} />
+        {/* Forearms back */}
+        <rect x="15" y="68" width="9" height="20" rx="4" fill={cb('forearms')} />
+        <rect x="76" y="68" width="9" height="20" rx="4" fill={cb('forearms')} />
+        {/* Hands */}
+        <ellipse cx="20" cy="91" rx="5" ry="4" fill="#1e1e1e" />
+        <ellipse cx="80" cy="91" rx="5" ry="4" fill="#1e1e1e" />
+        {/* Hips / glutes */}
+        <rect x="31" y="77" width="38" height="16" rx="5" fill={cb('glutes')} />
+        {/* Glute detail */}
+        <ellipse cx="41" cy="88" rx="9" ry="7" fill={cb('glutes')} />
+        <ellipse cx="59" cy="88" rx="9" ry="7" fill={cb('glutes')} />
+        {/* Hamstrings */}
+        <rect x="32" y="90" width="16" height="36" rx="7" fill={cb('hamstrings')} />
+        <rect x="52" y="90" width="16" height="36" rx="7" fill={cb('hamstrings')} />
+        {/* Knees back */}
+        <ellipse cx="40" cy="129" rx="8" ry="5" fill="#1e1e1e" />
+        <ellipse cx="60" cy="129" rx="8" ry="5" fill="#1e1e1e" />
+        {/* Calves back */}
+        <rect x="33" y="133" width="13" height="30" rx="6" fill={cb('calves')} />
+        <rect x="53" y="133" width="13" height="30" rx="6" fill={cb('calves')} />
+        {/* Feet */}
+        <ellipse cx="40" cy="166" rx="7" ry="4" fill="#1e1e1e" />
+        <ellipse cx="60" cy="166" rx="7" ry="4" fill="#1e1e1e" />
+      </svg>
+    </div>
+  );
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function WorkoutInsights() {
@@ -181,6 +306,11 @@ export default function WorkoutInsights() {
     .sort((a, b) => b[1] - a[1])
     .filter(([, sets]) => sets > 0);
   const maxMuscleSets = muscleEntries[0]?.[1] ?? 1;
+
+  // Normalized 0–1 intensity per muscle for heatmap
+  const muscleIntensity = new Map<MuscleGroup, number>(
+    [...muscleSetCounts.entries()].map(([m, sets]) => [m, sets / maxMuscleSets])
+  );
 
   // ── Personal records (all time) ────────────────────────────────────────────
   // Best 1RM per exercise slug (weight_reps only)
@@ -269,6 +399,30 @@ export default function WorkoutInsights() {
           </div>
         )}
       </div>
+
+      {/* ── Body heatmap ── */}
+      {muscleEntries.length > 0 && (
+        <div>
+          <p className="text-white/30 text-[10px] uppercase tracking-widest mb-3">Muscle Heatmap · 30 days</p>
+          <div className="px-4 py-5" style={card}>
+            <BodyHeatmap muscleIntensity={muscleIntensity} />
+            {/* Legend */}
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-sm" style={{ background: '#1c1c1c', border: '1px solid #2a2a2a' }} />
+                <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Untrained</span>
+              </div>
+              <div className="flex items-center gap-0.5">
+                {[0.2, 0.4, 0.6, 0.8, 1].map(v => (
+                  <div key={v} className="w-4 h-3 rounded-sm" style={{ background: heatColor(v, true) }} />
+                ))}
+              </div>
+              <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>High</span>
+            </div>
+            <p className="text-white/20 text-[10px] text-center mt-2">Front · Back</p>
+          </div>
+        </div>
+      )}
 
       {/* ── Muscle groups ── */}
       {muscleEntries.length > 0 && (

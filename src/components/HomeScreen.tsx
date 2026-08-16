@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   LogOut, Flame, Users, CreditCard, Laugh, Smile, Meh, Frown,
   Sparkles, Star, BarChart2, Plus, Settings2,
-  Dumbbell, BookOpen, List, Timer, Hash, Activity, TrendingDown, Check,
+  Dumbbell, BookOpen, List, Timer, Hash, Activity, TrendingDown, Check, ChevronLeft, ChevronRight,
 } from 'lucide-react';
 import CategoryIconPicker, { getCatIcon } from './CategoryIconPicker';
 
@@ -269,6 +269,15 @@ function MoodIcon({ h, size = 14 }: { h: number; size?: number }) {
   return <Frown size={size} />;
 }
 
+// ─── Page helpers ─────────────────────────────────────────────────────────────
+
+function getCatPage(catName: string): number {
+  return parseInt(localStorage.getItem(`cat-page-${catName}`) ?? '0');
+}
+function setCatPageLocal(catName: string, page: number) {
+  localStorage.setItem(`cat-page-${catName}`, String(page));
+}
+
 // ─── Main screen ──────────────────────────────────────────────────────────────
 
 export default function HomeScreen({
@@ -292,6 +301,70 @@ export default function HomeScreen({
   const [showSpecies, setShowSpecies] = useState(false);
   const [wiggling, setWiggling] = useState(false);
   const [bubble, setBubble] = useState<string | null>(null);
+
+  // ── Pages ─────────────────────────────────────────────────────────────────
+  const [currentPage, _setCurrentPage] = useState(0);
+  const currentPageRef = useRef(0);
+  function setCurrentPage(n: number) { currentPageRef.current = n; _setCurrentPage(n); }
+
+  const [totalPages, setTotalPages] = useState(() =>
+    pet ? parseInt(localStorage.getItem(`page-count-${pet.user_id}`) ?? '1') : 1
+  );
+  const totalPagesRef = useRef(totalPages);
+  useEffect(() => { totalPagesRef.current = totalPages; }, [totalPages]);
+
+  // ── Page swipe ─────────────────────────────────────────────────────────────
+  const [swipeDrag, setSwipeDrag] = useState(0);
+  const swipeActiveRef = useRef(false);
+  const swipeDataRef = useRef<{ startX: number; startY: number; pid: number; dir: 'h' | 'v' | null } | null>(null);
+
+  function onCatSwipeDown(e: React.PointerEvent) {
+    if (editMode || catDrag) return;
+    swipeDataRef.current = { startX: e.clientX, startY: e.clientY, pid: e.pointerId, dir: null };
+  }
+  function onCatSwipeMove(e: React.PointerEvent) {
+    const d = swipeDataRef.current;
+    if (!d || e.pointerId !== d.pid) return;
+    const dx = e.clientX - d.startX;
+    const dy = e.clientY - d.startY;
+    if (d.dir === null) {
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      d.dir = Math.abs(dx) > Math.abs(dy) ? 'h' : 'v';
+    }
+    if (d.dir === 'v') return;
+    // Horizontal swipe: apply drag with rubber-band at edges
+    let offset = dx;
+    if (currentPageRef.current === 0 && dx > 0) offset = dx * 0.25;
+    if (currentPageRef.current >= totalPagesRef.current - 1 && dx < 0) offset = dx * 0.25;
+    swipeActiveRef.current = true;
+    setSwipeDrag(offset);
+  }
+  function onCatSwipeUp(e: React.PointerEvent) {
+    const d = swipeDataRef.current;
+    if (!d || e.pointerId !== d.pid) return;
+    swipeDataRef.current = null;
+    const wasActive = swipeActiveRef.current;
+    swipeActiveRef.current = false;
+    setSwipeDrag(0);
+    if (!wasActive) return;
+    const dx = e.clientX - d.startX;
+    const THRESHOLD = 60;
+    if (dx < -THRESHOLD) {
+      // Swipe left → next page (create if needed)
+      const cp = currentPageRef.current;
+      const tp = totalPagesRef.current;
+      if (cp >= tp - 1) {
+        const newTotal = tp + 1;
+        localStorage.setItem(`page-count-${pet!.user_id}`, String(newTotal));
+        setTotalPages(newTotal);
+        setCurrentPage(tp);
+      } else {
+        setCurrentPage(cp + 1);
+      }
+    } else if (dx > THRESHOLD && currentPageRef.current > 0) {
+      setCurrentPage(currentPageRef.current - 1);
+    }
+  }
 
   // ── Edit mode (iOS-style) ─────────────────────────────────────────────────
   const [editMode, setEditMode] = useState(false);
@@ -364,7 +437,7 @@ export default function HomeScreen({
 
   async function renameCategory(oldName: string, newName: string) {
     await supabase.from('habits').update({ category: newName }).eq('user_id', pet!.user_id).eq('category', oldName);
-    ['cat-color-', 'cat-icon-'].forEach(prefix => {
+    ['cat-color-', 'cat-icon-', 'cat-page-'].forEach(prefix => {
       const v = localStorage.getItem(prefix + oldName);
       if (v) { localStorage.setItem(prefix + newName, v); localStorage.removeItem(prefix + oldName); }
     });
@@ -376,7 +449,7 @@ export default function HomeScreen({
   async function deleteCategory(catName: string) {
     // Move all habits in this category to null (they'll appear under 'General')
     await supabase.from('habits').update({ category: null }).eq('user_id', pet!.user_id).eq('category', catName);
-    ['cat-color-', 'cat-icon-'].forEach(prefix => localStorage.removeItem(prefix + catName));
+    ['cat-color-', 'cat-icon-', 'cat-page-'].forEach(prefix => localStorage.removeItem(prefix + catName));
     setCatOrder(prev => prev.filter(n => n !== catName));
     closeCatEdit();
     loadData();
@@ -410,7 +483,15 @@ export default function HomeScreen({
       ]);
       if (habitRes.error) console.error('[habits] fetch error:', habitRes.error.message, habitRes.error);
       if (habitRes.data) {
-        setHabits(habitRes.data.map(x => ({ ...x, checklist_items: x.checklist_items ?? [] })) as Habit[]);
+        const processed = habitRes.data.map(x => ({ ...x, checklist_items: x.checklist_items ?? [] })) as Habit[];
+        setHabits(processed);
+        // Assign any new (unassigned) categories to the current page
+        for (const h of processed) {
+          const cat = h.category ?? localStorage.getItem(`habit-cat-${h.id}`) ?? 'General';
+          if (!localStorage.getItem(`cat-page-${cat}`)) {
+            setCatPageLocal(cat, currentPageRef.current);
+          }
+        }
       }
       if (logRes.error) console.error('[logs] fetch error:', logRes.error.message);
       if (logRes.data) {
@@ -590,8 +671,64 @@ export default function HomeScreen({
           </div>
         </div>
 
-        {/* Category cards */}
-        <div className="fade-up" style={{ animationDelay: '0.2s' }}>
+        {/* Page dots + nav arrows */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <button
+              onClick={() => currentPage > 0 && setCurrentPage(currentPage - 1)}
+              className="w-6 h-6 flex items-center justify-center rounded-full transition-all"
+              style={{ opacity: currentPage > 0 ? 0.4 : 0.1, pointerEvents: currentPage > 0 ? 'auto' : 'none' }}
+            >
+              <ChevronLeft size={12} color="white" />
+            </button>
+            <div className="flex items-center gap-1.5">
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentPage(i)}
+                  className="rounded-full transition-all duration-300"
+                  style={{
+                    width: i === currentPage ? 20 : 6,
+                    height: 6,
+                    background: i === currentPage ? 'rgba(255,255,255,0.6)' : 'rgba(255,255,255,0.2)',
+                  }}
+                />
+              ))}
+            </div>
+            <button
+              onClick={() => {
+                if (currentPage < totalPages - 1) {
+                  setCurrentPage(currentPage + 1);
+                } else {
+                  const newTotal = totalPages + 1;
+                  localStorage.setItem(`page-count-${pet!.user_id}`, String(newTotal));
+                  setTotalPages(newTotal);
+                  setCurrentPage(totalPages);
+                }
+              }}
+              className="w-6 h-6 flex items-center justify-center rounded-full transition-all"
+              style={{ opacity: 0.4 }}
+            >
+              <ChevronRight size={12} color="white" />
+            </button>
+          </div>
+        )}
+
+        {/* Category cards — swipeable */}
+        <div
+          className="fade-up overflow-hidden"
+          style={{ animationDelay: '0.2s', touchAction: 'pan-y' }}
+          onPointerDown={onCatSwipeDown}
+          onPointerMove={onCatSwipeMove}
+          onPointerUp={onCatSwipeUp}
+          onPointerCancel={onCatSwipeUp}
+        >
+          <div
+            style={{
+              transform: `translateX(${swipeDrag}px)`,
+              transition: swipeActiveRef.current ? 'none' : 'transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94)',
+            }}
+          >
           {habitsLoading && (
             <div className="flex justify-center py-12">
               <div className="w-4 h-4 rounded-full border-2 border-white/15 border-t-white/50 animate-spin" />
@@ -612,86 +749,100 @@ export default function HomeScreen({
             </button>
           )}
 
-          {!habitsLoading && habits.length > 0 && (
-            <div className="grid grid-cols-2 gap-3">
-              {categories.map(([catName, catHabits], idx) => {
-                let translateX = 0, translateY = 0, isLifted = false;
-                if (catDrag) {
-                  const { fromIdx, toIdx, offsetX, offsetY, slotW, slotH } = catDrag;
-                  if (idx === fromIdx) { translateX = offsetX; translateY = offsetY; isLifted = true; }
-                  else {
-                    const cols = 2;
-                    const iCol = idx % cols;
-                    if (idx > Math.min(fromIdx, toIdx) && idx <= Math.max(fromIdx, toIdx)) {
-                      if (fromIdx < toIdx) { translateX = -slotW; if (iCol === 0) { translateX = slotW; translateY = -slotH; } }
-                      else { translateX = slotW; if (iCol === cols - 1) { translateX = -slotW; translateY = slotH; } }
+          {!habitsLoading && habits.length > 0 && (() => {
+            const pageCategories = categories.filter(([catName]) => getCatPage(catName) === currentPage);
+            return (
+              <div className="grid grid-cols-2 gap-3">
+                {pageCategories.map(([catName, catHabits], pageIdx) => {
+                  // Map page-local index to global index for drag-to-reorder
+                  const idx = categories.findIndex(([n]) => n === catName);
+                  let translateX = 0, translateY = 0, isLifted = false;
+                  if (catDrag) {
+                    const { fromIdx, toIdx, offsetX, offsetY, slotW, slotH } = catDrag;
+                    if (idx === fromIdx) { translateX = offsetX; translateY = offsetY; isLifted = true; }
+                    else {
+                      const cols = 2;
+                      const iCol = pageIdx % cols;
+                      if (idx > Math.min(fromIdx, toIdx) && idx <= Math.max(fromIdx, toIdx)) {
+                        if (fromIdx < toIdx) { translateX = -slotW; if (iCol === 0) { translateX = slotW; translateY = -slotH; } }
+                        else { translateX = slotW; if (iCol === cols - 1) { translateX = -slotW; translateY = slotH; } }
+                      }
                     }
                   }
-                }
-                return (
-                  <div key={catName} ref={el => { catCardRefs.current[idx] = el; }}
-                    style={{
-                      transform: isLifted
-                        ? `translate(${translateX}px, ${translateY}px) scale(1.08) rotate(2deg)`
-                        : `translate(${translateX}px, ${translateY}px)`,
-                      transition: isLifted ? 'none' : 'transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
-                      zIndex: isLifted ? 20 : 1, position: 'relative',
-                    }}>
-                    <CategoryCard
-                      name={catName}
-                      habits={catHabits}
-                      logs={todayLogs}
-                      editMode={editMode}
-                      isDragging={isLifted}
-                      refreshKey={cardRefreshKey}
-                      onPointerDown={e => {
-                        if (!editMode) return;
-                        // In edit mode: track movement to detect drag
-                        const startX = e.clientX, startY = e.clientY;
-                        let dragging = false;
-                        function onMove(ev: PointerEvent) {
-                          if (ev.pointerId !== e.pointerId) return;
-                          const dist = Math.hypot(ev.clientX - startX, ev.clientY - startY);
-                          if (!dragging && dist > 8) {
-                            dragging = true;
+                  return (
+                    <div key={catName} ref={el => { catCardRefs.current[idx] = el; }}
+                      style={{
+                        transform: isLifted
+                          ? `translate(${translateX}px, ${translateY}px) scale(1.08) rotate(2deg)`
+                          : `translate(${translateX}px, ${translateY}px)`,
+                        transition: isLifted ? 'none' : 'transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
+                        zIndex: isLifted ? 20 : 1, position: 'relative',
+                      }}>
+                      <CategoryCard
+                        name={catName}
+                        habits={catHabits}
+                        logs={todayLogs}
+                        editMode={editMode}
+                        isDragging={isLifted}
+                        refreshKey={cardRefreshKey}
+                        onPointerDown={e => {
+                          if (!editMode) return;
+                          const startX = e.clientX, startY = e.clientY;
+                          let dragging = false;
+                          function onMove(ev: PointerEvent) {
+                            if (ev.pointerId !== e.pointerId) return;
+                            const dist = Math.hypot(ev.clientX - startX, ev.clientY - startY);
+                            if (!dragging && dist > 8) {
+                              dragging = true;
+                              document.removeEventListener('pointermove', onMove);
+                              document.removeEventListener('pointerup', onUp);
+                              startCatDrag(idx, e, 2);
+                            }
+                          }
+                          function onUp() {
                             document.removeEventListener('pointermove', onMove);
                             document.removeEventListener('pointerup', onUp);
-                            startCatDrag(idx, e, 2);
                           }
-                        }
-                        function onUp() {
-                          document.removeEventListener('pointermove', onMove);
-                          document.removeEventListener('pointerup', onUp);
-                        }
-                        document.addEventListener('pointermove', onMove);
-                        document.addEventListener('pointerup', onUp, { once: true });
-                      }}
-                      onClick={() => {
-                        if (catDidDragRef.current) { catDidDragRef.current = false; return; }
-                        if (editMode) return; // In edit mode, tap opens settings (handled by settings button)
-                        onCategory(catName, catHabits, allCategoryNames, getCatColor(catName, catHabits), canCustomize, pro);
-                      }}
-                      onSettingsClick={e => {
-                        e.stopPropagation();
-                        setCatEditName(catName);
-                      }}
-                    />
+                          document.addEventListener('pointermove', onMove);
+                          document.addEventListener('pointerup', onUp, { once: true });
+                        }}
+                        onClick={() => {
+                          if (catDidDragRef.current) { catDidDragRef.current = false; return; }
+                          if (editMode) return;
+                          onCategory(catName, catHabits, allCategoryNames, getCatColor(catName, catHabits), canCustomize, pro);
+                        }}
+                        onSettingsClick={e => {
+                          e.stopPropagation();
+                          setCatEditName(catName);
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+
+                {/* Add habit / new page slot */}
+                <button
+                  onClick={() => { exitEditMode(); setShowCreator(true); }}
+                  className="rounded-[24px] flex flex-col items-center justify-center transition-all active:scale-[0.97]"
+                  style={{ background: '#111111', border: '1px dashed #1e1e1e', minHeight: 160 }}
+                >
+                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2" style={{ background: '#1a1a1a' }}>
+                    <Plus size={16} style={{ color: 'rgba(255,255,255,0.4)' }} strokeWidth={2} />
                   </div>
-                );
-              })}
-              <button
-                onClick={() => { exitEditMode(); setShowCreator(true); }}
-                className="rounded-[24px] flex flex-col items-center justify-center transition-all active:scale-[0.97]"
-                style={{ background: '#111111', border: '1px dashed #1e1e1e', minHeight: 160 }}
-              >
-                <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-2" style={{ background: '#1a1a1a' }}>
-                  <Plus size={16} style={{ color: 'rgba(255,255,255,0.4)' }} strokeWidth={2} />
-                </div>
-                <p className="text-white/25 text-xs font-medium">Add habit</p>
-              </button>
-            </div>
-          )}
+                  <p className="text-white/25 text-xs font-medium">Add habit</p>
+                </button>
+              </div>
+            );
+          })()}
+          </div>
         </div>
+
+        {/* Swipe hint — only on first session with multiple pages */}
+        {!habitsLoading && habits.length > 0 && totalPages === 1 && (
+          <p className="text-white/15 text-[10px] text-center mt-3">
+            Swipe left to add a new page
+          </p>
+        )}
 
         {/* Pro AI check-in */}
         {pro && (

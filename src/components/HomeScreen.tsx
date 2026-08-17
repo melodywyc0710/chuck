@@ -58,7 +58,6 @@ function CategoryEditSheet({
   onMoved: (targetCat: string) => void;
 }) {
   const [name, setName] = useState(catName);
-  const [nameChanged, setNameChanged] = useState(false);
   const [color, setColor] = useState(() => getCatColor(catName, habits));
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [deleteStep, setDeleteStep] = useState<'idle' | 'choose' | 'move'>('idle');
@@ -97,8 +96,8 @@ function CategoryEditSheet({
       >
         <div className="w-8 h-1 rounded-full bg-white/15 mx-auto mb-5" />
 
-        {/* Color swatch header */}
-        <div className="flex items-center gap-3 mb-5">
+        {/* Name + color swatch */}
+        <div className="flex items-center gap-3 mb-2">
           <div className="w-10 h-10 rounded-2xl shrink-0 flex items-center justify-center" style={{ background: color }}>
             {CustomIcon
               ? <CustomIcon size={20} color="white" strokeWidth={1.5} />
@@ -106,22 +105,21 @@ function CategoryEditSheet({
           </div>
           <input
             value={name}
-            onChange={e => { setName(e.target.value); setNameChanged(true); }}
+            onChange={e => setName(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') commitRename(); }}
             className="flex-1 text-white text-base font-semibold outline-none bg-transparent"
             placeholder="Category name"
             autoFocus
           />
-          {nameChanged && name.trim() && name.trim() !== catName && (
-            <button
-              onClick={commitRename}
-              className="px-3 py-1.5 rounded-xl text-xs font-semibold"
-              style={{ background: '#FF4D4D', color: 'white' }}
-            >
-              Save
-            </button>
-          )}
         </div>
+        <button
+          onClick={commitRename}
+          disabled={!name.trim()}
+          className="w-full py-2.5 rounded-xl text-sm font-semibold mb-5 transition-all active:scale-[0.98] disabled:opacity-30"
+          style={{ background: name.trim() !== catName ? '#FF4D4D' : '#1e1e1e', color: name.trim() !== catName ? 'white' : 'rgba(255,255,255,0.4)' }}
+        >
+          {name.trim() !== catName ? 'Save Name' : 'Rename'}
+        </button>
 
         {/* Color */}
         <p className="text-white/30 text-[10px] uppercase tracking-widest mb-2">Color</p>
@@ -569,7 +567,11 @@ export default function HomeScreen({
       const v = localStorage.getItem(prefix + oldName);
       if (v) { localStorage.setItem(prefix + newName, v); localStorage.removeItem(prefix + oldName); }
     });
-    setCatOrder(prev => prev.map(n => n === oldName ? newName : n));
+    setCatOrder(prev => {
+      const updated = prev.map(n => n === oldName ? newName : n);
+      localStorage.setItem(`cat-order-${pet?.user_id}`, JSON.stringify(updated));
+      return updated;
+    });
     closeCatEdit();
     loadData();
   }

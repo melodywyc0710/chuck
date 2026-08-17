@@ -124,12 +124,7 @@ function heatColor(intensity: number, active: boolean): string {
 }
 
 function BodyHeatmap({ muscleIntensity }: { muscleIntensity: Map<MuscleGroup, number> }) {
-  function c(m: MuscleGroup) {
-    const v = muscleIntensity.get(m) ?? 0;
-    return heatColor(v, true);
-  }
   const allBody = muscleIntensity.get('full_body') ?? 0;
-  // If full_body is trained, blend it into all muscles
   function cb(m: MuscleGroup) {
     const v = Math.max(muscleIntensity.get(m) ?? 0, allBody * 0.6);
     return heatColor(v, true);

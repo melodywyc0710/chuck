@@ -472,17 +472,12 @@ export default function HomeScreen({
   }
 
   async function renameCategory(oldName: string, newName: string) {
-    // Update habits in DB
-    await supabase.from('habits').update({ category: newName }).eq('user_id', pet!.user_id).eq('category', oldName);
-    // Also update habits stored via localStorage fallback (category = null in DB)
-    for (const h of habits) {
-      const localCat = localStorage.getItem(`habit-cat-${h.id}`);
-      if (localCat === oldName) {
-        localStorage.setItem(`habit-cat-${h.id}`, newName);
-        supabase.from('habits').update({ category: newName }).eq('id', h.id).then(() => {});
-      }
-    }
-    // Migrate category metadata keys
+    // Update local state immediately to avoid race with DB propagation
+    setHabits(prev => prev.map(h => {
+      const effectiveCat = h.category ?? localStorage.getItem(`habit-cat-${h.id}`) ?? 'General';
+      return effectiveCat === oldName ? { ...h, category: newName } : h;
+    }));
+    // Migrate metadata keys
     ['cat-color-', 'cat-icon-', 'cat-page-'].forEach(prefix => {
       const v = localStorage.getItem(prefix + oldName);
       if (v) { localStorage.setItem(prefix + newName, v); localStorage.removeItem(prefix + oldName); }
@@ -493,7 +488,15 @@ export default function HomeScreen({
       return updated;
     });
     setCatRenamingName(null);
-    loadData();
+    // Persist to DB in background
+    supabase.from('habits').update({ category: newName }).eq('user_id', pet!.user_id).eq('category', oldName).then(() => {});
+    for (const h of habits) {
+      const localCat = localStorage.getItem(`habit-cat-${h.id}`);
+      if (localCat === oldName) {
+        localStorage.setItem(`habit-cat-${h.id}`, newName);
+        supabase.from('habits').update({ category: newName }).eq('id', h.id).then(() => {});
+      }
+    }
   }
 
   async function deleteCategoryAndHabits(catName: string) {

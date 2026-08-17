@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ArrowLeft, Check, Play, Pause, Plus, Minus, Trash2,
+  ArrowLeft, Check, Play, Pause, Plus, Minus,
   BookOpen, List, Timer as TimerIcon, Hash, Activity, TrendingDown, Dumbbell,
-  Edit2, Camera, GripVertical, RotateCcw, Pin, PinOff,
+  Camera, GripVertical, RotateCcw, Pin,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from '../store/authStore';
@@ -138,7 +138,7 @@ const TYPE_ICONS: Record<string, React.ElementType> = {
 };
 
 function HabitPanel({
-  habit, todayLog, pet, user, color, isPro,
+  habit, todayLog, pet, user, color, isPro, editMode,
   isPinned, onTogglePin, onDelete, onRename,
   onLogUpdated, onLogCleared, onWorkout, onJournal, onPhotoVerify, onGripPointerDown,
 }: {
@@ -148,6 +148,7 @@ function HabitPanel({
   user: ReturnType<typeof useAuthStore.getState>['user'];
   color: string;
   isPro: boolean;
+  editMode: boolean;
   isPinned: boolean;
   onTogglePin: () => void;
   onDelete: () => void;
@@ -167,7 +168,6 @@ function HabitPanel({
     try { return new Set(JSON.parse(todayLog?.notes ?? '[]') as number[]); } catch { return new Set(); }
   });
   const [journalDone, setJournalDone] = useState(false);
-  const [editMode, setEditMode] = useState(false);
   const [nameEditing, setNameEditing] = useState(false);
   const [nameInput, setNameInput] = useState(habit.name);
   // Swipe gesture
@@ -175,9 +175,8 @@ function HabitPanel({
   const swipeRef = useRef({ active: false, startX: 0, startY: 0, pid: -1, cancelled: false });
   // Tap-to-confirm delete
   const [confirmDelete, setConfirmDelete] = useState(false);
-  // Long-press to open edit mode
-  const longPressRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lpStartRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => { if (!editMode) { setConfirmDelete(false); setNameEditing(false); } }, [editMode]);
 
   useEffect(() => {
     if (habit.tracking_type === 'journal' && user) {
@@ -222,25 +221,6 @@ function HabitPanel({
     if (!trimmed || trimmed === habit.name) { setNameEditing(false); return; }
     await supabase.from('habits').update({ name: trimmed }).eq('id', habit.id);
     onRename(trimmed); setNameEditing(false);
-  }
-
-  // ── Long-press to toggle edit mode ───────────────────────────────────────────
-  function onCardPointerDown(e: React.PointerEvent) {
-    if (nameEditing) return;
-    lpStartRef.current = { x: e.clientX, y: e.clientY };
-    longPressRef.current = setTimeout(() => {
-      try { navigator.vibrate?.(18); } catch {}
-      setEditMode(v => !v);
-    }, 500);
-  }
-  function onCardPointerMove(e: React.PointerEvent) {
-    if (!longPressRef.current) return;
-    const dx = Math.abs(e.clientX - lpStartRef.current.x);
-    const dy = Math.abs(e.clientY - lpStartRef.current.y);
-    if (dx > 8 || dy > 8) { clearTimeout(longPressRef.current); longPressRef.current = null; }
-  }
-  function onCardPointerUp() {
-    if (longPressRef.current) { clearTimeout(longPressRef.current); longPressRef.current = null; }
   }
 
   const tt = habit.tracking_type;
@@ -301,13 +281,42 @@ function HabitPanel({
 
   return (
     <div
-      className="rounded-[20px] overflow-hidden relative"
-      style={{ border: '1px solid #242424' }}
-      onPointerDown={onCardPointerDown}
-      onPointerMove={onCardPointerMove}
-      onPointerUp={onCardPointerUp}
-      onPointerCancel={onCardPointerUp}
+      className={`rounded-[20px] overflow-visible relative${editMode ? ' cat-jiggle' : ''}`}
+      style={{ border: '1px solid #242424', borderRadius: 20 }}
     >
+      {/* Red minus delete button — top-right in edit mode */}
+      {editMode && !confirmDelete && (
+        <button
+          onClick={e => { e.stopPropagation(); setConfirmDelete(true); }}
+          className="absolute -top-2 -right-2 z-30 w-6 h-6 rounded-full flex items-center justify-center transition-all active:scale-90"
+          style={{ background: '#DC2626', boxShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
+        >
+          <span className="text-white font-bold text-base leading-none" style={{ marginTop: -1 }}>−</span>
+        </button>
+      )}
+      {/* Confirm delete overlay */}
+      {confirmDelete && (
+        <div className="absolute -top-2 -right-2 z-30 flex items-center gap-1 px-2 py-1 rounded-xl"
+          style={{ background: '#1a1a1a', border: '1px solid #333', boxShadow: '0 4px 16px rgba(0,0,0,0.6)' }}>
+          <span className="text-[10px] text-white/50">Delete?</span>
+          <button onClick={e => { e.stopPropagation(); setConfirmDelete(false); }}
+            className="px-1.5 py-0.5 rounded-lg text-[10px] font-medium"
+            style={{ background: '#282828', color: 'rgba(255,255,255,0.5)' }}>Cancel</button>
+          <button onClick={e => { e.stopPropagation(); onDelete(); }}
+            className="px-1.5 py-0.5 rounded-lg text-[10px] font-medium text-white"
+            style={{ background: '#DC2626' }}>Delete</button>
+        </div>
+      )}
+      {/* Pin button in edit mode */}
+      {editMode && (
+        <button
+          onClick={e => { e.stopPropagation(); onTogglePin(); }}
+          className="absolute -top-2 -left-2 z-30 w-6 h-6 rounded-full flex items-center justify-center transition-all active:scale-90"
+          style={{ background: isPinned ? color : '#2a2a2a', boxShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
+        >
+          <Pin size={10} color="white" />
+        </button>
+      )}
       {/* Swipe-right reveal (complete) */}
       {canSwipeComplete && swipeX > 0 && (
         <div className="absolute inset-0 rounded-[20px] flex items-center px-5" style={{ background: color, opacity: swipePct }}>
@@ -318,44 +327,6 @@ function HabitPanel({
       {canSwipeUndo && swipeX < 0 && (
         <div className="absolute inset-0 rounded-[20px] flex items-center justify-end px-5" style={{ background: '#2d2d2d', opacity: swipePct }}>
           <RotateCcw size={18} color="rgba(255,255,255,0.6)" />
-        </div>
-      )}
-
-      {/* Edit mode bar */}
-      {editMode && (
-        <div className="flex items-center justify-between px-4 py-2.5"
-          style={{ background: '#1e1e1e', borderBottom: '1px solid #282828' }}>
-          <div className="flex items-center gap-2">
-            <button onClick={onTogglePin}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium"
-              style={{ background: isPinned ? '#2a2020' : '#282828', color: isPinned ? color : 'rgba(255,255,255,0.4)' }}>
-              {isPinned ? <PinOff size={11} /> : <Pin size={11} />}
-              {isPinned ? 'Unpin' : 'Pin'}
-            </button>
-            <button onClick={() => setNameEditing(true)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium"
-              style={{ background: '#282828', color: 'rgba(255,255,255,0.4)' }}>
-              <Edit2 size={10} /> Rename
-            </button>
-          </div>
-          {/* Tap-to-confirm delete */}
-          {confirmDelete ? (
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-white/50">Delete?</span>
-              <button onClick={e => { e.stopPropagation(); setConfirmDelete(false); }}
-                className="px-2 py-1 rounded-lg text-xs font-medium"
-                style={{ background: '#282828', color: 'rgba(255,255,255,0.5)' }}>Cancel</button>
-              <button onClick={e => { e.stopPropagation(); onDelete(); }}
-                className="px-2 py-1 rounded-lg text-xs font-medium text-white"
-                style={{ background: '#7f1d1d' }}>Delete</button>
-            </div>
-          ) : (
-            <button onClick={e => { e.stopPropagation(); setConfirmDelete(true); }}
-              className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: '#2d1515' }}>
-              <Trash2 size={13} color="#f87171" />
-            </button>
-          )}
         </div>
       )}
 
@@ -400,9 +371,14 @@ function HabitPanel({
                 style={{ borderBottom: `1px solid ${color}` }}
               />
             ) : (
-              <div className="flex items-center gap-1.5 truncate">
+              <div
+                className="flex items-center gap-1.5 truncate"
+                onClick={() => { if (editMode) setNameEditing(true); }}
+                style={{ cursor: editMode ? 'text' : 'default' }}
+              >
                 <p className="text-white text-sm font-semibold truncate">{habit.name}</p>
-                {isPinned && <Pin size={9} style={{ color, flexShrink: 0 }} />}
+                {isPinned && !editMode && <Pin size={9} style={{ color, flexShrink: 0 }} />}
+                {editMode && <span className="text-[9px] shrink-0" style={{ color: 'rgba(255,255,255,0.3)' }}>✎</span>}
               </div>
             )}
             <p className="text-white/25 text-[10px] capitalize">{tt} · {habit.frequency === 'monday' ? 'Every Mon' : habit.frequency === 'tuesday' ? 'Every Tue' : habit.frequency === 'wednesday' ? 'Every Wed' : habit.frequency === 'thursday' ? 'Every Thu' : habit.frequency === 'friday' ? 'Every Fri' : habit.frequency === 'saturday' ? 'Every Sat' : habit.frequency === 'sunday' ? 'Every Sun' : habit.frequency}</p>
@@ -781,6 +757,9 @@ export default function CategoryHubScreen({
   const [color, setColor] = useState(initialColor);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [photoVerifyHabit, setPhotoVerifyHabit] = useState<{ habit: Habit; onConfirm: (r: TaskVerifyResult) => void } | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const editLongPressRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const editLpStartRef = useRef({ x: 0, y: 0 });
 
   // ── Pinned habits (localStorage, no DB migration needed) ───────────────────
   const [pinnedIds, setPinnedIds] = useState<Set<string>>(() => {
@@ -797,6 +776,24 @@ export default function CategoryHubScreen({
 
   function handleRename(habitId: string, newName: string) {
     setHabits(prev => prev.map(h => h.id === habitId ? { ...h, name: newName } : h));
+  }
+
+  function onCardLongPressDown(e: React.PointerEvent) {
+    if (editMode) return;
+    editLpStartRef.current = { x: e.clientX, y: e.clientY };
+    editLongPressRef.current = setTimeout(() => {
+      try { navigator.vibrate?.(50); } catch {}
+      setEditMode(true);
+    }, 500);
+  }
+  function onCardLongPressMove(e: React.PointerEvent) {
+    if (!editLongPressRef.current) return;
+    if (Math.hypot(e.clientX - editLpStartRef.current.x, e.clientY - editLpStartRef.current.y) > 10) {
+      clearTimeout(editLongPressRef.current); editLongPressRef.current = null;
+    }
+  }
+  function onCardLongPressUp() {
+    if (editLongPressRef.current) { clearTimeout(editLongPressRef.current); editLongPressRef.current = null; }
   }
 
   // ── Drag-to-reorder state ───────────────────────────────────────────────────
@@ -989,8 +986,11 @@ export default function CategoryHubScreen({
               </button>
             ))}
           </div>
-          {tab === 'today' && habits.length > 1 && (
-            <p className="text-white/20 text-[10px] pb-2">Hold grip to reorder · long-press to edit</p>
+          {tab === 'today' && habits.length > 1 && !editMode && (
+            <p className="text-white/20 text-[10px] pb-2">Long-press to edit · drag to reorder</p>
+          )}
+          {tab === 'today' && editMode && (
+            <p className="text-white/35 text-[10px] pb-2">Tap name to rename · − to delete</p>
           )}
         </div>
 
@@ -1026,6 +1026,10 @@ export default function CategoryHubScreen({
                 <div
                   key={habit.id}
                   ref={el => { cardRefs.current[index] = el; }}
+                  onPointerDown={onCardLongPressDown}
+                  onPointerMove={onCardLongPressMove}
+                  onPointerUp={onCardLongPressUp}
+                  onPointerCancel={onCardLongPressUp}
                   style={{
                     transform: `translateY(${translateY}px)`,
                     transition: isLifted ? 'box-shadow 0.15s, transform 0s' : 'transform 0.2s cubic-bezier(0.25,0.46,0.45,0.94)',
@@ -1033,6 +1037,8 @@ export default function CategoryHubScreen({
                     position: 'relative',
                     boxShadow: isLifted ? '0 12px 40px rgba(0,0,0,0.6)' : 'none',
                     borderRadius: 20,
+                    padding: editMode ? '8px 8px' : '0',
+                    margin: editMode ? '-8px -8px' : '0',
                   }}
                 >
                   <HabitPanel
@@ -1041,6 +1047,7 @@ export default function CategoryHubScreen({
                     pet={pet}
                     user={user}
                     color={color}
+                    editMode={editMode}
                     isPinned={pinnedIds.has(habit.id)}
                     onTogglePin={() => togglePin(habit.id)}
                     onDelete={() => deleteHabit(habit.id)}
@@ -1106,6 +1113,19 @@ export default function CategoryHubScreen({
           )}
         </div>
       </div>
+
+      {/* Floating Done button in edit mode */}
+      {editMode && (
+        <div className="fixed bottom-10 left-0 right-0 z-30 flex justify-center pointer-events-none">
+          <button
+            onClick={() => setEditMode(false)}
+            className="pointer-events-auto px-10 py-3.5 rounded-2xl text-sm font-semibold transition-all active:scale-95"
+            style={{ background: 'white', color: '#111', boxShadow: '0 8px 40px rgba(0,0,0,0.7)' }}
+          >
+            Done
+          </button>
+        </div>
+      )}
 
       {photoVerifyHabit && (
         <PhotoVerifyModal

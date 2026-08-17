@@ -1,36 +1,6 @@
-import { useRef, useState } from 'react';
-import { X, Camera, Loader, ShieldCheck, ShieldQuestion, ShieldAlert, Shield } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import type { TaskVerifyResult, VerificationStatus } from '../lib/aiTypes';
-
-function resizeAndEncode(file: File): Promise<{ base64: string; mediaType: string }> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const MAX = 800;
-      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      const ctx = canvas.getContext('2d');
-      if (!ctx) { reject(new Error('canvas')); return; }
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const data = canvas.toDataURL('image/jpeg', 0.82);
-      resolve({ base64: data.split(',')[1], mediaType: 'image/jpeg' });
-    };
-    img.onerror = reject;
-    img.src = url;
-  });
-}
-
-const STATUS_CONFIG: Record<VerificationStatus, { label: string; color: string; Icon: React.ElementType }> = {
-  verified:              { label: 'Verified',            color: '#10B981', Icon: ShieldCheck },
-  likely_verified:       { label: 'Likely completed',    color: '#84CC16', Icon: ShieldCheck },
-  uncertain:             { label: 'Uncertain',           color: '#F59E0B', Icon: ShieldQuestion },
-  insufficient_evidence: { label: 'Needs clearer photo', color: '#EF4444', Icon: ShieldAlert },
-};
+import { useState } from 'react';
+import { X, Shield, CheckCircle2 } from 'lucide-react';
+import type { TaskVerifyResult } from '../lib/aiTypes';
 
 interface Props {
   taskTitle: string;
@@ -42,32 +12,19 @@ interface Props {
 }
 
 export default function PhotoVerifyModal({ taskTitle, taskNotes, color, onConfirm, onSkip, onClose }: Props) {
-  const fileRef = useRef<HTMLInputElement>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<TaskVerifyResult | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [reflection, setReflection] = useState('');
+  const [confirmed, setConfirmed] = useState(false);
 
-  async function handleFile(file: File) {
-    setError(null);
-    setResult(null);
-    setPreview(URL.createObjectURL(file));
-    setLoading(true);
-    try {
-      const { base64, mediaType } = await resizeAndEncode(file);
-      const { data, error } = await supabase.functions.invoke('verify-task-photo', {
-        body: { imageBase64: base64, mediaType, taskTitle, taskNotes },
-      });
-      if (error) throw error;
-      setResult(data as TaskVerifyResult);
-    } catch (e) {
-      setError((e as Error).message || 'Verification failed. Try again or skip.');
-    } finally {
-      setLoading(false);
-    }
+  function handleConfirm() {
+    setConfirmed(true);
+    // Produce a TaskVerifyResult-shaped object so callers stay compatible
+    const result: TaskVerifyResult = {
+      status: 'verified',
+      confidence: 100,
+      reasoning: reflection.trim() || 'Marked complete by user.',
+    };
+    setTimeout(() => onConfirm(result), 380);
   }
-
-  const statusCfg = result ? STATUS_CONFIG[result.status] : null;
 
   return (
     <div
@@ -82,8 +39,8 @@ export default function PhotoVerifyModal({ taskTitle, taskNotes, color, onConfir
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-4">
           <div className="flex items-center gap-2">
-            <Camera size={16} style={{ color }} />
-            <span className="text-white font-medium text-sm">Photo Proof</span>
+            <Shield size={16} style={{ color }} />
+            <span className="text-white font-medium text-sm">Complete habit</span>
           </div>
           <button onClick={onClose} className="text-white/30 hover:text-white/60 transition-colors">
             <X size={18} />
@@ -91,106 +48,55 @@ export default function PhotoVerifyModal({ taskTitle, taskNotes, color, onConfir
         </div>
 
         <div className="px-5 pb-6 space-y-4">
-          {/* Task name */}
-          <p className="text-white/50 text-xs">{taskTitle}</p>
+          <p className="text-white/60 text-sm font-medium">{taskTitle}</p>
+          {taskNotes && <p className="text-white/30 text-xs">{taskNotes}</p>}
 
-          {/* Photo area */}
-          {!result && !loading && (
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="w-full h-40 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors"
-              style={{ background: 'rgba(255,255,255,0.04)', border: `2px dashed ${color}40` }}
-            >
-              {preview ? (
-                <img src={preview} alt="" className="h-full w-full object-cover rounded-2xl" />
-              ) : (
-                <>
-                  <Camera size={28} style={{ color, opacity: 0.6 }} />
-                  <p className="text-white/40 text-sm">Take a photo showing you completed this</p>
-                </>
-              )}
-            </button>
-          )}
+          {/* Confirmation tap */}
+          <button
+            onClick={handleConfirm}
+            disabled={confirmed}
+            className="w-full h-28 rounded-2xl flex flex-col items-center justify-center gap-2 transition-all active:scale-[0.97]"
+            style={{
+              background: confirmed ? `${color}22` : `${color}14`,
+              border: `2px solid ${confirmed ? color : `${color}40`}`,
+            }}
+          >
+            <CheckCircle2
+              size={36}
+              style={{ color: confirmed ? color : `${color}80` }}
+              className={`transition-all duration-300${confirmed ? ' scale-110' : ''}`}
+            />
+            <p className="text-sm font-semibold" style={{ color: confirmed ? color : 'rgba(255,255,255,0.5)' }}>
+              {confirmed ? 'Marked complete!' : 'Tap to confirm you did this'}
+            </p>
+          </button>
 
-          {loading && (
-            <div className="flex flex-col items-center gap-3 py-8">
-              <Loader size={22} style={{ color }} className="animate-spin" />
-              <p className="text-white/40 text-sm">Reviewing your photo…</p>
+          {/* Optional reflection note */}
+          {!confirmed && (
+            <div>
+              <p className="text-white/30 text-[10px] uppercase tracking-widest mb-1.5">Note (optional)</p>
+              <textarea
+                value={reflection}
+                onChange={e => setReflection(e.target.value)}
+                placeholder="How did it go?"
+                rows={2}
+                className="w-full bg-transparent text-white/70 text-sm outline-none resize-none placeholder:text-white/20 border-b pb-1"
+                style={{ borderColor: 'rgba(255,255,255,0.1)' }}
+              />
             </div>
           )}
 
-          {error && (
-            <div className="px-4 py-3 rounded-2xl" style={{ background: 'rgba(248,113,113,0.1)' }}>
-              <p className="text-red-300 text-sm">{error}</p>
-            </div>
-          )}
-
-          {result && statusCfg && (
-            <>
-              {preview && (
-                <img src={preview} alt="" className="w-full h-28 object-cover rounded-2xl" />
-              )}
-              {/* Status */}
-              <div className="flex items-start gap-3 px-4 py-3.5 rounded-2xl" style={{ background: `${statusCfg.color}14` }}>
-                <statusCfg.Icon size={18} style={{ color: statusCfg.color }} className="shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-sm" style={{ color: statusCfg.color }}>{statusCfg.label}</p>
-                  <p className="text-white/40 text-xs mt-0.5">{result.reasoning}</p>
-                </div>
-              </div>
-              {/* Disclaimer */}
-              <p className="text-white/20 text-[10px] text-center px-2">
-                AI assessment is approximate and cannot definitively prove completion.
-              </p>
-            </>
-          )}
-
-          {/* Action buttons */}
-          <div className="flex flex-col gap-2 pt-1">
-            {result ? (
-              <button
-                onClick={() => onConfirm(result)}
-                className="w-full py-3.5 rounded-2xl text-sm font-semibold text-white transition-all active:scale-[0.97]"
-                style={{ background: statusCfg?.color ?? color }}
-              >
-                Mark complete
-              </button>
-            ) : !loading && (
-              <button
-                onClick={() => fileRef.current?.click()}
-                className="w-full py-3.5 rounded-2xl text-sm font-semibold text-white transition-all active:scale-[0.97]"
-                style={{ background: color }}
-              >
-                Choose photo
-              </button>
-            )}
-            {result && (
-              <button
-                onClick={() => { setResult(null); setPreview(null); fileRef.current?.click(); }}
-                className="text-white/25 text-xs text-center py-1 hover:text-white/50 transition-colors"
-              >
-                Retake photo
-              </button>
-            )}
+          {!confirmed && (
             <button
               onClick={onSkip}
               className="w-full py-3 rounded-2xl text-sm text-white/30 hover:text-white/60 transition-colors flex items-center justify-center gap-1.5"
               style={{ background: 'rgba(255,255,255,0.04)' }}
             >
               <Shield size={13} />
-              Complete without photo
+              Complete without confirming
             </button>
-          </div>
+          )}
         </div>
-
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="hidden"
-          onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ''; }}
-        />
       </div>
     </div>
   );

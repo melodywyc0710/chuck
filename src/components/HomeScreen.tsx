@@ -110,12 +110,49 @@ function CategoryAppearanceSheet({
   );
 }
 
+// ─── Category rename sheet ────────────────────────────────────────────────────
+
+function CatRenameSheet({ catName, onSave, onClose }: {
+  catName: string;
+  onSave: (newName: string) => void;
+  onClose: () => void;
+}) {
+  const [value, setValue] = useState(catName);
+  const changed = value.trim() && value.trim() !== catName;
+  return (
+    <>
+      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto rounded-t-[28px] px-5 pt-5 pb-10"
+        style={{ background: '#111111', border: '1px solid #1e1e1e' }}
+        onClick={e => e.stopPropagation()}>
+        <div className="w-8 h-1 rounded-full bg-white/15 mx-auto mb-5" />
+        <p className="text-white/40 text-xs mb-2">Rename category</p>
+        <input
+          autoFocus
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter' && changed) onSave(value.trim()); if (e.key === 'Escape') onClose(); }}
+          className="w-full text-white text-lg font-semibold bg-transparent outline-none border-b mb-5 pb-1"
+          style={{ borderColor: 'rgba(255,255,255,0.15)' }}
+        />
+        <button
+          onClick={() => changed ? onSave(value.trim()) : onClose()}
+          disabled={!value.trim()}
+          className="w-full py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] disabled:opacity-30"
+          style={{ background: changed ? '#FF4D4D' : '#1e1e1e', color: changed ? 'white' : 'rgba(255,255,255,0.4)' }}
+        >
+          {changed ? 'Save Name' : 'Cancel'}
+        </button>
+      </div>
+    </>
+  );
+}
+
 // ─── Category card ────────────────────────────────────────────────────────────
 
 function CategoryCard({
   name, habits, logs, editMode, isDragging, refreshKey,
-  onPointerDown, onClick, onSettingsClick, onDeleteClick,
-  inlineRenaming, renameValue, onRenameStart, onRenameChange, onRenameCommit, onRenameCancel,
+  onPointerDown, onClick, onSettingsClick, onDeleteClick, onRenameStart,
 }: {
   name: string;
   habits: Habit[];
@@ -127,12 +164,7 @@ function CategoryCard({
   onClick: () => void;
   onSettingsClick: (e: React.MouseEvent) => void;
   onDeleteClick: (e: React.MouseEvent) => void;
-  inlineRenaming: boolean;
-  renameValue: string;
-  onRenameStart: () => void;
-  onRenameChange: (v: string) => void;
-  onRenameCommit: () => void;
-  onRenameCancel: () => void;
+  onRenameStart: (e: React.MouseEvent) => void;
 }) {
   // Re-read color/icon from localStorage on every render (refreshKey forces this)
   const currentColor = getCatColor(name, habits);
@@ -208,27 +240,14 @@ function CategoryCard({
 
         {/* Body */}
         <div className="flex flex-col flex-1 px-4 pt-3 pb-3 gap-1" style={{ background: '#141414', marginTop: -6, borderRadius: '14px 14px 0 0' }}>
-          {inlineRenaming ? (
-            <input
-              autoFocus
-              value={renameValue}
-              onChange={e => onRenameChange(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') onRenameCommit(); if (e.key === 'Escape') onRenameCancel(); }}
-              onBlur={onRenameCommit}
-              onPointerDown={e => e.stopPropagation()}
-              onClick={e => e.stopPropagation()}
-              className="text-white text-sm font-semibold bg-transparent outline-none w-full"
-              style={{ borderBottom: `1px solid ${currentColor}` }}
-            />
-          ) : (
-            <p
-              className="text-white text-sm font-semibold leading-tight truncate"
-              onClick={e => { if (editMode) { e.stopPropagation(); onRenameStart(); } }}
-              onPointerDown={e => { if (editMode) e.stopPropagation(); }}
-            >
-              {name}
-            </p>
-          )}
+          <p
+            className="text-white text-sm font-semibold leading-tight truncate"
+            onClick={e => { if (editMode) { e.stopPropagation(); onRenameStart(e); } }}
+            onPointerDown={e => { if (editMode) e.stopPropagation(); }}
+            style={{ cursor: editMode ? 'text' : 'default' }}
+          >
+            {name}{editMode && <span className="ml-1 text-[9px] opacity-30">✎</span>}
+          </p>
           <p className="text-[11px] font-medium tabular-nums" style={{ color: 'rgba(255,255,255,0.35)' }}>
             {doneCount}/{total} today
           </p>
@@ -386,7 +405,7 @@ export default function HomeScreen({
   }
   function exitEditMode() {
     setEditMode(false);
-    setCatInlineRename(null);
+    setCatRenamingName(null);
   }
 
   // ── Category drag-to-reorder ──────────────────────────────────────────────
@@ -400,8 +419,7 @@ export default function HomeScreen({
   const catCardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [confirmDeleteCat, setConfirmDeleteCat] = useState<string | null>(null);
-  const [catInlineRename, setCatInlineRename] = useState<string | null>(null);
-  const [catInlineRenameInput, setCatInlineRenameInput] = useState('');
+  const [catRenamingName, setCatRenamingName] = useState<string | null>(null);
 
   function startCatDrag(idx: number, e: React.PointerEvent, numCols: number) {
     if (!editMode) return;
@@ -474,7 +492,7 @@ export default function HomeScreen({
       localStorage.setItem(`cat-order-${pet?.user_id}`, JSON.stringify(updated));
       return updated;
     });
-    setCatInlineRename(null);
+    setCatRenamingName(null);
     loadData();
   }
 
@@ -843,12 +861,7 @@ export default function HomeScreen({
                         isDragging={isLifted}
                         refreshKey={cardRefreshKey}
                         onDeleteClick={e => { e.stopPropagation(); setConfirmDeleteCat(catName); }}
-                        inlineRenaming={catInlineRename === catName}
-                        renameValue={catInlineRename === catName ? catInlineRenameInput : catName}
-                        onRenameStart={() => { setCatInlineRename(catName); setCatInlineRenameInput(catName); }}
-                        onRenameChange={setCatInlineRenameInput}
-                        onRenameCommit={() => { const v = catInlineRenameInput.trim(); if (v && v !== catName) renameCategory(catName, v); else setCatInlineRename(null); }}
-                        onRenameCancel={() => setCatInlineRename(null)}
+                        onRenameStart={e => { e.stopPropagation(); setCatRenamingName(catName); }}
                         onPointerDown={e => {
                           if (editMode) {
                             const startX = e.clientX, startY = e.clientY;
@@ -1039,6 +1052,14 @@ export default function HomeScreen({
           />
         );
       })()}
+
+      {catRenamingName && (
+        <CatRenameSheet
+          catName={catRenamingName}
+          onSave={newName => renameCategory(catRenamingName, newName)}
+          onClose={() => setCatRenamingName(null)}
+        />
+      )}
     </>
   );
 }

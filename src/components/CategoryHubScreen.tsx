@@ -173,9 +173,8 @@ function HabitPanel({
   // Swipe gesture
   const [swipeX, setSwipeX] = useState(0);
   const swipeRef = useRef({ active: false, startX: 0, startY: 0, pid: -1, cancelled: false });
-  // Hold-to-delete
-  const [holdPct, setHoldPct] = useState(0);
-  const holdIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Tap-to-confirm delete
+  const [confirmDelete, setConfirmDelete] = useState(false);
   // Long-press to open edit mode
   const longPressRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lpStartRef = useRef({ x: 0, y: 0 });
@@ -287,21 +286,6 @@ function HabitPanel({
     setSwipeX(0);
   }
 
-  // ── Hold-to-delete ────────────────────────────────────────────────────────────
-  function startHold() {
-    setHoldPct(0);
-    let p = 0;
-    holdIntervalRef.current = setInterval(() => {
-      p += 100 / 8; // 800ms total, tick every 100ms
-      setHoldPct(Math.min(100, p));
-      if (p >= 100) { clearInterval(holdIntervalRef.current!); onDelete(); }
-    }, 100);
-  }
-  function cancelHold() {
-    if (holdIntervalRef.current) { clearInterval(holdIntervalRef.current); holdIntervalRef.current = null; }
-    setHoldPct(0);
-  }
-
   function handleCounter(delta: number) {
     const next = Math.max(0, counter + delta);
     setCounter(next); logHabit(next);
@@ -313,8 +297,6 @@ function HabitPanel({
     setCheckedItems(next); logHabit(next.size, JSON.stringify([...next]));
   }
 
-  // Ring constants for hold-to-delete
-  const R = 10; const CIRC = 2 * Math.PI * R;
   const swipePct = Math.abs(swipeX) / 110;
 
   return (
@@ -356,23 +338,24 @@ function HabitPanel({
               <Edit2 size={10} /> Rename
             </button>
           </div>
-          {/* Hold-to-delete */}
-          <button
-            onPointerDown={e => { e.stopPropagation(); startHold(); }}
-            onPointerUp={e => { e.stopPropagation(); cancelHold(); }}
-            onPointerLeave={cancelHold}
-            onPointerCancel={cancelHold}
-            className="relative w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: '#2d1515', touchAction: 'none' }}
-            title="Hold to delete"
-          >
-            <svg className="absolute inset-0" width="32" height="32" viewBox="0 0 32 32">
-              <circle cx="16" cy="16" r={R} fill="none" stroke="#5c2020" strokeWidth="2"
-                strokeDasharray={CIRC} strokeDashoffset={CIRC * (1 - holdPct / 100)}
-                strokeLinecap="round" style={{ transform: 'rotate(-90deg)', transformOrigin: '16px 16px', transition: holdPct === 0 ? 'none' : 'stroke-dashoffset 0.1s linear' }} />
-            </svg>
-            <Trash2 size={13} color="#f87171" />
-          </button>
+          {/* Tap-to-confirm delete */}
+          {confirmDelete ? (
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-white/50">Delete?</span>
+              <button onClick={e => { e.stopPropagation(); setConfirmDelete(false); }}
+                className="px-2 py-1 rounded-lg text-xs font-medium"
+                style={{ background: '#282828', color: 'rgba(255,255,255,0.5)' }}>Cancel</button>
+              <button onClick={e => { e.stopPropagation(); onDelete(); }}
+                className="px-2 py-1 rounded-lg text-xs font-medium text-white"
+                style={{ background: '#7f1d1d' }}>Delete</button>
+            </div>
+          ) : (
+            <button onClick={e => { e.stopPropagation(); setConfirmDelete(true); }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ background: '#2d1515' }}>
+              <Trash2 size={13} color="#f87171" />
+            </button>
+          )}
         </div>
       )}
 
@@ -386,13 +369,25 @@ function HabitPanel({
       >
       <div className="px-4 py-4">
         <div className="flex items-center gap-2.5 mb-4">
-          <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: isDone ? color : '#2a2a2a' }}>
-            {isDone
-              ? <Check size={13} color="white" strokeWidth={2.5} />
-              : <TypeIcon size={13} style={{ color }} strokeWidth={1.5} />
-            }
-          </div>
+          {(tt === 'complete' || tt === 'avoid') ? (
+            <button
+              onClick={() => isDone ? undoHabit() : logHabit(1)}
+              className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: isDone ? color : '#2a2a2a' }}>
+              {isDone
+                ? <Check size={13} color="white" strokeWidth={2.5} />
+                : <TypeIcon size={13} style={{ color }} strokeWidth={1.5} />
+              }
+            </button>
+          ) : (
+            <div className="w-7 h-7 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: isDone ? color : '#2a2a2a' }}>
+              {isDone
+                ? <Check size={13} color="white" strokeWidth={2.5} />
+                : <TypeIcon size={13} style={{ color }} strokeWidth={1.5} />
+              }
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             {nameEditing ? (
               <input
@@ -413,9 +408,9 @@ function HabitPanel({
             <p className="text-white/25 text-[10px] capitalize">{tt} · {habit.frequency === 'monday' ? 'Every Mon' : habit.frequency === 'tuesday' ? 'Every Tue' : habit.frequency === 'wednesday' ? 'Every Wed' : habit.frequency === 'thursday' ? 'Every Thu' : habit.frequency === 'friday' ? 'Every Fri' : habit.frequency === 'saturday' ? 'Every Sat' : habit.frequency === 'sunday' ? 'Every Sun' : habit.frequency}</p>
           </div>
           {isDone && (tt === 'complete' || tt === 'avoid') ? (
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium text-white" style={{ background: color }}>
+            <button onClick={undoHabit} className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium text-white" style={{ background: color }}>
               <Check size={9} color="white" /> Done
-            </span>
+            </button>
           ) : isDone ? (
             <button onClick={undoHabit} className="flex items-center gap-1 px-2 py-0.5 rounded-full" style={{ background: color }}>
               <RotateCcw size={9} color="white" />
@@ -431,37 +426,13 @@ function HabitPanel({
           </div>
         </div>
 
-        {tt === 'complete' && !isDone && (
-          <div className="flex gap-2">
-            <button onClick={() => logHabit(1)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white"
-              style={{ background: color }}>
-              Mark done · or swipe →
+        {(tt === 'complete' || tt === 'avoid') && !isDone && isPro && (
+          <div className="flex justify-end">
+            <button onClick={onPhotoVerify}
+              className="w-8 h-8 rounded-xl flex items-center justify-center"
+              style={{ background: '#252525' }} title="Verify with photo">
+              <Camera size={13} style={{ color: 'rgba(255,255,255,0.4)' }} />
             </button>
-            {isPro && (
-              <button onClick={onPhotoVerify}
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ background: '#252525' }} title="Verify with photo">
-                <Camera size={14} style={{ color: 'rgba(255,255,255,0.5)' }} />
-              </button>
-            )}
-          </div>
-        )}
-
-        {tt === 'avoid' && !isDone && (
-          <div className="flex gap-2">
-            <button onClick={() => logHabit(1)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white"
-              style={{ background: color }}>
-              Stayed clean · or swipe →
-            </button>
-            {isPro && (
-              <button onClick={onPhotoVerify}
-                className="w-10 h-10 rounded-xl flex items-center justify-center"
-                style={{ background: '#252525' }} title="Verify with photo">
-                <Camera size={14} style={{ color: 'rgba(255,255,255,0.5)' }} />
-              </button>
-            )}
           </div>
         )}
 

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Workbook — VCE VCD Unit 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 16mm 16mm 16mm 16mm; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',sans-serif;background:#fff;color:#1a1a1a;font-size:10pt;line-height:1.4}
+  .page{max-width:178mm;margin:0 auto;padding:0}
+  /* Cover page */
+  .cover{min-height:240mm;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:3px solid #4f46e5;border-radius:12px;padding:30px;margin-bottom:20px;background:#eef2ff}
+  .cover h1{font-size:28pt;font-weight:900;color:#312e81;line-height:1.1;margin-bottom:10px}
+  .cover h2{font-size:14pt;font-weight:700;color:#4f46e5;margin-bottom:20px}
+  .cover .meta{background:#4f46e5;color:#fff;padding:10px 20px;border-radius:30px;font-size:9pt;font-weight:700;margin-bottom:20px}
+  .cover .student-box{border:2px solid #c7d2fe;border-radius:8px;padding:16px;width:100%;text-align:left;background:#fff}
+  .cover .student-box h3{color:#312e81;font-size:10pt;font-weight:800;margin-bottom:10px}
+  .field-row{display:flex;gap:12px;margin-bottom:8px}
+  .field-item{flex:1}
+  .field-item label{font-size:8pt;font-weight:700;color:#4338ca;display:block;margin-bottom:2px}
+  .field-item .line{border-bottom:1.5px solid #c7d2fe;height:20px}
+  .toc{background:#eef2ff;border:1.5px solid #c7d2fe;border-radius:8px;padding:12px;margin-bottom:15px}
+  .toc h3{color:#312e81;font-size:10pt;font-weight:800;margin-bottom:8px}
+  .toc-item{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid #e0e7ff;font-size:8.5pt}
+  .toc-item:last-child{border:none}
+  .toc-item .act{color:#374151}
+  .toc-item .dots{flex:1;border-bottom:1px dotted #a5b4fc;margin:0 8px;height:12px}
+  .toc-item .pg{color:#4f46e5;font-weight:700;font-size:8pt}
+  /* Activity sections */
+  .activity{margin-bottom:20px;page-break-inside:avoid}
+  .act-header{background:linear-gradient(135deg,#312e81,#4f46e5);color:#fff;padding:9px 14px;border-radius:6px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .act-header h2{font-size:12pt;font-weight:900}
+  .act-header .num{background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.4);padding:3px 10px;border-radius:20px;font-size:8pt;font-weight:700}
+  .section-title{font-size:8.5pt;font-weight:800;color:#312e81;text-transform:uppercase;letter-spacing:.05em;margin:8px 0 4px;border-bottom:1.5px solid #c7d2fe;padding-bottom:2px}
+  .write-box{border:1.5px solid #c7d2fe;border-radius:6px;padding:8px;background:#eef2ff;margin-bottom:6px;min-height:40px}
+  .write-line{border-bottom:1px solid #e0e0e0;height:22px;margin-bottom:0}
+  .lines-block{margin-bottom:8px}
+  .instruction{background:#eef2ff;border-left:3px solid #4f46e5;padding:7px 10px;margin-bottom:8px;font-size:8.5pt;color:#374151;line-height:1.5}
+  .instruction strong{color:#312e81}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+  .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:8px}
+  .match-col h4{font-size:8pt;font-weight:800;color:#312e81;margin-bottom:6px;text-transform:uppercase}
+  .match-item{border:1.5px solid #c7d2fe;border-radius:5px;padding:6px 10px;background:#fff;margin-bottom:6px;font-size:8.5pt;display:flex;align-items:center;gap:8px}
+  .match-item .dot{width:16px;height:16px;border:1.5px solid #818cf8;border-radius:50%;flex-shrink:0}
+  .match-item .letter{width:18px;height:18px;background:#4f46e5;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7.5pt;font-weight:800;flex-shrink:0}
+  .mcq-item{border:1.5px solid #c7d2fe;border-radius:6px;padding:9px;background:#fff;margin-bottom:8px}
+  .mcq-item .q{font-size:9pt;font-weight:700;color:#374151;margin-bottom:6px}
+  .score-box{background:#eef2ff;border:1.5px solid #c7d2fe;border-radius:8px;padding:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+  .score-box .label{font-size:8.5pt;font-weight:700;color:#312e81}
+  .score-box .marks{font-size:10pt;font-weight:900;color:#4f46e5;background:#e0e7ff;padding:3px 12px;border-radius:20px}
+  .table-fill{width:100%;border-collapse:collapse;margin-bottom:8px;font-size:8.5pt}
+  .table-fill th{background:#312e81;color:#fff;padding:6px 8px;text-align:left;font-size:8pt}
+  .table-fill td{border:1px solid #c7d2fe;padding:6px 8px;vertical-align:top;min-height:30px}
+  .table-fill .blank{height:28px;background:#eef2ff}
+  .table-fill tr:nth-child(even) .blank{background:#e8ecff}
+  .model-answer{background:#f0fdf4;border:1.5px solid #86efac;border-radius:6px;padding:9px;margin-top:6px;font-size:8pt;color:#14532d}
+  .model-answer h5{color:#166534;font-size:7.5pt;font-weight:800;text-transform:uppercase;margin-bottom:4px}
+  .footer{margin-top:8px;text-align:center;font-size:7pt;color:#a5b4fc;border-top:1px solid #c7d2fe;padding-top:6px}
+  .page-break{page-break-after:always}
+  @media print{body{background:#fff}.page{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- COVER PAGE -->
+  <div class="cover">
+    <div class="meta">VCE VISUAL COMMUNICATION DESIGN · VCAA 2024 · UNIT 2</div>
+    <h1>Student<br>Workbook</h1>
+    <h2>Trends in Design &middot; Design &amp; Industry Connections</h2>
+    <div style="font-size:8.5pt;color:#4338ca;margin-bottom:20px">8 Activities · Fill-in exercises · Exam practice · Model answers</div>
+    <div class="student-box">
+      <h3>📋 My Details</h3>
+      <div class="field-row">
+        <div class="field-item"><label>Name</label><div class="line"></div></div>
+        <div class="field-item"><label>Class</label><div class="line"></div></div>
+      </div>
+      <div class="field-row">
+        <div class="field-item"><label>Teacher</label><div class="line"></div></div>
+        <div class="field-item"><label>Year</label><div class="line"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h3>📖 Contents</h3>
+    <div class="toc-item"><span class="act">Activity 1: Trend Factors — Match the Example</span><span class="dots"></span><span class="pg">A1</span></div>
+    <div class="toc-item"><span class="act">Activity 2: Analyse a Trend Across the 4 Fields</span><span class="dots"></span><span class="pg">A2</span></div>
+    <div class="toc-item"><span class="act">Activity 3: Trend or Fad?</span><span class="dots"></span><span class="pg">A3</span></div>
+    <div class="toc-item"><span class="act">Activity 4: Collaboration Roles — Match the Description</span><span class="dots"></span><span class="pg">A4</span></div>
+    <div class="toc-item"><span class="act">Activity 5: Intellectual Property — Fill the Table</span><span class="dots"></span><span class="pg">A5</span></div>
+    <div class="toc-item"><span class="act">Activity 6: Short Analysis — Exam Practice</span><span class="dots"></span><span class="pg">A6</span></div>
+    <div class="toc-item"><span class="act">Activity 7: Extended Response — Case Study</span><span class="dots"></span><span class="pg">A7</span></div>
+    <div class="toc-item"><span class="act">Activity 8: Reflection — What I Know / Still Learning</span><span class="dots"></span><span class="pg">A8</span></div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ACTIVITY 1: TREND FACTORS MATCH -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 1: Trend Factors — Match the Example</h2>
+      <div class="num">A1</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">10 marks</span></div>
+    <div class="instruction">Draw a line connecting each <strong>factor</strong> to the example that best illustrates it.</div>
+    <div class="match-grid">
+      <div class="match-col">
+        <h4>Factor</h4>
+        <div class="match-item"><div class="dot"></div>Social</div>
+        <div class="match-item"><div class="dot"></div>Cultural</div>
+        <div class="match-item"><div class="dot"></div>Economic</div>
+        <div class="match-item"><div class="dot"></div>Technological</div>
+        <div class="match-item"><div class="dot"></div>Environmental</div>
+      </div>
+      <div class="match-col">
+        <h4>Example</h4>
+        <div class="match-item"><div class="letter">A</div>New AI image-generation tools change how illustrators produce concept art</div>
+        <div class="match-item"><div class="letter">B</div>Rising material costs push packaging designers toward cheaper substrates</div>
+        <div class="match-item"><div class="letter">C</div>Remote work reshapes how office interiors are designed</div>
+        <div class="match-item"><div class="letter">D</div>Growing concern about landfill waste drives biodegradable packaging design</div>
+        <div class="match-item"><div class="letter">E</div>A resurgence of interest in Indigenous motifs in Australian branding</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 2: ANALYSE A TREND -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 2: Analyse a Trend Across the 4 Fields</h2>
+      <div class="num">A2</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">12 marks</span></div>
+    <div class="instruction">Choose ONE current design trend. Complete the table showing how it appears in each design field.</div>
+    <table class="table-fill">
+      <tr><th>Design Field</th><th>How the trend appears in this field</th></tr>
+      <tr><td><strong>Communication Design</strong></td><td class="blank"></td></tr>
+      <tr><td><strong>Environmental Design</strong></td><td class="blank"></td></tr>
+      <tr><td><strong>Industrial Design</strong></td><td class="blank"></td></tr>
+      <tr><td><strong>Interaction Design</strong></td><td class="blank"></td></tr>
+    </table>
+    <div class="instruction" style="margin-top:6px">Which factor(s) — social, cultural, economic, technological, environmental — is driving this trend? Explain in one sentence.</div>
+    <div class="lines-block"><div class="write-line"></div><div class="write-line"></div></div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ACTIVITY 3: TREND OR FAD -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 3: Trend or Fad?</h2>
+      <div class="num">A3</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">8 marks</span></div>
+    <div class="instruction">For each scenario, circle <strong>Trend</strong> or <strong>Fad</strong> and justify your answer in one sentence.</div>
+    <div class="mcq-item">
+      <div class="q">1. A single novelty phone case design goes viral for a few weeks on social media. &nbsp;&nbsp;&nbsp; <strong>Trend &nbsp; / &nbsp; Fad</strong></div>
+      <div class="write-line" style="margin-top:4px"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">2. Minimalism has steadily influenced logo design, architecture and product design for over a decade. &nbsp;&nbsp;&nbsp; <strong>Trend &nbsp; / &nbsp; Fad</strong></div>
+      <div class="write-line" style="margin-top:4px"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">3. A particular meme-inspired filter briefly appears on packaging before disappearing within a month. &nbsp;&nbsp;&nbsp; <strong>Trend &nbsp; / &nbsp; Fad</strong></div>
+      <div class="write-line" style="margin-top:4px"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">4. Sustainable packaging has grown steadily across multiple design fields for several years, driven by environmental concern. &nbsp;&nbsp;&nbsp; <strong>Trend &nbsp; / &nbsp; Fad</strong></div>
+      <div class="write-line" style="margin-top:4px"></div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 4: COLLABORATION ROLES -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 4: Collaboration Roles — Match the Description</h2>
+      <div class="num">A4</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">10 marks</span></div>
+    <div class="instruction">Match each role to its correct description in the design industry.</div>
+    <div class="match-grid">
+      <div class="match-col">
+        <h4>Role</h4>
+        <div class="match-item"><div class="dot"></div>Client</div>
+        <div class="match-item"><div class="dot"></div>Manufacturer / Builder</div>
+        <div class="match-item"><div class="dot"></div>Other designer / specialist</div>
+        <div class="match-item"><div class="dot"></div>Marketing / Developer</div>
+      </div>
+      <div class="match-col">
+        <h4>Description</h4>
+        <div class="match-item"><div class="letter">A</div>Turns a design into physical or coded reality using their production expertise</div>
+        <div class="match-item"><div class="letter">B</div>Provides the design brief, feedback and funding for the project</div>
+        <div class="match-item"><div class="letter">C</div>Delivers the finished design to its final audience</div>
+        <div class="match-item"><div class="letter">D</div>Brings expertise in a different design field to the same project</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ACTIVITY 5: IP TABLE -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 5: Intellectual Property — Fill the Table</h2>
+      <div class="num">A5</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">12 marks</span></div>
+    <div class="instruction">Complete the table with the missing information about each type of intellectual property protection.</div>
+    <table class="table-fill">
+      <tr><th>IP Type</th><th>What it protects</th><th>Example</th></tr>
+      <tr><td><strong>Copyright</strong></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td><strong>Trademark</strong></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td><strong>Design registration</strong></td><td class="blank"></td><td class="blank"></td></tr>
+      <tr><td><strong>Patent</strong></td><td class="blank"></td><td class="blank"></td></tr>
+    </table>
+    <div class="instruction" style="margin-top:6px">Explain in one sentence why intellectual property law is relevant to your own VCD folio work.</div>
+    <div class="lines-block"><div class="write-line"></div><div class="write-line"></div></div>
+  </div>
+
+  <!-- ACTIVITY 6: SHORT EXAM PRACTICE -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 6: Short Analysis — Exam Practice</h2>
+      <div class="num">A6</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">6 marks (2 marks each)</span></div>
+    <div class="instruction">For each scenario, write a <strong>2-mark response</strong> naming the relevant factor or IP type and explaining its relevance.</div>
+    <div class="mcq-item">
+      <div class="q">1. A furniture brand switches to biodegradable packaging after customer complaints about landfill waste.</div>
+      <div class="write-line"></div><div class="write-line"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">2. A start-up discovers a competitor has copied their logo almost exactly and seeks legal advice.</div>
+      <div class="write-line"></div><div class="write-line"></div>
+    </div>
+    <div class="mcq-item">
+      <div class="q">3. An architecture firm begins using generative software to explore hundreds of building forms overnight.</div>
+      <div class="write-line"></div><div class="write-line"></div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ACTIVITY 7: EXTENDED RESPONSE -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 7: Extended Response — Case Study</h2>
+      <div class="num">A7</div>
+    </div>
+    <div class="score-box"><span class="label">Marks available</span><span class="marks">10 marks</span></div>
+    <div class="instruction">Read the case study below. Write an extended response (approx. 4–5 sentences) identifying ONE trend and ONE industry connection, and explaining the factors behind each.</div>
+    <div style="background:#eef2ff;border:1.5px solid #c7d2fe;border-radius:8px;padding:12px;margin-bottom:8px">
+      <p style="font-size:8.5pt;font-weight:700;color:#312e81;margin-bottom:4px">Case Study:</p>
+      <p style="font-size:8.5pt;color:#374151;line-height:1.6">A furniture company launches a new modular chair made from recycled ocean plastic. The chair was designed collaboratively between an industrial designer and a materials engineer, and its packaging was created by a separate communication design studio using only recyclable cardboard and soy-based ink. The company also trademarked the chair's distinctive silhouette to prevent competitors from copying its design.</p>
+    </div>
+    <div class="lines-block">
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+      <div class="write-line"></div><div class="write-line"></div>
+    </div>
+    <div class="model-answer">
+      <h5>✅ Sample response (refer to after completing)</h5>
+      <p>This case study reflects the <strong>sustainability trend</strong>, driven primarily by environmental factors — evident in the use of recycled ocean plastic for the chair and recyclable, soy-ink packaging, both responding to growing consumer concern about waste and material sourcing. It also demonstrates <strong>industry collaboration</strong>, with the industrial designer working alongside a materials engineer to solve the technical challenge of working with recycled plastic, and a separate communication design studio handling the packaging — showing how a single product relies on multiple specialists across different design fields. Finally, the company's decision to trademark the chair's silhouette highlights the role of <strong>intellectual property</strong> in protecting original design work from being copied once it reaches the market.</p>
+    </div>
+  </div>
+
+  <!-- ACTIVITY 8: REFLECTION -->
+  <div class="activity">
+    <div class="act-header">
+      <h2>Activity 8: Reflection — What I Know</h2>
+      <div class="num">A8</div>
+    </div>
+    <div class="instruction">Use this page to reflect on your learning so far. Be honest — this helps you study smarter!</div>
+
+    <div class="section-title">Confidence Check</div>
+    <div style="margin-bottom:8px">
+      <p style="font-size:8pt;color:#374151;margin-bottom:5px">Rate your confidence (1 = not sure · 3 = confident · 5 = could teach it):</p>
+      <table style="width:100%;border-collapse:collapse;font-size:8.5pt">
+        <tr style="background:#eef2ff"><th style="text-align:left;padding:4px 8px;font-size:7.5pt;color:#312e81;border:1px solid #c7d2fe">Topic</th><th style="padding:4px 8px;font-size:7.5pt;color:#312e81;border:1px solid #c7d2fe;width:100px">Rating (circle one)</th><th style="padding:4px 8px;font-size:7.5pt;color:#312e81;border:1px solid #c7d2fe">What I'm unsure about</th></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #c7d2fe">The 5 factors that drive design trends</td><td style="padding:5px 8px;border:1px solid #c7d2fe;text-align:center;color:#4f46e5;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #c7d2fe"></td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #c7d2fe">Distinguishing a trend from a fad</td><td style="padding:5px 8px;border:1px solid #c7d2fe;text-align:center;color:#4f46e5;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #c7d2fe"></td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #c7d2fe">Collaboration roles in the design industry</td><td style="padding:5px 8px;border:1px solid #c7d2fe;text-align:center;color:#4f46e5;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #c7d2fe"></td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #c7d2fe">Intellectual property types (copyright, trademark, design registration, patent)</td><td style="padding:5px 8px;border:1px solid #c7d2fe;text-align:center;color:#4f46e5;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #c7d2fe"></td></tr>
+        <tr><td style="padding:5px 8px;border:1px solid #c7d2fe">Writing an extended design-industry response</td><td style="padding:5px 8px;border:1px solid #c7d2fe;text-align:center;color:#4f46e5;font-weight:700">1 &nbsp; 2 &nbsp; 3 &nbsp; 4 &nbsp; 5</td><td style="padding:5px 8px;border:1px solid #c7d2fe"></td></tr>
+      </table>
+    </div>
+
+    <div class="section-title">My Learning Goals</div>
+    <div class="instruction">Before next lesson, I will review / practise:</div>
+    <div class="lines-block">
+      <div class="write-line"></div><div class="write-line"></div><div class="write-line"></div>
+    </div>
+
+    <div class="section-title">One thing I found surprising or interesting:</div>
+    <div class="lines-block">
+      <div class="write-line"></div><div class="write-line"></div>
+    </div>
+
+    <div class="section-title">My key vocab list (write 10 design terms you want to remember):</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+      <div style="border-bottom:1px solid #c7d2fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#818cf8">1.</div>
+      <div style="border-bottom:1px solid #c7d2fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#818cf8">2.</div>
+      <div style="border-bottom:1px solid #c7d2fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#818cf8">3.</div>
+      <div style="border-bottom:1px solid #c7d2fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#818cf8">4.</div>
+      <div style="border-bottom:1px solid #c7d2fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#818cf8">5.</div>
+      <div style="border-bottom:1px solid #c7d2fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#818cf8">6.</div>
+      <div style="border-bottom:1px solid #c7d2fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#818cf8">7.</div>
+      <div style="border-bottom:1px solid #c7d2fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#818cf8">8.</div>
+      <div style="border-bottom:1px solid #c7d2fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#818cf8">9.</div>
+      <div style="border-bottom:1px solid #c7d2fe;height:20px;display:flex;align-items:flex-end;padding-bottom:1px;font-size:8pt;color:#818cf8">10.</div>
+    </div>
+  </div>
+
+  <div class="footer">VCE Visual Communication Design · Student Workbook · Unit 2 · VCAA 2024 Study Design · Total: 68 marks</div>
+</div>
+</body>
+</html>

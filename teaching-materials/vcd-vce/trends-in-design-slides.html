@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Trends in Design — VCE VCD Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #04191a; color: white; height: 100vh; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 56px 72px; }
+  .slide.active { display: flex; }
+  .badge { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; background: rgba(45,212,191,0.18); color: #5eead4; border: 1px solid rgba(45,212,191,0.35); border-radius: 99px; padding: 4px 14px; margin-bottom: 18px; }
+  .slide-title { font-size: 2.6rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .accent { color: #2dd4bf; }
+  .divider { width: 60px; height: 4px; background: #2dd4bf; border-radius: 99px; margin-bottom: 28px; }
+  .nav { position: fixed; bottom: 28px; right: 32px; display: flex; gap: 10px; z-index: 100; }
+  .nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; transition: background 0.15s; }
+  .nav button:hover { background: rgba(45,212,191,0.4); }
+  .counter { position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 0.82rem; font-weight: 600; }
+  .hint { position: fixed; bottom: 36px; left: 32px; color: rgba(255,255,255,0.25); font-size: 0.78rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; }
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 22px; }
+  .card-sm { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; }
+  .visual-box { flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; min-height: 180px; }
+  .p-def { font-size: 1rem; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 14px; }
+  .vocab { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
+  .vocab strong { color: rgba(255,255,255,0.7); }
+  .big-title { font-size: 4rem; font-weight: 900; line-height: 1; margin-bottom: 16px; }
+  .factor-chip { padding: 10px 14px; background: rgba(45,212,191,0.1); border: 1px solid rgba(45,212,191,0.3); border-radius: 10px; font-weight: 700; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" style="justify-content:center;align-items:flex-start;">
+  <div style="max-width:700px;">
+    <div class="badge">VCAA-VCD-TREND1 · Unit 2 AOS 1</div>
+    <div class="divider"></div>
+    <div class="big-title">Trends in<br><span class="accent">Design</span></div>
+    <div style="font-size:1.3rem;color:rgba(255,255,255,0.5);font-weight:400;margin-top:16px;">Visual Communication Design · Year 11 VCE</div>
+    <div style="margin-top:48px;font-size:0.9rem;color:rgba(255,255,255,0.3);">Use ← → arrow keys to navigate</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: What is a trend -->
+<div class="slide">
+  <div class="badge">Introduction</div>
+  <div class="slide-title">What is a <span class="accent">Design Trend?</span></div>
+  <div class="grid-2" style="align-items:start;gap:32px;">
+    <div>
+      <p style="font-size:1.15rem;color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:24px;">A design trend is a <strong style="color:#2dd4bf;">general direction</strong> in which design styles, materials or ideas are developing at a particular time.</p>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:20px;">Trends emerge across <strong>all four design fields</strong> — communication, environmental, industrial and interaction design — often at the same time, driven by shared cultural forces.</p>
+      <div class="card" style="background:rgba(45,212,191,0.08);border-color:rgba(45,212,191,0.3);">
+        <p style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.6;"><strong style="color:#2dd4bf;">Trend vs Fad</strong> — a trend develops over a longer period and reflects deeper shifts; a fad is short-lived and often stylistic only.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#2dd4bf;margin-bottom:14px;">Why Study Trends?</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:2;">
+        <div>Understand the <strong style="color:white;">context</strong> a design was created in</div>
+        <div>Predict future <strong style="color:white;">audience expectations</strong></div>
+        <div>Position your own folio work within current practice</div>
+        <div>Analyse <strong style="color:white;">why</strong> a design looks the way it does</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Factors influencing trends -->
+<div class="slide">
+  <div class="badge">Key Concept</div>
+  <div class="slide-title">Factors that <span class="accent">Drive Trends</span></div>
+  <div class="p-def" style="margin-bottom:20px;">Trends don't appear from nowhere — they are shaped by broader forces acting on society. When analysing a trend, always link it back to one or more of these factors.</div>
+  <div class="grid-5">
+    <div class="factor-chip"><div style="font-size:1.4rem;margin-bottom:6px;">👥</div>Social</div>
+    <div class="factor-chip"><div style="font-size:1.4rem;margin-bottom:6px;">🎭</div>Cultural</div>
+    <div class="factor-chip"><div style="font-size:1.4rem;margin-bottom:6px;">💰</div>Economic</div>
+    <div class="factor-chip"><div style="font-size:1.4rem;margin-bottom:6px;">💻</div>Technological</div>
+    <div class="factor-chip"><div style="font-size:1.4rem;margin-bottom:6px;">🌱</div>Environmental</div>
+  </div>
+  <div class="card" style="margin-top:20px;">
+    <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+      <div><strong style="color:#2dd4bf;">Social</strong> — changing lifestyles, values, demographics (e.g. remote work reshaping office design)</div>
+      <div><strong style="color:#2dd4bf;">Cultural</strong> — shifting attitudes, identity, heritage, globalisation of style</div>
+      <div><strong style="color:#2dd4bf;">Economic</strong> — cost of materials, market demand, recession vs growth</div>
+      <div><strong style="color:#2dd4bf;">Technological</strong> — new tools, materials and manufacturing methods (3D printing, AI, AR/VR)</div>
+      <div><strong style="color:#2dd4bf;">Environmental</strong> — sustainability pressures, climate concern, resource scarcity</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Trend example 1 - Sustainability -->
+<div class="slide">
+  <div class="badge">Example Trend 1</div>
+  <div class="slide-title"><span class="accent">Sustainability</span> &amp; Eco-Design</div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">A shift toward materials, processes and forms that minimise environmental impact — driven largely by <strong>environmental</strong> and <strong>social</strong> factors.</div>
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#2dd4bf;margin-bottom:8px;">Across the 4 Fields</div>
+      <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Communication</strong> — recycled paper stock, reduced ink use, digital-first campaigns</div>
+        <div><strong style="color:white;">Environmental</strong> — passive solar buildings, green roofs, reclaimed materials</div>
+        <div><strong style="color:white;">Industrial</strong> — biodegradable packaging, modular/repairable products</div>
+        <div><strong style="color:white;">Interaction</strong> — dark-mode UI to reduce energy use, low-carbon web design</div>
+      </div>
+    </div>
+    <div class="visual-box">
+      <svg width="260" height="200" viewBox="0 0 260 200">
+        <circle cx="130" cy="90" r="60" fill="none" stroke="#2dd4bf" stroke-width="2"/>
+        <path d="M130 40 A50 50 0 0 1 178 100" fill="none" stroke="#5eead4" stroke-width="4"/>
+        <path d="M178 100 L172 90 M178 100 L188 96" stroke="#5eead4" stroke-width="3" fill="none"/>
+        <path d="M130 140 A50 50 0 0 1 82 80" fill="none" stroke="#5eead4" stroke-width="4"/>
+        <path d="M82 80 L88 90 M82 80 L72 84" stroke="#5eead4" stroke-width="3" fill="none"/>
+        <text x="130" y="95" text-anchor="middle" font-size="26" fill="#2dd4bf" font-family="Inter">♻</text>
+        <text x="130" y="175" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.4)" font-family="Inter">Circular design thinking</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Trend example 2 - Digital/AI -->
+<div class="slide">
+  <div class="badge">Example Trend 2</div>
+  <div class="slide-title">Digital &amp; <span class="accent">AI-Driven Design</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The rise of AI tools, generative design and immersive technology — driven by <strong>technological</strong> factors and shifting audience expectations.</div>
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#2dd4bf;margin-bottom:8px;">Across the 4 Fields</div>
+      <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Communication</strong> — AI-generated imagery, motion graphics, personalised content</div>
+        <div><strong style="color:white;">Environmental</strong> — parametric/generative architectural forms</div>
+        <div><strong style="color:white;">Industrial</strong> — generative product design optimised by software</div>
+        <div><strong style="color:white;">Interaction</strong> — AR/VR interfaces, voice UI, adaptive apps</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#2dd4bf;margin-bottom:10px;">Analysis Tip</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.8;">When discussing this trend in the exam, name the <strong style="color:white;">specific technology</strong> (e.g. generative AI, parametric modelling) rather than saying "modern design" — vague language earns fewer marks.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Trend example 3 - Nostalgia -->
+<div class="slide">
+  <div class="badge">Example Trend 3</div>
+  <div class="slide-title"><span class="accent">Nostalgia</span> &amp; Retro Revival</div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">A return to visual styles from past decades — driven by <strong>cultural</strong> and <strong>social</strong> factors such as comfort-seeking during uncertain times.</div>
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#2dd4bf;margin-bottom:8px;">Across the 4 Fields</div>
+      <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Communication</strong> — 90s/Y2K typography and colour palettes returning in branding</div>
+        <div><strong style="color:white;">Environmental</strong> — mid-century modern interiors revived</div>
+        <div><strong style="color:white;">Industrial</strong> — retro-styled appliances and vehicles</div>
+        <div><strong style="color:white;">Interaction</strong> — skeuomorphic UI elements referencing physical objects</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#2dd4bf;margin-bottom:10px;">Trend Cycles</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.8;">Trends are often <strong style="color:white;">cyclical</strong> — styles from 20–30 years ago frequently resurface, reinterpreted with current technology and values.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: How to analyse a trend -->
+<div class="slide">
+  <div class="badge">Skill</div>
+  <div class="slide-title">Analysing a <span class="accent">Trend</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="background:rgba(45,212,191,0.08);border-color:rgba(45,212,191,0.3);margin-bottom:16px;">
+        <div style="font-size:1rem;font-weight:900;color:#2dd4bf;margin-bottom:10px;">Trend → Factor(s) → Field Examples</div>
+        <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">
+          <div><span style="color:#2dd4bf;font-weight:700;">1. Name</span> the trend</div>
+          <div><span style="color:#2dd4bf;font-weight:700;">2. Identify</span> the driving factor(s)</div>
+          <div><span style="color:#2dd4bf;font-weight:700;">3. Give evidence</span> from at least two design fields</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> emerging, established, resurgence, driven by, reflects, in response to, across fields</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.35);">Sentence Starters</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.65);line-height:2;">
+        <div>"This trend is driven primarily by <em>[factor]</em> because..."</div>
+        <div>"In communication design, this trend manifests as..."</div>
+        <div>"Compared to [past trend], this reflects a shift toward..."</div>
+        <div>"This trend is likely to continue/fade because..."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: Summary -->
+<div class="slide">
+  <div class="badge">Summary</div>
+  <div class="slide-title">Trends in Design — <span class="accent">Quick Reference</span></div>
+  <div class="grid-5" style="margin-top:8px;">
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#2dd4bf;margin-bottom:6px;">Social</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Lifestyle &amp; demographic shifts</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#2dd4bf;margin-bottom:6px;">Cultural</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Values, identity, heritage</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#2dd4bf;margin-bottom:6px;">Economic</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Cost, demand, market conditions</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#2dd4bf;margin-bottom:6px;">Technological</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">New tools, materials, methods</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#2dd4bf;margin-bottom:6px;">Environmental</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Sustainability, resource pressure</div></div>
+  </div>
+  <div style="margin-top:20px;padding:14px 20px;background:rgba(45,212,191,0.1);border:1px solid rgba(45,212,191,0.3);border-radius:12px;font-size:0.88rem;color:rgba(255,255,255,0.65);text-align:center;">
+    💡 Reminder: always link a trend to <strong style="color:#5eead4;">at least two design fields</strong> and name the <strong style="color:#5eead4;">driving factor</strong> in exam responses.
+  </div>
+</div>
+
+<div class="nav"><button id="prev">←</button><button id="next">→</button></div>
+<div class="counter"></div>
+<div class="hint">← → arrow keys to navigate</div>
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.querySelector('.counter');
+  function show(n) { slides.forEach(s => s.classList.remove('active')); slides[n].classList.add('active'); counter.textContent = (n+1)+' / '+slides.length; }
+  document.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key==='ArrowDown'){if(current<slides.length-1)show(++current);} if(e.key==='ArrowLeft'||e.key==='ArrowUp'){if(current>0)show(--current);} });
+  document.getElementById('prev').onclick = () => { if(current>0)show(--current); };
+  document.getElementById('next').onclick = () => { if(current<slides.length-1)show(++current); };
+  show(0);
+</script>
+</body>
+</html>

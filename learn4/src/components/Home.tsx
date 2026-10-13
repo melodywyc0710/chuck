@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Star, Flame, Lock, Home as HomeIcon, RotateCcw, Trophy, User,
@@ -145,8 +145,11 @@ export default function Home() {
     else { sounds.click(); startSession(s.id); }
   }
 
-  if (navTab === 'revision') { setView('revision'); setNavTab('learn'); return null; }
-  if (navTab === 'rewards')  { setView('rewards');  setNavTab('learn'); return null; }
+  useEffect(() => {
+    if (navTab === 'revision') { setView('revision'); setNavTab('learn'); }
+    else if (navTab === 'rewards') { setView('rewards'); setNavTab('learn'); }
+  }, [navTab]);
+  if (navTab === 'revision' || navTab === 'rewards') return null;
 
   return (
     <div className="min-h-screen flex flex-col bg-white max-w-lg mx-auto relative overflow-hidden">

@@ -443,7 +443,8 @@ export default function RewardsRoom() {
       claimDailyBonus();
       setDailyBonusAmount(bonus);
       setShowDailyBonus(true);
-      setTimeout(() => setShowDailyBonus(false), 3500);
+      const t = setTimeout(() => setShowDailyBonus(false), 3500);
+      return () => clearTimeout(t);
     }
   }, []);
 

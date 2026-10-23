@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Design Process — VCE VCD Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #0a1420; color: white; height: 100vh; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 56px 72px; }
+  .slide.active { display: flex; }
+  .badge { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; background: rgba(251,146,60,0.18); color: #fdba74; border: 1px solid rgba(251,146,60,0.35); border-radius: 99px; padding: 4px 14px; margin-bottom: 18px; }
+  .slide-title { font-size: 2.6rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .accent { color: #fb923c; }
+  .divider { width: 60px; height: 4px; background: #fb923c; border-radius: 99px; margin-bottom: 28px; }
+  .nav { position: fixed; bottom: 28px; right: 32px; display: flex; gap: 10px; z-index: 100; }
+  .nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; transition: background 0.15s; }
+  .nav button:hover { background: rgba(251,146,60,0.4); }
+  .counter { position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 0.82rem; font-weight: 600; }
+  .hint { position: fixed; bottom: 36px; left: 32px; color: rgba(255,255,255,0.25); font-size: 0.78rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; }
+  .grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; }
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 22px; }
+  .card-sm { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; }
+  .visual-box { flex: 1; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; min-height: 180px; }
+  .p-def { font-size: 1rem; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 14px; }
+  .vocab { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
+  .vocab strong { color: rgba(255,255,255,0.7); }
+  .big-title { font-size: 4rem; font-weight: 900; line-height: 1; margin-bottom: 16px; }
+  .stage-num { width: 40px; height: 40px; border-radius: 50%; background: rgba(251,146,60,0.2); border: 1.5px solid #fb923c; color: #fdba74; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.1rem; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" style="justify-content:center;align-items:flex-start;">
+  <div style="max-width:700px;">
+    <div class="badge">VCAA-VCD-PROC1 · Unit 1 AOS 2</div>
+    <div class="divider"></div>
+    <div class="big-title">The Design<br><span class="accent">Process</span></div>
+    <div style="font-size:1.3rem;color:rgba(255,255,255,0.5);font-weight:400;margin-top:16px;">Visual Communication Design · Year 11 VCE</div>
+    <div style="margin-top:48px;font-size:0.9rem;color:rgba(255,255,255,0.3);">Use ← → arrow keys to navigate</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: What is the design process -->
+<div class="slide">
+  <div class="badge">Introduction</div>
+  <div class="slide-title">What is the <span class="accent">Design Process?</span></div>
+  <div class="grid-2" style="align-items:start;gap:32px;">
+    <div>
+      <p style="font-size:1.15rem;color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:24px;">The design process is the <strong style="color:#fb923c;">sequence of stages</strong> a designer moves through to take a problem from a client brief to a finished, resolved design.</p>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:20px;">It is not always linear — designers often loop back to earlier stages as ideas develop. But for study and folio purposes, it is broken into five key stages.</p>
+      <div class="card" style="background:rgba(251,146,60,0.08);border-color:rgba(251,146,60,0.3);">
+        <p style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.6;"><strong style="color:#fb923c;">In your folio</strong>, you must show visible evidence of thinking at every stage — not just a final picture.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#fb923c;margin-bottom:14px;">The 5 Stages</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;"><span class="stage-num" style="width:28px;height:28px;font-size:0.85rem;">1</span><span style="font-weight:700;">Research &amp; the Brief</span></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;"><span class="stage-num" style="width:28px;height:28px;font-size:0.85rem;">2</span><span style="font-weight:700;">Generation of Ideas</span></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;"><span class="stage-num" style="width:28px;height:28px;font-size:0.85rem;">3</span><span style="font-weight:700;">Development &amp; Refinement</span></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;"><span class="stage-num" style="width:28px;height:28px;font-size:0.85rem;">4</span><span style="font-weight:700;">Presentation</span></div>
+        <div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;"><span class="stage-num" style="width:28px;height:28px;font-size:0.85rem;">5</span><span style="font-weight:700;">Evaluation</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Stage 1 Research -->
+<div class="slide">
+  <div class="badge">Stage 1 of 5</div>
+  <div class="slide-title"><span class="accent">Research</span> &amp; the Brief</div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">Every design task starts with a <strong>design brief</strong> — a written statement from the client outlining the problem, purpose and requirements. Before generating ideas, a designer researches the context around the brief.</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:8px;">The Brief Must Identify</div>
+        <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+          <div><strong style="color:white;">Client</strong> — who is commissioning the design</div>
+          <div><strong style="color:white;">Target audience</strong> — who will use/view it</div>
+          <div><strong style="color:white;">Purpose</strong> — what the design needs to achieve</div>
+          <div><strong style="color:white;">Constraints</strong> — budget, timeline, materials, size</div>
+        </div>
+      </div>
+      <div class="vocab"><strong>Exam vocab:</strong> brief, client, target audience, purpose, constraints, parameters, primary research, secondary research</div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:10px;">Two Types of Research</div>
+      <div style="margin-bottom:14px;padding:12px;background:rgba(255,255,255,0.05);border-radius:10px;">
+        <div style="font-weight:800;color:white;margin-bottom:4px;">Primary research</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);">Information gathered first-hand — surveys, interviews, observation, site visits, photography.</div>
+      </div>
+      <div style="padding:12px;background:rgba(255,255,255,0.05);border-radius:10px;">
+        <div style="font-weight:800;color:white;margin-bottom:4px;">Secondary research</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);">Information gathered from existing sources — competitor designs, articles, market trends, mood boards.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Stage 2 Generation of ideas -->
+<div class="slide">
+  <div class="badge">Stage 2 of 5</div>
+  <div class="slide-title">Generation of <span class="accent">Ideas</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">Once the brief is understood, the designer generates a wide range of possible solutions. Quantity over quality at this stage — the goal is to explore as many directions as possible.</div>
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:8px;">Ideation Methods</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Brainstorming</strong> — free listing of words/concepts related to the brief</div>
+        <div><strong style="color:white;">Mind mapping</strong> — branching diagram connecting related ideas</div>
+        <div><strong style="color:white;">Thumbnail sketches</strong> — small, quick, rough drawings exploring layout/form</div>
+        <div><strong style="color:white;">SCAMPER / lateral thinking</strong> — Substitute, Combine, Adapt, Modify, Put to other use, Eliminate, Reverse</div>
+      </div>
+      <div class="vocab" style="margin-top:12px;"><strong>Exam vocab:</strong> ideation, thumbnail sketches, brainstorm, mind map, divergent thinking, concept</div>
+    </div>
+    <div class="visual-box">
+      <svg width="300" height="230" viewBox="0 0 300 230">
+        <text x="150" y="18" fill="rgba(255,255,255,0.4)" font-size="11" font-family="Inter" text-anchor="middle">Thumbnail sketches (rough, fast)</text>
+        <g stroke="rgba(251,146,60,0.6)" stroke-width="1.5" fill="none">
+          <rect x="20" y="30" width="60" height="45" rx="3"/>
+          <line x1="28" y1="45" x2="72" y2="45"/>
+          <circle cx="35" cy="60" r="6"/>
+          <rect x="90" y="30" width="60" height="45" rx="3"/>
+          <line x1="98" y1="38" x2="142" y2="38"/>
+          <line x1="98" y1="50" x2="130" y2="50"/>
+          <line x1="98" y1="62" x2="142" y2="62"/>
+          <rect x="160" y="30" width="60" height="45" rx="3"/>
+          <circle cx="190" cy="52" r="15"/>
+          <rect x="230" y="30" width="55" height="45" rx="3"/>
+          <path d="M240 65 L255 40 L270 65 Z"/>
+        </g>
+        <g stroke="rgba(251,146,60,0.4)" stroke-width="1.5" fill="none">
+          <rect x="20" y="90" width="60" height="45" rx="3"/>
+          <line x1="30" y1="100" x2="70" y2="125"/>
+          <rect x="90" y="90" width="60" height="45" rx="3"/>
+          <line x1="95" y1="130" x2="145" y2="95"/>
+          <rect x="160" y="90" width="60" height="45" rx="3"/>
+          <line x1="165" y1="95" x2="215" y2="95"/>
+          <line x1="165" y1="105" x2="215" y2="130"/>
+        </g>
+        <text x="150" y="165" fill="rgba(255,255,255,0.3)" font-size="10" font-family="Inter" text-anchor="middle">Many quick options, not one polished drawing</text>
+        <rect x="20" y="180" width="260" height="34" rx="6" fill="rgba(251,146,60,0.08)" stroke="rgba(251,146,60,0.3)"/>
+        <text x="150" y="201" fill="#fdba74" font-size="10" font-family="Inter" text-anchor="middle">Aim: quantity of concepts, not refinement</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Stage 3 Development -->
+<div class="slide">
+  <div class="badge">Stage 3 of 5</div>
+  <div class="slide-title">Development &amp; <span class="accent">Refinement</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The strongest ideas from generation are selected and developed further — testing them against the brief, adding detail, and refining elements and principles until the concept is resolved.</div>
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:8px;">What Happens at This Stage</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Annotated drawings</strong> — sketches with written notes explaining decisions</div>
+        <div><strong style="color:white;">Visualisation drawing</strong> — freehand, tonal renders exploring colour/material</div>
+        <div><strong style="color:white;">Testing against the brief</strong> — does it meet the purpose and audience?</div>
+        <div><strong style="color:white;">Feedback</strong> — peer or client feedback shapes further refinement</div>
+      </div>
+      <div class="vocab" style="margin-top:12px;"><strong>Exam vocab:</strong> refine, annotate, resolve, convergent thinking, iterate, visualisation drawing</div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.7;">
+        <strong style="color:#fb923c;">Generation vs Development</strong>
+      </div>
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div style="padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;">
+          <div style="font-weight:800;font-size:0.85rem;margin-bottom:4px;">Generation</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.55);">Many ideas · rough · fast · divergent</div>
+        </div>
+        <div style="padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;">
+          <div style="font-weight:800;font-size:0.85rem;margin-bottom:4px;">Development</div>
+          <div style="font-size:0.78rem;color:rgba(255,255,255,0.55);">Fewer ideas · detailed · slower · convergent</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Stage 4 Presentation -->
+<div class="slide">
+  <div class="badge">Stage 4 of 5</div>
+  <div class="slide-title"><span class="accent">Presentation</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The final, resolved design is communicated clearly and professionally using presentation (technical) drawing methods so a client or manufacturer can understand it exactly.</div>
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:8px;">Presentation Drawing Methods</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Orthogonal drawing</strong> — accurate 2D views (plan, elevation)</div>
+        <div><strong style="color:white;">Isometric drawing</strong> — 3D at fixed 30° angles, no perspective distortion</div>
+        <div><strong style="color:white;">1-point &amp; 2-point perspective</strong> — realistic 3D with vanishing points</div>
+        <div><strong style="color:white;">Digital rendering</strong> — computer-generated final visuals</div>
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);border-radius:10px;font-size:0.82rem;color:rgba(255,255,255,0.65);">See the <strong style="color:#fdba74;">Technical Drawing handout</strong> for detailed diagrams of each method.</div>
+    </div>
+    <div class="card" style="background:rgba(251,146,60,0.06);border-color:rgba(251,146,60,0.25);">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:10px;">Presentation vs Visualisation Drawing</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.8;">
+        <strong style="color:white;">Visualisation</strong> — quick, freehand, used <em>during</em> the process to explore ideas.<br><br>
+        <strong style="color:white;">Presentation</strong> — accurate, measured/rendered, used at the <em>end</em> to communicate the final design.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Stage 5 Evaluation -->
+<div class="slide">
+  <div class="badge">Stage 5 of 5</div>
+  <div class="slide-title"><span class="accent">Evaluation</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The final design is assessed against the original brief to determine whether it successfully solves the design problem for its intended audience and purpose.</div>
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#fb923c;margin-bottom:8px;">Questions to Ask</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div>Does it meet the <strong style="color:white;">purpose</strong> stated in the brief?</div>
+        <div>Is it appropriate for the <strong style="color:white;">target audience</strong>?</div>
+        <div>Were the <strong style="color:white;">constraints</strong> (budget, materials, size) respected?</div>
+        <div>What would you <strong style="color:white;">improve</strong> if given more time?</div>
+      </div>
+      <div class="vocab" style="margin-top:12px;"><strong>Exam vocab:</strong> evaluate, effective/ineffective, criteria, justify, refine further, meets the brief</div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:10px;"><strong style="color:#fb923c;">The process is cyclical</strong></div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.6);line-height:1.7;">Evaluation often leads back to further development or even new research — real design work loops back on itself rather than running in one straight line.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 8: Full process diagram -->
+<div class="slide">
+  <div class="badge">Overview</div>
+  <div class="slide-title">The Process as a <span class="accent">Cycle</span></div>
+  <div class="grid-5" style="margin-top:8px;">
+    <div class="card-sm" style="text-align:center;"><div class="stage-num" style="margin:0 auto 8px;">1</div><div style="font-weight:800;font-size:0.85rem;margin-bottom:4px;">Research &amp; Brief</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.55);">Understand the problem</div></div>
+    <div class="card-sm" style="text-align:center;"><div class="stage-num" style="margin:0 auto 8px;">2</div><div style="font-weight:800;font-size:0.85rem;margin-bottom:4px;">Generation</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.55);">Many rough ideas</div></div>
+    <div class="card-sm" style="text-align:center;"><div class="stage-num" style="margin:0 auto 8px;">3</div><div style="font-weight:800;font-size:0.85rem;margin-bottom:4px;">Development</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.55);">Refine &amp; test ideas</div></div>
+    <div class="card-sm" style="text-align:center;"><div class="stage-num" style="margin:0 auto 8px;">4</div><div style="font-weight:800;font-size:0.85rem;margin-bottom:4px;">Presentation</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.55);">Final resolved design</div></div>
+    <div class="card-sm" style="text-align:center;"><div class="stage-num" style="margin:0 auto 8px;">5</div><div style="font-weight:800;font-size:0.85rem;margin-bottom:4px;">Evaluation</div><div style="font-size:0.72rem;color:rgba(255,255,255,0.55);">Assess against brief</div></div>
+  </div>
+  <div class="visual-box" style="margin-top:20px;">
+    <svg width="560" height="150" viewBox="0 0 560 150">
+      <path d="M60 75 A210 210 0 1 1 59 76" fill="none" stroke="rgba(251,146,60,0.4)" stroke-width="2" stroke-dasharray="6"/>
+      <circle cx="60" cy="75" r="20" fill="rgba(251,146,60,0.2)" stroke="#fb923c" stroke-width="1.5"/><text x="60" y="79" fill="white" font-size="12" font-family="Inter" text-anchor="middle" font-weight="800">1</text>
+      <circle cx="185" cy="30" r="20" fill="rgba(251,146,60,0.2)" stroke="#fb923c" stroke-width="1.5"/><text x="185" y="34" fill="white" font-size="12" font-family="Inter" text-anchor="middle" font-weight="800">2</text>
+      <circle cx="330" cy="30" r="20" fill="rgba(251,146,60,0.2)" stroke="#fb923c" stroke-width="1.5"/><text x="330" y="34" fill="white" font-size="12" font-family="Inter" text-anchor="middle" font-weight="800">3</text>
+      <circle cx="455" cy="75" r="20" fill="rgba(251,146,60,0.2)" stroke="#fb923c" stroke-width="1.5"/><text x="455" y="79" fill="white" font-size="12" font-family="Inter" text-anchor="middle" font-weight="800">4</text>
+      <circle cx="330" cy="120" r="20" fill="rgba(251,146,60,0.2)" stroke="#fb923c" stroke-width="1.5"/><text x="330" y="124" fill="white" font-size="12" font-family="Inter" text-anchor="middle" font-weight="800">5</text>
+      <text x="280" y="145" fill="rgba(255,255,255,0.35)" font-size="10" font-family="Inter" text-anchor="middle">Evaluation can loop back to any earlier stage</text>
+    </svg>
+  </div>
+</div>
+
+<!-- SLIDE 9: Exam technique -->
+<div class="slide">
+  <div class="badge">Exam Technique</div>
+  <div class="slide-title">Answering <span class="accent">Design Process</span> Questions</div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="background:rgba(251,146,60,0.08);border-color:rgba(251,146,60,0.3);margin-bottom:16px;">
+        <div style="font-size:1rem;font-weight:900;color:#fb923c;margin-bottom:10px;">Stage → Purpose → Evidence</div>
+        <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">
+          <div><span style="color:#fb923c;font-weight:700;">1. Name</span> the stage of the process</div>
+          <div><span style="color:#fb923c;font-weight:700;">2. Explain</span> its purpose in that stage</div>
+          <div><span style="color:#fb923c;font-weight:700;">3. Link</span> to specific folio evidence (sketches, brief, feedback)</div>
+        </div>
+      </div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.4);line-height:1.8;">
+        <div style="color:#f87171;font-weight:700;margin-bottom:4px;">❌ Do NOT write:</div>
+        <div style="margin-bottom:12px;">"First I did research then I did some drawings."</div>
+        <div style="color:#4ade80;font-weight:700;margin-bottom:4px;">✓ Write this instead:</div>
+        <div>"During the <em>generation of ideas</em> stage, thumbnail sketches were used to explore a wide range of layout options quickly, allowing divergent thinking before selecting a direction to develop further."</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.35);">Sentence Starters</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.65);line-height:2;">
+        <div>"The design <em>brief</em> specified..."</div>
+        <div>"During <em>generation</em>, [technique] was used to..."</div>
+        <div>"The idea was <em>refined</em> by..."</div>
+        <div>"<em>Presentation drawing</em> was used to communicate..."</div>
+        <div>"When <em>evaluated</em> against the brief, the design..."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 10: Summary -->
+<div class="slide">
+  <div class="badge">Summary</div>
+  <div class="slide-title">The Design Process — <span class="accent">Quick Reference</span></div>
+  <div class="grid-5" style="margin-top:8px;">
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#fb923c;margin-bottom:6px;">1. Research</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Brief, client, audience, primary + secondary research.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#fb923c;margin-bottom:6px;">2. Generation</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Brainstorm, mind map, thumbnails. Quantity over quality.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#fb923c;margin-bottom:6px;">3. Development</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Annotate, visualise, test against the brief.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#fb923c;margin-bottom:6px;">4. Presentation</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Orthogonal, isometric, perspective, final render.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#fb923c;margin-bottom:6px;">5. Evaluation</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Assess against brief, audience, purpose, constraints.</div></div>
+  </div>
+  <div style="margin-top:20px;padding:14px 20px;background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.3);border-radius:12px;font-size:0.88rem;color:rgba(255,255,255,0.65);text-align:center;">
+    💡 Reminder: the process is <strong style="color:#fdba74;">cyclical, not strictly linear</strong> — evaluation can send you back to any earlier stage.
+  </div>
+</div>
+
+<div class="nav"><button id="prev">←</button><button id="next">→</button></div>
+<div class="counter"></div>
+<div class="hint">← → arrow keys to navigate</div>
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.querySelector('.counter');
+  function show(n) { slides.forEach(s => s.classList.remove('active')); slides[n].classList.add('active'); counter.textContent = (n+1)+' / '+slides.length; }
+  document.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key==='ArrowDown'){if(current<slides.length-1)show(++current);} if(e.key==='ArrowLeft'||e.key==='ArrowUp'){if(current>0)show(--current);} });
+  document.getElementById('prev').onclick = () => { if(current>0)show(--current); };
+  document.getElementById('next').onclick = () => { if(current<slides.length-1)show(++current); };
+  show(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Evaluation &amp; Presentation — VCE VCD Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #170a1f; color: white; height: 100vh; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 56px 72px; }
+  .slide.active { display: flex; }
+  .badge { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; background: rgba(232,121,249,0.18); color: #f0abfc; border: 1px solid rgba(232,121,249,0.35); border-radius: 99px; padding: 4px 14px; margin-bottom: 18px; }
+  .slide-title { font-size: 2.6rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .accent { color: #e879f9; }
+  .divider { width: 60px; height: 4px; background: #e879f9; border-radius: 99px; margin-bottom: 28px; }
+  .nav { position: fixed; bottom: 28px; right: 32px; display: flex; gap: 10px; z-index: 100; }
+  .nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; transition: background 0.15s; }
+  .nav button:hover { background: rgba(232,121,249,0.4); }
+  .counter { position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 0.82rem; font-weight: 600; }
+  .hint { position: fixed; bottom: 36px; left: 32px; color: rgba(255,255,255,0.25); font-size: 0.78rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; flex: 1; }
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 22px; }
+  .card-sm { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; }
+  .p-def { font-size: 1rem; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 14px; }
+  .vocab { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
+  .vocab strong { color: rgba(255,255,255,0.7); }
+  .big-title { font-size: 4rem; font-weight: 900; line-height: 1; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" style="justify-content:center;align-items:flex-start;">
+  <div style="max-width:700px;">
+    <div class="badge">VCAA-VCD-EVAL1 · Unit 4 AOS 2</div>
+    <div class="divider"></div>
+    <div class="big-title">Evaluation &amp;<br><span class="accent">Presentation</span></div>
+    <div style="font-size:1.3rem;color:rgba(255,255,255,0.5);font-weight:400;margin-top:16px;">Visual Communication Design · Year 12 VCE</div>
+    <div style="margin-top:48px;font-size:0.9rem;color:rgba(255,255,255,0.3);">Use ← → arrow keys to navigate</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: Final refinement -->
+<div class="slide">
+  <div class="badge">Introduction</div>
+  <div class="slide-title">From Resolution to <span class="accent">Final Presentation</span></div>
+  <div class="grid-2" style="align-items:start;gap:32px;">
+    <div>
+      <p style="font-size:1.15rem;color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:24px;">Once a concept is resolved, it undergoes <strong style="color:#e879f9;">final refinement</strong> — small, precise adjustments — before being presented to a professional standard.</p>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:20px;">The finished design is then <strong>evaluated</strong> against the original brief to determine its success.</p>
+    </div>
+    <div class="card">
+      <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#e879f9;margin-bottom:14px;">This AOS Covers</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:2;">
+        <div>Final refinement techniques</div>
+        <div>Presentation drawing standards</div>
+        <div>Folio layout and clarity</div>
+        <div>Evaluating against the brief</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Presentation standards -->
+<div class="slide">
+  <div class="badge">Key Skill</div>
+  <div class="slide-title">Presentation <span class="accent">Standards</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">The final design must be presented using an appropriate method to a professional standard, clearly communicating the resolved concept.</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Accuracy</strong> — correct use of orthogonal, isometric or perspective methods</div>
+        <div><strong style="color:white;">Rendering</strong> — colour, tone and material communicated clearly</div>
+        <div><strong style="color:white;">Context</strong> — mockups or environment shown where relevant</div>
+        <div><strong style="color:white;">Craftsmanship</strong> — clean linework, consistent scale, legible annotation</div>
+      </div>
+    </div>
+    <div class="card" style="background:rgba(232,121,249,0.08);border-color:rgba(232,121,249,0.3);">
+      <p style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.6;">See the <strong style="color:#f0abfc;">Technical Drawing</strong> and <strong style="color:#f0abfc;">Visualisation Drawing</strong> handouts (Unit 1 AOS 2) for a full recap of drawing methods.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 4: Evaluation criteria -->
+<div class="slide">
+  <div class="badge">Key Concept</div>
+  <div class="slide-title">Evaluating Against the <span class="accent">Brief</span></div>
+  <div class="grid-4" style="margin-top:8px;">
+    <div class="card-sm"><div style="font-weight:800;color:#e879f9;margin-bottom:6px;">Purpose</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Does the design achieve its communication objective?</div></div>
+    <div class="card-sm"><div style="font-weight:800;color:#e879f9;margin-bottom:6px;">Audience</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Is it appropriate and effective for the target audience?</div></div>
+    <div class="card-sm"><div style="font-weight:800;color:#e879f9;margin-bottom:6px;">Constraints</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Were the stated constraints respected (materials, time, format)?</div></div>
+    <div class="card-sm"><div style="font-weight:800;color:#e879f9;margin-bottom:6px;">Obligatory Fields</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Were all required design outcomes delivered?</div></div>
+  </div>
+  <div class="card" style="margin-top:20px;background:rgba(232,121,249,0.08);border-color:rgba(232,121,249,0.3);">
+    <p style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.6;">A strong evaluation is <strong style="color:#f0abfc;">specific and balanced</strong> — identify genuine strengths and any limitations, not just praise.</p>
+  </div>
+</div>
+
+<!-- SLIDE 5: Folio presentation -->
+<div class="slide">
+  <div class="badge">Key Skill</div>
+  <div class="slide-title">Folio <span class="accent">Layout &amp; Clarity</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">How your folio is organised affects how clearly your design thinking can be assessed.</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Sequence</strong> — brief → research → generation → development → resolution → evaluation</div>
+        <div><strong style="color:white;">Labelling</strong> — clearly label the brief, each concept, and final design</div>
+        <div><strong style="color:white;">Consistency</strong> — consistent visual presentation across pages</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#e879f9;margin-bottom:10px;">Exam Tip</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.8;">Exam questions may show a folio excerpt and ask you to identify which stage of the process it represents — know the full sequence well.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Exam technique -->
+<div class="slide">
+  <div class="badge">Exam Technique</div>
+  <div class="slide-title">Writing an <span class="accent">Evaluation</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="background:rgba(232,121,249,0.08);border-color:rgba(232,121,249,0.3);margin-bottom:16px;">
+        <div style="font-size:1rem;font-weight:900;color:#e879f9;margin-bottom:10px;">Criterion → Evidence → Judgement</div>
+        <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">
+          <div><span style="color:#e879f9;font-weight:700;">1. State</span> the brief criterion being evaluated</div>
+          <div><span style="color:#e879f9;font-weight:700;">2. Give evidence</span> from the final design</div>
+          <div><span style="color:#e879f9;font-weight:700;">3. Judge</span> whether it succeeds, with reasoning</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.35);">Sentence Starters</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.65);line-height:2;">
+        <div>"The brief required [X]; the final design achieves this by..."</div>
+        <div>"This effectively meets the needs of [audience] because..."</div>
+        <div>"One limitation of the final design is..."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Summary -->
+<div class="slide">
+  <div class="badge">Summary</div>
+  <div class="slide-title">Evaluation &amp; Presentation — <span class="accent">Quick Reference</span></div>
+  <div class="grid-4" style="margin-top:8px;">
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#e879f9;margin-bottom:6px;">Refinement</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Small, precise final adjustments.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#e879f9;margin-bottom:6px;">Presentation</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Accurate, rendered, professional standard.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#e879f9;margin-bottom:6px;">Evaluation</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Purpose, audience, constraints, obligatory fields.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#e879f9;margin-bottom:6px;">Folio Layout</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Clear sequence and consistent presentation.</div></div>
+  </div>
+  <div style="margin-top:20px;padding:14px 20px;background:rgba(232,121,249,0.1);border:1px solid rgba(232,121,249,0.3);border-radius:12px;font-size:0.88rem;color:rgba(255,255,255,0.65);text-align:center;">
+    💡 Reminder: a strong evaluation is <strong style="color:#f0abfc;">specific and balanced</strong> — not just "the design looks good."
+  </div>
+</div>
+
+<div class="nav"><button id="prev">←</button><button id="next">→</button></div>
+<div class="counter"></div>
+<div class="hint">← → arrow keys to navigate</div>
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.querySelector('.counter');
+  function show(n) { slides.forEach(s => s.classList.remove('active')); slides[n].classList.add('active'); counter.textContent = (n+1)+' / '+slides.length; }
+  document.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key==='ArrowDown'){if(current<slides.length-1)show(++current);} if(e.key==='ArrowLeft'||e.key==='ArrowUp'){if(current>0)show(--current);} });
+  document.getElementById('prev').onclick = () => { if(current>0)show(--current); };
+  document.getElementById('next').onclick = () => { if(current<slides.length-1)show(++current); };
+  show(0);
+</script>
+</body>
+</html>

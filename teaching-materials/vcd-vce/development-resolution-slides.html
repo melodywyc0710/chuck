@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Development &amp; Resolution — VCE VCD Slides</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #0e1a05; color: white; height: 100vh; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 56px 72px; }
+  .slide.active { display: flex; }
+  .badge { display: inline-block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; background: rgba(163,230,53,0.18); color: #bef264; border: 1px solid rgba(163,230,53,0.35); border-radius: 99px; padding: 4px 14px; margin-bottom: 18px; }
+  .slide-title { font-size: 2.6rem; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .accent { color: #a3e635; }
+  .divider { width: 60px; height: 4px; background: #a3e635; border-radius: 99px; margin-bottom: 28px; }
+  .nav { position: fixed; bottom: 28px; right: 32px; display: flex; gap: 10px; z-index: 100; }
+  .nav button { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 44px; height: 44px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; transition: background 0.15s; }
+  .nav button:hover { background: rgba(163,230,53,0.4); }
+  .counter { position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 0.82rem; font-weight: 600; }
+  .hint { position: fixed; bottom: 36px; left: 32px; color: rgba(255,255,255,0.25); font-size: 0.78rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; flex: 1; }
+  .card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 22px; }
+  .card-sm { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px; }
+  .p-def { font-size: 1rem; color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 14px; }
+  .vocab { font-size: 0.82rem; color: rgba(255,255,255,0.45); line-height: 1.7; }
+  .vocab strong { color: rgba(255,255,255,0.7); }
+  .big-title { font-size: 4rem; font-weight: 900; line-height: 1; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: Title -->
+<div class="slide active" style="justify-content:center;align-items:flex-start;">
+  <div style="max-width:700px;">
+    <div class="badge">VCAA-VCD-DEV1 · Unit 4 AOS 1</div>
+    <div class="divider"></div>
+    <div class="big-title">Development &amp;<br><span class="accent">Resolution</span></div>
+    <div style="font-size:1.3rem;color:rgba(255,255,255,0.5);font-weight:400;margin-top:16px;">Visual Communication Design · Year 12 VCE</div>
+    <div style="margin-top:48px;font-size:0.9rem;color:rgba(255,255,255,0.3);">Use ← → arrow keys to navigate</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: From two concepts to resolution -->
+<div class="slide">
+  <div class="badge">Introduction</div>
+  <div class="slide-title">Developing Your <span class="accent">Two Concepts</span></div>
+  <div class="grid-2" style="align-items:start;gap:32px;">
+    <div>
+      <p style="font-size:1.15rem;color:rgba(255,255,255,0.8);line-height:1.7;margin-bottom:24px;">In Unit 4, you take the <strong style="color:#a3e635;">two distinct concepts</strong> generated in Unit 3 and develop each one further through testing, refinement and feedback.</p>
+      <p style="font-size:1rem;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:20px;">One concept is ultimately selected and resolved into a final presentation — but both must show visible development.</p>
+    </div>
+    <div class="card">
+      <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:#a3e635;margin-bottom:14px;">Development Shows</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:2;">
+        <div>Testing of options (type, colour, material)</div>
+        <div>Annotated decision-making</div>
+        <div>Response to feedback</div>
+        <div>Progress toward a resolved final design</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 3: Methods of development -->
+<div class="slide">
+  <div class="badge">Key Methods</div>
+  <div class="slide-title">Methods of <span class="accent">Development</span></div>
+  <div class="grid-4" style="margin-top:8px;">
+    <div class="card-sm"><div style="font-weight:800;color:#a3e635;margin-bottom:6px;">Type Trials</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Testing typefaces, weights and sizes for the strongest hierarchy and tone.</div></div>
+    <div class="card-sm"><div style="font-weight:800;color:#a3e635;margin-bottom:6px;">Colour Trials</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Testing palettes for mood, contrast and audience appropriateness.</div></div>
+    <div class="card-sm"><div style="font-weight:800;color:#a3e635;margin-bottom:6px;">Material/Scale Trials</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Testing physical materials, surface finishes or scale relationships.</div></div>
+    <div class="card-sm"><div style="font-weight:800;color:#a3e635;margin-bottom:6px;">Layout Trials</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Testing composition, grid structure and hierarchy arrangements.</div></div>
+  </div>
+  <div class="card" style="margin-top:20px;background:rgba(163,230,53,0.08);border-color:rgba(163,230,53,0.3);">
+    <p style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.6;">Every trial should be <strong style="color:#bef264;">annotated</strong> — explain why an option was chosen or rejected, referencing the brief.</p>
+  </div>
+</div>
+
+<!-- SLIDE 4: Feedback and testing -->
+<div class="slide">
+  <div class="badge">Key Concept</div>
+  <div class="slide-title"><span class="accent">Feedback</span> &amp; Testing Against the Brief</div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">Development is not just personal preference — it is an iterative process of testing ideas against the brief and gathering feedback.</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div><strong style="color:white;">Peer feedback</strong> — classmates critique clarity and effectiveness</div>
+        <div><strong style="color:white;">Teacher feedback</strong> — checks against assessment criteria</div>
+        <div><strong style="color:white;">Self-testing</strong> — does it meet the audience, purpose and constraints?</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#a3e635;margin-bottom:10px;">Exam Tip</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.7);line-height:1.8;">When describing development, always show the <strong style="color:white;">before → feedback/testing → after</strong> sequence, not just the final result.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 5: Selecting a direction to resolve -->
+<div class="slide">
+  <div class="badge">Key Skill</div>
+  <div class="slide-title">Selecting a Direction to <span class="accent">Resolve</span></div>
+  <div class="grid-2">
+    <div>
+      <div class="p-def">After development, one concept is chosen to be resolved into the final design. This decision must be justified against the brief.</div>
+      <div style="font-size:0.95rem;color:rgba(255,255,255,0.7);line-height:1.9;">
+        <div>Which concept best meets the <strong style="color:white;">audience &amp; purpose</strong>?</div>
+        <div>Which received the strongest <strong style="color:white;">feedback</strong>?</div>
+        <div>Which is most <strong style="color:white;">achievable</strong> within constraints (time, materials)?</div>
+      </div>
+    </div>
+    <div class="card" style="background:rgba(163,230,53,0.08);border-color:rgba(163,230,53,0.3);">
+      <p style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.6;">The rejected concept is not wasted — it still demonstrates <strong style="color:#bef264;">breadth of development</strong> and is assessed as part of your folio.</p>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: Exam technique -->
+<div class="slide">
+  <div class="badge">Exam Technique</div>
+  <div class="slide-title">Answering <span class="accent">Development</span> Questions</div>
+  <div class="grid-2">
+    <div>
+      <div class="card" style="background:rgba(163,230,53,0.08);border-color:rgba(163,230,53,0.3);margin-bottom:16px;">
+        <div style="font-size:1rem;font-weight:900;color:#a3e635;margin-bottom:10px;">Method → Change → Justification</div>
+        <div style="font-size:0.9rem;color:rgba(255,255,255,0.7);line-height:1.7;">
+          <div><span style="color:#a3e635;font-weight:700;">1. Name</span> the development method used</div>
+          <div><span style="color:#a3e635;font-weight:700;">2. Describe</span> what changed between versions</div>
+          <div><span style="color:#a3e635;font-weight:700;">3. Justify</span> the change against the brief</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="font-size:0.8rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:rgba(255,255,255,0.35);">Sentence Starters</div>
+      <div style="font-size:0.85rem;color:rgba(255,255,255,0.65);line-height:2;">
+        <div>"A colour trial was conducted to test..."</div>
+        <div>"Following feedback, the [feature] was changed to..."</div>
+        <div>"This concept was selected for resolution because..."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 7: Summary -->
+<div class="slide">
+  <div class="badge">Summary</div>
+  <div class="slide-title">Development &amp; Resolution — <span class="accent">Quick Reference</span></div>
+  <div class="grid-4" style="margin-top:8px;">
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#a3e635;margin-bottom:6px;">Type Trials</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Test typeface, weight, hierarchy.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#a3e635;margin-bottom:6px;">Colour Trials</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Test palette for mood &amp; audience.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#a3e635;margin-bottom:6px;">Feedback</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Peer, teacher, self-testing against brief.</div></div>
+    <div class="card-sm"><div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;color:#a3e635;margin-bottom:6px;">Selection</div><div style="font-size:0.78rem;color:rgba(255,255,255,0.6);">Justify the chosen concept against the brief.</div></div>
+  </div>
+  <div style="margin-top:20px;padding:14px 20px;background:rgba(163,230,53,0.1);border:1px solid rgba(163,230,53,0.3);border-radius:12px;font-size:0.88rem;color:rgba(255,255,255,0.65);text-align:center;">
+    💡 Reminder: the resolved concept moves into <strong style="color:#bef264;">Unit 4 AOS 2</strong> for final presentation and evaluation.
+  </div>
+</div>
+
+<div class="nav"><button id="prev">←</button><button id="next">→</button></div>
+<div class="counter"></div>
+<div class="hint">← → arrow keys to navigate</div>
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.querySelector('.counter');
+  function show(n) { slides.forEach(s => s.classList.remove('active')); slides[n].classList.add('active'); counter.textContent = (n+1)+' / '+slides.length; }
+  document.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key==='ArrowDown'){if(current<slides.length-1)show(++current);} if(e.key==='ArrowLeft'||e.key==='ArrowUp'){if(current>0)show(--current);} });
+  document.getElementById('prev').onclick = () => { if(current>0)show(--current); };
+  document.getElementById('next').onclick = () => { if(current<slides.length-1)show(++current); };
+  show(0);
+</script>
+</body>
+</html>

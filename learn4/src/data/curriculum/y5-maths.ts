@@ -5798,4 +5798,1267 @@ export const y5Maths: Session[] = [
       },
     ],
   },
+  {
+    id: 'y5-mat-35',
+    subject: 'maths',
+    title: 'Number Patterns & Rules',
+    victorianCode: 'VCMNA205',
+    description: 'Identify and describe arithmetic and geometric sequences, write rules in words and as expressions, and use input/output tables to find unknown values in real contexts.',
+    yearLevel: 5,
+    estimatedMinutes: 60,
+    starsAvailable: 5,
+    color: '#0891b2',
+    icon: '🔢',
+    steps: [
+      {
+        id: 'y5-mat-35-s1',
+        type: 'video',
+        title: 'Introduction to Number Patterns & Rules',
+        youtubeId: '',
+        youtubeSearchQuery: 'Year 5 maths number patterns arithmetic geometric sequences rules Australia',
+        description: 'Learn how to identify arithmetic and geometric sequences, write rules in words and expressions, and use input/output tables to find unknown values.',
+        teacherNote: 'Begin with a quick pattern brainstorm — ask students where they see patterns in Australian nature (e.g. spiral patterns in banksias, regular growth rings on trees). Connect everyday contexts to the maths before starting the video.',
+        keyPoints: [
+          'An ARITHMETIC sequence adds or subtracts the same number each time (e.g. 3, 7, 11, 15 — add 4 each time). A GEOMETRIC sequence multiplies or divides by the same number each time (e.g. 2, 6, 18, 54 — multiply by 3 each time).',
+          'A rule describes how a pattern grows. Write it in words first (e.g. "Start at 5, add 3 each time") then as an expression (e.g. Term = 5 + 3 × (position − 1) or T = 3n + 2).',
+          'An input/output table (function machine) shows how an input value is transformed to an output. Find the rule by looking at what operation changes the input to the output consistently.',
+        ],
+      },
+      {
+        id: 'y5-mat-35-s2',
+        type: 'worked-example',
+        title: 'Worked Example: Arithmetic & Geometric Sequences',
+        teacherNote: 'Model both types side by side. Emphasise that arithmetic sequences have a constant DIFFERENCE and geometric sequences have a constant RATIO. Many students confuse multiplication by 1 (arithmetic) with ratio — clarify with examples.',
+        imagePrompt: 'Two clear worked examples. Left side: An arithmetic sequence 4, 7, 10, 13, 16 shown as a number line with arrows labelled "+3" between each term, and a table with position 1–5 and term values. The rule "T = 3n + 1" is highlighted in a box. Right side: A geometric sequence 2, 6, 18, 54, 162 shown as boxes with "×3" arrows between each, and a note saying "multiply by 3 each time". Both examples use bright, clear colours on a white background.',
+        content: {
+          heading: 'Arithmetic and geometric sequences',
+          body: [
+            { label: 'Arithmetic sequences', text: 'In an ARITHMETIC sequence the same number is added each time — this is called the COMMON DIFFERENCE. Example: 4, 7, 10, 13, 16. Differences: +3, +3, +3, +3. Common difference = 3. To write the rule: the 1st term is 4. Each new term adds 3. Rule in words: "Start at 4, add 3 each time." Rule as expression: T = 3n + 1, where n is the position. Check: position 1 → 3×1+1 = 4 ✓. Position 3 → 3×3+1 = 10 ✓. Position 10 → 3×10+1 = 31.', highlight: 'Find the common difference by subtracting any term from the next term. If the difference is CONSTANT, the sequence is arithmetic.' },
+            { label: 'Geometric sequences', text: 'In a GEOMETRIC sequence the same number is multiplied each time — this is the COMMON RATIO. Example: savings starting at $2, doubling each week: $2, $4, $8, $16, $32. Ratios: ×2, ×2, ×2, ×2. Common ratio = 2. Rule in words: "Start at 2, multiply by 2 each time." Rule as expression: T = 2 × 2^(n−1) or just describe it as "double the previous term." Check: week 1 → $2 ✓. Week 5 → $2 × 2 × 2 × 2 × 2 = $32 ✓. Week 7 → $2 × 2^6 = $128.', highlight: 'Divide any term by the previous term to find the common ratio. If the ratio is CONSTANT, the sequence is geometric.' },
+            { label: 'Input/output tables', text: 'An input/output table shows a function machine: every input is transformed by the SAME rule to produce the output. Example — tiling a path: tiles needed = 2 × length + 1. Input (length): 1 → Output (tiles): 3. Input 2 → 5. Input 3 → 7. Input 4 → 9. Input 5 → 11. To find the rule: look for a constant difference in the output column (+2 each time), then find what fits input 1 (2×1+1=3). Unknown: if tiles = 21, then 2×length+1 = 21 → length = 10. Verify: 2×10+1=21 ✓.', highlight: 'In an input/output table, find the rule by calculating output ÷ input or output − input for each row. If one stays constant, that IS the rule.' },
+          ],
+          questions: [
+            { q: 'The sequence is 5, 9, 13, 17, 21. (a) Is it arithmetic or geometric? (b) What is the common difference? (c) Write the rule in words.', a: '(a) Arithmetic. (b) Common difference = 4. (c) "Start at 5, add 4 each time." Rule: T = 4n + 1.' },
+            { q: 'An input/output table shows: Input 1 → 6, Input 2 → 12, Input 3 → 18, Input 4 → 24. What is the rule? What is the output when input = 9?', a: 'Rule: output = input × 6 (or T = 6n). When input = 9: output = 9 × 6 = 54.' },
+            { q: 'A population of kangaroos triples every year. Year 1 has 4 kangaroos. How many in year 4?', a: 'Year 1: 4. Year 2: 4×3=12. Year 3: 12×3=36. Year 4: 36×3=108 kangaroos.' },
+          ],
+        },
+      },
+      {
+        id: 'y5-mat-35-s3',
+        type: 'quiz',
+        title: 'Quick Check: Sequences',
+        questions: [
+          {
+            id: 'y5-mat-35-s3-q1',
+            text: 'What type of sequence is 3, 6, 12, 24, 48?',
+            image: null,
+            options: ['Arithmetic — add 3 each time', 'Geometric — multiply by 2 each time', 'Arithmetic — add 6 each time', 'Geometric — multiply by 3 each time'],
+            correct: 1,
+            explanation: 'Each term is multiplied by 2: 3×2=6, 6×2=12, 12×2=24, 24×2=48. This is a geometric sequence with common ratio 2.',
+          },
+          {
+            id: 'y5-mat-35-s3-q2',
+            text: 'The sequence 8, 14, 20, 26, 32 has a common difference of:',
+            image: null,
+            options: ['4', '8', '6', '2'],
+            correct: 2,
+            explanation: '14−8=6, 20−14=6, 26−20=6, 32−26=6. The common difference is 6.',
+          },
+          {
+            id: 'y5-mat-35-s3-q3',
+            text: 'An input/output table shows Input 3 → 10, Input 5 → 16, Input 7 → 22. What is the rule?',
+            image: null,
+            options: ['Output = input × 3 + 1', 'Output = input + 7', 'Output = input × 2 + 4', 'Output = input × 3'],
+            correct: 2,
+            explanation: 'Check: 3×2+4=10 ✓, 5×2+4=14 — wait, 5×2+4=14≠16. Let\'s try: difference between outputs is 6 for every 2 inputs, so rate = 3. 3×3+1=10 ✓, 5×3+1=16 ✓, 7×3+1=22 ✓. Rule: Output = input × 3 + 1.',
+          },
+          {
+            id: 'y5-mat-35-s3-q4',
+            text: 'Keiko saves $5 in week 1, $8 in week 2, $11 in week 3, $14 in week 4. How much will she save in week 8?',
+            image: null,
+            options: ['$23', '$26', '$29', '$32'],
+            correct: 1,
+            explanation: 'Common difference = $3. Week 5: $17, Week 6: $20, Week 7: $23, Week 8: $26. Or rule: T = 3n + 2. Week 8: 3×8+2 = $26.',
+          },
+        ],
+      },
+      {
+        id: 'y5-mat-35-s4',
+        type: 'worked-example',
+        title: 'Worked Example: Rules from Tables and Real Contexts',
+        teacherNote: 'Focus on building the rule from a table systematically: find the difference, confirm it is constant, then work out what you add or subtract to match the first term. Practise with real data from Australian contexts to increase engagement.',
+        imagePrompt: 'A large worked example showing a tiling pattern for a rectangular garden path. Top: a grid diagram of the path getting longer — length 1 has 4 tiles, length 2 has 7 tiles, length 3 has 10. An input/output table sits beside it with columns "Length" and "Tiles". Below: step-by-step working shows: Difference = 3, so rule starts with 3n. At n=1, tiles=4, but 3×1=3, so we add 1. Rule: Tiles = 3n + 1. Final box shows "Length 20: Tiles = 3×20+1 = 61". Colour scheme: teal and white.',
+        content: {
+          heading: 'Building rules from tables in real contexts',
+          body: [
+            { label: 'Step-by-step rule building', text: 'To find a rule from a table: (1) Check the differences between consecutive output values — if constant, it is arithmetic. (2) The constant difference becomes the coefficient of n (the multiplier). (3) Substitute n=1 into your rule and compare to the actual output — adjust the constant to make it fit. Example: Tiling a rectangular path. Length 1 → 4 tiles. Length 2 → 7 tiles. Length 3 → 10 tiles. Length 4 → 13 tiles. Differences: +3, +3, +3. So rule = 3n + ?. At n=1: 3×1=3, but tiles=4. So constant = +1. Rule: Tiles = 3n + 1. Verify at n=3: 3×3+1=10 ✓. At n=4: 3×4+1=13 ✓.', highlight: 'The constant difference tells you the COEFFICIENT of n. Substitute n=1 to find the constant to add or subtract.' },
+            { label: 'Finding unknown inputs and outputs', text: 'Once you have a rule, you can find ANY value. Example from the tiling rule Tiles = 3n + 1: (a) How many tiles for a path of length 15? T = 3×15+1 = 46 tiles. (b) If a contractor has 100 tiles, what is the longest path they can make? Set 3n + 1 = 100. So 3n = 99. So n = 33. The longest path is length 33. (c) Reverse check: 3×33+1 = 100 ✓.', highlight: 'To find an unknown INPUT when you know the output, write the equation and solve for n. Always verify your answer!' },
+            { label: 'Real Australian contexts', text: 'Population: A country town in Victoria has 1200 residents and gains 80 new residents each year. Year 0: 1200. Year 1: 1280. Year 2: 1360. Differences: +80 (arithmetic). Rule: Population = 1200 + 80 × years (or P = 80n + 1200). After 10 years: P = 80×10+1200 = 2000. When will the population reach 2000? 80n+1200=2000, 80n=800, n=10 years. A bacterial culture in a biology lab triples every hour: 10, 30, 90, 270, ... (geometric, ratio 3).', highlight: 'Many real-world situations follow arithmetic or geometric patterns. Writing the rule lets you make predictions and solve problems efficiently.' },
+          ],
+          questions: [
+            { q: 'A pattern has the rule T = 5n − 2. (a) Find T when n = 8. (b) Find n when T = 43.', a: '(a) T = 5×8−2 = 40−2 = 38. (b) 5n−2=43 → 5n=45 → n=9.' },
+            { q: 'A school fundraiser table shows: 1 box sold → $8 raised, 2 boxes → $16, 3 boxes → $24, 4 boxes → $32. Write the rule. How many boxes need to be sold to raise $200?', a: 'Rule: Amount = 8 × boxes (T = 8n). To raise $200: 8n=200, n=25 boxes.' },
+            { q: 'Lily makes friendship bracelets. She uses 12 beads for 1 bracelet, 22 for 2, 32 for 3, 42 for 4. Write the rule. How many beads for 7 bracelets? How many bracelets can she make with 152 beads?', a: 'Difference = 10. At n=1: 12, but 10×1=10. So add 2. Rule: T = 10n + 2. For 7 bracelets: 10×7+2=72 beads. For 152 beads: 10n+2=152, 10n=150, n=15 bracelets.' },
+          ],
+        },
+      },
+      {
+        id: 'y5-mat-35-s5',
+        type: 'quiz',
+        title: 'Quick Check: Rules and Tables',
+        questions: [
+          {
+            id: 'y5-mat-35-s5-q5',
+            text: 'A table shows: n=1→7, n=2→12, n=3→17, n=4→22. What is the rule?',
+            image: null,
+            options: ['T = 7n', 'T = 5n + 2', 'T = 4n + 3', 'T = 6n + 1'],
+            correct: 1,
+            explanation: 'Differences: 12−7=5, 17−12=5, 22−17=5. Common difference = 5. At n=1: 5×1=5, but T=7. So constant = +2. Rule: T = 5n + 2. Check n=3: 5×3+2=17 ✓.',
+          },
+          {
+            id: 'y5-mat-35-s5-q6',
+            text: 'Using the rule T = 4n − 3, what is T when n = 12?',
+            image: null,
+            options: ['45', '48', '51', '45'],
+            correct: 0,
+            explanation: 'T = 4×12 − 3 = 48 − 3 = 45.',
+          },
+          {
+            id: 'y5-mat-35-s5-q7',
+            text: 'Using the rule T = 6n + 4, for what value of n does T = 58?',
+            image: null,
+            options: ['n = 8', 'n = 9', 'n = 10', 'n = 7'],
+            correct: 1,
+            explanation: '6n + 4 = 58 → 6n = 54 → n = 9. Check: 6×9+4 = 54+4 = 58 ✓.',
+          },
+          {
+            id: 'y5-mat-35-s5-q8',
+            text: 'A cricket team scores 45 in round 1, and scores increase by 12 runs each round. In which round will they first score more than 100 runs?',
+            image: null,
+            options: ['Round 4', 'Round 5', 'Round 6', 'Round 7'],
+            correct: 2,
+            explanation: 'Rule: Score = 45 + 12×(round−1) = 12n + 33. Set 12n+33 > 100 → 12n > 67 → n > 5.58. So first round > 100 is n = 6 (round 6): 12×6+33 = 72+33 = 105 > 100 ✓.',
+          },
+        ],
+      },
+      {
+        id: 'y5-mat-35-s6',
+        type: 'free-response',
+        title: 'Patterns in Your World',
+        prompt: 'Number patterns appear everywhere around us — from nature to sport to finance. Explore these real Australian contexts.',
+        fields: [
+          { id: 'fr-y5-mat-35-a', label: 'Mia is training for a fun run. In week 1 she runs 3 km, in week 2 she runs 5 km, in week 3 she runs 7 km, and in week 4 she runs 9 km. (a) Is this arithmetic or geometric? What is the common difference? (b) Write the rule in words and as an expression. (c) How far will Mia run in week 12? (d) In which week will she first run more than 25 km?', placeholder: '(a) Arithmetic. Common difference = 2 km. (b) "Start at 3, add 2 each week." Rule: T = 2n + 1. (c) Week 12: 2×12+1 = 25 km. (d) 2n+1>25 → 2n>24 → n>12 → week 13...', multiline: true },
+          { id: 'fr-y5-mat-35-b', label: 'A koala sanctuary starts with 6 koalas. The population doubles every 2 years. Complete this table: Year 0→6, Year 2→?, Year 4→?, Year 6→?, Year 8→?. (a) Is this arithmetic or geometric? What is the ratio? (b) Write the rule in words. (c) How many koalas after 10 years? (d) How many years until the sanctuary has more than 200 koalas?', placeholder: '(a) Geometric. Ratio = 2 (doubles every 2 years). Year 2: 12, Year 4: 24, Year 6: 48, Year 8: 96. Year 10: 192. (d) Year 12: 384 > 200, so after 12 years...', multiline: true },
+          { id: 'fr-y5-mat-35-c', label: 'Look around your home or school and find a REAL pattern — it could be tiles on a floor, items arranged in rows, steps on a staircase, or a savings plan. Describe what you found, write the first 5 terms, decide if it is arithmetic or geometric, and write the rule. Predict the 10th term.', placeholder: 'I found a pattern in the stairs at school — each step is 18 cm high. Heights: 18, 36, 54, 72, 90 cm. Arithmetic, common difference = 18. Rule: Height = 18n. Step 10: 18×10 = 180 cm...', multiline: true },
+        ],
+      },
+      {
+        id: 'y5-mat-35-s7',
+        type: 'homework',
+        title: 'Homework: Number Patterns & Rules',
+        teacherNote: 'The savings extension task connects arithmetic sequences to financial literacy — a real-world application Year 5 students find motivating. Encourage students to use a table to organise their work before writing the rule.',
+        dueNext: true,
+        tasks: [
+          { id: 'hw-y5-mat-35-a', label: 'Create an input/output table with at least 6 rows using a rule you choose (e.g. Output = 4 × Input + 3). (a) Write your rule in words. (b) Write your rule as an expression. (c) Fill in your table. (d) Give the table to a family member — can they guess your rule? (e) Find the output when input = 20.', hint: 'Choose a rule like T = 3n + 5. Fill in inputs 1–6. For input 20: T = 3×20+5 = 65. Your family member looks at the pattern of outputs to guess the rule.' },
+          { id: 'hw-y5-mat-35-b', label: 'A local netball club charges a membership fee. The total cost for 1 person is $25, for 2 people is $45, for 3 people is $65, for 4 people is $85. (a) Is this arithmetic or geometric? (b) Write the rule. (c) How much for 7 people? (d) A family has $200 to spend. How many memberships can they buy? (e) If the club changes to $30 per person with no joining fee, write the new rule. Which is cheaper for 6 people?', hint: 'Differences: +20. At n=1: 25, 20×1=20, add 5. Rule: T = 20n + 5. For 7 people: 20×7+5=$145. For $200: 20n+5≤200, 20n≤195, n≤9.75, so 9 memberships. New rule: T=30n. 6 people original: 125. New: 180. Original is cheaper.' },
+          { id: 'hw-y5-mat-35-c', label: 'EXTENSION — Savings challenge: Jack saves $0.10 on day 1, $0.20 on day 2, $0.40 on day 3, $0.80 on day 4 (his savings double each day). (a) Is this arithmetic or geometric? (b) Write the rule in words. (c) How much does he save on day 10? (d) What is the total saved after 10 days? (e) On which day will he first save more than $50 in a single day?', hint: '(a) Geometric, ratio = 2. (b) "Start at $0.10, double each day." (c) Day 10: $0.10 × 2^9 = $0.10 × 512 = $51.20. (d) Total = $0.10 × (2^10 − 1) = $0.10 × 1023 = $102.30. (e) Day 10: $51.20 > $50, so day 10.' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'y5-mat-36',
+    subject: 'maths',
+    title: 'Problem Solving: Addition & Subtraction',
+    victorianCode: 'VCMNA194',
+    description: 'Solve multi-step word problems using addition and subtraction by applying strategies such as drawing diagrams, working backwards, making tables, and using Australian real-world contexts.',
+    yearLevel: 5,
+    estimatedMinutes: 60,
+    starsAvailable: 5,
+    color: '#dc2626',
+    icon: '🧩',
+    steps: [
+      {
+        id: 'y5-mat-36-s1',
+        type: 'video',
+        title: 'Introduction to Problem Solving: Addition & Subtraction',
+        youtubeId: '',
+        youtubeSearchQuery: 'Year 5 maths multi-step word problems addition subtraction strategies Australia',
+        description: 'Learn powerful strategies for solving multi-step word problems involving addition and subtraction, with Australian contexts including distances, budgets, sport scores, and fundraising.',
+        teacherNote: 'Before playing the video, display a two-step word problem on the board and ask students to identify: what do we KNOW, what do we NEED TO FIND, and what STEPS might we need? This activates prior knowledge and gives students a purpose for watching.',
+        keyPoints: [
+          'Read the problem carefully: identify the GIVEN information, what you need to FIND, and any KEY WORDS (total, difference, how many more, left over, altogether, less than, change).',
+          'Choose a strategy: DRAW A DIAGRAM (sketch the problem visually), WORK BACKWARDS (start from the end and reverse operations), MAKE A TABLE (organise information systematically), or ACT IT OUT (use objects or movement).',
+          'Show all working clearly. Solve one step at a time, label each step, and CHECK your answer by substituting it back into the original problem context.',
+        ],
+      },
+      {
+        id: 'y5-mat-36-s2',
+        type: 'worked-example',
+        title: 'Worked Example: Multi-Step Addition & Subtraction',
+        teacherNote: 'Model the THINK ALOUD strategy: narrate your thinking as you solve each example. Students should see that expert problem-solvers re-read the problem, identify what is known and unknown, select a strategy, solve, and check. Mistakes and false starts are normal.',
+        imagePrompt: 'A full worked example shown in a step-by-step format with clear handwriting style. Problem: "A school fundraiser raised $4,875 on day 1 and $3,246 on day 2. They spent $1,580 on resources. How much money is left?" Step 1 box: "Find total raised: $4,875 + $3,246 = $8,121". Step 2 box: "Subtract resources: $8,121 − $1,580 = $6,541". Answer box: "$6,541 remaining". A second smaller example shows "work backwards" strategy with arrows going right-to-left on a number line. Australian school setting with red and white colours.',
+        content: {
+          heading: 'Strategies for multi-step word problems',
+          body: [
+            { label: 'Strategy 1: Draw a diagram', text: 'Drawing a diagram helps you see the problem. Example: A hiking trail from Melbourne to a campsite is 47 km. Mum and Dad hike 18 km on Friday and 15 km on Saturday. How far do they still need to walk? DIAGRAM: Draw a bar of 47 km total. Mark 18 km and 15 km taken. Remaining part = ?. Working: Distance walked = 18 + 15 = 33 km. Distance remaining = 47 − 33 = 14 km. Answer: They still need to walk 14 km. Check: 14 + 33 = 47 ✓.', highlight: 'Drawing a bar model or number line helps you SEE what you know and what you need to find. It prevents mistakes about which operation to use.' },
+            { label: 'Strategy 2: Work backwards', text: 'Sometimes you know the END result and need to find the START. Work backwards by REVERSING each step. Example: After a school footy carnival, Oakleigh Primary had an unknown number of points. In the last quarter they scored 18 more points but then gave away 7 points for a penalty. Their final score was 64. What was their score at the start of the last quarter? WORK BACKWARDS: Final score = 64. Before penalty: 64 + 7 = 71. Before last quarter scores: 71 − 18 = 53. Answer: Score at start of last quarter was 53. Check: 53 + 18 − 7 = 64 ✓.', highlight: 'Work backwards by REVERSING operations: addition becomes subtraction, subtraction becomes addition. Always verify by working forwards with your answer.' },
+            { label: 'Strategy 3: Make a table', text: 'A table organises information and shows patterns. Example: A school tuck shop raised money across 3 terms. Term 1: $1,250 sales − $480 costs = $750 profit. Term 2: $1,840 sales − $620 costs = $1,220 profit. Term 3: $2,105 sales − $755 costs = $1,350 profit. Table: | Term | Sales | Costs | Profit | → Total profit = 750 + 1220 + 1350 = $3,320. What was the difference between the best and worst profit? 1350 − 750 = $600. Which term had the most profit? Term 3.', highlight: 'A table prevents confusion when a problem has several pieces of information. It helps you see what to add and what to subtract at each step.' },
+          ],
+          questions: [
+            { q: 'A Sydney school bus trip covers 3 legs: 24 km, 38 km, and 19 km. The return trip is 2 km shorter. What is the total distance for the whole journey (out and back)?', a: 'Out: 24+38+19 = 81 km. Back: 81−2 = 79 km. Total: 81+79 = 160 km.' },
+            { q: 'Zara had some tokens at the start of a game. She earned 45 more, lost 28, then earned 16 more and finished with 87 tokens. How many tokens did she start with? (Use the work backwards strategy.)', a: 'Work backwards: 87−16=71, 71+28=99, 99−45=54. She started with 54 tokens. Check: 54+45−28+16=87 ✓.' },
+            { q: 'A fundraising table: Monday $345, Tuesday $289, Wednesday $412, Thursday $378, Friday $503. What is the total? How much more was raised on Friday than Monday?', a: 'Total: 345+289+412+378+503 = $1,927. Friday−Monday: 503−345 = $158 more.' },
+          ],
+        },
+      },
+      {
+        id: 'y5-mat-36-s3',
+        type: 'quiz',
+        title: 'Quick Check: Addition & Subtraction Strategies',
+        questions: [
+          {
+            id: 'y5-mat-36-s3-q1',
+            text: 'A school raised $2,450 from a cake stall and $1,875 from a book sale. They spent $960 on a new library shelf. How much money is left?',
+            image: null,
+            options: ['$3,365', '$3,515', '$2,490', '$3,425'],
+            correct: 0,
+            explanation: 'Total raised: $2,450 + $1,875 = $4,325. Money left: $4,325 − $960 = $3,365.',
+          },
+          {
+            id: 'y5-mat-36-s3-q2',
+            text: 'Work backwards: After adding 35, subtracting 18, and adding 7, Jake has 84. What number did Jake start with?',
+            image: null,
+            options: ['60', '58', '62', '56'],
+            correct: 0,
+            explanation: 'Work backwards: 84−7=77, 77+18=95, 95−35=60. Check: 60+35−18+7=84 ✓.',
+          },
+          {
+            id: 'y5-mat-36-s3-q3',
+            text: 'A cricket team scores 4,523 runs in season 1 and 3,891 runs in season 2. By how many runs did season 1 exceed season 2?',
+            image: null,
+            options: ['532', '632', '638', '542'],
+            correct: 1,
+            explanation: '4,523 − 3,891 = 632 runs. Season 1 exceeded season 2 by 632 runs.',
+          },
+          {
+            id: 'y5-mat-36-s3-q4',
+            text: 'Lena walks 3 km on Monday, 4.5 km on Tuesday, and 2.8 km on Thursday. Her weekly goal is 15 km. How far must she walk on Friday to reach her goal?',
+            image: null,
+            options: ['4.7 km', '5.2 km', '4.2 km', '3.7 km'],
+            correct: 0,
+            explanation: 'Distance so far: 3 + 4.5 + 2.8 = 10.3 km. Remaining: 15 − 10.3 = 4.7 km.',
+          },
+        ],
+      },
+      {
+        id: 'y5-mat-36-s4',
+        type: 'worked-example',
+        title: 'Worked Example: Australian Events and Budgets',
+        teacherNote: 'These examples use realistic Australian data — local event costs, school budgets, and AFL-style scoring — to build engagement. Remind students to always identify their steps before computing, and to write a sentence answering the question.',
+        imagePrompt: 'A detailed worked example set in an Australian context. The problem shows a Year 5 school camp budget: Total budget $8,500. Costs: Bus hire $2,340, Campsite fees $3,150, Food $1,875, Activities $890. Step-by-step working in colour-coded boxes showing addition of costs then subtraction from budget. Final answer highlighted. Second example shows an AFL ladder with team scores and asks for difference between first and last — shown on a simple table.',
+        content: {
+          heading: 'Multi-step problems: events, budgets, and sport',
+          body: [
+            { label: 'Event budget problems', text: 'Example: A Year 5 school camp budget is $8,500. The school pays $2,340 for bus hire, $3,150 for campsite fees, $1,875 for food, and $890 for activities. (a) What is the total cost? (b) How much of the budget is left over? Step 1 — Total costs: 2340 + 3150 + 1875 + 890. Add in parts: 2340+3150=5490, 5490+1875=7365, 7365+890=8255. Total cost = $8,255. Step 2 — Budget remaining: 8500−8255 = $245. Answer: The camp costs $8,255 and $245 of the budget remains. Check: 8255+245=8500 ✓.', highlight: 'For budget problems: TOTAL INCOME − TOTAL COSTS = BALANCE. Always label your steps clearly so you (and the teacher) can follow your reasoning.' },
+            { label: 'Distance and travel problems', text: 'Example: The Great Ocean Road is 243 km long. A family drives 78 km on day 1 and 95 km on day 2. (a) How far have they driven in total? (b) How far do they still have to go? (c) If they plan to drive an equal distance on each of the remaining 2 days, what distance will they drive each day? Step 1: Total driven = 78+95 = 173 km. Step 2: Remaining = 243−173 = 70 km. Step 3: Each of 2 remaining days = 70÷2 = 35 km per day. (Note: step 3 uses division — showing real problems mix operations!). Check: 78+95+35+35 = 243 ✓.', highlight: 'Multi-step problems often mix operations — solve one step at a time. The answer to one step becomes the input for the next.' },
+            { label: 'Sport and score problems', text: 'Example: At a swimming carnival, Northside Primary scored 285 points in the morning and 347 points in the afternoon. Southside Primary scored 198 points in the morning and 421 points in the afternoon. (a) What was each school\'s total? (b) Who won and by how much? (c) If Northside scores 50 more next year and Southside scores 20 more, who wins then? Northside: 285+347=632. Southside: 198+421=619. Southside was behind by 632−619=13 points. (c) Northside next year: 682. Southside next year: 639. Northside still wins by 682−639=43 points.', highlight: 'Comparison problems ask for a DIFFERENCE. Make sure you subtract the smaller value from the larger value and state WHO wins by how much.' },
+          ],
+          questions: [
+            { q: 'A footy club has a canteen budget of $5,000. They spend $1,245 on drinks, $876 on snacks, and $1,590 on meat for the BBQ. How much is left?', a: 'Total spent: 1245+876+1590 = $3,711. Remaining: 5000−3711 = $1,289.' },
+            { q: 'Team A scored 48 goals across 4 quarters: 8, 14, 11, and some unknown amount in Q4. If their total was 48 goals, how many did they score in Q4? What was the difference between their best and worst quarter?', a: 'Q4: 48−(8+14+11) = 48−33 = 15 goals. Best quarter: 15. Worst quarter: 8. Difference: 15−8 = 7 goals.' },
+            { q: 'Mei walked a charity walk. Her route was: Start → Park (3.4 km) → Lake (2.7 km) → School (4.1 km) → Finish (1.8 km). Her sponsor pays $2 per km. How much does Mei raise?', a: 'Total distance: 3.4+2.7+4.1+1.8 = 12 km. Amount raised: 12×$2 = $24.' },
+          ],
+        },
+      },
+      {
+        id: 'y5-mat-36-s5',
+        type: 'quiz',
+        title: 'Quick Check: Budgets, Distance, and Sport',
+        questions: [
+          {
+            id: 'y5-mat-36-s5-q5',
+            text: 'A class raised $843 from a bake sale and $1,215 from a fun run. They donated $700 to a wildlife charity and kept the rest for a class party. How much is the party budget?',
+            image: null,
+            options: ['$1,358', '$1,278', '$1,358', '$1,258'],
+            correct: 0,
+            explanation: 'Total raised: $843 + $1,215 = $2,058. Party budget: $2,058 − $700 = $1,358.',
+          },
+          {
+            id: 'y5-mat-36-s5-q6',
+            text: 'The Sydney to Melbourne road distance is 878 km. A driver covers 312 km on day 1 and 287 km on day 2. How far remains?',
+            image: null,
+            options: ['269 km', '289 km', '279 km', '259 km'],
+            correct: 2,
+            explanation: 'Distance covered: 312 + 287 = 599 km. Remaining: 878 − 599 = 279 km.',
+          },
+          {
+            id: 'y5-mat-36-s5-q7',
+            text: 'Work backwards: A fundraiser ended with $1,250 after spending $480 on supplies and receiving a $300 donation at the end. How much did it start with?',
+            image: null,
+            options: ['$1,430', '$1,250', '$1,430', '$1,030'],
+            correct: 0,
+            explanation: 'Work backwards: $1,250 − $300 = $950. $950 + $480 = $1,430. Check: $1,430 − $480 + $300 = $1,250 ✓.',
+          },
+          {
+            id: 'y5-mat-36-s5-q8',
+            text: 'Archers score 95, 87, 103, and 79 points across four rounds. What is the total score, and how many points short of 400 are they?',
+            image: null,
+            options: ['364 total, 36 short', '374 total, 26 short', '354 total, 46 short', '364 total, 46 short'],
+            correct: 0,
+            explanation: 'Total: 95+87+103+79 = 364 points. Short of 400: 400−364 = 36 points.',
+          },
+        ],
+      },
+      {
+        id: 'y5-mat-36-s6',
+        type: 'free-response',
+        title: 'Solving Your Own Problems',
+        prompt: 'Apply your addition and subtraction problem-solving skills to these extended Australian contexts.',
+        fields: [
+          { id: 'fr-y5-mat-36-a', label: 'The Year 5 and 6 students at Riverdale Primary are planning a sports day. Equipment costs: 8 footballs at $24 each, 6 netballs at $18 each, 4 cricket sets at $55 each, and 10 witches hats at $3 each. Their budget is $600. (a) Find the total cost of each item. (b) Find the overall total. (c) Is it within budget? If not, how much over? (d) If they remove one cricket set, is it now within budget?', placeholder: '(a) Footballs: 8×$24=$192, Netballs: 6×$18=$108, Cricket: 4×$55=$220, Hats: 10×$3=$30. (b) Total: 192+108+220+30=$550. (c) Yes, $50 under budget...', multiline: true },
+          { id: 'fr-y5-mat-36-b', label: 'Work backwards to solve this problem: At the end of a school athletics carnival, Bluebird house had 312 points. During the last event, they gained 45 points but were penalised 12 points. Before that, they had lost 28 points in a disqualification. Before that event, they had won 67 points. What was Bluebird house\'s score BEFORE the last four events? Show each step of your working backwards.', placeholder: 'Start with 312. Before gaining 45 and losing 12 in last event: 312+12−45=279. Before losing 28: 279+28=307. Before winning 67: 307−67=240. Score was 240 before the last four events. Check: 240+67−28+45−12=312 ✓', multiline: true },
+          { id: 'fr-y5-mat-36-c', label: 'Create your OWN two-step word problem set in an Australian context (sport, travel, food, or events). Write the problem, show the full solution with all working, and write a checking sentence. Then swap with a classmate and solve each other\'s problems.', placeholder: 'My problem: "The Melbourne Cup carnival sold 8,450 tickets on Friday and 12,375 on Saturday. If 3,200 tickets were for children at half price... " Solution: Step 1... Step 2... Check...', multiline: true },
+        ],
+      },
+      {
+        id: 'y5-mat-36-s7',
+        type: 'homework',
+        title: 'Homework: Problem Solving — Addition & Subtraction',
+        teacherNote: 'The newspaper hunt task builds real-world literacy and numeracy together. Accept any legitimate Australian data source — online news, sports results, or shop catalogues are all valid. The key is that students identify multi-step problems themselves.',
+        dueNext: true,
+        tasks: [
+          { id: 'hw-y5-mat-36-a', label: 'Solve these multi-step problems, showing ALL working and a checking sentence for each: (a) A netball player scores 18 goals in game 1, 24 in game 2, and 15 in game 3. Her season target is 100 goals. How many goals does she need in her remaining 2 games if she wants to share them equally? (b) A family drives from Brisbane to the Gold Coast (78 km), Gold Coast to Byron Bay (103 km), then Byron Bay back to Brisbane (189 km). What is the total drive? How much longer is the return leg than the first two legs combined?', hint: '(a) Current total: 18+24+15=57. Remaining needed: 100−57=43. Each of 2 games: 43÷2=21.5 goals (21 one game, 22 the other). (b) Total: 78+103+189=370 km. First two legs: 78+103=181 km. Return is 189−181=8 km longer.' },
+          { id: 'hw-y5-mat-36-b', label: 'Work backwards to solve: (a) A magician ends a show with 47 scarves. During the show, she gave 12 away to audience members, found 8 in a hat, and lost 5 in her coat. How many scarves did she start with? (b) Tom ends the school year with $34.50 in his piggy bank. During the year he spent $24.80 on stationery, received $15 for his birthday, and spent $12.70 on lunch. How much did he start with?', hint: '(a) Work backwards: 47+5−8+12=56 scarves. Check: 56−12+8−5=47 ✓. (b) Work backwards: 34.50+12.70−15+24.80=$57.00. Check: 57−24.80+15−12.70=34.50 ✓.' },
+          { id: 'hw-y5-mat-36-c', label: 'NEWSPAPER/INTERNET HUNT: Find a real Australian news article, sport report, or shopping catalogue that contains numbers. Create a TWO-STEP word problem from the real data. Write the problem, solve it, and check it. Bring it to class to share.', hint: 'Example: Find AFL scores from last weekend. "Carlton scored 112 points and Collingwood scored 87 points in game 1. In game 2 Carlton scored 94 and Collingwood scored 108. What was each team\'s two-game total? Who won overall and by how much?"' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'y5-mat-37',
+    subject: 'maths',
+    title: 'Problem Solving: Multiplication & Division',
+    victorianCode: 'VCMNA195',
+    description: 'Solve multi-step word problems using multiplication and division by identifying key words, selecting the correct operation, and checking reasonableness, with Australian real-world contexts.',
+    yearLevel: 5,
+    estimatedMinutes: 60,
+    starsAvailable: 5,
+    color: '#7c3aed',
+    icon: '🧩',
+    steps: [
+      {
+        id: 'y5-mat-37-s1',
+        type: 'video',
+        title: 'Introduction to Problem Solving: Multiplication & Division',
+        youtubeId: '',
+        youtubeSearchQuery: 'Year 5 maths multi-step word problems multiplication division strategies Australia',
+        description: 'Learn to solve multi-step word problems involving multiplication and division by identifying key words, choosing the right operation, and checking your answers make sense.',
+        teacherNote: 'Before the video, brainstorm real situations that use multiplication (catering, buying in bulk, arranging in rows, scaling) and division (sharing equally, grouping, finding a rate). Write student suggestions on the board — refer back to them during worked examples.',
+        keyPoints: [
+          'KEY WORDS for multiplication: each, every, per, times, of, product, sets of, rows of, groups of, at a rate of. KEY WORDS for division: share equally, split, divide, how many each, per, every, rate, how many groups of.',
+          'Select the correct operation by asking: am I combining equal groups? (× multiply). Am I splitting into equal groups or finding how many groups fit? (÷ divide). A multi-step problem may use both.',
+          'CHECK REASONABLENESS: estimate before you calculate, and ask "Is my answer sensible?" If 3 bags of apples each hold 8 apples, the total should be close to 3×8=24 — not 240 or 2.4.',
+        ],
+      },
+      {
+        id: 'y5-mat-37-s2',
+        type: 'worked-example',
+        title: 'Worked Example: Multiplication & Division Word Problems',
+        teacherNote: 'Model the estimation step explicitly — students who estimate first are far less likely to make large errors. Show how to identify the operation from key words, and demonstrate that division answers can sometimes be whole numbers and sometimes remainders, depending on context.',
+        imagePrompt: 'Two fully worked out word problem examples. Left: "A school canteen buys 24 packs of sandwiches, with 8 sandwiches in each pack. They sell them for $3.50 each. How much money do they make?" Step 1: 24×8=192 sandwiches. Step 2: 192×$3.50=$672. Answer box: $672. Right: "168 students need to be arranged in rows of 12 for a school photo. How many rows are needed?" 168÷12=14 rows. Colour-coded steps, Australian school setting, purple and white theme.',
+        content: {
+          heading: 'Identifying operations and solving multi-step problems',
+          body: [
+            { label: 'Identifying the operation from key words', text: 'The words in a problem tell you which operation to use. MULTIPLICATION: "each pack has 6 items" → multiply (total items = packs × 6). "4 rows of 9 chairs" → 4×9=36. "3 times as many" → ×3. "at $4 per kg" → ×4. DIVISION: "shared equally among 8 students" → ÷8. "how many groups of 6" → ÷6. "a rate of 25 km per hour" → ÷ to find hours. BOTH: "12 classes, 28 students each, divided into groups of 4 for activities" → Step 1: 12×28=336 students total. Step 2: 336÷4=84 groups.', highlight: 'Circle the KEY WORDS before you calculate. They tell you which operation to use. "Each" and "per" usually signal multiplication. "Share" and "split" usually signal division.' },
+            { label: 'Catering and packaging problems', text: 'Australian catering example: A school hosts a science expo for 180 students. Sausage rolls come in packs of 12. Each student eats 2 sausage rolls. (a) How many sausage rolls are needed? (b) How many packs must be ordered? Step 1: Total sausage rolls = 180 × 2 = 360 rolls. Step 2: Packs needed = 360 ÷ 12 = 30 packs. Answer: 30 packs are needed. Sanity check: 30 packs × 12 per pack × 2 per student = 360 ÷ 2 = 180 students ✓. Packaging example: 1,248 biscuits need to be packed into boxes of 48. Boxes needed = 1248 ÷ 48 = 26 boxes. (Long division: 48×25=1200, 1248−1200=48, so 48÷48=1, total 26.)'.trim(), highlight: 'After solving, ask: "Does this answer make sense?" If you expect around 30 packs and get 300, go back and check for a decimal point error or wrong operation.' },
+            { label: 'Checking reasonableness and remainders', text: 'Remainders need CONTEXT. Example: 145 students go on excursion in vans that hold 12. Vans needed = 145 ÷ 12 = 12 remainder 1. ANSWER: 13 vans are needed (the remainder 1 student still needs a van — you round UP, not down, when people need to fit). Contrast: 145 lollies shared among 12 friends = 12 lollies each, with 1 left over. Here the remainder IS part of the answer — 12 each and 1 spare. Always think about what the remainder MEANS in context.', highlight: 'When dividing in a real context, think: does the remainder need a whole extra group (round UP) or is the remainder a leftover amount (keep it as remainder)?' },
+          ],
+          questions: [
+            { q: 'A cricket team orders 9 boxes of balls, with 6 balls in each box. Each ball costs $8. What is the total cost?', a: 'Total balls: 9×6=54. Total cost: 54×$8=$432.' },
+            { q: '256 students need to sit in rows of 16 for an assembly. How many rows are needed? If the hall has only 14 rows, will all students fit?', a: 'Rows: 256÷16=16 rows. 14 rows hold 14×16=224 students. No — 32 students would not have a seat. 2 more rows are needed.' },
+            { q: 'A bakery makes 15 trays of 24 lamingtons each. They pack them in boxes of 9 for sale. How many full boxes can they fill? How many lamingtons are left over?', a: 'Total lamingtons: 15×24=360. Full boxes: 360÷9=40 boxes exactly. No lamingtons left over.' },
+          ],
+        },
+      },
+      {
+        id: 'y5-mat-37-s3',
+        type: 'quiz',
+        title: 'Quick Check: Multiplication & Division Operations',
+        questions: [
+          {
+            id: 'y5-mat-37-s3-q1',
+            text: 'A school stall sells 48 bags of popcorn at $2.50 each. What is the total money collected?',
+            image: null,
+            options: ['$100', '$120', '$116', '$240'],
+            correct: 1,
+            explanation: '48 × $2.50 = 48 × 2 + 48 × 0.50 = $96 + $24 = $120.',
+          },
+          {
+            id: 'y5-mat-37-s3-q2',
+            text: '312 students need to be divided equally into classes of 24. How many classes will there be?',
+            image: null,
+            options: ['11', '12', '13', '14'],
+            correct: 2,
+            explanation: '312 ÷ 24 = 13. Check: 13 × 24 = 312 ✓.',
+          },
+          {
+            id: 'y5-mat-37-s3-q3',
+            text: 'A farmer packs 840 oranges into crates of 35. He sells each crate for $42. What is his total income?',
+            image: null,
+            options: ['$1,008', '$1,050', '$1,008', '$1,080'],
+            correct: 0,
+            explanation: 'Crates: 840÷35=24. Income: 24×$42=$1,008.',
+          },
+          {
+            id: 'y5-mat-37-s3-q4',
+            text: '178 children need to be transported in minibuses that hold 15 each. How many minibuses are needed?',
+            image: null,
+            options: ['11', '12', '13', '10'],
+            correct: 1,
+            explanation: '178÷15=11 remainder 13. Since 13 children still need a bus, 12 minibuses are needed in total (round UP).',
+          },
+        ],
+      },
+      {
+        id: 'y5-mat-37-s4',
+        type: 'worked-example',
+        title: 'Worked Example: Sport, School Events, and Multi-Step Contexts',
+        teacherNote: 'These problems blend multiplication and division within a single context — students must decide which operation to use at each step. Encourage students to write a brief plan (Step 1: find..., Step 2: then find...) before computing.',
+        imagePrompt: 'A detailed two-part worked example. Top: "A school sports day has 8 teams. Each team has 18 players. Players need 3 water bottles each for the day. Water bottles come in packs of 24. How many packs are needed?" Working shown in four colour-coded steps: 1) 8×18=144 players. 2) 144×3=432 bottles. 3) 432÷24=18 packs. Answer: 18 packs. Bottom: A simpler example about packaging chocolate bars for a school fete. Purple and white colour scheme, clear step labels.',
+        content: {
+          heading: 'Multi-step multiplication and division problems',
+          body: [
+            { label: 'Sport and events: planning quantities', text: 'Example: A school sports day has 8 teams. Each team has 18 players. Players need 3 water bottles each. Bottles come in packs of 24. How many packs are needed? Plan: Step 1 → total players. Step 2 → total bottles. Step 3 → packs needed. Working: Step 1: 8 × 18 = 144 players. Step 2: 144 × 3 = 432 bottles. Step 3: 432 ÷ 24 = 18 packs exactly. Answer: 18 packs are needed. Check: 18 × 24 = 432 bottles. 432 ÷ 3 = 144 players. 144 ÷ 18 = 8 teams ✓.', highlight: 'Write a PLAN before calculating: "Step 1: find total players. Step 2: find total bottles. Step 3: find packs." A plan stops you from getting lost in a multi-step problem.' },
+            { label: 'Cost and rate problems', text: 'Example: A school canteen orders supplies for a BBQ. 25 kg of sausages at $9 per kg. 15 kg of onions at $3 per kg. 8 packs of bread rolls, each holding 12 rolls, at $4 per pack. (a) Total cost of sausages: 25×$9=$225. (b) Total cost of onions: 15×$3=$45. (c) Total rolls: 8×12=96 rolls. Total cost of bread: 8×$4=$32. (d) Grand total: $225+$45+$32=$302. (e) If tickets cost $8 each, how many tickets must be sold to cover costs? 302÷8=37.75 → ROUND UP to 38 tickets. Check: 38×$8=$304 which covers $302 ✓.', highlight: 'Cost problems often combine multiplication (quantity × price) with addition (sum of costs) and division (how many to cover costs). Identify each step before you calculate.' },
+            { label: 'Sharing and grouping with remainders in context', text: 'Example: 250 book fair books are packed into 3 equal boxes, with the remaining books in a smaller box. (a) How many in each large box? 250÷3=83 remainder 1. Each large box gets 83 books. (b) How many are in the small box? 1 book. Check: 83×3+1=249+1=250 ✓. Context matters: 50 students share a bag of 127 gummy bears. Each gets 2 gummy bears: 50×2=100. Remaining: 127−100=27. Teacher keeps the extras. DIFFERENT from "split into groups": 127÷50 = 2 remainder 27.', highlight: 'Remainders mean different things in different contexts. 17 leftover students need an extra bus (round up). 17 leftover lollies go to the teacher (keep as remainder). Read the context carefully.' },
+          ],
+          questions: [
+            { q: 'A school tuck shop buys 12 boxes of juice, 24 boxes per carton, at $36 per carton. How many juice boxes are there? What is the cost per box?', a: 'Total boxes: 12×24=288 boxes. Cost per box: $36÷24=$1.50 per box. Total cost: 12×$36=$432.' },
+            { q: '675 students are split into groups of 9 for a workshop. Each group needs 2 worksheets. How many worksheets are needed in total?', a: 'Groups: 675÷9=75 groups. Worksheets: 75×2=150 worksheets.' },
+            { q: 'A school camp needs 420 meals across 3 days with 5 meals per day for 28 campers. Does 420 meals satisfy all campers? Show working.', a: 'Meals needed: 28×5×3=420. Yes, exactly 420 meals is correct. ✓.' },
+          ],
+        },
+      },
+      {
+        id: 'y5-mat-37-s5',
+        type: 'quiz',
+        title: 'Quick Check: Multi-Step Multiplication & Division',
+        questions: [
+          {
+            id: 'y5-mat-37-s5-q5',
+            text: 'A school trip has 7 buses with 48 students in each. At the venue, students are split into tour groups of 12. How many tour groups are there?',
+            image: null,
+            options: ['24', '28', '32', '27'],
+            correct: 1,
+            explanation: 'Total students: 7×48=336. Tour groups: 336÷12=28 groups.',
+          },
+          {
+            id: 'y5-mat-37-s5-q6',
+            text: 'Juice boxes come in packs of 6 for $4.80 each. A school needs 180 juice boxes for their sports day. What is the total cost?',
+            image: null,
+            options: ['$120', '$144', '$140', '$160'],
+            correct: 1,
+            explanation: 'Packs needed: 180÷6=30 packs. Total cost: 30×$4.80=$144.',
+          },
+          {
+            id: 'y5-mat-37-s5-q7',
+            text: '500 fundraising chocolates are sold in groups of 8. How many full groups are there, and how many chocolates are left over?',
+            image: null,
+            options: ['62 groups, 4 left', '62 groups, 4 left', '63 groups, 0 left', '61 groups, 12 left'],
+            correct: 0,
+            explanation: '500÷8=62 remainder 4. There are 62 full groups and 4 chocolates left over. Check: 62×8+4=496+4=500 ✓.',
+          },
+          {
+            id: 'y5-mat-37-s5-q8',
+            text: 'A netball club has 9 teams, 12 players per team. Each player needs a uniform costing $35. What is the total uniform cost?',
+            image: null,
+            options: ['$3,780', '$3,450', '$3,360', '$4,200'],
+            correct: 0,
+            explanation: 'Total players: 9×12=108. Total cost: 108×$35=$3,780.',
+          },
+        ],
+      },
+      {
+        id: 'y5-mat-37-s6',
+        type: 'free-response',
+        title: 'Solving Real-World Multiplication & Division Problems',
+        prompt: 'Apply your multiplication and division problem-solving skills to these Australian contexts.',
+        fields: [
+          { id: 'fr-y5-mat-37-a', label: 'A Year 5 class is organising a fundraising sausage sizzle at Bunnings for a school trip to Canberra. They expect 360 customers. Each customer buys 2 sausages. Sausages come in packs of 36 and cost $14 per pack. Bread comes in loaves of 24 slices at $3.50 per loaf. Sauce bottles (each good for 48 sausages) cost $2.80 each. (a) How many sausages are needed? (b) How many packs of sausages? What is the cost? (c) How many loaves of bread? What is the cost? (d) How many sauce bottles? What is the cost? (e) What is the total food cost?', placeholder: '(a) 360×2=720 sausages. (b) 720÷36=20 packs, 20×$14=$280. (c) 720÷24=30 loaves, 30×$3.50=$105. (d) 720÷48=15 bottles, 15×$2.80=$42. (e) Total: $280+$105+$42=$427.', multiline: true },
+          { id: 'fr-y5-mat-37-b', label: 'Solve this packaging problem: A biscuit factory produces 4,368 biscuits per hour. They run for 6 hours. Biscuits are packed in trays of 12, then trays are packed 8 to a box, then boxes are loaded 15 to a pallet. (a) How many biscuits total? (b) How many trays? (c) How many full boxes? Any leftover trays? (d) How many full pallets? Any leftover boxes? Show ALL working and check your answers.', placeholder: '(a) 4368×6=26,208 biscuits. (b) 26208÷12=2,184 trays. (c) 2184÷8=273 boxes, 0 remainder. (d) 273÷15=18 pallets remainder 3 boxes. Check: 18×15×8×12+3×8×12=...', multiline: true },
+          { id: 'fr-y5-mat-37-c', label: 'Create your own multi-step word problem using multiplication AND division, set in an Australian context (e.g. the Melbourne Cup, a footy final, a school camp, or a local market). Your problem must have at least 3 steps. Write the problem, identify the key words, write a step-by-step solution, and write a checking sentence.', placeholder: 'My problem: "The Melbourne Show has 48 rides. Each ride holds 16 people. It runs for 8 sessions each day. Over 3 days, how many total people can ride? If tickets cost $4 each, how much revenue?" Key words: each, total, how many. Step 1: 16×48=768 per session...', multiline: true },
+        ],
+      },
+      {
+        id: 'y5-mat-37-s7',
+        type: 'homework',
+        title: 'Homework: Problem Solving — Multiplication & Division',
+        teacherNote: 'The supermarket task grounds abstract multiplication and division in a familiar real-world context. Students can bring in actual receipts or use supermarket websites to gather data. The extension connects to unit rates and value for money — practical consumer mathematics.',
+        dueNext: true,
+        tasks: [
+          { id: 'hw-y5-mat-37-a', label: 'Solve these multi-step problems showing ALL working and a checking sentence: (a) A school library gets new books: 14 boxes of fiction, 8 books per box; 9 boxes of non-fiction, 12 books per box. Each book costs $18. What is the total cost? (b) 504 students attend a whole-school sport event. They form teams of 6. Each team plays 4 games. How many total games are played across all teams? (c) A Year 5 class earns $675 from selling hand-made crafts. Each craft sold for $15. If the materials cost $3 per craft, what was the profit per craft and total profit?', hint: '(a) Fiction: 14×8=112 books. Non-fiction: 9×12=108 books. Total: 220 books. Cost: 220×$18=$3,960. (b) Teams: 504÷6=84 teams. Total games: 84×4=336 games. (c) Crafts sold: 675÷15=45 crafts. Profit per craft: $15−$3=$12. Total profit: 45×$12=$540.' },
+          { id: 'hw-y5-mat-37-b', label: 'Remainder challenge! Solve and explain what the remainder means in each context: (a) 250 chairs need to be arranged in rows of 18 for a concert. How many COMPLETE rows? How many extra chairs? (b) 175 students need to form relay teams of 4. How many COMPLETE teams? How many students miss out? (c) A baker makes 500 biscuits and packs them in bags of 6 to sell at a market. How many FULL bags? How many biscuits are left? At $5 per bag, how much does the baker earn?', hint: '(a) 250÷18=13 r16. 13 complete rows, 16 extra chairs. (b) 175÷4=43 r3. 43 complete teams, 3 students miss out. (c) 500÷6=83 r2. 83 full bags, 2 biscuits left. Earnings: 83×$5=$415.' },
+          { id: 'hw-y5-mat-37-c', label: 'SUPERMARKET INVESTIGATION: Go to a supermarket (or use a supermarket website) and find two products that come in different-sized packages (e.g. 500g for $3.50 and 1kg for $6.20). (a) Work out the cost per 100g for each size. Which is better value? (b) If a family needs 3 kg per week, which option costs less per week? How much do they save per week? How much per year?', hint: '(a) Divide price by grams then multiply by 100 to get cost per 100g. (b) Work out how many packs needed to get 3 kg, then multiply by cost. Compare totals. Per year: multiply weekly savings by 52.' },
+        ],
+      },
+    ],
+  },
+  // ── LESSON 38: Problem Solving: Mixed Operations ──────────────────────────
+  {
+    id: 'y5-mat-38',
+    subject: 'maths',
+    title: 'Problem Solving: Mixed Operations',
+    victorianCode: 'VCMNA196',
+    description:
+      'Solve multi-step word problems that require two or more operations. Learn to identify which operations to use, apply BODMAS in context, and explain your reasoning clearly.',
+    yearLevel: 5,
+    estimatedMinutes: 60,
+    starsAvailable: 5,
+    color: '#15803d',
+    icon: '🧩',
+    steps: [
+      {
+        // s1 ── Video introduction
+        id: 's1',
+        type: 'video',
+        youtubeId: '',
+        youtubeSearchQuery: 'Year 5 multi-step word problems mixed operations BODMAS Australia',
+        description:
+          'Watch how to break multi-step word problems into smaller parts, choose the right operations, and check your answer makes sense.',
+        teacherNote:
+          'Pause after each worked problem in the video and ask students: "What operation came first? Why?" Reinforce that reading the problem twice before writing any numbers is a key habit.',
+        keyPoints: [
+          'Read the problem carefully and identify what is being asked before choosing an operation.',
+          'BODMAS tells us the order: Brackets, Orders, Division/Multiplication, then Addition/Subtraction.',
+          'Always check whether your answer is reasonable in the real-world context.',
+        ],
+      },
+      {
+        // s2 ── Worked example: School market stall
+        id: 's2',
+        type: 'worked-example',
+        teacherNote:
+          'Model "think aloud" here — show students how to annotate the problem, underline key numbers, and circle operation words like "each", "total", "left over". Stress that writing a number sentence before calculating helps avoid mistakes.',
+        imagePrompt:
+          'Bright illustrated Australian primary school market stall with handwritten price tags on cupcakes, lemonade cups and bookmarks; cheerful Year 5 students serving customers; sunny outdoor setting',
+        content: {
+          heading: 'Market Stall Problem',
+          body: [
+            {
+              label: 'The Problem',
+              text: 'Our class set up a market stall. We baked 8 trays of cupcakes with 12 cupcakes on each tray. We sold 74 cupcakes during the day. How many cupcakes were left over?',
+              highlight: 'Find the total first, then subtract what was sold.',
+            },
+            {
+              label: 'Step-by-Step Solution',
+              text: 'Step 1 — Find the total: 8 × 12 = 96 cupcakes.\nStep 2 — Subtract what was sold: 96 − 74 = 22 cupcakes left over.\nNumber sentence: (8 × 12) − 74 = 22',
+              highlight: 'Brackets around the multiplication show it happens first.',
+            },
+            {
+              label: 'Check Your Answer',
+              text: 'Is 22 reasonable? We started with 96, sold most of them (74), so having 22 left makes sense. ✔',
+              highlight: 'Always ask: does my answer fit the story?',
+            },
+          ],
+          questions: [
+            {
+              q: 'The stall sold 3 types of drink: 15 lemonades at $2 each, 9 juices at $3 each, and 6 waters at $1 each. Write the number sentence for total income.',
+              a: '(15 × 2) + (9 × 3) + (6 × 1) = 30 + 27 + 6 = $63',
+            },
+            {
+              q: 'Bookmarks were sold in packs of 5 for $4 a pack. If 7 packs were sold, how much money was collected from bookmarks?',
+              a: '7 × 4 = $28',
+            },
+            {
+              q: 'The stall started with $20 float (change). By the end they had $83 in the tin. How much money did the stall earn during the day?',
+              a: '$83 − $20 = $63 earned during the day',
+            },
+          ],
+        },
+      },
+      {
+        // s3 ── Quiz q1–q4
+        id: 's3',
+        type: 'quiz',
+        questions: [
+          {
+            id: 'y5-mat-38-q1',
+            text: 'Mia bought 4 boxes of coloured pencils. Each box has 12 pencils. She gave 15 pencils to her friend. How many pencils does Mia have left?',
+            image: null,
+            options: ['33', '48', '63', '57'],
+            correct: 0,
+            explanation: '4 × 12 = 48 pencils, then 48 − 15 = 33 pencils left.',
+          },
+          {
+            id: 'y5-mat-38-q2',
+            text: 'A school canteen sells pies for $3 each. On Monday 24 pies were sold and on Tuesday 18 pies were sold. What was the total income from pies over both days?',
+            image: null,
+            options: ['$42', '$126', '$72', '$54'],
+            correct: 1,
+            explanation: '(24 + 18) × 3 = 42 × 3 = $126.',
+          },
+          {
+            id: 'y5-mat-38-q3',
+            text: 'Which number sentence correctly represents: "5 groups of 6, then add 9"?',
+            image: null,
+            options: ['5 + 6 × 9', '(5 × 6) + 9', '5 × (6 + 9)', '5 + 6 + 9'],
+            correct: 1,
+            explanation: 'Multiply first (5 × 6 = 30), then add 9 = 39. Brackets make the order clear.',
+          },
+          {
+            id: 'y5-mat-38-q4',
+            text: 'Using BODMAS, what is the value of 3 + 4 × 5?',
+            image: null,
+            options: ['35', '23', '17', '27'],
+            correct: 1,
+            explanation: 'Multiplication before addition: 4 × 5 = 20, then 3 + 20 = 23.',
+          },
+        ],
+      },
+      {
+        // s4 ── Worked example: Sports day planning
+        id: 's4',
+        type: 'worked-example',
+        teacherNote:
+          'This example introduces a three-operation problem. Encourage students to work in stages and write each stage\'s answer before moving on. Ask: "Could we solve this a different way?" to spark discussion about flexibility.',
+        imagePrompt:
+          'Illustrated Australian primary school sports day with running tracks, relay batons, and colourful team bibs; students lined up at starting blocks; teacher with clipboard; bright sunny oval',
+        content: {
+          heading: 'Sports Day Planning',
+          body: [
+            {
+              label: 'The Problem',
+              text: 'For Sports Day, 96 students are divided equally into 4 teams. Each team needs 3 water bottles per student for the day. Water bottles cost $2 each. What is the total cost for all the water bottles?',
+              highlight: 'Three operations: division → multiplication → multiplication.',
+            },
+            {
+              label: 'Solving Step by Step',
+              text: 'Step 1 — Students per team: 96 ÷ 4 = 24 students.\nStep 2 — Bottles per team: 24 × 3 = 72 bottles per team.\nStep 3 — Total bottles: 72 × 4 = 288 bottles.\nStep 4 — Total cost: 288 × 2 = $576.',
+              highlight: 'Working stage by stage avoids big errors.',
+            },
+            {
+              label: 'Shortcut Check',
+              text: 'We could also think: each student needs 3 bottles at $2 each = $6 per student. 96 × 6 = $576. Same answer! ✔',
+              highlight: 'Checking with a different method builds confidence.',
+            },
+          ],
+          questions: [
+            {
+              q: 'If the school budget only allows $400 for water bottles, how many bottles short are they?',
+              a: '576 − 400 = $176 short, so 176 ÷ 2 = 88 bottles short.',
+            },
+            {
+              q: 'Each of the 4 teams runs 6 relay laps. Each lap is 200 m. How far does each team run in total?',
+              a: '6 × 200 = 1200 m per team.',
+            },
+            {
+              q: 'First prize for the winning team is a $15 voucher for each member. If a team of 24 wins, what is the total prize value?',
+              a: '24 × 15 = $360',
+            },
+          ],
+        },
+      },
+      {
+        // s5 ── Quiz q5–q8
+        id: 's5',
+        type: 'quiz',
+        questions: [
+          {
+            id: 'y5-mat-38-q5',
+            text: 'A baker makes 6 batches of scones. Each batch makes 15 scones. She packs them in bags of 9. How many full bags can she fill?',
+            image: null,
+            options: ['10', '9', '8', '11'],
+            correct: 0,
+            explanation: '6 × 15 = 90 scones. 90 ÷ 9 = 10 full bags.',
+          },
+          {
+            id: 'y5-mat-38-q6',
+            text: 'What is the value of (20 − 8) × 3 + 4?',
+            image: null,
+            options: ['44', '40', '36', '48'],
+            correct: 0,
+            explanation: 'Brackets first: 20 − 8 = 12. Then 12 × 3 = 36. Then 36 + 4 = 40. Wait — 36 + 4 = 40. The correct answer is 40.',
+          },
+          {
+            id: 'y5-mat-38-q7',
+            text: 'A school orders 5 packs of exercise books. Each pack has 20 books. They share the books equally among 4 classes. How many books does each class get?',
+            image: null,
+            options: ['20', '25', '30', '16'],
+            correct: 1,
+            explanation: '5 × 20 = 100 books in total. 100 ÷ 4 = 25 books per class.',
+          },
+          {
+            id: 'y5-mat-38-q8',
+            text: 'Tom earns $12 per hour helping at the school fete. He works for 3 hours on Saturday and 2 hours on Sunday. How much does he earn altogether?',
+            image: null,
+            options: ['$36', '$60', '$48', '$72'],
+            correct: 1,
+            explanation: '(3 + 2) × 12 = 5 × 12 = $60.',
+          },
+        ],
+      },
+      {
+        // s6 ── Free response
+        id: 's6',
+        type: 'free-response',
+        prompt:
+          'Create and solve your own two-step word problem set in an Australian context (e.g., sport, food, school). Show your working and explain why you chose each operation.',
+        fields: [
+          {
+            id: 'fr1',
+            label: 'My word problem',
+            placeholder: 'Write your problem here. Include at least two operations.',
+            multiline: true,
+          },
+          {
+            id: 'fr2',
+            label: 'My working out',
+            placeholder: 'Show each step. Write the number sentence for each stage.',
+            multiline: true,
+          },
+          {
+            id: 'fr3',
+            label: 'Why I chose those operations',
+            placeholder: 'Explain how you knew which operations to use and how you checked your answer.',
+            multiline: true,
+          },
+        ],
+      },
+      {
+        // s7 ── Homework
+        id: 's7',
+        type: 'homework',
+        dueNext: true,
+        tasks: [
+          {
+            id: 'hw1',
+            label: 'Cooking challenge: A recipe makes 24 biscuits and uses 3 cups of flour. If you want to make 72 biscuits, how many cups of flour do you need? Show your working.',
+            hint: 'First find how many times bigger the new batch is, then multiply the flour.',
+          },
+          {
+            id: 'hw2',
+            label: 'Write a multi-step problem for a family member to solve. It must use at least two different operations. Write the answer on the back.',
+            hint: 'Think of a real situation: shopping, cooking, sport. Check your own answer with BODMAS before giving it to them.',
+          },
+          {
+            id: 'hw3',
+            label: 'Look at a receipt from home (supermarket, café, etc.). Write two questions that could be answered using the numbers on the receipt, and solve them.',
+            hint: 'You might ask: "How much would 3 of the same item cost?" or "How much change from $20?"',
+          },
+        ],
+      },
+    ],
+  },
+
+  // ── LESSON 39: Financial Maths: Budgeting & Profit/Loss ───────────────────
+  {
+    id: 'y5-mat-39',
+    subject: 'maths',
+    title: 'Financial Maths: Budgeting & Profit/Loss',
+    victorianCode: 'VCMNA203',
+    description:
+      'Explore income, expenses, profit and loss. Plan a simple budget for a school event, calculate GST and discounts, and understand how percentages are used in everyday financial decisions.',
+    yearLevel: 5,
+    estimatedMinutes: 60,
+    starsAvailable: 5,
+    color: '#b45309',
+    icon: '💰',
+    steps: [
+      {
+        // s1 ── Video introduction
+        id: 's1',
+        type: 'video',
+        youtubeId: '',
+        youtubeSearchQuery: 'Year 5 financial maths budgeting profit loss GST Australia primary school',
+        description:
+          'Learn the meaning of income, expenses, profit, and loss. See how a simple school-stall budget is planned and how GST and discounts are calculated.',
+        teacherNote:
+          'Before playing, ask students: "Has anyone ever run a stall or sold something?" Use their experiences as a bridge into formal vocabulary. Create a T-chart on the board: Income (money in) vs Expenses (money out) and add examples throughout the lesson.',
+        keyPoints: [
+          'Income is money received; expenses are money spent. Profit = income − expenses (when income is greater).',
+          'A loss occurs when expenses are greater than income.',
+          'GST (Goods and Services Tax) in Australia adds 10% to a price; a 10% discount reduces a price by 10%.',
+        ],
+      },
+      {
+        // s2 ── Worked example: Market stall budget
+        id: 's2',
+        type: 'worked-example',
+        teacherNote:
+          'Introduce a simple budget table. Ask students why knowing expenses before starting is important (avoid a loss). Link to real-life: pocket money budgets, saving for an item. Discuss the difference between "profit" and "revenue".',
+        imagePrompt:
+          'Colourful Australian primary school market stall budget worksheet on a clipboard surrounded by coins, price tags, and small jars of homemade jam; Year 5 students calculating with pencil and paper; warm community atmosphere',
+        content: {
+          heading: 'Planning a Market Stall Budget',
+          body: [
+            {
+              label: 'The Stall Plan',
+              text: 'Class 5B plans a stall selling homemade jam ($4/jar), lemon shortbread ($2 each), and lemonade ($1.50/cup). They need $18 for ingredients, $5 for labels, and $7 for a table hire.',
+              highlight: 'Total expenses = $18 + $5 + $7 = $30.',
+            },
+            {
+              label: 'Income Forecast',
+              text: 'They hope to sell 12 jars of jam, 20 shortbreads, and 30 cups of lemonade.\nIncome = (12 × 4) + (20 × 2) + (30 × 1.50)\n= $48 + $40 + $45 = $133.',
+              highlight: 'Forecast income: $133.',
+            },
+            {
+              label: 'Profit Calculation',
+              text: 'Profit = Income − Expenses = $133 − $30 = $103.\nIf they only sold half of everything: Income = $66.50. Loss? No — $66.50 > $30, still a profit of $36.50.',
+              highlight: 'Break-even is when income exactly equals expenses.',
+            },
+          ],
+          questions: [
+            {
+              q: 'The class decides to donate 25% of profit to charity. How much is donated if profit is $103?',
+              a: '25% of $103 = $103 ÷ 4 = $25.75 donated.',
+            },
+            {
+              q: 'A supplier offers a 10% discount on ingredients if they buy in bulk, reducing the $18 cost. What is the new ingredient cost?',
+              a: '10% of $18 = $1.80. New cost = $18 − $1.80 = $16.20.',
+            },
+            {
+              q: 'What is the minimum number of jars of jam the class must sell to cover the $30 total expenses (ignoring other items)?',
+              a: '$30 ÷ $4 = 7.5, so they need to sell at least 8 jars.',
+            },
+          ],
+        },
+      },
+      {
+        // s3 ── Quiz q1–q4
+        id: 's3',
+        type: 'quiz',
+        questions: [
+          {
+            id: 'y5-mat-39-q1',
+            text: 'A school disco earns $240 from ticket sales. It costs $95 for decorations and $60 for the DJ. What is the profit?',
+            image: null,
+            options: ['$85', '$155', '$145', '$180'],
+            correct: 0,
+            explanation: 'Expenses = $95 + $60 = $155. Profit = $240 − $155 = $85.',
+          },
+          {
+            id: 'y5-mat-39-q2',
+            text: 'A sports club spends $320 on uniforms but only earns $280 from their fundraiser. What is the financial result?',
+            image: null,
+            options: ['Profit of $40', 'Loss of $40', 'Break-even', 'Profit of $600'],
+            correct: 1,
+            explanation: '$280 income − $320 expenses = −$40. This is a loss of $40.',
+          },
+          {
+            id: 'y5-mat-39-q3',
+            text: 'A book costs $20 before GST. GST is 10%. What is the price including GST?',
+            image: null,
+            options: ['$21', '$22', '$25', '$18'],
+            correct: 1,
+            explanation: '10% of $20 = $2. $20 + $2 = $22.',
+          },
+          {
+            id: 'y5-mat-39-q4',
+            text: 'A pair of shoes is $80 and is on sale with a 25% discount. What is the sale price?',
+            image: null,
+            options: ['$55', '$65', '$60', '$70'],
+            correct: 2,
+            explanation: '25% of $80 = $20. Sale price = $80 − $20 = $60.',
+          },
+        ],
+      },
+      {
+        // s4 ── Worked example: Savings goal and percentage
+        id: 's4',
+        type: 'worked-example',
+        teacherNote:
+          'Connect percentages to fractions students already know: 50% = ½, 25% = ¼, 10% = 1/10. Use a number line showing 0%–100% to visualise. Challenge early finishers to find 15% and 20% by combining 10% and 5%.',
+        imagePrompt:
+          'Illustrated Australian student piggy bank saving money with a goal thermometer chart on the wall showing percentage filled; coin jar; bright bedroom setting with school bag and footy in the background',
+        content: {
+          heading: 'Savings Goals and Percentages',
+          body: [
+            {
+              label: 'Saving for a Goal',
+              text: 'Lachlan wants to buy a new footy ($45). He earns $6 pocket money per week and has already saved $18. How many more weeks does he need to save?',
+              highlight: 'Remaining amount = $45 − $18 = $27. Weeks = $27 ÷ $6 = 4.5, so 5 weeks.',
+            },
+            {
+              label: 'Tracking by Percentage',
+              text: 'What percentage of his goal has Lachlan already reached?\n$18 out of $45 = 18/45 = 2/5 = 40%.\nHe is 40% of the way to his goal.',
+              highlight: 'Percentage = (amount saved ÷ total goal) × 100.',
+            },
+            {
+              label: 'Discount at the Shop',
+              text: 'The shop offers a 20% loyalty discount. New price = $45 − 20% of $45 = $45 − $9 = $36.\nWith the discount, Lachlan only needs $36 − $18 = $18 more, which is exactly 3 weeks of pocket money!',
+              highlight: 'Discounts can significantly change a savings plan.',
+            },
+          ],
+          questions: [
+            {
+              q: 'Priya saves $12 per week. Her goal is $60. What percentage of her goal does she reach after 3 weeks?',
+              a: 'After 3 weeks: 3 × $12 = $36. Percentage = (36 ÷ 60) × 100 = 60%.',
+            },
+            {
+              q: 'A skateboard worth $120 is discounted by 15%. What is the discounted price?',
+              a: '15% of $120 = $18. Discounted price = $120 − $18 = $102.',
+            },
+            {
+              q: 'A store adds 10% GST to a $55 helmet. What is the final price?',
+              a: '10% of $55 = $5.50. Final price = $55 + $5.50 = $60.50.',
+            },
+          ],
+        },
+      },
+      {
+        // s5 ── Quiz q5–q8
+        id: 's5',
+        type: 'quiz',
+        questions: [
+          {
+            id: 'y5-mat-39-q5',
+            text: 'Chloe earns $35 babysitting and spends $14 on a gift. What percentage of her earnings does she spend on the gift?',
+            image: null,
+            options: ['30%', '35%', '40%', '45%'],
+            correct: 2,
+            explanation: '14 ÷ 35 = 0.4 = 40%.',
+          },
+          {
+            id: 'y5-mat-39-q6',
+            text: 'A school cake stall earns $180. The ingredients cost $60. What fraction of the income was profit?',
+            image: null,
+            options: ['½', '⅓', '⅔', '¾'],
+            correct: 2,
+            explanation: 'Profit = $180 − $60 = $120. Fraction = 120/180 = 2/3.',
+          },
+          {
+            id: 'y5-mat-39-q7',
+            text: 'A budget allows $200 for a school excursion. Bus costs $85, entry costs $70, and lunch is $30 per class. Is there enough in the budget?',
+            image: null,
+            options: [
+              'Yes, $15 left over',
+              'No, $15 over budget',
+              'Exactly on budget',
+              'Yes, $45 left over',
+            ],
+            correct: 0,
+            explanation: '$85 + $70 + $30 = $185. $200 − $185 = $15 left over.',
+          },
+          {
+            id: 'y5-mat-39-q8',
+            text: 'A market stall has income of $75 and expenses of $75. What is the financial result?',
+            image: null,
+            options: ['Profit of $75', 'Loss of $75', 'Break-even', 'Cannot be determined'],
+            correct: 2,
+            explanation: 'When income equals expenses exactly, the result is break-even — no profit and no loss.',
+          },
+        ],
+      },
+      {
+        // s6 ── Free response
+        id: 's6',
+        type: 'free-response',
+        prompt:
+          'Plan a simple budget for a school event of your choice (e.g., a cake stall, games day, or book swap). Identify your income sources and expenses, calculate expected profit or loss, and describe one financial decision you would make.',
+        fields: [
+          {
+            id: 'fr1',
+            label: 'My event and budget plan',
+            placeholder: 'Name your event. List your income sources and expenses with dollar amounts.',
+            multiline: true,
+          },
+          {
+            id: 'fr2',
+            label: 'Profit or loss calculation',
+            placeholder: 'Calculate your total income, total expenses, and whether you make a profit or a loss. Show your working.',
+            multiline: true,
+          },
+          {
+            id: 'fr3',
+            label: 'My financial decision',
+            placeholder: 'What is one decision you would make to increase profit or reduce a loss? Explain using numbers.',
+            multiline: true,
+          },
+        ],
+      },
+      {
+        // s7 ── Homework
+        id: 's7',
+        type: 'homework',
+        dueNext: true,
+        tasks: [
+          {
+            id: 'hw1',
+            label: 'Find a receipt or catalogue at home and identify two items. Calculate the 10% GST that is included in the price (GST included price ÷ 11 = GST amount). Show your working.',
+            hint: 'In Australia, prices usually include GST already. To find the GST portion, divide the price by 11.',
+          },
+          {
+            id: 'hw2',
+            label: 'Create a personal savings plan. Choose something you want to buy (real or imaginary). Work out how many weeks of pocket money (or chores earnings) you would need. Calculate what percentage of your goal you reach each week.',
+            hint: 'Draw a savings thermometer and shade it in week by week until you reach 100%.',
+          },
+          {
+            id: 'hw3',
+            label: 'Interview a family member about a financial decision they have made (e.g., buying in bulk to save money, using a discount code). Write two sentences about what you learned.',
+            hint: 'Think about: Did they make a "profit" in some sense? How did they know it was a good deal?',
+          },
+        ],
+      },
+    ],
+  },
+
+  // ── LESSON 40: Review & Mathematical Investigations ───────────────────────
+  {
+    id: 'y5-mat-40',
+    subject: 'maths',
+    title: 'Review & Mathematical Investigations',
+    victorianCode: 'VCMNA192',
+    description:
+      'A capstone lesson bringing together the key Year 5 mathematics skills: number, measurement, geometry, statistics, and financial reasoning. Design a school garden, reflect on learning, and set goals for Year 6.',
+    yearLevel: 5,
+    estimatedMinutes: 60,
+    starsAvailable: 5,
+    color: '#0f766e',
+    icon: '🔭',
+    steps: [
+      {
+        // s1 ── Video introduction
+        id: 's1',
+        type: 'video',
+        youtubeId: '',
+        youtubeSearchQuery: 'Year 5 maths review investigations open-ended problems Australia primary',
+        description:
+          'See how the mathematics skills you have developed this year connect together. Watch how a real-world investigation — designing a garden — draws on number, measurement, geometry, data, and financial maths all at once.',
+        teacherNote:
+          'Frame this lesson as a celebration of learning. Remind students of topics from across the year: fractions, decimals, area, perimeter, data, probability, coordinates, and financial maths. This video is an opportunity to review vocabulary. Consider having students call out "I remember learning that!" as topics appear.',
+        keyPoints: [
+          'Mathematics skills connect — a single problem can use number, measurement, geometry, and data together.',
+          'An open-ended investigation has more than one right answer; what matters is your reasoning.',
+          'Reflecting on what you have learned helps you grow as a mathematician.',
+        ],
+      },
+      {
+        // s2 ── Worked example: School garden design
+        id: 's2',
+        type: 'worked-example',
+        teacherNote:
+          'This is the core investigation of the lesson. Walk through each stage, pausing to ask students to recall the relevant skill: "Who can remind us how to find area? Perimeter?" Encourage students to sketch their own garden design on grid paper alongside this example. The example uses a simple rectangular garden — students can make theirs more complex.',
+        imagePrompt:
+          'Illustrated top-down plan view of a colourful Australian primary school garden with labelled rectangular garden beds, a water tap, a compost bin, and a vegetable patch; ruler and pencil lying nearby on grid paper; bright, friendly style',
+        content: {
+          heading: 'Designing a School Garden',
+          body: [
+            {
+              label: 'The Brief',
+              text: 'Design a rectangular school garden that is 12 m long and 8 m wide. Inside it, plan three garden beds: vegetables (½ of the garden), flowers (¼ of the garden), and a path/seating area (the rest).',
+              highlight: 'Total area = length × width = 12 × 8 = 96 m².',
+            },
+            {
+              label: 'Dividing the Space Using Fractions',
+              text: 'Vegetable bed: ½ × 96 = 48 m².\nFlower bed: ¼ × 96 = 24 m².\nPath/seating: 96 − 48 − 24 = 24 m² (also ¼ of total).\nPerimeter of full garden: 2 × (12 + 8) = 40 m.',
+              highlight: 'Fractions, area, and perimeter work together here.',
+            },
+            {
+              label: 'Budgeting the Garden',
+              text: 'Fencing costs $15 per metre. Total fencing cost = 40 × $15 = $600.\nTopsoil for vegetable bed costs $8 per m². Cost = 48 × $8 = $384.\nTotal garden cost so far = $600 + $384 = $984.',
+              highlight: 'Financial maths and measurement work together in real projects.',
+            },
+          ],
+          questions: [
+            {
+              q: 'The class surveys 24 students about their favourite garden feature. 12 choose vegetables, 6 choose flowers, and 6 choose seating. What fraction and percentage chose vegetables?',
+              a: '12/24 = ½ = 50% chose vegetables.',
+            },
+            {
+              q: 'If the vegetable bed is rectangular with area 48 m², what are two possible sets of dimensions (length × width)?',
+              a: 'Possible answers: 8 m × 6 m, or 12 m × 4 m, or 16 m × 3 m (many are valid).',
+            },
+            {
+              q: 'The garden needs 6 pots of seedlings. Each pot costs $4.50. The class has a $20 budget for seedlings. Do they have enough? By how much are they over or under?',
+              a: '6 × $4.50 = $27. They are $7 over budget.',
+            },
+          ],
+        },
+      },
+      {
+        // s3 ── Quiz q1–q4
+        id: 's3',
+        type: 'quiz',
+        questions: [
+          {
+            id: 'y5-mat-40-q1',
+            text: 'A rectangle has a perimeter of 36 cm and a length of 10 cm. What is its width?',
+            image: null,
+            options: ['8 cm', '6 cm', '7 cm', '16 cm'],
+            correct: 1,
+            explanation: 'Perimeter = 2 × (length + width). 36 = 2 × (10 + w). 18 = 10 + w. w = 8. Wait — 18 − 10 = 8. The answer is 8 cm.',
+          },
+          {
+            id: 'y5-mat-40-q2',
+            text: 'A garden has an area of 60 m². Three-quarters of it is planted with grass. How many square metres is the grass?',
+            image: null,
+            options: ['15 m²', '40 m²', '45 m²', '20 m²'],
+            correct: 2,
+            explanation: '¾ × 60 = 45 m².',
+          },
+          {
+            id: 'y5-mat-40-q3',
+            text: 'The mean temperature across 5 days in Melbourne was 22°C. The first four days were 18, 20, 25, and 24°C. What was the temperature on the fifth day?',
+            image: null,
+            options: ['23°C', '22°C', '21°C', '20°C'],
+            correct: 0,
+            explanation: 'Mean × 5 = total: 22 × 5 = 110. Sum of first four = 18 + 20 + 25 + 24 = 87. Fifth day = 110 − 87 = 23°C.',
+          },
+          {
+            id: 'y5-mat-40-q4',
+            text: 'Which of these decimals is equivalent to ⅗?',
+            image: null,
+            options: ['0.35', '0.53', '0.60', '0.06'],
+            correct: 2,
+            explanation: '3 ÷ 5 = 0.6. Also written as 0.60.',
+          },
+        ],
+      },
+      {
+        // s4 ── Worked example: Year 5 skill connections
+        id: 's4',
+        type: 'worked-example',
+        teacherNote:
+          'Use this example to explicitly name the Year 5 skills as they appear. Write them on the board as a "skills web": fractions ↔ decimals ↔ percentages; area ↔ perimeter; data ↔ statistics; operations ↔ problem solving. Help students see the web as a map of their mathematical year.',
+        imagePrompt:
+          'Illustrated mind map or web diagram on a whiteboard showing Year 5 maths topics — fractions, decimals, percentages, area, perimeter, data, graphs, geometry, financial maths — connected with colourful lines; primary school classroom setting with eager students pointing at it',
+        content: {
+          heading: 'Connecting the Year's Skills',
+          body: [
+            {
+              label: 'A Year of Mathematics',
+              text: 'This year you have worked with: place value and large numbers, fractions and decimals, multiplication and division strategies, area and perimeter, angles and 2D shapes, data collection and graphs, probability, coordinates, and financial maths.',
+              highlight: 'Every topic connects to real life and to other topics.',
+            },
+            {
+              label: 'How Topics Connect',
+              text: 'Fractions, decimals and percentages are three ways to express the same part-whole relationship.\nArea and perimeter both describe shapes but answer different questions.\nData and statistics help us make decisions — just like budgets do in financial maths.',
+              highlight: 'Knowing how to move between representations is a key mathematical skill.',
+            },
+            {
+              label: 'Looking Ahead to Year 6',
+              text: 'In Year 6 you will extend these ideas: larger numbers and negative numbers, ratio and proportion, more complex geometry, richer data investigations, and algebraic thinking. The skills you built this year are the foundation.',
+              highlight: 'You are better prepared for Year 6 than you might think!',
+            },
+          ],
+          questions: [
+            {
+              q: 'Name one topic from Year 5 that you found challenging and explain one strategy that helped you.',
+              a: 'Open response — sample: "I found fractions hard. Drawing a number line helped me see where fractions sat."',
+            },
+            {
+              q: 'Give a real-life example where you would use both area AND data/statistics together.',
+              a: 'Open response — sample: "Designing a classroom layout: measure areas of desks (measurement) then survey students about preferred seating (data)."',
+            },
+            {
+              q: 'What is 0.75 expressed as a fraction and as a percentage?',
+              a: '0.75 = 75/100 = ¾ = 75%.',
+            },
+          ],
+        },
+      },
+      {
+        // s5 ── Quiz q5–q8
+        id: 's5',
+        type: 'quiz',
+        questions: [
+          {
+            id: 'y5-mat-40-q5',
+            text: 'A spinner has 8 equal sections: 3 red, 3 blue, and 2 green. What is the probability of landing on blue?',
+            image: null,
+            options: ['3/8', '1/4', '1/2', '3/5'],
+            correct: 0,
+            explanation: '3 blue sections out of 8 total = 3/8.',
+          },
+          {
+            id: 'y5-mat-40-q6',
+            text: 'A shape has 4 sides of equal length and 4 right angles. What is the name of this shape?',
+            image: null,
+            options: ['Rectangle', 'Rhombus', 'Square', 'Trapezium'],
+            correct: 2,
+            explanation: 'Equal sides and 4 right angles defines a square.',
+          },
+          {
+            id: 'y5-mat-40-q7',
+            text: 'On a coordinate grid, a point is plotted at (4, 7). Which description is correct?',
+            image: null,
+            options: [
+              '4 units up, 7 units right',
+              '4 units right, 7 units up',
+              '7 units right, 4 units up',
+              '4 units left, 7 units down',
+            ],
+            correct: 1,
+            explanation: 'Coordinates are written as (x, y): x is across (right), y is up. So (4, 7) means 4 right, 7 up.',
+          },
+          {
+            id: 'y5-mat-40-q8',
+            text: 'Which of the following best describes what a mathematician does when they are "stuck"?',
+            image: null,
+            options: [
+              'Give up and move on',
+              'Try a different strategy, draw a diagram, or use simpler numbers',
+              'Wait for the teacher to give the answer',
+              'Skip the question permanently',
+            ],
+            correct: 1,
+            explanation: 'Resilience and strategy-switching are key mathematical habits of mind. Trying a simpler case or drawing a diagram are powerful strategies.',
+          },
+        ],
+      },
+      {
+        // s6 ── Free response: Capstone reflection
+        id: 's6',
+        type: 'free-response',
+        prompt:
+          'Reflect on your Year 5 mathematics journey. Choose two different topics from across the year (e.g., fractions, area, data, financial maths, geometry) and write about what you learned, a challenge you overcame, and a goal for Year 6.',
+        fields: [
+          {
+            id: 'fr1',
+            label: 'Two topics I am proud of mastering',
+            placeholder: 'Name two topics and describe something specific you can now do that you could not do at the start of the year. Give a maths example for each.',
+            multiline: true,
+          },
+          {
+            id: 'fr2',
+            label: 'A challenge I overcame and how',
+            placeholder: 'Describe a concept that was tricky. What strategy or "aha moment" helped you understand it?',
+            multiline: true,
+          },
+          {
+            id: 'fr3',
+            label: 'My goal for Year 6',
+            placeholder: 'What maths skill do you most want to improve next year? How will you work on it?',
+            multiline: true,
+          },
+        ],
+      },
+      {
+        // s7 ── Homework: Capstone investigation
+        id: 's7',
+        type: 'homework',
+        dueNext: true,
+        tasks: [
+          {
+            id: 'hw1',
+            label: 'Design your own school garden on 1 cm grid paper. Your garden must have a total area of at least 50 cm² on the grid. Label the area and perimeter of the full garden and at least two sections inside it. Use fractions to describe what proportion each section takes up.',
+            hint: 'Draw on grid paper and count squares for area. Use the formula Perimeter = 2 × (length + width) for rectangles.',
+          },
+          {
+            id: 'hw2',
+            label: 'Write a budget for your garden design. Assign a "cost per cm²" for different sections (e.g., $3/cm² for vegetables, $2/cm² for lawn, $5/cm² for path paving). Calculate the total cost of your garden.',
+            hint: 'Multiply each section's area by its cost per cm². Then add all the section costs together. This connects area with financial maths!',
+          },
+          {
+            id: 'hw3',
+            label: 'Survey at least 5 people (family, friends) about their favourite vegetable to grow. Record the results in a tally chart, draw a column graph, and write one sentence about what the data shows. Bring your graph to share with the class.',
+            hint: 'Label your axes clearly. Title your graph. Think about what the most common answer tells you and whether you were surprised.',
+          },
+        ],
+      },
+    ],
+  },
+
 ];

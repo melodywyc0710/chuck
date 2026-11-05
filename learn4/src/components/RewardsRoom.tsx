@@ -762,11 +762,9 @@ export default function RewardsRoom() {
                         onDragEnd={(_, info) => {
                           if (!roomRef.current) return;
                           const rect = roomRef.current.getBoundingClientRect();
-                          const newXPx = rect.width * xPct / 100 + info.offset.x;
-                          const newYPx = rect.height * yPct / 100 + info.offset.y;
                           setItemPosition(posKey, {
-                            x: Math.max(4, Math.min(96, (newXPx / rect.width) * 100)),
-                            y: Math.max(4, Math.min(92, (newYPx / rect.height) * 100)),
+                            x: Math.max(4, Math.min(96, ((info.point.x - rect.left) / rect.width) * 100)),
+                            y: Math.max(4, Math.min(92, ((info.point.y - rect.top) / rect.height) * 100)),
                           });
                         }}
                         whileDrag={{ scale: 1.2, zIndex: 50 }}
